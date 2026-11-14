@@ -1,0 +1,4 @@
+Assembly	Total contigs	Total length	GC content	Maximum contig length	N50	L50	Num. contigs >= 10000	Num. contigs >= 50000	Num. contigs >= 100000	est. completeness	est. redundancy	est. strain heterogeneity	domain	phylum	class	order	family	genus	species
+C001_L-44_DEL-MAG-1	10	2524243	60.08	572738	323412	4	9	8	8	100.00	0.00	0.00	Bacteria	Actinobacteriota	Actinomycetia	Propionibacteriales	Propionibacteriaceae	Cutibacterium	Cutibacterium acnes
+C001_R+1_DEL-MAG-3	67	2387102	60.13	215072	95763	10	43	15	9	97.04	0.00	0.00	Bacteria	Actinobacteriota	Actinomycetia	Propionibacteriales	Propionibacteriaceae	Cutibacterium	Cutibacterium acnes
+C004_L-44_DEL-MAG-2	74	2500243	60.17	166927	62130	13	51	17	6	99.89	0.13	0.00	Bacteria	Actinobacteriota	Actinomycetia	Propionibacteriales	Propionibacteriaceae	Cutibacterium	Cutibacterium acnes

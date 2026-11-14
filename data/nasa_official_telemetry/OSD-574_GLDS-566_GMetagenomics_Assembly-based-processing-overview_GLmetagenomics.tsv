@@ -1,0 +1,9 @@
+Sample_ID	assembly_produced	gene_calls_identified	read_mapping_successful	bins_recovered	MAGs_recovered
+C001_L-44_DEL	Yes	Yes	Yes	2	1
+C001_R+1_DEL	Yes	Yes	Yes	3	1
+C002_L-44_DEL	Yes	Yes	Yes	1	0
+C002_R+1_DEL	Yes	Yes	Yes	0	0
+C003_L-44_DEL	Yes	Yes	Yes	1	0
+C003_R+1_DEL	Yes	Yes	Yes	1	0
+C004_L-44_DEL	Yes	Yes	Yes	6	1
+C004_R+1_DEL	Yes	Yes	Yes	3	0

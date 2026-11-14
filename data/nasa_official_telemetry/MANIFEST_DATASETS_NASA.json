@@ -1,0 +1,32 @@
+[
+  {
+    "archivo": "NASA_OSD-715_Retina_Proteomics_iBAQ.xlsx",
+    "tamano_kb": 22594.53,
+    "url_origen": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-715/download?source=datamanager&file=GLDS-639_proteomics_01_Mao_RR9_Retina_092018_MQ_iBAQ.xlsx",
+    "descripcion": "Estudio oficial NASA OSD-715 (vinculado en data.nasa.gov): Adaptaciones proteómicas y presión intraocular en vuelo espacial (modelo SANS)."
+  },
+  {
+    "archivo": "NASA_OSD-574_Metagenomics_Assembly_Summaries.tsv",
+    "tamano_kb": 1.12,
+    "url_origen": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-574/download?source=datamanager&file=GLDS-566_GMetagenomics_assembly-summaries_GLmetagenomics.tsv",
+    "descripcion": "Estudio oficial NASA OSD-574: Métricas del microbioma humano y adaptación celular de los 4 astronautas de Inspiration4."
+  },
+  {
+    "archivo": "NASA_OSD-574_MAGs_Overview.tsv",
+    "tamano_kb": 0.81,
+    "url_origen": "https://osdr.nasa.gov/geode-py/ws/studies/OSD-574/download?source=datamanager&file=GLDS-566_GMetagenomics_MAGs-overview_GLmetagenomics.tsv",
+    "descripcion": "Estudio oficial NASA OSD-574: Perfiles genómicos y de respuesta fisiológica en astronautas."
+  },
+  {
+    "archivo": "NASA_ISS_Telemetry_Packet_S0000001.txt",
+    "tamano_kb": 713.54,
+    "url_origen": "https://raw.githubusercontent.com/ISS-Mimic/Mimic/main/Pi/RecordedData/Standard/S0000001.txt",
+    "descripcion": "Telemetría real registrada segundo a segundo de la Estación Espacial Internacional (ISS) generada por sistemas de aviónica y soporte vital."
+  },
+  {
+    "archivo": "NASA_ISS_Telemetry_Packet_P4000001.txt",
+    "tamano_kb": 127.98,
+    "url_origen": "https://raw.githubusercontent.com/ISS-Mimic/Mimic/main/Pi/RecordedData/Standard/P4000001.txt",
+    "descripcion": "Telemetría real de sensores térmicos y distribución de potencia del segmento P4 de la Estación Espacial Internacional."
+  }
+]
