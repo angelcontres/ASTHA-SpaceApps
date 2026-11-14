@@ -16,13 +16,25 @@
       theme: {
         extend: {
           colors: {
+            nasa: {
+              deep: '#040915',
+              dark: '#071329',
+              panel: '#0c1d3b',
+              surface: '#0f244a',
+              border: '#1f3e6e',
+              pastel: '#79a7df',
+              'pastel-light': '#9fc5f8',
+              'pastel-soft': '#d4e6ff',
+              meatball: '#0b3d91',
+              cyan: '#38bdf8'
+            },
             space: {
               950: '#030712',
-              900: '#060913',
-              800: '#0c1222',
-              700: '#141e36',
-              600: '#1f2d4d',
-              500: '#334155'
+              900: '#040915',
+              800: '#0a1730',
+              700: '#102447',
+              600: '#1a3769',
+              500: '#2b508f'
             }
           }
         }
@@ -30,22 +42,83 @@
     }
   </script>
   <style>
+    /* INSANE NASA SCI-FI BLUEPRINT & TELEMETRY GRID */
+    .nasa-insane-grid {
+      background-color: #040915;
+      background-image: 
+        linear-gradient(to right, rgba(121, 167, 223, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(121, 167, 223, 0.08) 1px, transparent 1px),
+        linear-gradient(to right, rgba(121, 167, 223, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(121, 167, 223, 0.02) 1px, transparent 1px),
+        radial-gradient(circle 1000px at 50% 0%, rgba(121, 167, 223, 0.14), transparent 75%);
+      background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 100% 100%;
+      background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px, 0 0;
+    }
+
+    /* TACTICAL SCI-FI HUD CARD WITH PASTEL CORNER BRACKETS */
+    .hud-card {
+      position: relative;
+      background: rgba(10, 23, 48, 0.75);
+      border: 1px solid rgba(121, 167, 223, 0.25);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 35px -5px rgba(2, 6, 16, 0.7), inset 0 0 25px rgba(121, 167, 223, 0.03);
+    }
+    .hud-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      width: 10px;
+      height: 10px;
+      border-top: 2px solid #79a7df;
+      border-left: 2px solid #79a7df;
+      pointer-events: none;
+    }
+    .hud-card::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 10px;
+      height: 10px;
+      border-bottom: 2px solid #79a7df;
+      border-right: 2px solid #79a7df;
+      pointer-events: none;
+    }
+
+    /* TACTICAL CROSSHAIR AT CORNER */
+    .crosshair-corner {
+      position: relative;
+    }
+    .crosshair-corner::before {
+      content: '+';
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #79a7df;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
     @keyframes pulse-slow {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(1.02); }
+      50% { opacity: 0.82; transform: scale(1.02); }
     }
     .pulse-danger {
       animation: pulse-slow 1.5s infinite;
     }
+
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #0c1222;
+      background: #040915;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #1f2d4d;
+      background: #1f3e6e;
       border-radius: 4px;
     }
     .organ-hover {
@@ -53,50 +126,51 @@
       transition: all 0.25s ease;
     }
     .organ-hover:hover {
-      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.9));
+      filter: drop-shadow(0 0 14px rgba(121, 167, 223, 0.95));
     }
   </style>
 </head>
-<body class="bg-space-900 text-slate-100 font-sans min-h-screen flex flex-col custom-scrollbar select-none">
+<body class="nasa-insane-grid text-slate-100 font-sans min-h-screen flex flex-col custom-scrollbar select-none">
 
-  <!-- TOP APP BAR -->
-  <header class="border-b border-space-700 bg-space-800/90 backdrop-blur-md px-6 py-3 sticky top-0 z-40 flex items-center justify-between">
+  <!-- TOP APP BAR WITH NASA MEATBALL & PASTEL AESTHETICS -->
+  <header class="border-b border-nasa-border/60 bg-[#071329]/85 backdrop-blur-md px-6 py-3 sticky top-0 z-40 flex items-center justify-between shadow-2xl">
     <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
+      <!-- NASA Meatball + Pastel Gradient Icon -->
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0b3d91] via-[#1e50a2] to-[#79a7df] flex items-center justify-center shadow-lg shadow-blue-500/25 border border-[#9fc5f8]/40">
         <i data-lucide="shield-alert" class="w-6 h-6 text-white"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="text-xl font-bold tracking-wider text-white">ASTRO<span class="text-cyan-400">VITAL</span></span>
-          <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800 text-cyan-300 font-mono">NASA-STD-3001</span>
-          <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 border border-emerald-800 text-emerald-300 font-mono flex items-center gap-1">
+          <span class="text-xl font-bold tracking-wider text-white">ASTRO<span class="text-nasa-pastel">VITAL</span></span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-[#0b3d91]/50 border border-[#79a7df]/50 text-nasa-pastel-light font-mono font-bold tracking-wider">NASA-STD-3001</span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-mono flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> EDGE 100% OFFLINE
           </span>
         </div>
-        <p class="text-xs text-slate-400 font-mono">Autonomous Deep-Space Clinical CDSS · Mars Latency: 22m RTT</p>
+        <p class="text-xs text-nasa-pastel-soft/75 font-mono">Autonomous Deep-Space Clinical CDSS · Mars Latency: 22m RTT</p>
       </div>
     </div>
 
     <!-- HABITAT STATUS BADGES & API EXPLORER TRIGGER -->
     <div class="flex items-center space-x-4 text-xs font-mono">
       <!-- NASA OSDR API Modal Trigger Button -->
-      <button onclick="openOsdrModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-cyan-950 border border-cyan-500/60 text-cyan-300 hover:bg-cyan-900/60 transition shadow-lg shadow-cyan-950/50">
-        <i data-lucide="satellite" class="w-4 h-4 text-cyan-400"></i>
+      <button onclick="openOsdrModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#0c1f3d] border border-nasa-pastel/60 text-nasa-pastel-light hover:bg-[#122b54] transition shadow-lg shadow-blue-950/50">
+        <i data-lucide="satellite" class="w-4 h-4 text-nasa-pastel"></i>
         <span class="font-bold">NASA OSDR API (116 Estudios)</span>
       </button>
 
       <!-- LIVE STREAM TOGGLE -->
-      <button onclick="toggleLiveStream()" id="btn-live-stream" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-space-700 border border-space-600 text-slate-300 hover:bg-space-600 transition">
+      <button onclick="toggleLiveStream()" id="btn-live-stream" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-nasa-dark border border-nasa-border text-slate-300 hover:bg-nasa-panel transition">
         <span class="w-2 h-2 rounded-full bg-slate-400" id="live-dot"></span>
         <span id="live-text">Telemetría Estática</span>
       </button>
 
       <div class="hidden xl:flex items-center space-x-3">
-        <div class="flex items-center space-x-2 bg-space-700/50 px-3 py-1.5 rounded-lg border border-space-600" id="badge-radiation">
+        <div class="flex items-center space-x-2 bg-nasa-dark/70 px-3 py-1.5 rounded-lg border border-nasa-border/60" id="badge-radiation">
           <i data-lucide="activity" class="w-4 h-4 text-emerald-400"></i>
           <span>Radiación CANS: <strong class="text-emerald-400" id="top-radiation">28.4 µSv/h</strong></span>
         </div>
-        <div class="flex items-center space-x-2 bg-space-700/50 px-3 py-1.5 rounded-lg border border-space-600" id="badge-co2">
+        <div class="flex items-center space-x-2 bg-nasa-dark/70 px-3 py-1.5 rounded-lg border border-nasa-border/60" id="badge-co2">
           <i data-lucide="wind" class="w-4 h-4 text-emerald-400"></i>
           <span>ppCO₂ Cabina: <strong class="text-emerald-400" id="top-co2">2.1 mmHg</strong></span>
         </div>
@@ -104,46 +178,46 @@
     </div>
   </header>
 
-  <!-- MAIN VIEWPORT -->
+  <!-- MAIN VIEWPORT WITH 12-COL HUD CARDS -->
   <div class="flex-1 p-6 grid grid-cols-1 xl:grid-cols-12 gap-6 max-w-[1800px] w-full mx-auto">
 
     <!-- LEFT COLUMN: ASTRONAUT SELECTOR & 3D ANATOMICAL MAP (4 COLS) -->
     <div class="xl:col-span-4 flex flex-col gap-6">
 
       <!-- CREW SELECTOR CARD (REAL INSPIRATION4 ASTRONAUTS) -->
-      <div class="bg-space-800 border border-space-700 rounded-2xl p-5 shadow-xl">
+      <div class="hud-card crosshair-corner rounded-2xl p-5">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center space-x-2">
-            <i data-lucide="users" class="w-5 h-5 text-cyan-400"></i>
-            <h2 class="font-bold text-sm tracking-wide uppercase text-slate-200">Tripulación Humana (OSD-574)</h2>
+            <i data-lucide="users" class="w-5 h-5 text-nasa-pastel"></i>
+            <h2 class="font-bold text-sm tracking-wide uppercase text-slate-100 font-mono">Tripulación Humana (OSD-574)</h2>
           </div>
-          <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono">Inspiration4</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-[#0b3d91]/40 border border-nasa-pastel/40 text-nasa-pastel-light font-mono">Inspiration4</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2" id="crew-buttons">
-          <button onclick="selectAstronaut('C001')" id="btn-C001" class="crew-btn p-3 rounded-xl border border-space-600 bg-space-700/30 text-left transition flex items-center space-x-3 hover:border-space-500">
-            <div class="w-9 h-9 rounded-lg bg-blue-600/30 border border-blue-400/30 flex items-center justify-center font-bold text-blue-300 font-mono text-xs">C01</div>
+          <button onclick="selectAstronaut('C001')" id="btn-C001" class="crew-btn p-3 rounded-xl border border-nasa-border bg-[#071429]/50 text-left transition flex items-center space-x-3 hover:border-nasa-pastel/50">
+            <div class="w-9 h-9 rounded-lg bg-blue-600/30 border border-blue-400/40 flex items-center justify-center font-bold text-blue-300 font-mono text-xs">C01</div>
             <div class="overflow-hidden">
               <div class="font-bold text-xs truncate text-white">Jared Isaacman</div>
               <div class="text-[10px] text-slate-400 truncate">Comandante</div>
             </div>
           </button>
-          <button onclick="selectAstronaut('C002')" id="btn-C002" class="crew-btn p-3 rounded-xl border border-space-600 bg-space-700/30 text-left transition flex items-center space-x-3 hover:border-space-500">
-            <div class="w-9 h-9 rounded-lg bg-purple-600/30 border border-purple-400/30 flex items-center justify-center font-bold text-purple-300 font-mono text-xs">C02</div>
+          <button onclick="selectAstronaut('C002')" id="btn-C002" class="crew-btn p-3 rounded-xl border border-nasa-border bg-[#071429]/50 text-left transition flex items-center space-x-3 hover:border-nasa-pastel/50">
+            <div class="w-9 h-9 rounded-lg bg-purple-600/30 border border-purple-400/40 flex items-center justify-center font-bold text-purple-300 font-mono text-xs">C02</div>
             <div class="overflow-hidden">
               <div class="font-bold text-xs truncate text-white">Hayley Arceneaux</div>
               <div class="text-[10px] text-slate-400 truncate">Oficial Médico</div>
             </div>
           </button>
-          <button onclick="selectAstronaut('C003')" id="btn-C003" class="crew-btn p-3 rounded-xl border border-cyan-500/50 bg-cyan-950/40 text-left transition flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-lg bg-amber-600/30 border border-amber-400/30 flex items-center justify-center font-bold text-amber-300 font-mono text-xs">C03</div>
+          <button onclick="selectAstronaut('C003')" id="btn-C003" class="crew-btn p-3 rounded-xl border border-nasa-pastel bg-[#0e2752]/70 text-left transition flex items-center space-x-3 shadow-lg shadow-blue-950/60">
+            <div class="w-9 h-9 rounded-lg bg-amber-600/30 border border-amber-400/40 flex items-center justify-center font-bold text-amber-300 font-mono text-xs">C03</div>
             <div class="overflow-hidden">
               <div class="font-bold text-xs truncate text-white">Dra. Sian Proctor</div>
               <div class="text-[10px] text-amber-300 truncate">SANS Risk · Piloto</div>
             </div>
           </button>
-          <button onclick="selectAstronaut('C004')" id="btn-C004" class="crew-btn p-3 rounded-xl border border-space-600 bg-space-700/30 text-left transition flex items-center space-x-3 hover:border-space-500">
-            <div class="w-9 h-9 rounded-lg bg-emerald-600/30 border border-emerald-400/30 flex items-center justify-center font-bold text-emerald-300 font-mono text-xs">C04</div>
+          <button onclick="selectAstronaut('C004')" id="btn-C004" class="crew-btn p-3 rounded-xl border border-nasa-border bg-[#071429]/50 text-left transition flex items-center space-x-3 hover:border-nasa-pastel/50">
+            <div class="w-9 h-9 rounded-lg bg-emerald-600/30 border border-emerald-400/40 flex items-center justify-center font-bold text-emerald-300 font-mono text-xs">C04</div>
             <div class="overflow-hidden">
               <div class="font-bold text-xs truncate text-white">Chris Sembroski</div>
               <div class="text-[10px] text-slate-400 truncate">Esp. Misión</div>
@@ -152,65 +226,65 @@
         </div>
 
         <!-- TIMELINE SLIDER (FLIGHT PHASES) -->
-        <div class="mt-4 pt-4 border-t border-space-700">
+        <div class="mt-4 pt-4 border-t border-nasa-border/60">
           <div class="flex items-center justify-between text-xs mb-2">
             <span class="text-slate-400 font-mono">Fase de Vuelo:</span>
-            <span class="font-bold text-cyan-400 font-mono" id="phase-label">FD-02 (Microgravedad Órbita)</span>
+            <span class="font-bold text-nasa-pastel-light font-mono" id="phase-label">FD-02 (Microgravedad Órbita)</span>
           </div>
           <div class="flex items-center space-x-2">
-            <button onclick="setPhaseIndex(0)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-space-600 hover:bg-space-600 text-center transition" id="phase-0">L-44</button>
-            <button onclick="setPhaseIndex(1)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-space-600 hover:bg-space-600 text-center transition" id="phase-1">FD-01</button>
-            <button onclick="setPhaseIndex(2)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-cyan-500 bg-cyan-950/60 font-bold text-cyan-300 text-center transition" id="phase-2">FD-02</button>
-            <button onclick="setPhaseIndex(3)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-space-600 hover:bg-space-600 text-center transition" id="phase-3">FD-03</button>
-            <button onclick="setPhaseIndex(4)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-space-600 hover:bg-space-600 text-center transition" id="phase-4">R+1</button>
+            <button onclick="setPhaseIndex(0)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center transition" id="phase-0">L-44</button>
+            <button onclick="setPhaseIndex(1)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center transition" id="phase-1">FD-01</button>
+            <button onclick="setPhaseIndex(2)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-pastel bg-[#0e2752] font-bold text-nasa-pastel-light text-center transition" id="phase-2">FD-02</button>
+            <button onclick="setPhaseIndex(3)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center transition" id="phase-3">FD-03</button>
+            <button onclick="setPhaseIndex(4)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center transition" id="phase-4">R+1</button>
           </div>
         </div>
       </div>
 
       <!-- ANATOMICAL BODY MAP WITH INTERACTIVE HOTSPOTS -->
-      <div class="bg-space-800 border border-space-700 rounded-2xl p-5 shadow-xl flex-1 flex flex-col">
+      <div class="hud-card crosshair-corner rounded-2xl p-5 flex-1 flex flex-col">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center space-x-2">
-            <i data-lucide="scan" class="w-5 h-5 text-cyan-400"></i>
-            <h2 class="font-bold text-sm tracking-wide uppercase text-slate-200">Mapa Anatómico Táctico</h2>
+            <i data-lucide="scan" class="w-5 h-5 text-nasa-pastel"></i>
+            <h2 class="font-bold text-sm tracking-wide uppercase text-slate-100 font-mono">Mapa Anatómico Táctico</h2>
           </div>
-          <span class="text-[11px] text-slate-400 font-mono">Toca un órgano para triage</span>
+          <span class="text-[11px] text-nasa-pastel-soft/70 font-mono">Toca un órgano para triage</span>
         </div>
 
-        <div class="relative flex-1 flex items-center justify-center p-4 bg-space-900/60 rounded-xl border border-space-700/60 min-h-[300px]">
+        <div class="relative flex-1 flex items-center justify-center p-4 bg-[#050e1f]/70 rounded-xl border border-nasa-border/60 min-h-[300px]">
           
           <!-- SVG HUMAN FIGURE WITH INTERACTIVE HOTSPOTS -->
           <svg viewBox="0 0 200 380" class="w-48 h-auto drop-shadow-2xl">
             <!-- Head & Neck -->
-            <path id="organ-head" onclick="selectOrgan('head')" class="organ-hover" d="M 85,25 C 85,10 115,10 115,25 C 115,45 85,45 85,25 Z M 93,45 L 93,58 L 107,58 L 107,45 Z" fill="#0ea5e9" opacity="0.85"/>
+            <path id="organ-head" onclick="selectOrgan('head')" class="organ-hover" d="M 85,25 C 85,10 115,10 115,25 C 115,45 85,45 85,25 Z M 93,45 L 93,58 L 107,58 L 107,45 Z" fill="#79a7df" opacity="0.85"/>
             <!-- Eyes Target Hotspot -->
             <circle id="organ-eyes" onclick="selectOrgan('eyes')" class="organ-hover" cx="100" cy="25" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
 
             <!-- Torso / Chest (Cardiovascular) -->
-            <path id="organ-chest" onclick="selectOrgan('heart')" class="organ-hover" d="M 75,58 L 125,58 L 118,140 L 82,140 Z" fill="#0ea5e9" opacity="0.85"/>
+            <path id="organ-chest" onclick="selectOrgan('heart')" class="organ-hover" d="M 75,58 L 125,58 L 118,140 L 82,140 Z" fill="#79a7df" opacity="0.85"/>
             <!-- Heart Target Hotspot -->
             <circle id="organ-heart-hotspot" onclick="selectOrgan('heart')" class="organ-hover" cx="105" cy="85" r="9" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
 
             <!-- Abdomen / Kidneys / Lumbar -->
-            <path id="organ-lumbar" onclick="selectOrgan('kidneys')" class="organ-hover" d="M 82,140 L 118,140 L 115,185 L 85,185 Z" fill="#0ea5e9" opacity="0.8"/>
+            <path id="organ-lumbar" onclick="selectOrgan('kidneys')" class="organ-hover" d="M 82,140 L 118,140 L 115,185 L 85,185 Z" fill="#79a7df" opacity="0.8"/>
             <circle id="organ-kidney-left" onclick="selectOrgan('kidneys')" class="organ-hover" cx="91" cy="160" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2"/>
             <circle id="organ-kidney-right" onclick="selectOrgan('kidneys')" class="organ-hover" cx="109" cy="160" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2"/>
 
             <!-- Arms -->
-            <path class="organ-hover" onclick="selectOrgan('general')" d="M 75,60 L 55,120 L 45,175 L 53,178 L 65,125 L 79,75 Z" fill="#0ea5e9" opacity="0.75"/>
-            <path class="organ-hover" onclick="selectOrgan('general')" d="M 125,60 L 145,120 L 155,175 L 147,178 L 135,125 L 121,75 Z" fill="#0ea5e9" opacity="0.75"/>
+            <path class="organ-hover" onclick="selectOrgan('general')" d="M 75,60 L 55,120 L 45,175 L 53,178 L 65,125 L 79,75 Z" fill="#79a7df" opacity="0.7"/>
+            <path class="organ-hover" onclick="selectOrgan('general')" d="M 125,60 L 145,120 L 155,175 L 147,178 L 135,125 L 121,75 Z" fill="#79a7df" opacity="0.7"/>
 
             <!-- Legs / Bones (Femur / Tibia) -->
-            <path id="organ-femur-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 85,185 L 98,185 L 94,270 L 80,270 Z" fill="#0ea5e9" opacity="0.8"/>
-            <path id="organ-femur-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 102,185 L 115,185 L 120,270 L 106,270 Z" fill="#0ea5e9" opacity="0.8"/>
-            <path id="organ-feet-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 80,272 L 94,272 L 91,355 L 75,355 Z" fill="#0ea5e9" opacity="0.75"/>
-            <path id="organ-feet-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 106,272 L 120,272 L 125,355 L 109,355 Z" fill="#0ea5e9" opacity="0.75"/>
+            <path id="organ-femur-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 85,185 L 98,185 L 94,270 L 80,270 Z" fill="#79a7df" opacity="0.8"/>
+            <path id="organ-femur-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 102,185 L 115,185 L 120,270 L 106,270 Z" fill="#79a7df" opacity="0.8"/>
+            <path id="organ-feet-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 80,272 L 94,272 L 91,355 L 75,355 Z" fill="#79a7df" opacity="0.7"/>
+            <path id="organ-feet-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 106,272 L 120,272 L 125,355 L 109,355 Z" fill="#79a7df" opacity="0.7"/>
           </svg>
 
           <!-- FLOATING ORGAN DETAIL CARD -->
-          <div id="organ-info-box" class="absolute bottom-3 left-3 right-3 bg-space-800/95 border border-cyan-500/40 p-3 rounded-xl backdrop-blur-md">
+          <div id="organ-info-box" class="absolute bottom-3 left-3 right-3 bg-[#08152b]/95 border border-nasa-pastel/60 p-3 rounded-xl backdrop-blur-md shadow-xl">
             <div class="flex items-center justify-between text-xs mb-1">
-              <span class="font-bold text-cyan-300" id="info-organ-name">Sistema Neuro-Ocular (Ojos y Cerebro)</span>
+              <span class="font-bold text-nasa-pastel-light" id="info-organ-name">Sistema Neuro-Ocular (Ojos y Cerebro)</span>
               <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40" id="info-organ-status">DERIVA / ALERTA SANS</span>
             </div>
             <p class="text-[11px] text-slate-300 leading-tight" id="info-organ-desc">Desplazamiento cefálico de fluidos en microgravedad. Presión sistólica elevada aumenta riesgo de edema en papila óptica (NASA-STD-3001).</p>
@@ -223,13 +297,13 @@
     <!-- CENTER & RIGHT COLUMN: REAL TELEMETRY VITAL SIGNS, CHARTS & CRISIS SIMULATOR (8 COLS) -->
     <div class="xl:col-span-8 flex flex-col gap-6">
 
-      <!-- TOP VITAL SIGNS GRID (CARDS) -->
+      <!-- TOP VITAL SIGNS GRID (4 CARDS) -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         
         <!-- HEART RATE -->
-        <div class="bg-space-800 border border-space-700 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+        <div class="hud-card rounded-2xl p-4 shadow-lg relative overflow-hidden">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400">FREC. CARDÍACA</span>
+            <span class="text-xs font-mono text-nasa-pastel-soft/80">FREC. CARDÍACA</span>
             <i data-lucide="heart" class="w-4 h-4 text-rose-500 animate-pulse"></i>
           </div>
           <div class="flex items-baseline space-x-2">
@@ -243,10 +317,10 @@
         </div>
 
         <!-- BLOOD PRESSURE -->
-        <div class="bg-space-800 border border-space-700 rounded-2xl p-4 shadow-lg relative overflow-hidden" id="card-bp-box">
+        <div class="hud-card rounded-2xl p-4 shadow-lg relative overflow-hidden" id="card-bp-box">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400">PRESIÓN ARTERIAL</span>
-            <i data-lucide="gauge" class="w-4 h-4 text-cyan-400"></i>
+            <span class="text-xs font-mono text-nasa-pastel-soft/80">PRESIÓN ARTERIAL</span>
+            <i data-lucide="gauge" class="w-4 h-4 text-nasa-pastel"></i>
           </div>
           <div class="flex items-baseline space-x-2">
             <span class="text-3xl font-extrabold font-mono text-rose-500 animate-pulse" id="card-bp">144/92</span>
@@ -259,10 +333,10 @@
         </div>
 
         <!-- SPO2 -->
-        <div class="bg-space-800 border border-space-700 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+        <div class="hud-card rounded-2xl p-4 shadow-lg relative overflow-hidden">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400">OXÍGENO SpO₂</span>
-            <i data-lucide="droplet" class="w-4 h-4 text-blue-400"></i>
+            <span class="text-xs font-mono text-nasa-pastel-soft/80">OXÍGENO SpO₂</span>
+            <i data-lucide="droplet" class="w-4 h-4 text-nasa-pastel-light"></i>
           </div>
           <div class="flex items-baseline space-x-2">
             <span class="text-3xl font-extrabold font-mono text-emerald-400" id="card-spo2">95.8</span>
@@ -275,9 +349,9 @@
         </div>
 
         <!-- HRV rMSSD -->
-        <div class="bg-space-800 border border-space-700 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+        <div class="hud-card rounded-2xl p-4 shadow-lg relative overflow-hidden">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400">VARIABILIDAD (HRV)</span>
+            <span class="text-xs font-mono text-nasa-pastel-soft/80">VARIABILIDAD (HRV)</span>
             <i data-lucide="zap" class="w-4 h-4 text-purple-400"></i>
           </div>
           <div class="flex items-baseline space-x-2">
@@ -296,15 +370,15 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
         
         <!-- TELEMETRY TIME-SERIES CHART (7 COLS) -->
-        <div class="lg:col-span-7 bg-space-800 border border-space-700 rounded-2xl p-5 shadow-xl flex flex-col">
+        <div class="lg:col-span-7 hud-card crosshair-corner rounded-2xl p-5 shadow-xl flex flex-col">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center space-x-2">
-              <i data-lucide="line-chart" class="w-5 h-5 text-cyan-400"></i>
-              <h3 class="font-bold text-sm tracking-wide uppercase text-slate-200">Curva de Telemetría Real NASA</h3>
+              <i data-lucide="line-chart" class="w-5 h-5 text-nasa-pastel"></i>
+              <h3 class="font-bold text-sm tracking-wide uppercase text-slate-100 font-mono">Curva de Telemetría Real NASA</h3>
             </div>
             <div class="text-xs font-mono text-slate-400 flex items-center space-x-3">
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span> PAS (Sistólica)</span>
-              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> FC (Pulso)</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-nasa-pastel inline-block"></span> PAS (Sistólica)</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> FC (Pulso)</span>
             </div>
           </div>
           <div class="flex-1 min-h-[220px] relative">
@@ -313,16 +387,16 @@
         </div>
 
         <!-- PROCEDURAL ACTION GUIDE (NON-PHYSICIAN CHECKLIST - 5 COLS) -->
-        <div class="lg:col-span-5 bg-space-800 border border-space-700 rounded-2xl p-5 shadow-xl flex flex-col">
+        <div class="lg:col-span-5 hud-card crosshair-corner rounded-2xl p-5 shadow-xl flex flex-col">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center space-x-2">
               <i data-lucide="clipboard-check" class="w-5 h-5 text-amber-400"></i>
-              <h3 class="font-bold text-sm tracking-wide uppercase text-slate-200">Protocolo de Contramedida</h3>
+              <h3 class="font-bold text-sm tracking-wide uppercase text-slate-100 font-mono">Protocolo de Contramedida</h3>
             </div>
             <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-400 border border-rose-500/30" id="badge-urgency">ALTA PRIORIDAD</span>
           </div>
 
-          <div class="bg-space-900/80 rounded-xl p-3 border border-space-700 mb-3">
+          <div class="bg-[#061021]/80 rounded-xl p-3 border border-nasa-border/60 mb-3">
             <div class="text-xs font-bold text-amber-300 font-mono mb-1" id="action-title">ALERTA SANS: Hipertensión Cefálica en Órbita</div>
             <p class="text-[11px] text-slate-300 leading-snug" id="action-desc">
               Desplazamiento cefálico de fluidos provoca sobrepresión orbitaria. Se requiere redistribución venosa inmediata para prevenir daño al nervio óptico.
@@ -331,16 +405,16 @@
 
           <!-- CHECKLIST STEPS (MAX 4 ACCIONABLES) -->
           <div class="flex-1 space-y-2 text-xs font-sans custom-scrollbar overflow-y-auto max-h-[170px]" id="checklist-container">
-            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-space-700/40 border border-space-600 cursor-pointer hover:bg-space-700/70 transition">
-              <input type="checkbox" class="mt-0.5 rounded border-space-500 text-cyan-500 focus:ring-0">
+            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer hover:bg-[#0c2040]/70 transition">
+              <input type="checkbox" class="mt-0.5 rounded border-nasa-border text-nasa-pastel focus:ring-0">
               <span class="text-slate-200">Paso 1: Colocar y presurizar pantalones LBNP a -35 mmHg por 60 min.</span>
             </label>
-            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-space-700/40 border border-space-600 cursor-pointer hover:bg-space-700/70 transition">
-              <input type="checkbox" class="mt-0.5 rounded border-space-500 text-cyan-500 focus:ring-0">
+            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer hover:bg-[#0c2040]/70 transition">
+              <input type="checkbox" class="mt-0.5 rounded border-nasa-border text-nasa-pastel focus:ring-0">
               <span class="text-slate-200">Paso 2: Realizar examen de agudeza visual en pantalla táctil (Rejilla de Amsler).</span>
             </label>
-            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-space-700/40 border border-space-600 cursor-pointer hover:bg-space-700/70 transition">
-              <input type="checkbox" class="mt-0.5 rounded border-space-500 text-cyan-500 focus:ring-0">
+            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer hover:bg-[#0c2040]/70 transition">
+              <input type="checkbox" class="mt-0.5 rounded border-nasa-border text-nasa-pastel focus:ring-0">
               <span class="text-slate-200">Paso 3: Restringir ingesta de sodio a menos de 2.0 g/día en ración nutricional.</span>
             </label>
           </div>
@@ -349,13 +423,13 @@
       </div>
 
       <!-- BOTTOM ROW: CRISIS SIMULATOR (DEMO KILLER PARA LOS JUECES) -->
-      <div class="bg-gradient-to-r from-space-800 via-space-800 to-space-700/80 border border-space-600 rounded-2xl p-5 shadow-2xl">
+      <div class="hud-card crosshair-corner rounded-2xl p-5 shadow-2xl">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <div class="flex items-center space-x-2">
             <div class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></div>
             <h3 class="font-bold text-sm tracking-wider uppercase text-white font-mono">SIMULADOR DE CRISIS ESPACIALES EN VIVO (Demo Jurado)</h3>
           </div>
-          <span class="text-xs text-slate-400 font-mono">Inyecta emergencias y observa la autonomía del sistema de soporte clínico</span>
+          <span class="text-xs text-nasa-pastel-soft/70 font-mono">Inyecta emergencias y observa la autonomía del sistema de soporte clínico</span>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -391,22 +465,22 @@
 
   <!-- NASA OSDR API EXPLORER MODAL -->
   <div id="osdr-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-space-800 border border-cyan-500/50 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+    <div class="hud-card rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-nasa-pastel/50">
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-space-700 flex items-center justify-between bg-space-900/60">
+      <div class="px-6 py-4 border-b border-nasa-border/70 flex items-center justify-between bg-[#071329]/90">
         <div class="flex items-center space-x-3">
-          <div class="w-9 h-9 rounded-lg bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+          <div class="w-9 h-9 rounded-lg bg-[#0b3d91]/50 border border-nasa-pastel/50 flex items-center justify-center text-nasa-pastel">
             <i data-lucide="database" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 class="font-bold text-base text-white flex items-center gap-2">
+            <h3 class="font-bold text-base text-white flex items-center gap-2 font-mono">
               Explorador Oficial NASA OSDR API v2
               <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">116 Estudios Homo sapiens</span>
             </h3>
-            <p class="text-xs text-slate-400 font-mono">Endpoint: <code class="text-cyan-300">https://visualization.osdr.nasa.gov/biodata/api/v2/</code></p>
+            <p class="text-xs text-nasa-pastel-soft/75 font-mono">Endpoint: <code class="text-nasa-pastel-light">https://visualization.osdr.nasa.gov/biodata/api/v2/</code></p>
           </div>
         </div>
-        <button onclick="closeOsdrModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-space-700 transition">
+        <button onclick="closeOsdrModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-nasa-panel transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -415,17 +489,17 @@
       <div class="p-6 flex-1 overflow-y-auto custom-scrollbar space-y-4">
         
         <!-- Live Connection Status Card -->
-        <div class="p-4 rounded-xl bg-space-900/80 border border-space-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="p-4 rounded-xl bg-[#061224]/90 border border-nasa-border/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <div class="text-xs font-bold text-cyan-300 font-mono uppercase">Vínculo con Datos de Vuelo Real</div>
+            <div class="text-xs font-bold text-nasa-pastel font-mono uppercase">Vínculo con Datos de Vuelo Real</div>
             <div class="text-xs text-slate-300 mt-0.5">La telemetría de nuestro software está anclada directamente en los estudios biológicos y de vuelo humano de NASA OSDR.</div>
           </div>
-          <button onclick="pingNasaApi()" id="btn-ping" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-cyan-600/30 whitespace-nowrap">
+          <button onclick="pingNasaApi()" id="btn-ping" class="px-3 py-1.5 rounded-lg bg-[#0b3d91] hover:bg-[#1a56b8] text-white font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-blue-900/40 whitespace-nowrap border border-nasa-pastel/40">
             <i data-lucide="radio" class="w-3.5 h-3.5"></i>
             <span>Comprobar API NASA</span>
           </button>
         </div>
-        <div id="ping-status" class="hidden text-xs font-mono p-2.5 rounded-lg bg-space-950 border border-space-700"></div>
+        <div id="ping-status" class="hidden text-xs font-mono p-2.5 rounded-lg bg-[#030814] border border-nasa-border"></div>
 
         <!-- Enriched Studies Cards -->
         <div class="space-y-3" id="studies-list">
@@ -435,9 +509,9 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-3 border-t border-space-700 bg-space-900/60 flex items-center justify-between text-xs font-mono text-slate-400">
+      <div class="px-6 py-3 border-t border-nasa-border/70 bg-[#071329]/90 flex items-center justify-between text-xs font-mono text-slate-400">
         <span>Fuente: NASA GeneLab / OSDR Open Science Data Repository</span>
-        <button onclick="closeOsdrModal()" class="px-4 py-1.5 rounded-lg bg-space-700 hover:bg-space-600 text-slate-200 transition">Cerrar</button>
+        <button onclick="closeOsdrModal()" class="px-4 py-1.5 rounded-lg bg-nasa-dark hover:bg-nasa-panel text-slate-200 transition border border-nasa-border">Cerrar</button>
       </div>
     </div>
   </div>
@@ -542,7 +616,7 @@
     let liveStreaming = false;
     let streamInterval = null;
 
-    // 3. INITIALIZE CHART.JS FOR REAL TIME-SERIES
+    // 3. INITIALIZE CHART.JS WITH NASA PASTEL BLUE STYLING
     function initChart() {
       const ctx = document.getElementById('telemetryChart').getContext('2d');
       const phases = telemetryDataset[currentCrew].phases;
@@ -558,11 +632,11 @@
             {
               label: 'Presión Sistólica (mmHg)',
               data: sysData,
-              borderColor: '#38bdf8',
-              backgroundColor: 'rgba(56, 189, 248, 0.12)',
+              borderColor: '#79a7df',
+              backgroundColor: 'rgba(121, 167, 223, 0.15)',
               borderWidth: 2.5,
-              pointBackgroundColor: '#38bdf8',
-              pointRadius: 4,
+              pointBackgroundColor: '#9fc5f8',
+              pointRadius: 5,
               tension: 0.35,
               fill: true
             },
@@ -570,10 +644,10 @@
               label: 'Frecuencia Cardíaca (bpm)',
               data: hrData,
               borderColor: '#f43f5e',
-              backgroundColor: 'rgba(244, 63, 94, 0.06)',
+              backgroundColor: 'rgba(244, 63, 94, 0.05)',
               borderWidth: 2.5,
               pointBackgroundColor: '#f43f5e',
-              pointRadius: 4,
+              pointRadius: 5,
               tension: 0.35,
               fill: true
             }
@@ -587,12 +661,12 @@
           },
           scales: {
             x: {
-              grid: { color: '#141e36' },
-              ticks: { color: '#94a3b8', font: { family: 'monospace', size: 10 } }
+              grid: { color: 'rgba(121, 167, 223, 0.12)' },
+              ticks: { color: '#9fc5f8', font: { family: 'monospace', size: 10 } }
             },
             y: {
-              grid: { color: '#141e36' },
-              ticks: { color: '#94a3b8', font: { family: 'monospace', size: 10 } },
+              grid: { color: 'rgba(121, 167, 223, 0.12)' },
+              ticks: { color: '#9fc5f8', font: { family: 'monospace', size: 10 } },
               suggestedMin: 50,
               suggestedMax: 160
             }
@@ -640,9 +714,9 @@
       for (let i = 0; i < 5; i++) {
         const btn = document.getElementById(`phase-${i}`);
         if (i === currentPhaseIndex) {
-          btn.className = "phase-step flex-1 py-1 rounded text-[11px] font-mono border border-cyan-400 bg-cyan-950 font-bold text-cyan-300 text-center transition";
+          btn.className = "phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-pastel bg-[#0e2752] font-bold text-nasa-pastel-light text-center transition";
         } else {
-          btn.className = "phase-step flex-1 py-1 rounded text-[11px] font-mono border border-space-600 hover:bg-space-600 text-center text-slate-400 transition";
+          btn.className = "phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center text-slate-400 transition";
         }
       }
 
@@ -657,9 +731,9 @@
     function selectAstronaut(id) {
       currentCrew = id;
       document.querySelectorAll('.crew-btn').forEach(b => {
-        b.className = "crew-btn p-3 rounded-xl border border-space-600 bg-space-700/30 text-left transition flex items-center space-x-3 hover:border-space-500";
+        b.className = "crew-btn p-3 rounded-xl border border-nasa-border bg-[#071429]/50 text-left transition flex items-center space-x-3 hover:border-nasa-pastel/50";
       });
-      document.getElementById(`btn-${id}`).className = "crew-btn p-3 rounded-xl border border-cyan-500/50 bg-cyan-950/40 text-left transition flex items-center space-x-3";
+      document.getElementById(`btn-${id}`).className = "crew-btn p-3 rounded-xl border border-nasa-pastel bg-[#0e2752]/70 text-left transition flex items-center space-x-3 shadow-lg shadow-blue-950/60";
       updateUI();
     }
 
@@ -693,7 +767,7 @@
         title.innerText = "Sistema Musculoesquelético (Fémur y Columna)";
         desc.innerText = "Pérdida de densidad ósea de 1.0% a 1.5% mensual por falta de carga axial.";
         status.innerText = "PROTOCOLO ARED 150m";
-        status.className = "px-1.5 py-0.5 rounded text-[10px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/40";
+        status.className = "px-1.5 py-0.5 rounded text-[10px] font-mono bg-nasa-pastel/20 text-nasa-pastel-light border border-nasa-pastel/40";
       }
     }
 
@@ -750,22 +824,22 @@
     function resetNominal() {
       selectAstronaut('C001');
       setPhaseIndex(0);
-      document.getElementById('badge-radiation').className = "flex items-center space-x-2 bg-space-700/50 px-3 py-1.5 rounded-lg border border-space-600";
-      document.getElementById('badge-co2').className = "flex items-center space-x-2 bg-space-700/50 px-3 py-1.5 rounded-lg border border-space-600";
+      document.getElementById('badge-radiation').className = "flex items-center space-x-2 bg-nasa-dark/70 px-3 py-1.5 rounded-lg border border-nasa-border/60";
+      document.getElementById('badge-co2').className = "flex items-center space-x-2 bg-nasa-dark/70 px-3 py-1.5 rounded-lg border border-nasa-border/60";
       document.getElementById('action-title').innerText = "Protocolo de Mantenimiento Nominal";
       document.getElementById('action-desc').innerText = "Todos los sistemas biológicos y ambientales se encuentran dentro de las tolerancias de NASA-STD-3001.";
       document.getElementById('badge-urgency').innerText = "NOMINAL 100%";
       document.getElementById('badge-urgency').className = "px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
       document.getElementById('checklist-container').innerHTML = `
-        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-space-700/40 border border-space-600 cursor-pointer">
+        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer">
           <input type="checkbox" class="mt-0.5 text-emerald-500 focus:ring-0">
           <span class="text-slate-200">1. Completar 150 min de ejercicio diario en dispositivo resistivo ARED.</span>
         </label>
-        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-space-700/40 border border-space-600 cursor-pointer">
+        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer">
           <input type="checkbox" class="mt-0.5 text-emerald-500 focus:ring-0">
           <span class="text-slate-200">2. Ingesta mínima de 2.8 L de agua electrolítica para evitar cálculos renales.</span>
         </label>
-        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-space-700/40 border border-space-600 cursor-pointer">
+        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer">
           <input type="checkbox" class="mt-0.5 text-emerald-500 focus:ring-0">
           <span class="text-slate-200">3. Registrar reporte matutino de calidad de sueño y ánimo.</span>
         </label>
@@ -794,7 +868,7 @@
         clearInterval(streamInterval);
         dot.className = "w-2 h-2 rounded-full bg-slate-400";
         text.innerText = "Telemetría Estática";
-        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-space-700 border border-space-600 text-slate-300 hover:bg-space-600 transition";
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-nasa-dark border border-nasa-border text-slate-300 hover:bg-nasa-panel transition";
         updateUI();
       }
     }
@@ -814,18 +888,18 @@
     function renderStudies() {
       const container = document.getElementById('studies-list');
       container.innerHTML = nasaOsdrStudies.map(s => `
-        <div class="p-4 rounded-xl bg-space-900/60 border border-space-700 hover:border-cyan-500/50 transition">
+        <div class="p-4 rounded-xl bg-[#08152b]/80 border border-nasa-border/60 hover:border-nasa-pastel/60 transition">
           <div class="flex items-start justify-between gap-3 mb-1.5">
             <div>
-              <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800 text-cyan-300 font-mono font-bold mr-2">${s.accession}</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-[#0b3d91]/50 border border-nasa-pastel/50 text-nasa-pastel-light font-mono font-bold mr-2">${s.accession}</span>
               <span class="font-bold text-xs text-white">${s.title}</span>
             </div>
-            <a href="${s.link}" target="_blank" class="text-cyan-400 hover:text-cyan-300 text-xs font-mono flex items-center gap-1 shrink-0">
+            <a href="${s.link}" target="_blank" class="text-nasa-pastel hover:text-nasa-pastel-light text-xs font-mono flex items-center gap-1 shrink-0">
               <span>API Link</span>
               <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </a>
           </div>
-          <div class="text-[11px] text-slate-400 font-mono mb-1">Misión: <span class="text-slate-200">${s.mission}</span> · Ensayo: <span class="text-cyan-300">${s.assay}</span></div>
+          <div class="text-[11px] text-slate-400 font-mono mb-1">Misión: <span class="text-slate-200">${s.mission}</span> · Ensayo: <span class="text-nasa-pastel-light">${s.assay}</span></div>
           <div class="text-[11px] text-emerald-300/90 bg-emerald-950/30 p-2 rounded-lg border border-emerald-900/40">
             <strong>Impacto en AstroVital:</strong> ${s.correlation}
           </div>
@@ -853,7 +927,7 @@
           statusBox.innerHTML = `<span class="text-amber-400">⚠ Respuesta HTTP ${res.status}.</span> Los datos están precargados en caché local sin pérdida de funcionalidad (Edge Mode).`;
         }
       } catch (err) {
-        statusBox.innerHTML = `<span class="text-cyan-400">✓ MODO RESILIENTE EDGE ACTIVO:</span> La API oficial de NASA OSDR requiere política CORS interna de NASA; el sistema ha conmutado al repositorio local indexado (<code class="text-white">data/nasa_osdr_api_human_studies.json</code> con 116 estudios reales y <code class="text-white">OSD-574</code>). Tolerancia 100% a fallas en espacio profundo.`;
+        statusBox.innerHTML = `<span class="text-nasa-pastel-light">✓ MODO RESILIENTE EDGE ACTIVO:</span> La API oficial de NASA OSDR requiere política CORS interna de NASA; el sistema ha conmutado al repositorio local indexado (<code class="text-white">data/nasa_osdr_api_human_studies.json</code> con 116 estudios reales y <code class="text-white">OSD-574</code>). Tolerancia 100% a fallas en espacio profundo.`;
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<i data-lucide="radio" class="w-3.5 h-3.5"></i> Probar Conexión`;

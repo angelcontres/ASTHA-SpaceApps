@@ -3,40 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AstroVital — Interactive Wireframe & Blueprint Prototype</title>
+  <title>AstroVital — NASA Blueprint & Wireframe Prototype</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    /* Technical Blueprint Grid Pattern */
+    /* INSANE NASA BLUEPRINT & HUD GRID */
     .blueprint-bg {
-      background-color: #07172c;
+      background-color: #040915;
       background-image: 
-        linear-gradient(rgba(56, 189, 248, 0.12) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56, 189, 248, 0.12) 1px, transparent 1px),
-        linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
-      background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
-      background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+        linear-gradient(to right, rgba(121, 167, 223, 0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(121, 167, 223, 0.12) 1px, transparent 1px),
+        linear-gradient(to right, rgba(121, 167, 223, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(121, 167, 223, 0.03) 1px, transparent 1px),
+        radial-gradient(circle 900px at 50% 0%, rgba(121, 167, 223, 0.16), transparent 70%);
+      background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 100% 100%;
+      background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px, 0 0;
     }
     .blueprint-box {
-      border: 1.5px dashed rgba(56, 189, 248, 0.5);
-      background: rgba(12, 34, 64, 0.65);
-      backdrop-blur: 4px;
+      border: 1.5px dashed rgba(121, 167, 223, 0.55);
+      background: rgba(8, 20, 42, 0.72);
+      backdrop-filter: blur(8px);
       position: relative;
+      box-shadow: 0 4px 20px -2px rgba(4, 9, 21, 0.6);
+    }
+    .blueprint-box::before {
+      content: '+';
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #79a7df;
+      opacity: 0.6;
     }
     .dimension-tag {
       font-family: monospace;
       font-size: 10px;
-      color: #38bdf8;
-      background: #0c2240;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      padding: 1px 5px;
+      color: #9fc5f8;
+      background: #091936;
+      border: 1px solid rgba(121, 167, 223, 0.5);
+      padding: 1px 6px;
       border-radius: 4px;
     }
     .touch-target {
-      outline: 1.5px dashed rgba(245, 158, 11, 0.6);
+      outline: 1.5px dashed rgba(245, 158, 11, 0.7);
       position: relative;
     }
     .touch-target::after {
@@ -56,28 +68,28 @@
 <body class="blueprint-bg text-slate-100 font-sans min-h-screen flex flex-col select-none">
 
   <!-- TOP WIREFRAME CONTROLLER BAR -->
-  <header class="border-b border-cyan-800/60 bg-space-950/90 bg-[#040e1c] px-6 py-3 sticky top-0 z-50 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+  <header class="border-b border-[#1f3e6e]/80 bg-[#061124]/90 px-6 py-3 sticky top-0 z-50 flex flex-wrap items-center justify-between gap-4 shadow-xl backdrop-blur-md">
     <div class="flex items-center space-x-3">
-      <div class="w-9 h-9 rounded-lg bg-cyan-900/60 border border-cyan-500/50 flex items-center justify-center text-cyan-400">
+      <div class="w-9 h-9 rounded-lg bg-[#0b3d91]/50 border border-[#79a7df]/60 flex items-center justify-center text-[#9fc5f8]">
         <i data-lucide="compass" class="w-5 h-5"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="text-base font-bold tracking-wider text-white font-mono">ASTRO<span class="text-cyan-400">VITAL</span></span>
-          <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 border border-cyan-700 text-cyan-300 font-mono">WIREFRAME v2.4</span>
+          <span class="text-base font-bold tracking-wider text-white font-mono">ASTRO<span class="text-[#79a7df]">VITAL</span></span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-[#0b3d91]/50 border border-[#79a7df]/60 text-[#9fc5f8] font-mono font-bold">NASA BLUEPRINT v2.5</span>
           <span class="text-[10px] px-2 py-0.5 rounded bg-amber-950/80 border border-amber-700 text-amber-300 font-mono">MIL-STD-1472H / WCAG AAA</span>
         </div>
-        <p class="text-[11px] text-slate-400 font-mono">Prototipo de Arquitectura Visual, Ergonomía de Cabina y Cotas Técnicas</p>
+        <p class="text-[11px] text-slate-300 font-mono">Prototipo de Arquitectura Visual, Ergonomía de Cabina y Cotas Técnicas</p>
       </div>
     </div>
 
     <!-- VIEW MODE SWITCHER TABS -->
-    <div class="flex items-center space-x-2 bg-cyan-950/80 p-1.5 rounded-xl border border-cyan-700/60 text-xs font-mono">
-      <button onclick="setViewMode('blueprint')" id="tab-blueprint" class="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md">
+    <div class="flex items-center space-x-2 bg-[#071733]/90 p-1.5 rounded-xl border border-[#79a7df]/40 text-xs font-mono">
+      <button onclick="setViewMode('blueprint')" id="tab-blueprint" class="px-3 py-1.5 rounded-lg bg-[#79a7df] text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md">
         <i data-lucide="drafting-compass" class="w-3.5 h-3.5"></i>
         <span>1. Blueprint Cotas (Baja Fidelidad)</span>
       </button>
-      <button onclick="setViewMode('hifi')" id="tab-hifi" class="px-3 py-1.5 rounded-lg text-cyan-300 hover:bg-cyan-900/60 transition flex items-center gap-1.5">
+      <button onclick="setViewMode('hifi')" id="tab-hifi" class="px-3 py-1.5 rounded-lg text-[#9fc5f8] hover:bg-[#0f2854] transition flex items-center gap-1.5">
         <i data-lucide="layout" class="w-3.5 h-3.5"></i>
         <span>2. Vista Táctica (Hi-Fi)</span>
       </button>
@@ -89,7 +101,7 @@
 
     <!-- LINK TO PRODUCTION PROTOTYPE -->
     <a href="index.html" class="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 hover:bg-emerald-900 transition text-xs font-mono">
-      <span>Probar App de Producción</span>
+      <span>Abrir Dashboard Táctico</span>
       <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
     </a>
   </header>
@@ -103,15 +115,15 @@
     <div id="view-blueprint" class="space-y-6">
 
       <!-- ANNOTATION HEADER -->
-      <div class="p-4 rounded-xl bg-cyan-950/60 border border-cyan-500/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs font-mono">
+      <div class="p-4 rounded-xl bg-[#091b38]/70 border border-[#79a7df]/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs font-mono">
         <div class="flex items-center space-x-3">
-          <i data-lucide="info" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+          <i data-lucide="info" class="w-5 h-5 text-[#79a7df] shrink-0"></i>
           <div>
-            <strong class="text-cyan-300 uppercase">Especificación de Cotas y Ergonomía Espacial:</strong>
-            <span class="text-slate-300 ml-1">Líneas punteadas cian indican componentes modulares; recuadros punteados amarillos indican áreas táctiles mínimas ($\ge 48\text{px}$).</span>
+            <strong class="text-[#9fc5f8] uppercase">Especificación de Cotas y Ergonomía Espacial:</strong>
+            <span class="text-slate-300 ml-1">Líneas punteadas en azul pastel de NASA indican módulos; recuadros punteados amarillos indican áreas táctiles mínimas ($\ge 48\text{px}$).</span>
           </div>
         </div>
-        <span class="text-cyan-400 bg-cyan-900/40 px-2 py-1 rounded border border-cyan-700">Resolución Base: 1920x1080 (Bulkhead) / 1024x768 (Tablet)</span>
+        <span class="text-[#9fc5f8] bg-[#0c224a] px-2.5 py-1 rounded border border-[#79a7df]/50">Resolución Base: 1920x1080 (Bulkhead) / 1024x768 (Tablet)</span>
       </div>
 
       <!-- BULKHEAD 12-COLUMN WIREFRAME LAYOUT -->
@@ -128,29 +140,29 @@
             </div>
 
             <div class="grid grid-cols-2 gap-2 mb-4">
-              <div class="p-3 rounded-xl border border-cyan-500/60 bg-cyan-950/40 touch-target flex items-center space-x-2">
-                <div class="w-8 h-8 rounded bg-cyan-800 flex items-center justify-center font-mono text-xs font-bold text-white">C01</div>
+              <div class="p-3 rounded-xl border border-[#79a7df]/60 bg-[#091a38]/60 touch-target flex items-center space-x-2">
+                <div class="w-8 h-8 rounded bg-[#0b3d91] flex items-center justify-center font-mono text-xs font-bold text-white">C01</div>
                 <div class="overflow-hidden">
-                  <div class="font-bold text-xs truncate text-cyan-200">Jared Isaacman</div>
+                  <div class="font-bold text-xs truncate text-[#9fc5f8]">Jared Isaacman</div>
                   <div class="text-[9px] text-slate-400">Cmdte · Baseline</div>
                 </div>
               </div>
-              <div class="p-3 rounded-xl border border-cyan-800/40 bg-cyan-950/20 touch-target flex items-center space-x-2">
-                <div class="w-8 h-8 rounded bg-cyan-900 flex items-center justify-center font-mono text-xs font-bold text-slate-300">C02</div>
+              <div class="p-3 rounded-xl border border-[#1f3e6e] bg-[#071429]/50 touch-target flex items-center space-x-2">
+                <div class="w-8 h-8 rounded bg-[#162f59] flex items-center justify-center font-mono text-xs font-bold text-slate-300">C02</div>
                 <div class="overflow-hidden">
                   <div class="font-bold text-xs truncate text-slate-300">Hayley Arceneaux</div>
                   <div class="text-[9px] text-slate-400">Médico · Nominal</div>
                 </div>
               </div>
-              <div class="p-3 rounded-xl border border-cyan-500/80 bg-cyan-950/60 touch-target flex items-center space-x-2">
+              <div class="p-3 rounded-xl border border-[#79a7df] bg-[#0e2752] touch-target flex items-center space-x-2">
                 <div class="w-8 h-8 rounded bg-rose-900 flex items-center justify-center font-mono text-xs font-bold text-rose-200">C03</div>
                 <div class="overflow-hidden">
                   <div class="font-bold text-xs truncate text-rose-300 font-bold">Dra. Sian Proctor</div>
                   <div class="text-[9px] text-amber-300">Piloto · SANS Risk!</div>
                 </div>
               </div>
-              <div class="p-3 rounded-xl border border-cyan-800/40 bg-cyan-950/20 touch-target flex items-center space-x-2">
-                <div class="w-8 h-8 rounded bg-cyan-900 flex items-center justify-center font-mono text-xs font-bold text-slate-300">C04</div>
+              <div class="p-3 rounded-xl border border-[#1f3e6e] bg-[#071429]/50 touch-target flex items-center space-x-2">
+                <div class="w-8 h-8 rounded bg-[#162f59] flex items-center justify-center font-mono text-xs font-bold text-slate-300">C04</div>
                 <div class="overflow-hidden">
                   <div class="font-bold text-xs truncate text-slate-300">Chris Sembroski</div>
                   <div class="text-[9px] text-slate-400">Esp. Misión</div>
@@ -159,17 +171,17 @@
             </div>
 
             <!-- TIMELINE FLIGHT PHASES -->
-            <div class="pt-3 border-t border-cyan-800/50">
+            <div class="pt-3 border-t border-[#1f3e6e]/60">
               <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-2">
                 <span>Fase de Vuelo:</span>
-                <span class="text-cyan-400 font-bold">FD-02 (Órbita Microgravedad)</span>
+                <span class="text-[#9fc5f8] font-bold">FD-02 (Órbita Microgravedad)</span>
               </div>
               <div class="flex items-center space-x-1.5 text-xs font-mono">
-                <div class="flex-1 py-1 rounded bg-cyan-950 border border-cyan-800 text-center text-slate-400">L-44</div>
-                <div class="flex-1 py-1 rounded bg-cyan-950 border border-cyan-800 text-center text-slate-400">FD-01</div>
-                <div class="flex-1 py-1 rounded bg-cyan-600 border border-cyan-400 text-center text-slate-950 font-bold">FD-02*</div>
-                <div class="flex-1 py-1 rounded bg-cyan-950 border border-cyan-800 text-center text-slate-400">FD-03</div>
-                <div class="flex-1 py-1 rounded bg-cyan-950 border border-cyan-800 text-center text-slate-400">R+1</div>
+                <div class="flex-1 py-1 rounded bg-[#061124] border border-[#1f3e6e] text-center text-slate-400">L-44</div>
+                <div class="flex-1 py-1 rounded bg-[#061124] border border-[#1f3e6e] text-center text-slate-400">FD-01</div>
+                <div class="flex-1 py-1 rounded bg-[#79a7df] border border-[#9fc5f8] text-center text-slate-950 font-bold">FD-02*</div>
+                <div class="flex-1 py-1 rounded bg-[#061124] border border-[#1f3e6e] text-center text-slate-400">FD-03</div>
+                <div class="flex-1 py-1 rounded bg-[#061124] border border-[#1f3e6e] text-center text-slate-400">R+1</div>
               </div>
             </div>
           </div>
@@ -181,25 +193,25 @@
               <span class="dimension-tag">INTERACTIVE TRIAGE</span>
             </div>
 
-            <div class="flex-1 flex items-center justify-center relative p-4 bg-cyan-950/20 rounded-xl border border-cyan-900/60">
+            <div class="flex-1 flex items-center justify-center relative p-4 bg-[#050f24]/50 rounded-xl border border-[#1f3e6e]/60">
               
               <!-- SCHEMATIC HUMAN FIGURE -->
-              <div class="relative w-44 h-72 border border-dashed border-cyan-700/60 rounded-xl flex flex-col items-center justify-between p-3">
+              <div class="relative w-44 h-72 border border-dashed border-[#79a7df]/50 rounded-xl flex flex-col items-center justify-between p-3">
                 
                 <!-- Head / Eyes Hotspot -->
-                <div class="w-14 h-14 rounded-full border-2 border-rose-500 bg-rose-950/50 flex flex-col items-center justify-center touch-target cursor-pointer">
+                <div class="w-14 h-14 rounded-full border-2 border-rose-500 bg-rose-950/60 flex flex-col items-center justify-center touch-target cursor-pointer">
                   <span class="text-[9px] font-mono text-rose-300 font-bold">OJOS/SANS</span>
                   <span class="text-[8px] font-mono text-rose-400">PAS 144</span>
                 </div>
 
                 <!-- Chest / Heart Hotspot -->
-                <div class="w-20 h-16 rounded-xl border-2 border-cyan-500 bg-cyan-950/50 flex flex-col items-center justify-center touch-target cursor-pointer my-2">
-                  <span class="text-[9px] font-mono text-cyan-300 font-bold">TÓRAX / FC</span>
-                  <span class="text-[8px] font-mono text-cyan-400">98 bpm · HRV 19</span>
+                <div class="w-20 h-16 rounded-xl border-2 border-[#79a7df] bg-[#0c234a]/60 flex flex-col items-center justify-center touch-target cursor-pointer my-2">
+                  <span class="text-[9px] font-mono text-[#9fc5f8] font-bold">TÓRAX / FC</span>
+                  <span class="text-[8px] font-mono text-[#9fc5f8]">98 bpm · HRV 19</span>
                 </div>
 
                 <!-- Kidneys / Lumbar Hotspot -->
-                <div class="w-18 h-10 rounded border border-cyan-600 bg-cyan-950/40 flex items-center justify-around px-2 touch-target cursor-pointer w-full max-w-[120px]">
+                <div class="w-18 h-10 rounded border border-[#79a7df]/70 bg-[#0c234a]/40 flex items-center justify-around px-2 touch-target cursor-pointer w-full max-w-[120px]">
                   <span class="text-[8px] font-mono text-slate-300">R. Izq</span>
                   <span class="text-[8px] font-mono text-amber-300 font-bold">CALCIO >300</span>
                   <span class="text-[8px] font-mono text-slate-300">R. Der</span>
@@ -207,10 +219,10 @@
 
                 <!-- Legs / Bones Hotspot -->
                 <div class="flex space-x-3 w-full justify-center mt-2">
-                  <div class="w-6 h-18 border border-cyan-600/70 bg-cyan-950/30 rounded text-center text-[8px] font-mono text-cyan-300 pt-1">
+                  <div class="w-6 h-18 border border-[#79a7df]/70 bg-[#091a38]/40 rounded text-center text-[8px] font-mono text-[#9fc5f8] pt-1">
                     Fémur
                   </div>
-                  <div class="w-6 h-18 border border-cyan-600/70 bg-cyan-950/30 rounded text-center text-[8px] font-mono text-cyan-300 pt-1">
+                  <div class="w-6 h-18 border border-[#79a7df]/70 bg-[#091a38]/40 rounded text-center text-[8px] font-mono text-[#9fc5f8] pt-1">
                     ARED
                   </div>
                 </div>
@@ -218,8 +230,8 @@
               </div>
 
               <!-- FLOATING ORGAN DETAIL CALLOUT -->
-              <div class="absolute bottom-2 left-2 right-2 p-2.5 rounded-lg bg-cyan-950 border border-cyan-500/60 text-xs font-mono">
-                <div class="flex justify-between items-center text-cyan-300 font-bold mb-0.5">
+              <div class="absolute bottom-2 left-2 right-2 p-2.5 rounded-lg bg-[#071736] border border-[#79a7df]/70 text-xs font-mono shadow-xl">
+                <div class="flex justify-between items-center text-[#9fc5f8] font-bold mb-0.5">
                   <span>Hotspot: Sistema Neuro-Ocular</span>
                   <span class="text-[9px] bg-rose-950 text-rose-300 px-1 rounded border border-rose-700">CRÍTICO SANS</span>
                 </div>
@@ -243,25 +255,25 @@
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
               <!-- FC CARD -->
-              <div class="p-3 rounded-xl border border-cyan-500/50 bg-cyan-950/40">
+              <div class="p-3 rounded-xl border border-[#79a7df]/50 bg-[#081a38]/60">
                 <div class="text-[10px] font-mono text-slate-400">FREC. CARDÍACA</div>
                 <div class="text-2xl font-bold font-mono text-white">98 <span class="text-xs text-slate-400">bpm</span></div>
                 <div class="text-[9px] font-mono text-amber-400 mt-1">Nom: 55-85 | Precaución</div>
               </div>
               <!-- PA CARD (ALERTA) -->
-              <div class="p-3 rounded-xl border-2 border-rose-500 bg-rose-950/30 animate-pulse">
+              <div class="p-3 rounded-xl border-2 border-rose-500 bg-rose-950/40 animate-pulse">
                 <div class="text-[10px] font-mono text-rose-300 font-bold">PRESIÓN ARTERIAL</div>
                 <div class="text-2xl font-bold font-mono text-rose-400">144/92 <span class="text-xs text-slate-400">mmHg</span></div>
                 <div class="text-[9px] font-mono text-rose-300 font-bold mt-1">SANS CRITICAL (>=140)</div>
               </div>
               <!-- SPO2 CARD -->
-              <div class="p-3 rounded-xl border border-cyan-500/50 bg-cyan-950/40">
+              <div class="p-3 rounded-xl border border-[#79a7df]/50 bg-[#081a38]/60">
                 <div class="text-[10px] font-mono text-slate-400">OXÍGENO SpO₂</div>
                 <div class="text-2xl font-bold font-mono text-emerald-400">95.8 <span class="text-xs text-slate-400">%</span></div>
                 <div class="text-[9px] font-mono text-amber-400 mt-1">Nom: >=96.0% | Límite</div>
               </div>
               <!-- HRV CARD -->
-              <div class="p-3 rounded-xl border border-rose-500/60 bg-rose-950/20">
+              <div class="p-3 rounded-xl border border-rose-500/60 bg-rose-950/30">
                 <div class="text-[10px] font-mono text-rose-300">VARIABILIDAD (HRV)</div>
                 <div class="text-2xl font-bold font-mono text-rose-400">19.5 <span class="text-xs text-slate-400">ms</span></div>
                 <div class="text-[9px] font-mono text-rose-400 mt-1">Nom: >35ms | Estrés Agudo</div>
@@ -276,17 +288,17 @@
             <div class="lg:col-span-7 blueprint-box p-4 rounded-2xl flex flex-col justify-between min-h-[240px]">
               <div class="flex items-center justify-between mb-2">
                 <span class="dimension-tag">COMP-04: CHART.JS TIME-SERIES (7 COLS | MIN-H: 220px)</span>
-                <span class="dimension-tag">PAS (Cian) vs FC (Rojo)</span>
+                <span class="dimension-tag">PAS (Pastel) vs FC (Rojo)</span>
               </div>
 
               <!-- CHART SCHEMATIC -->
-              <div class="flex-1 flex items-end justify-between p-3 border-b border-l border-cyan-800 font-mono text-[10px] text-cyan-400 relative">
+              <div class="flex-1 flex items-end justify-between p-3 border-b border-l border-[#79a7df]/60 font-mono text-[10px] text-[#9fc5f8] relative">
                 <span class="absolute top-2 left-2 text-[9px] text-slate-400">mmHg / bpm</span>
-                <div class="text-center w-12"><div class="h-16 w-1 bg-cyan-400 mx-auto"></div>L-44</div>
-                <div class="text-center w-12"><div class="h-28 w-1 bg-cyan-400 mx-auto"></div>FD-01</div>
+                <div class="text-center w-12"><div class="h-16 w-1 bg-[#79a7df] mx-auto"></div>L-44</div>
+                <div class="text-center w-12"><div class="h-28 w-1 bg-[#79a7df] mx-auto"></div>FD-01</div>
                 <div class="text-center w-12"><div class="h-36 w-1.5 bg-rose-500 mx-auto animate-pulse"></div>FD-02*</div>
-                <div class="text-center w-12"><div class="h-24 w-1 bg-cyan-400 mx-auto"></div>FD-03</div>
-                <div class="text-center w-12"><div class="h-18 w-1 bg-cyan-400 mx-auto"></div>R+1</div>
+                <div class="text-center w-12"><div class="h-24 w-1 bg-[#79a7df] mx-auto"></div>FD-03</div>
+                <div class="text-center w-12"><div class="h-18 w-1 bg-[#79a7df] mx-auto"></div>R+1</div>
               </div>
             </div>
 
@@ -303,16 +315,16 @@
 
               <!-- CHECKLIST ITEMS -->
               <div class="space-y-2 text-xs font-mono">
-                <div class="p-2 rounded bg-cyan-950/60 border border-cyan-700/60 flex items-center space-x-2 touch-target">
-                  <input type="checkbox" checked class="w-4 h-4 text-cyan-500">
+                <div class="p-2 rounded bg-[#091a38]/80 border border-[#79a7df]/50 flex items-center space-x-2 touch-target">
+                  <input type="checkbox" checked class="w-4 h-4 text-[#79a7df]">
                   <span class="text-slate-300 text-[11px]">1. Presurizar LBNP a -35 mmHg (60 min)</span>
                 </div>
-                <div class="p-2 rounded bg-cyan-950/60 border border-cyan-700/60 flex items-center space-x-2 touch-target">
-                  <input type="checkbox" class="w-4 h-4 text-cyan-500">
+                <div class="p-2 rounded bg-[#091a38]/80 border border-[#79a7df]/50 flex items-center space-x-2 touch-target">
+                  <input type="checkbox" class="w-4 h-4 text-[#79a7df]">
                   <span class="text-slate-300 text-[11px]">2. Test visual Rejilla de Amsler</span>
                 </div>
-                <div class="p-2 rounded bg-cyan-950/60 border border-cyan-700/60 flex items-center space-x-2 touch-target">
-                  <input type="checkbox" class="w-4 h-4 text-cyan-500">
+                <div class="p-2 rounded bg-[#091a38]/80 border border-[#79a7df]/50 flex items-center space-x-2 touch-target">
+                  <input type="checkbox" class="w-4 h-4 text-[#79a7df]">
                   <span class="text-slate-300 text-[11px]">3. Dieta baja en sodio (&lt; 2.0 g/d)</span>
                 </div>
               </div>
@@ -353,11 +365,11 @@
     <!-- VIEW 2: HI-FI PRODUCTION UI VIEW           -->
     <!-- ========================================== -->
     <div id="view-hifi" class="hidden">
-      <div class="p-4 rounded-xl bg-space-800 border border-cyan-500/60 text-xs font-mono mb-6 flex items-center justify-between">
-        <span>Vista de Producción Táctica Activa: Esta es la apariencia final con estilos OSCUROS espaciales y fuentes de alta legibilidad.</span>
-        <a href="index.html" target="_blank" class="text-cyan-400 underline font-bold">Abrir en Pestaña Completa</a>
+      <div class="p-4 rounded-xl bg-[#091a38] border border-[#79a7df]/60 text-xs font-mono mb-6 flex items-center justify-between">
+        <span class="text-[#9fc5f8]">Vista de Producción Táctica Activa: Apariencia con cuadrícula insana de NASA y azul pastel `#79a7df`.</span>
+        <a href="index.html" target="_blank" class="text-[#79a7df] hover:underline font-bold">Abrir en Pestaña Completa</a>
       </div>
-      <iframe src="index.html" class="w-full h-[850px] rounded-2xl border border-cyan-500/40 shadow-2xl"></iframe>
+      <iframe src="index.html" class="w-full h-[850px] rounded-2xl border border-[#79a7df]/40 shadow-2xl"></iframe>
     </div>
 
     <!-- ========================================== -->
@@ -377,7 +389,7 @@
       </div>
 
       <!-- SHELTER EVACUATION CHECKLIST CARD -->
-      <div class="bg-space-950 border-2 border-rose-600 rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="bg-[#050e1f] border-2 border-rose-600 rounded-2xl p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b border-rose-800 pb-3">
           <h2 class="text-base font-bold font-mono text-rose-300">PROTOCOLO DE SUPERVIVENCIA INMEDIATA (TIEMPO DE IMPACTO: &lt; 5 MINUTOS)</h2>
           <span class="text-xs px-2.5 py-1 rounded bg-rose-900 border border-rose-500 text-white font-mono font-bold">ACCIONES CRÍTICAS</span>
@@ -426,16 +438,16 @@
       document.getElementById('view-hifi').classList.add('hidden');
       document.getElementById('view-crisis').classList.add('hidden');
 
-      document.getElementById('tab-blueprint').className = "px-3 py-1.5 rounded-lg text-cyan-300 hover:bg-cyan-900/60 transition flex items-center gap-1.5";
-      document.getElementById('tab-hifi').className = "px-3 py-1.5 rounded-lg text-cyan-300 hover:bg-cyan-900/60 transition flex items-center gap-1.5";
+      document.getElementById('tab-blueprint').className = "px-3 py-1.5 rounded-lg text-[#9fc5f8] hover:bg-[#0f2854] transition flex items-center gap-1.5";
+      document.getElementById('tab-hifi').className = "px-3 py-1.5 rounded-lg text-[#9fc5f8] hover:bg-[#0f2854] transition flex items-center gap-1.5";
       document.getElementById('tab-crisis').className = "px-3 py-1.5 rounded-lg text-rose-300 hover:bg-rose-950/60 transition flex items-center gap-1.5";
 
       if (mode === 'blueprint') {
         document.getElementById('view-blueprint').classList.remove('hidden');
-        document.getElementById('tab-blueprint').className = "px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md";
+        document.getElementById('tab-blueprint').className = "px-3 py-1.5 rounded-lg bg-[#79a7df] text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md";
       } else if (mode === 'hifi') {
         document.getElementById('view-hifi').classList.remove('hidden');
-        document.getElementById('tab-hifi').className = "px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md";
+        document.getElementById('tab-hifi').className = "px-3 py-1.5 rounded-lg bg-[#79a7df] text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md";
       } else if (mode === 'crisis') {
         document.getElementById('view-crisis').classList.remove('hidden');
         document.getElementById('tab-crisis').className = "px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold transition flex items-center gap-1.5 shadow-md";
