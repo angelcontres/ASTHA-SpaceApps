@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AstroVital — Interactive Wireframe & Blueprint Prototype</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Technical Blueprint Grid Pattern */
+    .blueprint-bg {
+      background-color: #07172c;
+      background-image: 
+        linear-gradient(rgba(56, 189, 248, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.12) 1px, transparent 1px),
+        linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+      background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+      background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+    }
+    .blueprint-box {
+      border: 1.5px dashed rgba(56, 189, 248, 0.5);
+      background: rgba(12, 34, 64, 0.65);
+      backdrop-blur: 4px;
+      position: relative;
+    }
+    .dimension-tag {
+      font-family: monospace;
+      font-size: 10px;
+      color: #38bdf8;
+      background: #0c2240;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .touch-target {
+      outline: 1.5px dashed rgba(245, 158, 11, 0.6);
+      position: relative;
+    }
+    .touch-target::after {
+      content: '>=48px';
+      position: absolute;
+      top: -14px;
+      right: 0;
+      font-family: monospace;
+      font-size: 9px;
+      color: #f59e0b;
+      background: #1c1917;
+      padding: 0 3px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="blueprint-bg text-slate-100 font-sans min-h-screen flex flex-col select-none">
+
+  <!-- TOP WIREFRAME CONTROLLER BAR -->
+  <header class="border-b border-cyan-800/60 bg-space-950/90 bg-[#040e1c] px-6 py-3 sticky top-0 z-50 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-lg bg-cyan-900/60 border border-cyan-500/50 flex items-center justify-center text-cyan-400">
+        <i data-lucide="compass" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-base font-bold tracking-wider text-white font-mono">ASTRO<span class="text-cyan-400">VITAL</span></span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 border border-cyan-700 text-cyan-300 font-mono">WIREFRAME v2.4</span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-amber-950/80 border border-amber-700 text-amber-300 font-mono">MIL-STD-1472H / WCAG AAA</span>
+        </div>
+        <p class="text-[11px] text-slate-400 font-mono">Prototipo de Arquitectura Visual, Ergonomía de Cabina y Cotas Técnicas</p>
+      </div>
+    </div>
+
+    <!-- VIEW MODE SWITCHER TABS -->
+    <div class="flex items-center space-x-2 bg-cyan-950/80 p-1.5 rounded-xl border border-cyan-700/60 text-xs font-mono">
+      <button onclick="setViewMode('blueprint')" id="tab-blueprint" class="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md">
+        <i data-lucide="drafting-compass" class="w-3.5 h-3.5"></i>
+        <span>1. Blueprint Cotas (Baja Fidelidad)</span>
+      </button>
+      <button onclick="setViewMode('hifi')" id="tab-hifi" class="px-3 py-1.5 rounded-lg text-cyan-300 hover:bg-cyan-900/60 transition flex items-center gap-1.5">
+        <i data-lucide="layout" class="w-3.5 h-3.5"></i>
+        <span>2. Vista Táctica (Hi-Fi)</span>
+      </button>
+      <button onclick="setViewMode('crisis')" id="tab-crisis" class="px-3 py-1.5 rounded-lg text-rose-300 hover:bg-rose-950/60 transition flex items-center gap-1.5">
+        <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+        <span>3. Código Rojo SPE (Evacuación)</span>
+      </button>
+    </div>
+
+    <!-- LINK TO PRODUCTION PROTOTYPE -->
+    <a href="index.html" class="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 hover:bg-emerald-900 transition text-xs font-mono">
+      <span>Probar App de Producción</span>
+      <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+    </a>
+  </header>
+
+  <!-- MAIN WIREFRAME VIEWPORT -->
+  <main class="flex-1 p-6 max-w-[1750px] w-full mx-auto" id="viewport-container">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: BLUEPRINT WIREFRAME (LOW-FIDELITY) -->
+    <!-- ========================================== -->
+    <div id="view-blueprint" class="space-y-6">
+
+      <!-- ANNOTATION HEADER -->
+      <div class="p-4 rounded-xl bg-cyan-950/60 border border-cyan-500/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs font-mono">
+        <div class="flex items-center space-x-3">
+          <i data-lucide="info" class="w-5 h-5 text-cyan-400 shrink-0"></i>
+          <div>
+            <strong class="text-cyan-300 uppercase">Especificación de Cotas y Ergonomía Espacial:</strong>
+            <span class="text-slate-300 ml-1">Líneas punteadas cian indican componentes modulares; recuadros punteados amarillos indican áreas táctiles mínimas ($\ge 48\text{px}$).</span>
+          </div>
+        </div>
+        <span class="text-cyan-400 bg-cyan-900/40 px-2 py-1 rounded border border-cyan-700">Resolución Base: 1920x1080 (Bulkhead) / 1024x768 (Tablet)</span>
+      </div>
+
+      <!-- BULKHEAD 12-COLUMN WIREFRAME LAYOUT -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+        <!-- LEFT COLUMN: CREW SELECTOR & ANATOMICAL BODY (4 COLS) -->
+        <div class="xl:col-span-4 space-y-6">
+
+          <!-- WIREFRAME CREW SELECTOR CARD -->
+          <div class="blueprint-box p-5 rounded-2xl">
+            <div class="flex items-center justify-between mb-3">
+              <span class="dimension-tag">COMP-01: CREW SELECTOR (W: 100% | H: Auto)</span>
+              <span class="dimension-tag">NASA OSD-574 DATASET</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 mb-4">
+              <div class="p-3 rounded-xl border border-cyan-500/60 bg-cyan-950/40 touch-target flex items-center space-x-2">
+                <div class="w-8 h-8 rounded bg-cyan-800 flex items-center justify-center font-mono text-xs font-bold text-white">C01</div>
+                <div class="overflow-hidden">
+                  <div class="font-bold text-xs truncate text-cyan-200">Jared Isaacman</div>
+                  <div class="text-[9px] text-slate-400">Cmdte · Baseline</div>
+                </div>
+              </div>
+              <div class="p-3 rounded-xl border border-cyan-800/40 bg-cyan-950/20 touch-target flex items-center space-x-2">
+                <div class="w-8 h-8 rounded bg-cyan-900 flex items-center justify-center font-mono text-xs font-bold text-slate-300">C02</div>
+                <div class="overflow-hidden">
+                  <div class="font-bold text-xs truncate text-slate-300">Hayley Arceneaux</div>
+                  <div class="text-[9px] text-slate-400">Médico · Nominal</div>
+                </div>
+              </div>
+              <div class="p-3 rounded-xl border border-cyan-500/80 bg-cyan-950/60 touch-target flex items-center space-x-2">
+                <div class="w-8 h-8 rounded bg-rose-900 flex items-center justify-center font-mono text-xs font-bold text-rose-200">C03</div>
+                <div class="overflow-hidden">
+                  <div class="font-bold text-xs truncate text-rose-300 font-bold">Dra. Sian Proctor</div>
+                  <div class="text-[9px] text-amber-300">Piloto · SANS Risk!</div>
+                </div>
+              </div>
+              <div class="p-3 rounded-xl border border-cyan-800/40 bg-cyan-950/20 touch-target flex items-center space-x-2">
+                <div class="w-8 h-8 rounded bg-cyan-900 flex items-center justify-center font-mono text-xs font-bold text-slate-300">C04</div>
+                <div class="overflow-hidden">
+                  <div class="font-bold text-xs truncate text-slate-300">Chris Sembroski</div>
+                  <div class="text-[9px] text-slate-400">Esp. Misión</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TIMELINE FLIGHT PHASES -->
+            <div class="pt-3 border-t border-cyan-800/50">
+              <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-2">
+                <span>Fase de Vuelo:</span>
+                <span class="text-cyan-400 font-bold">FD-02 (Órbita Microgravedad)</span>
+              </div>
+              <div class="flex items-center space-x-1.5 text-xs font-mono">
+                <div class="flex-1 py-1 rounded bg-cyan-950 border border-cyan-800 text-center text-slate-400">L-44</div>
+                <div class="flex-1 py-1 rounded bg-cyan-950 border border-cyan-800 text-center text-slate-400">FD-01</div>
+                <div class="flex-1 py-1 rounded bg-cyan-600 border border-cyan-400 text-center text-slate-950 font-bold">FD-02*</div>
+                <div class="flex-1 py-1 rounded bg-cyan-950 border border-cyan-800 text-center text-slate-400">FD-03</div>
+                <div class="flex-1 py-1 rounded bg-cyan-950 border border-cyan-800 text-center text-slate-400">R+1</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIREFRAME ANATOMICAL BODY MAP -->
+          <div class="blueprint-box p-5 rounded-2xl flex flex-col min-h-[380px]">
+            <div class="flex items-center justify-between mb-2">
+              <span class="dimension-tag">COMP-02: ANATOMICAL SVG (W: 100% | H: 380px)</span>
+              <span class="dimension-tag">INTERACTIVE TRIAGE</span>
+            </div>
+
+            <div class="flex-1 flex items-center justify-center relative p-4 bg-cyan-950/20 rounded-xl border border-cyan-900/60">
+              
+              <!-- SCHEMATIC HUMAN FIGURE -->
+              <div class="relative w-44 h-72 border border-dashed border-cyan-700/60 rounded-xl flex flex-col items-center justify-between p-3">
+                
+                <!-- Head / Eyes Hotspot -->
+                <div class="w-14 h-14 rounded-full border-2 border-rose-500 bg-rose-950/50 flex flex-col items-center justify-center touch-target cursor-pointer">
+                  <span class="text-[9px] font-mono text-rose-300 font-bold">OJOS/SANS</span>
+                  <span class="text-[8px] font-mono text-rose-400">PAS 144</span>
+                </div>
+
+                <!-- Chest / Heart Hotspot -->
+                <div class="w-20 h-16 rounded-xl border-2 border-cyan-500 bg-cyan-950/50 flex flex-col items-center justify-center touch-target cursor-pointer my-2">
+                  <span class="text-[9px] font-mono text-cyan-300 font-bold">TÓRAX / FC</span>
+                  <span class="text-[8px] font-mono text-cyan-400">98 bpm · HRV 19</span>
+                </div>
+
+                <!-- Kidneys / Lumbar Hotspot -->
+                <div class="w-18 h-10 rounded border border-cyan-600 bg-cyan-950/40 flex items-center justify-around px-2 touch-target cursor-pointer w-full max-w-[120px]">
+                  <span class="text-[8px] font-mono text-slate-300">R. Izq</span>
+                  <span class="text-[8px] font-mono text-amber-300 font-bold">CALCIO >300</span>
+                  <span class="text-[8px] font-mono text-slate-300">R. Der</span>
+                </div>
+
+                <!-- Legs / Bones Hotspot -->
+                <div class="flex space-x-3 w-full justify-center mt-2">
+                  <div class="w-6 h-18 border border-cyan-600/70 bg-cyan-950/30 rounded text-center text-[8px] font-mono text-cyan-300 pt-1">
+                    Fémur
+                  </div>
+                  <div class="w-6 h-18 border border-cyan-600/70 bg-cyan-950/30 rounded text-center text-[8px] font-mono text-cyan-300 pt-1">
+                    ARED
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- FLOATING ORGAN DETAIL CALLOUT -->
+              <div class="absolute bottom-2 left-2 right-2 p-2.5 rounded-lg bg-cyan-950 border border-cyan-500/60 text-xs font-mono">
+                <div class="flex justify-between items-center text-cyan-300 font-bold mb-0.5">
+                  <span>Hotspot: Sistema Neuro-Ocular</span>
+                  <span class="text-[9px] bg-rose-950 text-rose-300 px-1 rounded border border-rose-700">CRÍTICO SANS</span>
+                </div>
+                <div class="text-[10px] text-slate-300">PAS 144 mmHg · Desplazamiento venoso cefálico en FD-02.</div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: VITALS, CHART & CHECKLIST (8 COLS) -->
+        <div class="xl:col-span-8 space-y-6">
+
+          <!-- WIREFRAME VITALS CARDS (4 COLS) -->
+          <div class="blueprint-box p-4 rounded-2xl">
+            <div class="flex items-center justify-between mb-2">
+              <span class="dimension-tag">COMP-03: VITALS 4-GRID (W: 100% | 4 EQUAL COLUMNS)</span>
+              <span class="dimension-tag">NASA-STD-3001 VOL 1</span>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <!-- FC CARD -->
+              <div class="p-3 rounded-xl border border-cyan-500/50 bg-cyan-950/40">
+                <div class="text-[10px] font-mono text-slate-400">FREC. CARDÍACA</div>
+                <div class="text-2xl font-bold font-mono text-white">98 <span class="text-xs text-slate-400">bpm</span></div>
+                <div class="text-[9px] font-mono text-amber-400 mt-1">Nom: 55-85 | Precaución</div>
+              </div>
+              <!-- PA CARD (ALERTA) -->
+              <div class="p-3 rounded-xl border-2 border-rose-500 bg-rose-950/30 animate-pulse">
+                <div class="text-[10px] font-mono text-rose-300 font-bold">PRESIÓN ARTERIAL</div>
+                <div class="text-2xl font-bold font-mono text-rose-400">144/92 <span class="text-xs text-slate-400">mmHg</span></div>
+                <div class="text-[9px] font-mono text-rose-300 font-bold mt-1">SANS CRITICAL (>=140)</div>
+              </div>
+              <!-- SPO2 CARD -->
+              <div class="p-3 rounded-xl border border-cyan-500/50 bg-cyan-950/40">
+                <div class="text-[10px] font-mono text-slate-400">OXÍGENO SpO₂</div>
+                <div class="text-2xl font-bold font-mono text-emerald-400">95.8 <span class="text-xs text-slate-400">%</span></div>
+                <div class="text-[9px] font-mono text-amber-400 mt-1">Nom: >=96.0% | Límite</div>
+              </div>
+              <!-- HRV CARD -->
+              <div class="p-3 rounded-xl border border-rose-500/60 bg-rose-950/20">
+                <div class="text-[10px] font-mono text-rose-300">VARIABILIDAD (HRV)</div>
+                <div class="text-2xl font-bold font-mono text-rose-400">19.5 <span class="text-xs text-slate-400">ms</span></div>
+                <div class="text-[9px] font-mono text-rose-400 mt-1">Nom: >35ms | Estrés Agudo</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIREFRAME CHART & CHECKLIST (SPLIT 7:5) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- CHART (7 COLS) -->
+            <div class="lg:col-span-7 blueprint-box p-4 rounded-2xl flex flex-col justify-between min-h-[240px]">
+              <div class="flex items-center justify-between mb-2">
+                <span class="dimension-tag">COMP-04: CHART.JS TIME-SERIES (7 COLS | MIN-H: 220px)</span>
+                <span class="dimension-tag">PAS (Cian) vs FC (Rojo)</span>
+              </div>
+
+              <!-- CHART SCHEMATIC -->
+              <div class="flex-1 flex items-end justify-between p-3 border-b border-l border-cyan-800 font-mono text-[10px] text-cyan-400 relative">
+                <span class="absolute top-2 left-2 text-[9px] text-slate-400">mmHg / bpm</span>
+                <div class="text-center w-12"><div class="h-16 w-1 bg-cyan-400 mx-auto"></div>L-44</div>
+                <div class="text-center w-12"><div class="h-28 w-1 bg-cyan-400 mx-auto"></div>FD-01</div>
+                <div class="text-center w-12"><div class="h-36 w-1.5 bg-rose-500 mx-auto animate-pulse"></div>FD-02*</div>
+                <div class="text-center w-12"><div class="h-24 w-1 bg-cyan-400 mx-auto"></div>FD-03</div>
+                <div class="text-center w-12"><div class="h-18 w-1 bg-cyan-400 mx-auto"></div>R+1</div>
+              </div>
+            </div>
+
+            <!-- CHECKLIST (5 COLS) -->
+            <div class="lg:col-span-5 blueprint-box p-4 rounded-2xl flex flex-col justify-between min-h-[240px]">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="dimension-tag">COMP-05: ACTION CHECKLIST (5 COLS)</span>
+                  <span class="text-[9px] bg-rose-950 text-rose-300 px-1 rounded border border-rose-700 font-mono font-bold">ALTA PRIORIDAD</span>
+                </div>
+                <div class="text-xs font-bold font-mono text-amber-300 mb-1">PROTOCOLO SANS: Hipertensión Cefálica</div>
+                <p class="text-[10px] text-slate-300 leading-tight mb-3">Redistribuir volumen venoso a extremidades inferiores para despresurizar papila óptica.</p>
+              </div>
+
+              <!-- CHECKLIST ITEMS -->
+              <div class="space-y-2 text-xs font-mono">
+                <div class="p-2 rounded bg-cyan-950/60 border border-cyan-700/60 flex items-center space-x-2 touch-target">
+                  <input type="checkbox" checked class="w-4 h-4 text-cyan-500">
+                  <span class="text-slate-300 text-[11px]">1. Presurizar LBNP a -35 mmHg (60 min)</span>
+                </div>
+                <div class="p-2 rounded bg-cyan-950/60 border border-cyan-700/60 flex items-center space-x-2 touch-target">
+                  <input type="checkbox" class="w-4 h-4 text-cyan-500">
+                  <span class="text-slate-300 text-[11px]">2. Test visual Rejilla de Amsler</span>
+                </div>
+                <div class="p-2 rounded bg-cyan-950/60 border border-cyan-700/60 flex items-center space-x-2 touch-target">
+                  <input type="checkbox" class="w-4 h-4 text-cyan-500">
+                  <span class="text-slate-300 text-[11px]">3. Dieta baja en sodio (&lt; 2.0 g/d)</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- WIREFRAME CRISIS SIMULATOR (12 COLS) -->
+          <div class="blueprint-box p-4 rounded-2xl">
+            <div class="flex items-center justify-between mb-2">
+              <span class="dimension-tag">COMP-06: CRISIS SIMULATOR BAR (4 BUTTONS | MIN-H: 48px)</span>
+              <span class="dimension-tag">DEMO JURADO NASA</span>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
+              <button class="p-2.5 rounded-xl border border-rose-500/60 bg-rose-950/30 text-rose-300 font-bold touch-target">
+                1. Tormenta Solar SPE (&gt;180 µSv)
+              </button>
+              <button class="p-2.5 rounded-xl border border-amber-500/60 bg-amber-950/30 text-amber-300 font-bold touch-target">
+                2. Fuga CO₂ Cabina (&gt;3.8 mmHg)
+              </button>
+              <button class="p-2.5 rounded-xl border border-purple-500/60 bg-purple-950/30 text-purple-300 font-bold touch-target">
+                3. Crisis SANS Agudo (PAS 144)
+              </button>
+              <button class="p-2.5 rounded-xl border border-emerald-500/60 bg-emerald-950/30 text-emerald-300 font-bold touch-target">
+                Restablecer Nominal (L-44)
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: HI-FI PRODUCTION UI VIEW           -->
+    <!-- ========================================== -->
+    <div id="view-hifi" class="hidden">
+      <div class="p-4 rounded-xl bg-space-800 border border-cyan-500/60 text-xs font-mono mb-6 flex items-center justify-between">
+        <span>Vista de Producción Táctica Activa: Esta es la apariencia final con estilos OSCUROS espaciales y fuentes de alta legibilidad.</span>
+        <a href="index.html" target="_blank" class="text-cyan-400 underline font-bold">Abrir en Pestaña Completa</a>
+      </div>
+      <iframe src="index.html" class="w-full h-[850px] rounded-2xl border border-cyan-500/40 shadow-2xl"></iframe>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: CODE RED SPE CRISIS EMERGENCY VIEW -->
+    <!-- ========================================== -->
+    <div id="view-crisis" class="hidden space-y-6">
+      
+      <!-- CODE RED EMERGENCY BANNER -->
+      <div class="p-6 rounded-2xl bg-rose-950 border-2 border-rose-500 text-rose-100 shadow-2xl shadow-rose-950/80 animate-pulse">
+        <div class="flex items-center space-x-3 mb-2">
+          <i data-lucide="alert-triangle" class="w-8 h-8 text-rose-400"></i>
+          <div>
+            <h1 class="text-xl font-extrabold font-mono tracking-wider text-white">ALERTA MÁXIMA — CÓDIGO ROJO: TORMENTA SOLAR (SPE)</h1>
+            <p class="text-xs text-rose-300 font-mono">Tasa de Radiación Ionizante detectada por CANS: <strong class="text-white text-sm">184.2 µSv/h</strong> (Límite SPELs: 100 µSv/h)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHELTER EVACUATION CHECKLIST CARD -->
+      <div class="bg-space-950 border-2 border-rose-600 rounded-2xl p-6 shadow-2xl space-y-4">
+        <div class="flex items-center justify-between border-b border-rose-800 pb-3">
+          <h2 class="text-base font-bold font-mono text-rose-300">PROTOCOLO DE SUPERVIVENCIA INMEDIATA (TIEMPO DE IMPACTO: &lt; 5 MINUTOS)</h2>
+          <span class="text-xs px-2.5 py-1 rounded bg-rose-900 border border-rose-500 text-white font-mono font-bold">ACCIONES CRÍTICAS</span>
+        </div>
+
+        <div class="space-y-3 font-mono text-sm">
+          <label class="flex items-start space-x-3 p-4 rounded-xl bg-rose-950/60 border border-rose-500 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 mt-0.5 text-rose-600 rounded">
+            <div>
+              <strong class="text-white">Paso 1: Evacuar de inmediato al módulo central blindado (STORM SHELTER).</strong>
+              <p class="text-xs text-rose-300 mt-0.5">El blindaje de tanques de agua y polietileno reduce la dosis biológica en más del 70%.</p>
+            </div>
+          </label>
+
+          <label class="flex items-start space-x-3 p-4 rounded-xl bg-rose-950/60 border border-rose-500 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 mt-0.5 text-rose-600 rounded">
+            <div>
+              <strong class="text-white">Paso 2: Administrar cóctel radioprotector antioxidante oral (Botiquín Bravo mamparo 2).</strong>
+              <p class="text-xs text-rose-300 mt-0.5">Mitigación celular de roturas de doble cadena de ADN provocadas por protones solares.</p>
+            </div>
+          </label>
+
+          <label class="flex items-start space-x-3 p-4 rounded-xl bg-rose-950/60 border border-rose-500 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 mt-0.5 text-rose-600 rounded">
+            <div>
+              <strong class="text-white">Paso 3: Fijar dosímetros personales pasivos CANS en el mamparo interior blindado.</strong>
+              <p class="text-xs text-rose-300 mt-0.5">Registro continuo de dosis absorbida acumulada para cómputo de carrera médica.</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="pt-3 border-t border-rose-900 flex justify-between text-xs font-mono text-rose-400">
+          <span>Enlace Houston DTN: Encolado para transmisión en próxima ventana</span>
+          <span>Dosis acumulada estimada: 42.8 mSv / 600 mSv SPELs</span>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- SCRIPT LOGIC TO TOGGLE VIEWS -->
+  <script>
+    function setViewMode(mode) {
+      document.getElementById('view-blueprint').classList.add('hidden');
+      document.getElementById('view-hifi').classList.add('hidden');
+      document.getElementById('view-crisis').classList.add('hidden');
+
+      document.getElementById('tab-blueprint').className = "px-3 py-1.5 rounded-lg text-cyan-300 hover:bg-cyan-900/60 transition flex items-center gap-1.5";
+      document.getElementById('tab-hifi').className = "px-3 py-1.5 rounded-lg text-cyan-300 hover:bg-cyan-900/60 transition flex items-center gap-1.5";
+      document.getElementById('tab-crisis').className = "px-3 py-1.5 rounded-lg text-rose-300 hover:bg-rose-950/60 transition flex items-center gap-1.5";
+
+      if (mode === 'blueprint') {
+        document.getElementById('view-blueprint').classList.remove('hidden');
+        document.getElementById('tab-blueprint').className = "px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md";
+      } else if (mode === 'hifi') {
+        document.getElementById('view-hifi').classList.remove('hidden');
+        document.getElementById('tab-hifi').className = "px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md";
+      } else if (mode === 'crisis') {
+        document.getElementById('view-crisis').classList.remove('hidden');
+        document.getElementById('tab-crisis').className = "px-3 py-1.5 rounded-lg bg-rose-600 text-white font-bold transition flex items-center gap-1.5 shadow-md";
+      }
+      lucide.createIcons();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

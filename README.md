@@ -10,13 +10,15 @@
 [![Use Cases](https://img.shields.io/badge/Use%20Cases-12%20UML%20%28ISO%2029148%29-cyan.svg)](docs/Casos-de-uso/README.md)
 [![Acceptance Criteria](https://img.shields.io/badge/Acceptance%20Criteria-NASA%20V%26V%20Compliance-emerald.svg)](docs/Criterios-de-aceptacion/README.md)
 [![RTM Traceability](https://img.shields.io/badge/RTM%20Traceability-100%25%20NASA%20Covered-purple.svg)](docs/MATRIZ_DE_TRAZABILIDAD_RTM.md)
+[![Wireframe](https://img.shields.io/badge/Wireframe-Interactive%20Blueprint-blue.svg)](wireframe.html)
+[![Glossary](https://img.shields.io/badge/Glossary->60%20Aerospace%20Terms-informational.svg)](docs/GLOSARIO_TERMINOLOGICO_AEROESPACIAL.md)
 [![Architecture](https://img.shields.io/badge/Architecture-100%25%20Edge%20%2F%20Mars--Zero--Ping-red.svg)](#)
 
 ---
 
-> 🎮 **PROBADOR EN VIVO (LIVE WEB DEMO):** Puedes probar la aplicación interactiva de inmediato en tu navegador en:  
-> **👉 [https://angelcontres.github.io/AstroVital-SpaceApps/](https://angelcontres.github.io/AstroVital-SpaceApps/)**  
-> *(Incluye simulador de tormenta solar, fuga de CO₂, SANS, mapa anatómico táctico interactivo y explorador de la API de NASA OSDR)*
+> 🎮 **PROBADORES EN VIVO (LIVE WEB DEMOS EN GITHUB PAGES):**  
+> * **👉 [Dashboard de Producción Táctico](https://angelcontres.github.io/AstroVital-SpaceApps/)** *(Simulador de tormentas SPE, fuga de CO₂, SANS, mapa anatómico interactivo y explorador NASA OSDR)*  
+> * **📐 [Prototipo Wireframe & Blueprint Interactivo](https://angelcontres.github.io/AstroVital-SpaceApps/wireframe.html)** *(Cotas técnicas de cabina, ergonomía para guantes $\ge 48\text{px}$, accesibilidad WCAG AAA y alternador de vistas)*
 
 ---
 
@@ -106,6 +108,8 @@ Nasa-Project/
 │   │   ├── CRITERIOS_NO_FUNCIONALES_AC_TECNICOS.md             # AC-TECH-01 a 06: Zero-ping, potencia <5W y SEU
 │   │   └── MATRIZ_VERIFICACION_Y_VALIDACION_NASA.md            # Matriz de cumplimiento cruzado (100% PASS)
 │   ├── MATRIZ_DE_TRAZABILIDAD_RTM.md                           # Matriz Maestra de Trazabilidad End-to-End (RTM)
+│   ├── GLOSARIO_TERMINOLOGICO_AEROESPACIAL.md                  # Glosario formal con >60 términos (SANS, LBNP, CANS, etc.)
+│   ├── WIREFRAME_Y_DISENO_UI_UX.md                             # Especificación de ergonomía táctil y diseño UI/UX
 │   ├── SRS – Software de Monitoreo de Salud para Astronautas.md   # Especificación formal ISO/IEC/IEEE 29148
 │   ├── VALIDACION_FUENTES_OFICIALES_NASA.md                    # Certificación cruzada contra NASA-STD-3001
 │   ├── DOCUMENTO_DOMINIO_Y_PROBLEMATICA_ESPACIAL.md            # Análisis de dominio operacional
@@ -116,6 +120,7 @@ Nasa-Project/
 │   ├── nasa_osdr_enriched_human_studies.json                   # 10 estudios enriquecidos (Inspiration4, SANS, etc.)
 │   └── nasa_official_telemetry/                                # Paquetes reales ISS y tablas ISA-Tab
 ├── index.html                                                  # Dashboard táctico interactivo 100% offline
+├── wireframe.html                                              # Prototipo visual interactivo de Wireframe & Blueprint
 ├── .nojekyll                                                   # Soporte para despliegue en GitHub Pages
 ├── .gitignore
 └── README.md
