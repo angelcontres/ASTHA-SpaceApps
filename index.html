@@ -20,15 +20,22 @@
         extend: {
           colors: {
             nasa: {
-              blue: '#0b3d91',       // NASA Meatball Blue
-              pastel: '#79a7df',     // NASA Pastel Blue HUD
-              'pastel-light': '#9fc5f8',
-              'pastel-soft': '#b8d6fc',
-              dark: '#040915',       // Deep Void
-              panel: '#071329',      // Tactical HUD Panel
-              border: '#18345f',     // Subdued Border
-              danger: '#f43f5e',
-              warning: '#f59e0b',
+              royal: '#1c4482',      // The exact NASA shirt royal blue (#214783)
+              blue: '#1c4482',
+              dark: '#10274f',       // Deep aerospace navy
+              card: '#133266',       // Card panel navy
+              yellow: '#facc15',     // Retro grid & planet yellow
+              orange: '#f97316',     // Retro stripe orange
+              pink: '#db3b68',       // Planet heatmap magenta/pink
+              magenta: '#db3b68',
+              cyan: '#38bdf8',       // Blueprint cyan
+              pastel: '#facc15',     // Primary accent: warm retro yellow
+              'pastel-light': '#fef08a',
+              'pastel-soft': '#93c5fd',
+              panel: '#10274f',      // Tactical HUD panel
+              border: '#2a5ba8',     // Technical border blue
+              danger: '#db3b68',     // Heatmap magenta
+              warning: '#facc15',    // Retro yellow
               nominal: '#10b981'
             }
           }
@@ -75,32 +82,34 @@
       background-color: #330006 !important;
     }
 
-    /* AESTHETIC NASA GRID BACKGROUND */
+    /* AESTHETIC RETRO NASA ROYAL BLUE GRID (EXACT VINTAGE SHIRT GRAPHIC AESTHETIC) */
     .nasa-insane-grid {
-      background-color: #040915;
+      background-color: #163a75;
       background-image: 
-        linear-gradient(to right, rgba(121, 167, 223, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(121, 167, 223, 0.08) 1px, transparent 1px),
-        linear-gradient(to right, rgba(121, 167, 223, 0.02) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(121, 167, 223, 0.02) 1px, transparent 1px),
-        radial-gradient(circle 900px at 50% -10%, rgba(121, 167, 223, 0.14), transparent 75%);
-      background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 100% 100%;
+        linear-gradient(to right, rgba(250, 204, 21, 0.13) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(250, 204, 21, 0.13) 1px, transparent 1px),
+        linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        radial-gradient(circle 1100px at 50% 0%, #1c4482 0%, #133366 65%, #0d2244 100%);
+      background-size: 56px 56px, 56px 56px, 14px 14px, 14px 14px, 100% 100%;
       background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px, 0 0;
     }
 
-    /* TACTICAL HUD CARDS */
+    /* TACTICAL HUD CARDS IN RETRO NASA NAVY WITH YELLOW ACCENTS */
     .hud-card {
-      background: rgba(7, 19, 41, 0.82);
-      border: 1px solid rgba(121, 167, 223, 0.35);
-      backdrop-filter: blur(10px);
+      background: rgba(16, 39, 79, 0.90);
+      border: 1px solid rgba(250, 204, 21, 0.35);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px 0 rgba(10, 22, 48, 0.5);
       position: relative;
       transition: all 0.25s ease;
     }
     .hud-card:hover {
-      border-color: rgba(121, 167, 223, 0.6);
+      border-color: rgba(250, 204, 21, 0.75);
+      box-shadow: 0 8px 32px 0 rgba(250, 204, 21, 0.15);
     }
 
-    /* CORNER ANGLE ACCENTS */
+    /* VINTAGE YELLOW CORNER BRACKETS */
     .hud-card::before {
       content: '';
       position: absolute;
@@ -108,8 +117,8 @@
       left: -1px;
       width: 10px;
       height: 10px;
-      border-top: 2px solid #79a7df;
-      border-left: 2px solid #79a7df;
+      border-top: 2px solid #facc15;
+      border-left: 2px solid #facc15;
       pointer-events: none;
     }
     .hud-card::after {
@@ -119,9 +128,16 @@
       right: -1px;
       width: 10px;
       height: 10px;
-      border-bottom: 2px solid #79a7df;
-      border-right: 2px solid #79a7df;
+      border-bottom: 2px solid #facc15;
+      border-right: 2px solid #facc15;
       pointer-events: none;
+    }
+
+    /* 4-COLOR RETRO CHROMATIC SPECTRUM BAR */
+    .nasa-spectrum-bar {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(to right, #ffd500 0%, #ffd500 25%, #f97316 25%, #f97316 50%, #db3b68 50%, #db3b68 75%, #38bdf8 75%, #38bdf8 100%);
     }
 
     .custom-scrollbar::-webkit-scrollbar {
@@ -129,10 +145,10 @@
       height: 5px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #040915;
+      background: #0d2244;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #18345f;
+      background: #2a5ba8;
       border-radius: 0px;
     }
     .organ-hover {
@@ -140,7 +156,7 @@
       transition: all 0.2s ease;
     }
     .organ-hover:hover {
-      filter: drop-shadow(0 0 10px rgba(121, 167, 223, 0.9));
+      filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.9));
     }
 
     /* ======================================================== */
@@ -151,15 +167,15 @@
     }
     body.modo-m .hud-card {
       border-radius: 0px !important;
-      border: 1px solid rgba(121, 167, 223, 0.4) !important;
+      border: 1px solid rgba(250, 204, 21, 0.5) !important;
     }
 
     /* RANGE BAR STYLING */
     .range-track {
-      background: #06152b;
+      background: #0d2244;
       height: 6px;
       position: relative;
-      border: 1px solid rgba(121, 167, 223, 0.25);
+      border: 1px solid rgba(42, 91, 168, 0.45);
     }
     .range-safe {
       position: absolute;
@@ -172,85 +188,108 @@
       top: -3px;
       bottom: -3px;
       width: 4px;
-      background: #ffffff;
-      box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+      background: #facc15;
+      box-shadow: 0 0 8px rgba(250, 204, 21, 0.9);
       transition: left 0.3s ease;
     }
 
-    /* ASTRONAUT CARD SELECTION */
+    /* ASTRONAUT CARD SELECTION (RETRO NASA YELLOW HIGHLIGHT) */
     .crew-card-active {
-      border-color: #79a7df !important;
-      background: rgba(14, 39, 82, 0.85) !important;
-      box-shadow: 0 0 15px -3px rgba(121, 167, 223, 0.35) !important;
+      border-color: #facc15 !important;
+      background: rgba(28, 68, 130, 0.95) !important;
+      box-shadow: 0 0 18px 0 rgba(250, 204, 21, 0.45) !important;
     }
   </style>
 </head>
 <body class="nasa-insane-grid text-slate-100 font-sans min-h-screen flex flex-col custom-scrollbar select-none modo-m">
 
   <!-- TOP APP BAR -->
-  <header class="border-b border-nasa-border/70 bg-[#061226]/90 backdrop-blur-md px-6 py-3 sticky top-0 z-40 flex flex-wrap items-center justify-between gap-4 shadow-xl">
-    <div class="flex items-center space-x-3">
-      <!-- NASA Meatball + Pastel Gradient Icon -->
-      <div class="w-9 h-9 bg-gradient-to-tr from-[#0b3d91] to-[#79a7df] flex items-center justify-center border border-[#9fc5f8]/40 shadow-md">
-        <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+  <header class="border-b border-[#2a5ba8]/80 bg-[#122e5e]/95 backdrop-blur-md px-6 py-2.5 sticky top-0 z-40 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+    <div class="flex items-center space-x-3.5">
+      <!-- Official NASA Worm Vector Logo (White, matching vintage shirt) -->
+      <div class="flex items-center space-x-2.5">
+        <svg class="h-6 sm:h-7 w-auto text-white drop-shadow" viewBox="0 0 508.204 141.732" fill="currentColor" title="NASA Worm Logotype (Danne & Blackburn 1975)">
+          <path d="M91.991,104.699c1.576,5.961,4.119,8.266,8.613,8.266c4.659,0,7.102-2.799,7.102-8.266V3.2h29.184v101.499 c0,14.307-1.856,20.506-9.11,27.762c-5.228,5.229-14.871,9.271-27.047,9.271c-9.837,0-19.25-3.256-25.253-9.27 c-5.263-5.273-8.154-10.689-12.672-27.764L44.9,37.033c-1.577-5.961-4.119-8.265-8.613-8.265c-4.66,0-7.103,2.798-7.103,8.265 v101.5H0v-101.5C0,22.727,1.857,16.527,9.111,9.271C14.337,4.044,23.981,0,36.158,0c9.837,0,19.25,3.257,25.253,9.27 c5.263,5.273,8.154,10.689,12.672,27.764L91.991,104.699z"/>
+          <path d="M478.038,138.533L444.334,33.096c-0.372-1.164-0.723-2.152-1.263-2.811 c-0.926-1.127-2.207-1.719-3.931-1.719c-1.723,0-3.004,0.592-3.931,1.719c-0.539,0.658-0.891,1.646-1.262,2.811l-33.703,105.437 h-30.167l36.815-115.177c1.918-6,4.66-11.094,8.139-14.488C421.002,3.047,428.038,0,439.141,0s18.14,3.047,24.109,8.867 c3.479,3.395,6.221,8.488,8.14,14.488l36.814,115.177H478.038z"/>
+          <path d="M328.878,138.533c19.12,0,28.446-4.062,35.814-11.389c8.153-8.105,12.053-16.973,12.053-30.213 c0-11.699-4.283-22.535-10.804-29.019c-8.526-8.479-19.116-11.151-36.384-11.151L305.37,56.76c-9.242,0-12.925-1.117-15.839-3.98 c-2.001-1.964-2.939-4.885-2.939-8.328c0-3.559,0.857-7.074,3.303-9.475c2.171-2.131,5.13-3.109,10.816-3.109h69.903V3.2H306.05 c-19.12,0-28.445,4.063-35.814,11.389c-8.152,8.105-12.053,16.972-12.053,30.212c0,11.701,4.283,22.536,10.804,29.019 c8.527,8.479,19.116,11.152,36.384,11.152l24.188,0.002c9.242,0,12.925,1.115,15.839,3.979c2.001,1.965,2.939,4.885,2.939,8.328 c0,3.559-0.857,7.074-3.302,9.475c-2.172,2.131-5.131,3.109-10.817,3.109h-72.094l-27.651-86.509 c-1.918-6-4.66-11.094-8.139-14.488C220.363,3.047,213.327,0,202.224,0s-18.14,3.047-24.108,8.867 c-3.48,3.395-6.221,8.488-8.139,14.488l-36.815,115.177h30.166l33.704-105.437c0.372-1.164,0.723-2.152,1.263-2.811 c0.926-1.127,2.208-1.719,3.931-1.719s3.004,0.592,3.931,1.719c0.54,0.658,0.891,1.646,1.262,2.811l33.704,105.437H328.878z"/>
+        </svg>
+        <!-- Vintage American Flag Outline -->
+        <svg class="w-5 h-3.5 text-white hidden md:inline-block border border-white/50" viewBox="0 0 24 16" fill="currentColor">
+          <rect width="24" height="2" fill="white"/>
+          <rect y="4" width="24" height="2" fill="white"/>
+          <rect y="8" width="24" height="2" fill="white"/>
+          <rect y="12" width="24" height="2" fill="white"/>
+          <rect width="11" height="9" fill="#1b468a"/>
+          <circle cx="2.5" cy="2.5" r="0.7" fill="white"/>
+          <circle cx="5.5" cy="2.5" r="0.7" fill="white"/>
+          <circle cx="8.5" cy="2.5" r="0.7" fill="white"/>
+          <circle cx="4" cy="4.5" r="0.7" fill="white"/>
+          <circle cx="7" cy="4.5" r="0.7" fill="white"/>
+          <circle cx="2.5" cy="6.5" r="0.7" fill="white"/>
+          <circle cx="5.5" cy="6.5" r="0.7" fill="white"/>
+          <circle cx="8.5" cy="6.5" r="0.7" fill="white"/>
+        </svg>
       </div>
+
       <div>
         <div class="flex items-center space-x-2">
-          <span class="text-lg font-bold tracking-wider text-white">ASTRO<span class="text-nasa-pastel">VITAL</span></span>
-          <span class="text-[10px] px-2 py-0.5 bg-[#0b3d91]/50 border border-[#79a7df]/50 text-nasa-pastel-light font-mono font-bold tracking-wider">NASA-STD-3001</span>
-          <span class="text-[10px] px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-mono flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> EDGE 100% OFFLINE
+          <span class="text-base font-bold tracking-wider text-white uppercase font-mono">ASTRO<span class="text-[#facc15]">VITAL</span></span>
+          <span class="text-[9px] px-2 py-0.5 bg-[#facc15] text-[#0f2854] font-mono font-bold tracking-wider uppercase">ESTD 1958</span>
+          <span class="text-[9px] px-2 py-0.5 bg-emerald-950/90 border border-emerald-400 text-emerald-300 font-mono flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OFFLINE EDGE
           </span>
         </div>
-        <p class="text-[11px] text-nasa-pastel-soft/75 font-mono">Autonomous Deep-Space Clinical Guardian & ECLSS · Mars Transit</p>
+        <p class="text-[10px] text-slate-300 font-mono tracking-wide">NATIONAL AERONAUTICS AND SPACE ADMINISTRATION · BIO-GUARDIAN</p>
       </div>
     </div>
 
     <!-- ACTION CONTROLS & UTILITIES -->
-    <div class="flex items-center space-x-2.5 text-xs font-mono">
+    <div class="flex items-center space-x-2 text-xs font-mono">
       <!-- FORMATO M (RECTO) TOGGLE -->
-      <button onclick="toggleModoM()" id="btn-modo-m" class="flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-bold transition shadow-sm" title="Alternar Formato M (Bordes Rectos a 90°)">
-        <i data-lucide="square" class="w-3.5 h-3.5 text-nasa-pastel"></i>
+      <button onclick="toggleModoM()" id="btn-modo-m" class="flex items-center space-x-1.5 px-3 py-1.5 border border-[#facc15] bg-[#122e5e] text-[#fef08a] font-bold transition shadow-sm hover:bg-[#183a74]" title="Alternar Formato M (Bordes Rectos a 90°)">
+        <i data-lucide="square" class="w-3.5 h-3.5 text-[#facc15]"></i>
         <span id="modo-m-label">Formato M (Recto)</span>
       </button>
 
       <!-- NASA OSDR API Modal Trigger -->
-      <button onclick="openOsdrModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0c1f3d] border border-nasa-pastel/60 text-nasa-pastel-light hover:bg-[#122b54] transition shadow-md">
-        <i data-lucide="satellite" class="w-3.5 h-3.5 text-nasa-pastel"></i>
+      <button onclick="openOsdrModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#10274f] border border-[#2a5ba8] text-white hover:bg-[#16366f] transition shadow-md">
+        <i data-lucide="satellite" class="w-3.5 h-3.5 text-[#facc15]"></i>
         <span class="font-bold">NASA OSDR API</span>
       </button>
 
       <!-- MISSION ELAPSED TIME CLOCK (MET) -->
-      <div class="hidden 2xl:flex items-center space-x-2 px-3 py-1.5 bg-[#051124] border border-nasa-border/80 text-nasa-pastel-light">
-        <i data-lucide="timer" class="w-3.5 h-3.5 text-nasa-pastel"></i>
+      <div class="hidden 2xl:flex items-center space-x-2 px-3 py-1.5 bg-[#0d2244] border border-[#2a5ba8] text-[#fef08a]">
+        <i data-lucide="timer" class="w-3.5 h-3.5 text-[#facc15]"></i>
         <span>MET: <strong id="clock-met" class="text-white">048:14:28:10</strong></span>
       </div>
 
       <!-- SOUND FX TOGGLE (WEB AUDIO) -->
-      <button onclick="toggleAudioFx()" id="btn-audio-fx" class="flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-border/70 bg-[#081833] text-slate-300 hover:border-nasa-pastel/60 transition shadow-sm" title="Alternar Sonidos de Cabina (Web Audio Synthesizer)">
-        <i data-lucide="volume-2" class="w-3.5 h-3.5 text-nasa-pastel" id="icon-audio-fx"></i>
+      <button onclick="toggleAudioFx()" id="btn-audio-fx" class="flex items-center space-x-1.5 px-3 py-1.5 border border-[#2a5ba8] bg-[#10274f] text-slate-200 hover:border-[#facc15] transition shadow-sm" title="Alternar Sonidos de Cabina">
+        <i data-lucide="volume-2" class="w-3.5 h-3.5 text-[#facc15]" id="icon-audio-fx"></i>
         <span id="text-audio-fx">Audio: ON</span>
       </button>
 
       <!-- NVIS RED NIGHT MODE TOGGLE -->
-      <button onclick="toggleNvisMode()" id="btn-nvis" class="flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-border/70 bg-[#081833] text-slate-300 hover:border-rose-500/60 transition shadow-sm" title="Alternar Visión Nocturna NVIS (NASA-STD-3001)">
+      <button onclick="toggleNvisMode()" id="btn-nvis" class="flex items-center space-x-1.5 px-3 py-1.5 border border-[#2a5ba8] bg-[#10274f] text-slate-200 hover:border-rose-500 transition shadow-sm" title="Alternar Visión Nocturna NVIS">
         <i data-lucide="moon" class="w-3.5 h-3.5 text-rose-400"></i>
         <span id="text-nvis">NVIS</span>
       </button>
 
       <!-- EXPORT CLINICAL LOGBOOK MODAL TRIGGER -->
-      <button onclick="openReportModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0e2752] border border-nasa-pastel/60 text-nasa-pastel-light hover:bg-[#153a74] transition font-bold shadow-sm">
-        <i data-lucide="file-text" class="w-3.5 h-3.5 text-nasa-pastel"></i>
+      <button onclick="openReportModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#facc15] text-[#0f2854] hover:bg-[#fde047] transition font-bold shadow-md">
+        <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#0f2854]"></i>
         <span>Bitácora</span>
       </button>
 
       <!-- LIVE STREAM TOGGLE -->
-      <button onclick="toggleLiveStream()" id="btn-live-stream" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#051124] border border-nasa-border text-slate-300 hover:bg-[#091b38] transition">
+      <button onclick="toggleLiveStream()" id="btn-live-stream" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0d2244] border border-[#2a5ba8] text-slate-200 hover:bg-[#143366] transition">
         <span class="w-2 h-2 rounded-full bg-slate-400" id="live-dot"></span>
         <span id="live-text">1 Hz Stream</span>
       </button>
     </div>
   </header>
+  <!-- 4-COLOR RETRO CHROMATIC SPECTRUM STRIPE -->
+  <div class="nasa-spectrum-bar"></div>
 
   <!-- MISSION QUICK-STATUS STRIP (AEROSPACE COCKPIT BANNER) -->
   <div class="border-b border-nasa-border/50 bg-[#050f21]/80 px-6 py-2 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-300">
@@ -279,7 +318,7 @@
 
   <!-- NAVIGATION TABS -->
     <!-- CONSOLE STATUS & SHORTCUTS STRIP (AEROSPACE COCKPIT BAR) -->
-  <nav class="border-b border-nasa-border/60 bg-[#07152b]/80 px-6 py-2 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+  <nav class="border-b border-nasa-border/60 bg-[#10274f]/80 px-6 py-2 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
     <div class="flex items-center space-x-3">
       <div class="flex items-center space-x-2 text-nasa-pastel-light">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -301,7 +340,7 @@
         <span>Bitácora DTN</span>
       </button>
 
-      <button onclick="openOsdrModal()" class="px-3 py-1 bg-[#051124] hover:bg-[#091b38] text-slate-300 border border-nasa-border transition flex items-center gap-1.5" title="Explorador de Estudios NASA OSDR">
+      <button onclick="openOsdrModal()" class="px-3 py-1 bg-[#10274f] hover:bg-[#091b38] text-slate-300 border border-nasa-border transition flex items-center gap-1.5" title="Explorador de Estudios NASA OSDR">
         <i data-lucide="database" class="w-3.5 h-3.5 text-nasa-pastel"></i>
         <span>NASA OSDR</span>
       </button>
@@ -326,7 +365,7 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5" id="crew-roster-grid">
         <!-- Jared Isaacman (C001) -->
-        <div onclick="selectAstronaut('C001')" id="roster-card-C001" class="crew-card p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
+        <div onclick="selectAstronaut('C001')" id="roster-card-C001" class="crew-card p-2 border border-nasa-border bg-[#10274f] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
           <div class="flex items-center space-x-2.5">
             <div class="w-7 h-7 bg-[#0b3d91]/50 border border-nasa-pastel/40 flex items-center justify-center text-xs font-bold font-mono text-nasa-pastel">
               C1
@@ -347,7 +386,7 @@
         </div>
 
         <!-- Hayley Arceneaux (C002) -->
-        <div onclick="selectAstronaut('C002')" id="roster-card-C002" class="crew-card p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
+        <div onclick="selectAstronaut('C002')" id="roster-card-C002" class="crew-card p-2 border border-nasa-border bg-[#10274f] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
           <div class="flex items-center space-x-2.5">
             <div class="w-7 h-7 bg-[#0b3d91]/50 border border-nasa-pastel/40 flex items-center justify-center text-xs font-bold font-mono text-nasa-pastel">
               C2
@@ -389,7 +428,7 @@
         </div>
 
         <!-- Christopher Sembroski (C004) -->
-        <div onclick="selectAstronaut('C004')" id="roster-card-C004" class="crew-card p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
+        <div onclick="selectAstronaut('C004')" id="roster-card-C004" class="crew-card p-2 border border-nasa-border bg-[#10274f] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
           <div class="flex items-center space-x-2.5">
             <div class="w-7 h-7 bg-[#0b3d91]/50 border border-nasa-pastel/40 flex items-center justify-center text-xs font-bold font-mono text-nasa-pastel">
               C4
@@ -431,13 +470,13 @@
           </p>
           <!-- Specialized Clinical Indications -->
           <div class="pt-1 flex flex-wrap gap-1.5 text-[10px]" id="alert-indications">
-            <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
               <strong class="text-rose-400">👉 INDICACIÓN 1:</strong> 45 min en dispositivo de vacío LBNP a -35 mmHg
             </span>
-            <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
               <strong class="text-rose-400">👉 INDICACIÓN 2:</strong> Ingesta de 500 ml solución salina de rehidratación oral
             </span>
-            <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
               <strong class="text-rose-400">👉 INDICACIÓN 3:</strong> Atenuar iluminación de cabina y reposo visual 2h
             </span>
           </div>
@@ -510,12 +549,25 @@
           </div>
 
           <!-- Interactive Click Hint Bar -->
-          <div id="hud-body-hover-hint" class="text-center py-1 px-3 bg-[#051124] border border-nasa-border/60 text-[11px] font-mono text-nasa-pastel-light mb-2 transition-all">
+          <div id="hud-body-hover-hint" class="text-center py-1 px-3 bg-[#10274f] border border-nasa-border/60 text-[11px] font-mono text-nasa-pastel-light mb-2 transition-all">
             💡 Haz clic directamente en la Cabeza, Pecho, Riñones o Piernas del astronauta para ver sus detalles en 3D
           </div>
 
           <!-- 3D Canvas Viewport Container -->
-          <div class="relative flex-1 flex items-center justify-center bg-[#020714] border border-nasa-border/60 min-h-[500px] overflow-hidden select-none" id="container-3d">
+          <div class="relative flex-1 flex items-center justify-center bg-[#10274f] border-2 border-[#facc15]/40 min-h-[500px] overflow-hidden select-none shadow-2xl" id="container-3d" style="background-image: linear-gradient(rgba(250, 204, 21, 0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(250, 204, 21, 0.16) 1px, transparent 1px); background-size: 28px 28px;">
+            <!-- RETRO NASA TECHNICAL COORDINATE TICKS (FROM VINTAGE SHIRT GRAPHIC) -->
+            <div class="absolute top-2 left-2 text-[#facc15] font-mono text-[9px] tracking-widest flex items-center gap-1.5 pointer-events-none z-10 opacity-70 bg-[#0d2244]/80 px-2 py-0.5 border border-[#facc15]/30">
+              <span class="font-bold">+</span><span>COORD: 28.5721°N 80.6480°W</span>
+            </div>
+            <div class="absolute top-2 right-2 text-[#facc15] font-mono text-[9px] tracking-widest flex items-center gap-1.5 pointer-events-none z-10 opacity-70 bg-[#0d2244]/80 px-2 py-0.5 border border-[#facc15]/30">
+              <span>NASA-STD-3001 SPEC</span><span class="font-bold">+</span>
+            </div>
+            <div class="absolute bottom-2 left-2 text-[#facc15] font-mono text-[9px] tracking-widest flex items-center gap-1.5 pointer-events-none z-10 opacity-70 bg-[#0d2244]/80 px-2 py-0.5 border border-[#facc15]/30">
+              <span class="font-bold">+</span><span>ESTD 1958 · DANNE & BLACKBURN</span>
+            </div>
+            <div class="absolute bottom-2 right-2 text-[#facc15] font-mono text-[9px] tracking-widest flex items-center gap-1.5 pointer-events-none z-10 opacity-70 bg-[#0d2244]/80 px-2 py-0.5 border border-[#facc15]/30">
+              <span>ORBITAL INCLINATION 51.6°</span><span class="font-bold">+</span>
+            </div>
             <canvas id="canvas-anatomical-3d" class="w-full h-full cursor-grab active:cursor-grabbing block"></canvas>
 
             <!-- 3D DYNAMIC FLOATING PAIN & WARNING CALLOUT PIN -->
@@ -529,19 +581,19 @@
             </div>
 
             <!-- Real-time HUD Angle Indicator Badge -->
-            <div class="absolute top-2 left-2 text-[10px] font-mono px-2 py-0.5 bg-[#071329]/90 border border-nasa-border/60 text-nasa-pastel-light pointer-events-none z-10 flex items-center gap-1.5">
+            <div class="absolute top-2 left-2 text-[10px] font-mono px-2 py-0.5 bg-[#10274f]/90 border border-nasa-border/60 text-nasa-pastel-light pointer-events-none z-10 flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-nasa-pastel"></span>
               <span>ÁNGULO: <strong id="hud-angle-display">0° (Anterior / Frente)</strong></span>
             </div>
 
             <!-- Top-Right Laser Scanner Status -->
-            <div class="absolute top-2 right-2 text-[10px] font-mono px-2 py-0.5 bg-[#071329]/90 border border-nasa-border/60 text-emerald-400 pointer-events-none z-10 flex items-center gap-1.5">
+            <div class="absolute top-2 right-2 text-[10px] font-mono px-2 py-0.5 bg-[#10274f]/90 border border-nasa-border/60 text-emerald-400 pointer-events-none z-10 flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
               <span>ESCÁNER LÁSER ACTIVO</span>
             </div>
 
             <!-- Floating Pain Summary Bar (Bottom of 3D Viewport) -->
-            <div class="absolute bottom-2 left-2 right-2 bg-[#07152b]/95 border border-nasa-pastel/60 p-3 backdrop-blur-md z-10 shadow-xl" id="box-pain-summary">
+            <div class="absolute bottom-2 left-2 right-2 bg-[#10274f]/95 border border-nasa-pastel/60 p-3 backdrop-blur-md z-10 shadow-xl" id="box-pain-summary">
               <div class="flex items-center justify-between text-xs mb-1">
                 <span class="font-bold text-nasa-pastel-light flex items-center gap-1.5" id="info-organ-name">
                   <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500" id="icon-pain-alert"></i>
@@ -563,7 +615,7 @@
             <!-- ========================================================================= -->
             <!-- REACTIVE 3D ORGAN DETAIL DRAWER (SLIDES IN ON DIRECT 3D CLICK)             -->
             <!-- ========================================================================= -->
-            <div id="organ-detail-drawer" class="absolute top-2 right-2 bottom-2 w-80 md:w-96 bg-[#06142a]/95 border-2 border-nasa-pastel backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl z-30 transition-all duration-300 transform translate-x-[110%] opacity-0 pointer-events-none">
+            <div id="organ-detail-drawer" class="absolute top-2 right-2 bottom-2 w-80 md:w-96 bg-[#122e5e]/95 border-2 border-nasa-pastel backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl z-30 transition-all duration-300 transform translate-x-[110%] opacity-0 pointer-events-none">
               <div>
                 <div class="flex items-center justify-between border-b border-nasa-border/80 pb-2 mb-3">
                   <div class="flex items-center space-x-2">
@@ -579,7 +631,7 @@
                 </div>
 
                 <div class="space-y-3 font-mono text-xs">
-                  <div class="p-2.5 bg-[#030917] border border-nasa-border/60">
+                  <div class="p-2.5 bg-[#0d2244] border border-nasa-border/60">
                     <div class="flex items-center justify-between text-[11px] mb-1">
                       <span class="text-slate-400">Estado Clínico:</span>
                       <span class="px-2 py-0.5 font-bold" id="drawer-organ-status">DERIVA SANS</span>
@@ -588,33 +640,33 @@
                       <span class="text-slate-400">Escala de Dolor Físico:</span>
                       <strong class="text-rose-300" id="drawer-pain-score">3 / 10</strong>
                     </div>
-                    <div class="w-full bg-[#071329] h-2 rounded overflow-hidden border border-nasa-border/40">
+                    <div class="w-full bg-[#10274f] h-2 rounded overflow-hidden border border-nasa-border/40">
                       <div id="drawer-pain-bar" class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 transition-all duration-300" style="width: 30%;"></div>
                     </div>
                   </div>
 
-                  <div class="p-2.5 bg-[#051124] border border-nasa-border/60 space-y-1">
+                  <div class="p-2.5 bg-[#10274f] border border-nasa-border/60 space-y-1">
                     <span class="text-[10px] text-slate-400 uppercase font-bold block">Fisiopatología en Microgravedad:</span>
                     <p class="text-[11px] text-slate-200 leading-snug" id="drawer-organ-mechanism">
                       Migración cefálica de fluidos (+2L de sangre hacia la cabeza). Sobrepresión intracraneal y edema de papila transitorio.
                     </p>
                   </div>
 
-                  <div class="p-2.5 bg-[#030917] border border-nasa-border/60 space-y-2">
+                  <div class="p-2.5 bg-[#0d2244] border border-nasa-border/60 space-y-2">
                     <span class="text-[10px] text-emerald-400 uppercase font-bold flex items-center gap-1">
                       <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
                       <span>Indicaciones Clínicas de Intervención:</span>
                     </span>
                     <div class="space-y-1.5 text-[10px]" id="drawer-indications-list">
-                      <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                      <label class="flex items-start space-x-2 p-1.5 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
                         <input type="checkbox" checked class="mt-0.5 text-emerald-500">
                         <span class="text-slate-200">1. Sesión de 45 min en dispositivo de vacío LBNP a -35 mmHg.</span>
                       </label>
-                      <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                      <label class="flex items-start space-x-2 p-1.5 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
                         <input type="checkbox" checked class="mt-0.5 text-emerald-500">
                         <span class="text-slate-200">2. Ingesta de 500 ml solución salina de rehidratación oral.</span>
                       </label>
-                      <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                      <label class="flex items-start space-x-2 p-1.5 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
                         <input type="checkbox" class="mt-0.5 text-emerald-500">
                         <span class="text-slate-200">3. Reducir luminancia de pantallas de cabina y reposo 2h.</span>
                       </label>
@@ -639,16 +691,16 @@
         <!-- Quick Organ Target Buttons (Direct Hotspot Focus) -->
         <div class="mt-3 space-y-2 text-[10px] font-mono">
           <div class="grid grid-cols-4 gap-1.5 text-center">
-            <button onclick="triggerOrganInspection('eyes')" class="p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
+            <button onclick="triggerOrganInspection('eyes')" class="p-2 border border-nasa-border bg-[#10274f] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
               👁️ Cabeza (SANS)
             </button>
-            <button onclick="triggerOrganInspection('heart')" class="p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
+            <button onclick="triggerOrganInspection('heart')" class="p-2 border border-nasa-border bg-[#10274f] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
               ❤️ Pecho (Corazón)
             </button>
-            <button onclick="triggerOrganInspection('kidneys')" class="p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
+            <button onclick="triggerOrganInspection('kidneys')" class="p-2 border border-nasa-border bg-[#10274f] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
               🩺 Riñones (Espalda 180°)
             </button>
-            <button onclick="triggerOrganInspection('bones')" class="p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
+            <button onclick="triggerOrganInspection('bones')" class="p-2 border border-nasa-border bg-[#10274f] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
               🦴 Piernas / Huesos
             </button>
           </div>
@@ -660,13 +712,13 @@
               <button onclick="setPainSymptom('sans')" id="btn-pain-sans" class="px-2 py-1 border border-rose-500 bg-rose-950/60 text-rose-300 font-bold hover:bg-rose-900 transition flex items-center gap-1">
                 🤕 Cefalea (SANS)
               </button>
-              <button onclick="setPainSymptom('heart')" id="btn-pain-heart" class="px-2 py-1 border border-nasa-border bg-[#051124] text-slate-300 hover:border-amber-500/60 transition flex items-center gap-1">
+              <button onclick="setPainSymptom('heart')" id="btn-pain-heart" class="px-2 py-1 border border-nasa-border bg-[#10274f] text-slate-300 hover:border-amber-500/60 transition flex items-center gap-1">
                 ❤️ Dolor Pecho
               </button>
-              <button onclick="setPainSymptom('kidneys')" id="btn-pain-kidneys" class="px-2 py-1 border border-nasa-border bg-[#051124] text-slate-300 hover:border-amber-500/60 transition flex items-center gap-1">
+              <button onclick="setPainSymptom('kidneys')" id="btn-pain-kidneys" class="px-2 py-1 border border-nasa-border bg-[#10274f] text-slate-300 hover:border-amber-500/60 transition flex items-center gap-1">
                 🩺 Lumbar (180°)
               </button>
-              <button onclick="setPainSymptom('none')" id="btn-pain-none" class="px-2 py-1 border border-emerald-500/50 bg-[#051124] text-emerald-400 hover:bg-emerald-950/50 transition flex items-center gap-1">
+              <button onclick="setPainSymptom('none')" id="btn-pain-none" class="px-2 py-1 border border-emerald-500/50 bg-[#10274f] text-emerald-400 hover:bg-emerald-950/50 transition flex items-center gap-1">
                 ✓ Sin Dolor
               </button>
             </div>
@@ -700,7 +752,7 @@
                 <span class="text-slate-400">Frecuencia Cardíaca</span>
                 <span class="font-bold text-white"><span id="val-hr">84</span> <span class="text-[10px] text-slate-400 font-normal">bpm</span></span>
               </div>
-              <div class="relative w-full h-3 bg-[#030917] border border-nasa-border/60 overflow-hidden">
+              <div class="relative w-full h-3 bg-[#0d2244] border border-nasa-border/60 overflow-hidden">
                 <div class="absolute inset-y-0 left-[20%] w-[40%] bg-emerald-500/20 border-x border-emerald-500/40" title="Zona Normal 60-100 bpm"></div>
                 <div id="ptr-hr" class="absolute top-0 bottom-0 w-1.5 bg-white shadow-md transition-all duration-300" style="left: 44%;"></div>
               </div>
@@ -718,7 +770,7 @@
                   <span id="eval-bp" class="text-[10px] ml-1.5 px-1.5 py-0.2 bg-rose-950 text-rose-300 border border-rose-800 font-bold">Riesgo SANS</span>
                 </span>
               </div>
-              <div class="relative w-full h-3 bg-[#030917] border border-nasa-border/60 overflow-hidden">
+              <div class="relative w-full h-3 bg-[#0d2244] border border-nasa-border/60 overflow-hidden">
                 <div class="absolute inset-y-0 left-[12%] w-[38%] bg-emerald-500/20 border-x border-emerald-500/40" title="Zona Normal Sistólica 100-130 mmHg"></div>
                 <div id="ptr-bp" class="absolute top-0 bottom-0 w-1.5 bg-white shadow-md transition-all duration-300" style="left: 65%;"></div>
               </div>
@@ -733,7 +785,7 @@
                 <span class="text-slate-400">Saturación de Oxígeno (SpO₂)</span>
                 <span class="font-bold text-white"><span id="val-spo2">97.2</span> <span class="text-[10px] text-slate-400 font-normal">%</span></span>
               </div>
-              <div class="relative w-full h-3 bg-[#030917] border border-nasa-border/60 overflow-hidden">
+              <div class="relative w-full h-3 bg-[#0d2244] border border-nasa-border/60 overflow-hidden">
                 <div class="absolute inset-y-0 left-[58%] w-[42%] bg-emerald-500/20 border-x border-emerald-500/40" title="Zona Normal 95-100%"></div>
                 <div id="ptr-spo2" class="absolute top-0 bottom-0 w-1.5 bg-white shadow-md transition-all duration-300" style="left: 76%;"></div>
               </div>
@@ -748,7 +800,7 @@
                 <span class="text-slate-400">Variabilidad Cardíaca (HRV / Estrés)</span>
                 <span class="font-bold text-white"><span id="val-hrv">22.4</span> <span class="text-[10px] text-slate-400 font-normal">ms</span></span>
               </div>
-              <div class="relative w-full h-3 bg-[#030917] border border-nasa-border/60 overflow-hidden">
+              <div class="relative w-full h-3 bg-[#0d2244] border border-nasa-border/60 overflow-hidden">
                 <div class="absolute inset-y-0 left-[41%] w-[59%] bg-emerald-500/20 border-x border-emerald-500/40" title="Zona Óptima > 35 ms"></div>
                 <div id="ptr-hrv" class="absolute top-0 bottom-0 w-1.5 bg-white shadow-md transition-all duration-300" style="left: 20%;"></div>
               </div>
@@ -772,20 +824,20 @@
           </div>
 
           <div class="grid grid-cols-4 gap-2 text-[10px] font-mono text-center">
-            <div class="bg-[#051124] p-1.5 border border-nasa-border/60">
+            <div class="bg-[#10274f] p-1.5 border border-nasa-border/60">
               <span class="text-slate-400 block text-[9px]">Presión</span>
               <strong class="text-white text-xs"><span id="env-pressure">101.3</span> kPa</strong>
             </div>
-            <div class="bg-[#051124] p-1.5 border border-nasa-border/60">
+            <div class="bg-[#10274f] p-1.5 border border-nasa-border/60">
               <span class="text-slate-400 block text-[9px]">ppCO₂</span>
               <strong class="text-emerald-400 text-xs"><span id="env-co2">2.85</span> mmHg</strong>
               <span id="env-co2-ppm" class="hidden"></span>
             </div>
-            <div class="bg-[#051124] p-1.5 border border-nasa-border/60">
+            <div class="bg-[#10274f] p-1.5 border border-nasa-border/60">
               <span class="text-slate-400 block text-[9px]">Oxígeno</span>
               <strong class="text-white text-xs"><span id="env-o2">20.8</span>%</strong>
             </div>
-            <div class="bg-[#051124] p-1.5 border border-nasa-border/60">
+            <div class="bg-[#10274f] p-1.5 border border-nasa-border/60">
               <span class="text-slate-400 block text-[9px]">Radiación</span>
               <strong class="text-emerald-400 text-xs"><span id="env-rad">32.8</span> µSv</strong>
             </div>
@@ -808,7 +860,7 @@
           </div>
 
           <div class="space-y-1.5 text-xs">
-            <div class="p-2 bg-[#051124] border-l-2 border-rose-500 text-slate-200">
+            <div class="p-2 bg-[#10274f] border-l-2 border-rose-500 text-slate-200">
               <div class="font-bold text-nasa-pastel-light font-mono text-[11px]" id="action-title">
                 Dra. Sian Proctor: Riesgo SANS en Microgravedad
               </div>
@@ -819,17 +871,17 @@
               <div id="detail-summary" class="hidden"></div>
             </div>
 
-            <div class="p-2 bg-[#030917] border border-nasa-border/50 space-y-1 text-[10px] font-mono">
+            <div class="p-2 bg-[#0d2244] border border-nasa-border/50 space-y-1 text-[10px] font-mono">
               <div class="text-slate-400 font-bold uppercase text-[9px] flex items-center gap-1">
                 <i data-lucide="check-square" class="w-3 h-3 text-emerald-400"></i>
                 <span>Protocolo Prescrito Inmediato:</span>
               </div>
               <div id="checklist-container" class="space-y-1 text-[10px]">
-                <label class="flex items-start space-x-2 p-1 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                <label class="flex items-start space-x-2 p-1 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
                   <input type="checkbox" checked class="mt-0.5 text-emerald-500">
                   <span class="text-slate-200">1. Sesión de 45 min en dispositivo de vacío LBNP a -35 mmHg.</span>
                 </label>
-                <label class="flex items-start space-x-2 p-1 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                <label class="flex items-start space-x-2 p-1 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
                   <input type="checkbox" checked class="mt-0.5 text-emerald-500">
                   <span class="text-slate-200">2. Ingesta de 500 ml solución salina de rehidratación oral.</span>
                 </label>
@@ -915,7 +967,7 @@
       <!-- Modal Body -->
       <div class="p-6 flex-1 overflow-y-auto custom-scrollbar space-y-4">
         <!-- Live Connection Status Card -->
-        <div class="p-4 bg-[#051124] border border-nasa-border/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="p-4 bg-[#10274f] border border-nasa-border/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <div class="text-xs font-bold text-nasa-pastel font-mono uppercase">Vínculo con Datos de Vuelo Real</div>
             <div class="text-xs text-slate-300 mt-0.5">La telemetría de AstroVital está anclada directamente en los estudios biológicos y de vuelo humano de NASA OSDR.</div>
@@ -936,7 +988,7 @@
       <!-- Modal Footer -->
       <div class="px-6 py-3 border-t border-nasa-border/70 bg-[#061226] flex items-center justify-between text-xs font-mono text-slate-400">
         <span>Fuente: NASA GeneLab / OSDR Open Science Data Repository</span>
-        <button onclick="closeOsdrModal()" class="px-4 py-1.5 bg-[#051124] hover:bg-[#0a2044] text-slate-200 border border-nasa-border">Cerrar</button>
+        <button onclick="closeOsdrModal()" class="px-4 py-1.5 bg-[#10274f] hover:bg-[#0a2044] text-slate-200 border border-nasa-border">Cerrar</button>
       </div>
     </div>
   </div>
@@ -967,7 +1019,7 @@
       <!-- Modal Body with Charts -->
       <div class="p-6 flex-1 overflow-y-auto custom-scrollbar space-y-6">
         <!-- Chart 1: Vitals -->
-        <div class="p-4 bg-[#051124] border border-nasa-border/60">
+        <div class="p-4 bg-[#10274f] border border-nasa-border/60">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center space-x-2">
               <i data-lucide="activity" class="w-4 h-4 text-nasa-pastel"></i>
@@ -981,7 +1033,7 @@
         </div>
 
         <!-- Chart 2: ECLSS Environment -->
-        <div class="p-4 bg-[#051124] border border-nasa-border/60">
+        <div class="p-4 bg-[#10274f] border border-nasa-border/60">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center space-x-2">
               <i data-lucide="gauge" class="w-4 h-4 text-emerald-400"></i>
@@ -998,7 +1050,7 @@
       <!-- Modal Footer -->
       <div class="px-6 py-3 border-t border-nasa-border/70 bg-[#061226] flex items-center justify-between text-xs font-mono text-slate-400">
         <span>Datos validados con NASA Open Science Data Repository & Bio-Monitor Astroskin</span>
-        <button onclick="closeTrendsModal()" class="px-4 py-1.5 bg-[#051124] hover:bg-[#0a2044] text-slate-200 border border-nasa-border">Cerrar</button>
+        <button onclick="closeTrendsModal()" class="px-4 py-1.5 bg-[#10274f] hover:bg-[#0a2044] text-slate-200 border border-nasa-border">Cerrar</button>
       </div>
     </div>
   </div>
@@ -1524,7 +1576,7 @@
           if (s === symptom) {
             btn.className = "px-2 py-1 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-bold transition flex items-center gap-1";
           } else {
-            btn.className = "px-2 py-1 border border-nasa-border bg-[#051124] text-slate-300 hover:border-nasa-pastel/60 transition flex items-center gap-1";
+            btn.className = "px-2 py-1 border border-nasa-border bg-[#10274f] text-slate-300 hover:border-nasa-pastel/60 transition flex items-center gap-1";
           }
         }
       });
@@ -1641,22 +1693,22 @@
       renderer3d.setSize(width, height);
       renderer3d.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      // 3. Multi-point Cinematic Aerospace Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      // 3. Multi-point Retro-NASA Golden Sunburst & Royal Blue Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
       scene3d.add(ambientLight);
 
-      // Front Key Light (NASA pastel blue)
-      const keyLight = new THREE.DirectionalLight(0xd8e8fc, 1.3);
+      // Front Key Light (Warm golden-yellow sunburst matching vintage shirt globe)
+      const keyLight = new THREE.DirectionalLight(0xfff176, 1.35);
       keyLight.position.set(4, 8, 8);
       scene3d.add(keyLight);
 
-      // Back Rim Light (Cyan highlight for silhouette definition)
-      const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+      // Back Rim Light (Electric cyan for sharp silhouette definition)
+      const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.25);
       rimLight.position.set(-5, -2, -8);
       scene3d.add(rimLight);
 
-      // Bottom Underglow (Deep Space blue)
-      const underLight = new THREE.PointLight(0x0b3d91, 1.0, 10);
+      // Bottom Underglow (Vibrant heatmap magenta matching globe lower hemisphere)
+      const underLight = new THREE.PointLight(0xdb3b68, 1.45, 12);
       underLight.position.set(0, -3.5, 2);
       scene3d.add(underLight);
 
@@ -1718,6 +1770,49 @@
       const matLaser = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65, side: THREE.DoubleSide });
 
       // =====================================================================
+            // =====================================================================
+      // 0. RETRO NASA THERMAL WIREFRAME GLOBE (MATCHING VINTAGE SHIRT GRAPHIC)
+      // =====================================================================
+      retroGlobeGroup = new THREE.Group();
+      retroGlobeGroup.position.set(3.2, 0.8, -4.2);
+
+      // Outer wireframe sphere in warm yellow
+      const globeWireGeo = new THREE.SphereGeometry(2.4, 24, 18);
+      const globeWireMat = new THREE.MeshBasicMaterial({
+        color: 0xfacc15,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.32
+      });
+      const globeWireMesh = new THREE.Mesh(globeWireGeo, globeWireMat);
+      retroGlobeGroup.add(globeWireMesh);
+
+      // Inner thermal heatmap atmosphere (magenta/pink gradient glow)
+      const globeInnerGeo = new THREE.SphereGeometry(2.36, 32, 24);
+      const globeInnerMat = new THREE.MeshBasicMaterial({
+        color: 0xdb3b68,
+        transparent: true,
+        opacity: 0.18
+      });
+      const globeInnerMesh = new THREE.Mesh(globeInnerGeo, globeInnerMat);
+      retroGlobeGroup.add(globeInnerMesh);
+
+      // Equatorial & Tropic Latitudinal Accent Rings (Orange & Gold)
+      const eqRingGeo = new THREE.RingGeometry(2.42, 2.47, 48);
+      const eqRingMat = new THREE.MeshBasicMaterial({ color: 0xf97316, side: THREE.DoubleSide, transparent: true, opacity: 0.45 });
+      const eqRing = new THREE.Mesh(eqRingGeo, eqRingMat);
+      eqRing.rotation.x = Math.PI / 2.3;
+      retroGlobeGroup.add(eqRing);
+
+      const tropicRingGeo = new THREE.RingGeometry(2.0, 2.04, 36);
+      const tropicRingMat = new THREE.MeshBasicMaterial({ color: 0xffd500, side: THREE.DoubleSide, transparent: true, opacity: 0.35 });
+      const tropicRing = new THREE.Mesh(tropicRingGeo, tropicRingMat);
+      tropicRing.rotation.x = Math.PI / 2.3;
+      tropicRing.position.y = 1.0;
+      retroGlobeGroup.add(tropicRing);
+
+      scene3d.add(retroGlobeGroup);
+
       // 1. CYBERNETIC TURNTABLE PLATFORM
       // =====================================================================
       const platformGeo = new THREE.CylinderGeometry(2.7, 2.9, 0.12, 36);
@@ -1725,7 +1820,7 @@
       platformMesh.position.y = -3.4;
       astronautGroup.add(platformMesh);
 
-      const ringOuter = new THREE.Mesh(new THREE.RingGeometry(2.5, 2.56, 48), new THREE.MeshBasicMaterial({ color: 0x79a7df }));
+      const ringOuter = new THREE.Mesh(new THREE.RingGeometry(2.5, 2.56, 48), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
       ringOuter.rotation.x = -Math.PI / 2;
       ringOuter.position.y = -3.33;
       astronautGroup.add(ringOuter);
@@ -2079,6 +2174,12 @@
       astronautGroup.rotation.y += (targetAngleY - astronautGroup.rotation.y) * 0.08;
 
       // Vertical Laser Medical Scanner Loop
+      // Rotate Retro Thermal Globe matching shirt graphic
+      if (retroGlobeGroup) {
+        retroGlobeGroup.rotation.y += 0.0022;
+        retroGlobeGroup.rotation.x += 0.0008;
+      }
+
       if (laserScanRing) {
         const scanY = Math.sin(Date.now() * 0.002) * 3.2 + 0.2;
         laserScanRing.position.y = scanY;
@@ -2392,8 +2493,8 @@
         // Indications checklist
         const list = document.getElementById('drawer-indications-list');
         list.innerHTML = data.indications.map((ind, i) => `
-          <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
-            <input type="checkbox" ${i < 2 ? 'checked' : ''} class="mt-0.5 text-emerald-500 rounded bg-[#030917] border-nasa-border">
+          <label class="flex items-start space-x-2 p-1.5 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
+            <input type="checkbox" ${i < 2 ? 'checked' : ''} class="mt-0.5 text-emerald-500 rounded bg-[#0d2244] border-nasa-border">
             <span class="text-slate-200">${ind}</span>
           </label>
         `).join('');
@@ -2465,13 +2566,13 @@
         target.innerText = `ALERTA DE FLOTA · RADIACIÓN CANS: 184.2 µSv/h`;
         diag.innerText = "Flujo masivo de protones y neutrones galácticos detectado por el sensor CANS de la Agencia Espacial Canadiense. El nivel excede los límites biológicos SPELs establecidos por NASA.";
         indications.innerHTML = `
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
             <strong class="text-rose-400">👉 INDICACIÓN 1:</strong> Evacuación inmediata de los 4 tripulantes al módulo central blindado (Storm Shelter).
           </span>
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
             <strong class="text-rose-400">👉 INDICACIÓN 2:</strong> Administrar cóctel radioprotector antioxidante oral a cada astronauta (Botiquín Bravo).
           </span>
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
             <strong class="text-rose-400">👉 INDICACIÓN 3:</strong> Fijar dosímetros pasivos CANS en mamparo interior y emitir telemetría de emergencia a Houston.
           </span>
         `;
@@ -2484,13 +2585,13 @@
         target.innerText = `CABINA HÁBITAT · ppCO₂: 3.85 mmHg`;
         diag.innerText = "La presión parcial de CO₂ en la atmósfera de la cabina supera 3.8 mmHg (límite NASA-STD-3001). Riesgo de acidosis respiratoria, cefalea aguda e hipercapnia.";
         indications.innerHTML = `
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
             <strong class="text-amber-400">👉 INDICACIÓN 1:</strong> Conmutar el subsistema CDRA a ciclo forzado de desorción y regeneración de lechos de zeolita.
           </span>
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
             <strong class="text-amber-400">👉 INDICACIÓN 2:</strong> Activar ventiladores portátiles de ventilación forzada para disipar bolsas de CO₂ estancadas.
           </span>
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
             <strong class="text-amber-400">👉 INDICACIÓN 3:</strong> Colocar máscara de oxígeno de emergencia O₂ al 100% a astronautas con molestia cefálica.
           </span>
         `;
@@ -2503,13 +2604,13 @@
         target.innerText = `SUJETO ACTIVO: ${astro.name.toUpperCase()} (${currentCrew})`;
         diag.innerText = "Sobrepresión sistólica (142 mmHg) y dolor ocular retro-orbitario (Nivel 3/10) por desplazamiento cefálico de 2 litros de sangre en microgravedad. Riesgo inminente de edema papilar.";
         indications.innerHTML = `
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
             <strong class="text-rose-400">👉 INDICACIÓN 1:</strong> Iniciar sesión de 45 min en dispositivo de vacío LBNP a -35 mmHg para redistribuir fluidos hacia miembros inferiores.
           </span>
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
             <strong class="text-rose-400">👉 INDICACIÓN 2:</strong> Ingesta de 500 ml solución salina de rehidratación oral obligatoria para estabilizar volumen vascular.
           </span>
-          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+          <span class="px-2 py-0.5 bg-[#0d2244]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
             <strong class="text-rose-400">👉 INDICACIÓN 3:</strong> Atenuar iluminación de pantallas de cabina y reposo visual durante 2 horas.
           </span>
         `;
@@ -2723,7 +2824,7 @@ function selectOrgan(organ) {
         clearInterval(streamInterval);
         dot.className = "w-2 h-2 rounded-full bg-slate-400";
         text.innerText = "1 Hz Stream";
-        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 bg-[#051124] border border-nasa-border text-slate-300 hover:bg-[#091b38] transition";
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 bg-[#10274f] border border-nasa-border text-slate-300 hover:bg-[#091b38] transition";
         updateUI();
       }
     }
@@ -2742,7 +2843,7 @@ function selectOrgan(organ) {
     function renderStudies() {
       const container = document.getElementById('studies-list');
       container.innerHTML = nasaOsdrStudies.map(s => `
-        <div class="p-3.5 bg-[#06142a] border border-nasa-border/60 hover:border-nasa-pastel/60 transition">
+        <div class="p-3.5 bg-[#122e5e] border border-nasa-border/60 hover:border-nasa-pastel/60 transition">
           <div class="flex items-start justify-between gap-3 mb-1.5">
             <div>
               <span class="text-xs px-2 py-0.5 bg-[#0b3d91]/50 border border-nasa-pastel/50 text-nasa-pastel-light font-mono font-bold mr-2">${s.accession}</span>
@@ -3094,7 +3195,7 @@ DELAY UNIDIRECCIONAL RADIO (OWLT): 04m 21s (Distancia: 78,400,000 km)
         </button>
       </div>
       <div class="p-6 flex-1 overflow-y-auto custom-scrollbar font-mono text-xs space-y-4">
-        <div class="bg-[#030917] p-4 border border-nasa-border/60 text-slate-300 whitespace-pre-wrap font-mono leading-relaxed" id="report-text-content">
+        <div class="bg-[#0d2244] p-4 border border-nasa-border/60 text-slate-300 whitespace-pre-wrap font-mono leading-relaxed" id="report-text-content">
 Cargando informe médico de telemetría...
         </div>
       </div>
@@ -3105,7 +3206,7 @@ Cargando informe médico de telemetría...
             <i data-lucide="copy" class="w-3.5 h-3.5"></i>
             <span>Copiar al Portapapeles</span>
           </button>
-          <button onclick="closeReportModal()" class="px-4 py-1.5 bg-[#051124] text-slate-300 border border-nasa-border">Cerrar</button>
+          <button onclick="closeReportModal()" class="px-4 py-1.5 bg-[#10274f] text-slate-300 border border-nasa-border">Cerrar</button>
         </div>
       </div>
     </div>
