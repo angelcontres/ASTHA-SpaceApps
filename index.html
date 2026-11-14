@@ -309,208 +309,179 @@
   </nav>
 
   <!-- MAIN VIEWPORT: UNIFIED SCI-FI BIO-TERMINAL (ALL-IN-ONE COCKPIT) -->
+    <!-- MAIN VIEWPORT: HERO 3D ASTRONAUT + PRINCIPAL METRICS + REACTIVE 3D INSPECTION -->
   <main class="flex-1 p-4 lg:p-6 max-w-[1920px] w-full mx-auto space-y-4">
 
-    <!-- TIMELINE PHASE CONTROLLER STRIP -->
-    <div class="hud-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
-      <div class="flex items-center space-x-2">
-        <i data-lucide="clock" class="w-4 h-4 text-nasa-pastel"></i>
-        <span class="text-slate-400 uppercase tracking-wider font-bold">Línea Temporal de Vuelo:</span>
-        <span class="text-white font-bold" id="current-phase-display">FD-02 (Día 2 en Órbita)</span>
-        <span class="text-slate-500 hidden md:inline">|</span>
-        <span class="text-slate-400 hidden md:inline">Sujeto Seleccionado: <strong class="text-nasa-pastel-light" id="active-astronaut-label">Dra. Sian Proctor (C03)</strong></span>
+    <!-- ========================================================================= -->
+    <!-- 1. CREW SELECTOR BAR: 4 ASTRONAUT PILLS (1 CLICK TO SWITCH CHARACTER)      -->
+    <!-- ========================================================================= -->
+    <div class="hud-card p-3 space-y-2">
+      <div class="flex items-center justify-between text-xs font-mono">
+        <span class="text-nasa-pastel-light font-bold uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="users" class="w-4 h-4 text-nasa-pastel"></i>
+          Tripulación Activa de la Misión (Toca un astronauta para cambiar el foco 3D)
+        </span>
+        <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">Misión Inspiration4 · OSD-574</span>
       </div>
-      <div class="flex items-center space-x-1.5 overflow-x-auto">
-        <button onclick="setPhaseIndex(0)" id="phase-0" class="phase-pill px-3 py-1 border border-nasa-border text-slate-400 hover:text-white transition">L-44 Tierra</button>
-        <button onclick="setPhaseIndex(1)" id="phase-1" class="phase-pill px-3 py-1 border border-nasa-border text-slate-400 hover:text-white transition">FD-01 Órbita</button>
-        <button onclick="setPhaseIndex(2)" id="phase-2" class="phase-pill px-3 py-1 border border-nasa-pastel bg-[#0e2752] font-bold text-nasa-pastel-light transition shadow-sm">FD-02 Órbita*</button>
-        <button onclick="setPhaseIndex(3)" id="phase-3" class="phase-pill px-3 py-1 border border-nasa-border text-slate-400 hover:text-white transition">FD-03 Órbita</button>
-        <button onclick="setPhaseIndex(4)" id="phase-4" class="phase-pill px-3 py-1 border border-nasa-border text-slate-400 hover:text-white transition">R+1 Retorno</button>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5" id="crew-roster-grid">
+        <!-- Jared Isaacman (C001) -->
+        <div onclick="selectAstronaut('C001')" id="roster-card-C001" class="crew-card p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-7 h-7 bg-[#0b3d91]/50 border border-nasa-pastel/40 flex items-center justify-center text-xs font-bold font-mono text-nasa-pastel">
+              C1
+            </div>
+            <div>
+              <div class="font-bold text-xs text-white">Jared Isaacman</div>
+              <div class="text-[10px] text-slate-400 font-mono">Comandante</div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="text-right font-mono text-[10px]">
+              <span id="mini-hr-C001" class="text-slate-200 font-bold block">84 bpm</span>
+              <span id="mini-bp-C001" class="text-slate-400 block text-[9px]">134/84</span>
+            </div>
+            <span id="badge-C001" class="text-[9px] px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold">APTO</span>
+          </div>
+          <div class="hidden"><canvas id="sparkline-C001"></canvas><span id="mini-spo2-C001"></span><span id="mini-hrv-C001"></span><span id="desc-C001"></span></div>
+        </div>
+
+        <!-- Hayley Arceneaux (C002) -->
+        <div onclick="selectAstronaut('C002')" id="roster-card-C002" class="crew-card p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-7 h-7 bg-[#0b3d91]/50 border border-nasa-pastel/40 flex items-center justify-center text-xs font-bold font-mono text-nasa-pastel">
+              C2
+            </div>
+            <div>
+              <div class="font-bold text-xs text-white">Hayley Arceneaux</div>
+              <div class="text-[10px] text-slate-400 font-mono">Oficial Médico</div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="text-right font-mono text-[10px]">
+              <span id="mini-hr-C002" class="text-slate-200 font-bold block">72 bpm</span>
+              <span id="mini-bp-C002" class="text-slate-400 block text-[9px]">116/74</span>
+            </div>
+            <span id="badge-C002" class="text-[9px] px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold">APTO</span>
+          </div>
+          <div class="hidden"><canvas id="sparkline-C002"></canvas><span id="mini-spo2-C002"></span><span id="mini-hrv-C002"></span><span id="desc-C002"></span></div>
+        </div>
+
+        <!-- Dra. Sian Proctor (C003) -->
+        <div onclick="selectAstronaut('C003')" id="roster-card-C003" class="crew-card p-2 border border-nasa-pastel bg-[#0e2752]/70 crew-card-active hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-7 h-7 bg-rose-950/80 border border-rose-500/60 flex items-center justify-center text-xs font-bold font-mono text-rose-300 animate-pulse">
+              C3
+            </div>
+            <div>
+              <div class="font-bold text-xs text-white">Dra. Sian Proctor</div>
+              <div class="text-[10px] text-amber-300 font-mono">Piloto de Misión</div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="text-right font-mono text-[10px]">
+              <span id="mini-hr-C003" class="text-slate-200 font-bold block">84 bpm</span>
+              <span id="mini-bp-C003" class="text-rose-400 block text-[9px]">142/90</span>
+            </div>
+            <span id="badge-C003" class="text-[9px] px-1.5 py-0.5 bg-rose-950 text-rose-300 border border-rose-800 font-mono font-bold animate-pulse">SANS</span>
+          </div>
+          <div class="hidden"><canvas id="sparkline-C003"></canvas><span id="mini-spo2-C003"></span><span id="mini-hrv-C003"></span><span id="desc-C003"></span></div>
+        </div>
+
+        <!-- Christopher Sembroski (C004) -->
+        <div onclick="selectAstronaut('C004')" id="roster-card-C004" class="crew-card p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none flex items-center justify-between gap-2">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-7 h-7 bg-[#0b3d91]/50 border border-nasa-pastel/40 flex items-center justify-center text-xs font-bold font-mono text-nasa-pastel">
+              C4
+            </div>
+            <div>
+              <div class="font-bold text-xs text-white">Christopher Sembroski</div>
+              <div class="text-[10px] text-slate-400 font-mono">Especialista Misión</div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="text-right font-mono text-[10px]">
+              <span id="mini-hr-C004" class="text-slate-200 font-bold block">76 bpm</span>
+              <span id="mini-bp-C004" class="text-slate-400 block text-[9px]">122/78</span>
+            </div>
+            <span id="badge-C004" class="text-[9px] px-1.5 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold">APTO</span>
+          </div>
+          <div class="hidden"><canvas id="sparkline-C004"></canvas><span id="mini-spo2-C004"></span><span id="mini-hrv-C004"></span><span id="desc-C004"></span></div>
+        </div>
       </div>
     </div>
 
-    <!-- MASTER 3-COLUMN COCKPIT VIEWPORT -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
-      <!-- ========================================================================= -->
-      <!-- FLANK 1 (LEFT, 3.5 COLS): TRIPULACIÓN ACTIVA + ENTORNO DE CABINA (ECLSS)  -->
-      <!-- ========================================================================= -->
-      <div class="lg:col-span-4 xl:col-span-3 space-y-4 flex flex-col">
-        
-        <!-- 1. CREW SELECTION ROSTER (4 ASTRONAUTS WITH REAL-TIME ECG) -->
-        <div class="hud-card p-4 space-y-3">
-          <div class="flex items-center justify-between border-b border-nasa-border/60 pb-2 text-xs font-mono">
-            <span class="text-nasa-pastel-light font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <i data-lucide="users" class="w-4 h-4 text-nasa-pastel"></i>
-              Tripulación Activa (4)
-            </span>
-            <span class="text-[10px] text-slate-400 font-mono">Toca para enfocar</span>
-          </div>
-
-          <div class="space-y-2.5" id="crew-roster-grid">
-            <!-- Jared Isaacman (C001) -->
-            <div onclick="selectAstronaut('C001')" id="roster-card-C001" class="crew-card p-2.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none">
-              <div class="flex items-center justify-between mb-1">
-                <div>
-                  <div class="font-bold text-xs text-white">Jared Isaacman</div>
-                  <div class="text-[10px] text-slate-400 font-mono">Comandante · C01</div>
-                </div>
-                <span id="badge-C001" class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold">APTO</span>
-              </div>
-              <div class="h-6 w-full bg-[#020714] border border-nasa-border/40 mb-1.5 overflow-hidden">
-                <canvas id="sparkline-C001" class="w-full h-full block"></canvas>
-              </div>
-              <div class="grid grid-cols-4 gap-1 text-[10px] font-mono text-center">
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">FC</span><strong id="mini-hr-C001" class="text-slate-200">84 bpm</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">PA</span><strong id="mini-bp-C001" class="text-slate-200">134/84</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">SpO2</span><strong id="mini-spo2-C001" class="text-slate-200">97%</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">HRV</span><strong id="mini-hrv-C001" class="text-slate-200">34ms</strong></div>
-              </div>
-              <div id="desc-C001" class="hidden"></div>
-            </div>
-
-            <!-- Hayley Arceneaux (C002) -->
-            <div onclick="selectAstronaut('C002')" id="roster-card-C002" class="crew-card p-2.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none">
-              <div class="flex items-center justify-between mb-1">
-                <div>
-                  <div class="font-bold text-xs text-white">Hayley Arceneaux</div>
-                  <div class="text-[10px] text-slate-400 font-mono">Oficial Médico · C02</div>
-                </div>
-                <span id="badge-C002" class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold">APTO</span>
-              </div>
-              <div class="h-6 w-full bg-[#020714] border border-nasa-border/40 mb-1.5 overflow-hidden">
-                <canvas id="sparkline-C002" class="w-full h-full block"></canvas>
-              </div>
-              <div class="grid grid-cols-4 gap-1 text-[10px] font-mono text-center">
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">FC</span><strong id="mini-hr-C002" class="text-slate-200">72 bpm</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">PA</span><strong id="mini-bp-C002" class="text-slate-200">116/74</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">SpO2</span><strong id="mini-spo2-C002" class="text-slate-200">98%</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">HRV</span><strong id="mini-hrv-C002" class="text-slate-200">42ms</strong></div>
-              </div>
-              <div id="desc-C002" class="hidden"></div>
-            </div>
-
-            <!-- Dra. Sian Proctor (C003) -->
-            <div onclick="selectAstronaut('C003')" id="roster-card-C003" class="crew-card p-2.5 border border-nasa-pastel bg-[#0e2752]/70 crew-card-active hover:border-nasa-pastel/60 cursor-pointer transition select-none">
-              <div class="flex items-center justify-between mb-1">
-                <div>
-                  <div class="font-bold text-xs text-white">Dra. Sian Proctor</div>
-                  <div class="text-[10px] text-amber-300 font-mono">Piloto de Misión · C03</div>
-                </div>
-                <span id="badge-C003" class="text-[10px] px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-800 font-mono font-bold animate-pulse">SANS</span>
-              </div>
-              <div class="h-6 w-full bg-[#020714] border border-nasa-border/40 mb-1.5 overflow-hidden">
-                <canvas id="sparkline-C003" class="w-full h-full block"></canvas>
-              </div>
-              <div class="grid grid-cols-4 gap-1 text-[10px] font-mono text-center">
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">FC</span><strong id="mini-hr-C003" class="text-slate-200">84 bpm</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">PA</span><strong id="mini-bp-C003" class="text-slate-200">142/90</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">SpO2</span><strong id="mini-spo2-C003" class="text-slate-200">97%</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">HRV</span><strong id="mini-hrv-C003" class="text-slate-200">22ms</strong></div>
-              </div>
-              <div id="desc-C003" class="hidden"></div>
-            </div>
-
-            <!-- Christopher Sembroski (C004) -->
-            <div onclick="selectAstronaut('C004')" id="roster-card-C004" class="crew-card p-2.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 cursor-pointer transition select-none">
-              <div class="flex items-center justify-between mb-1">
-                <div>
-                  <div class="font-bold text-xs text-white">Christopher Sembroski</div>
-                  <div class="text-[10px] text-slate-400 font-mono">Especialista · C04</div>
-                </div>
-                <span id="badge-C004" class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold">APTO</span>
-              </div>
-              <div class="h-6 w-full bg-[#020714] border border-nasa-border/40 mb-1.5 overflow-hidden">
-                <canvas id="sparkline-C004" class="w-full h-full block"></canvas>
-              </div>
-              <div class="grid grid-cols-4 gap-1 text-[10px] font-mono text-center">
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">FC</span><strong id="mini-hr-C004" class="text-slate-200">76 bpm</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">PA</span><strong id="mini-bp-C004" class="text-slate-200">122/78</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">SpO2</span><strong id="mini-spo2-C004" class="text-slate-200">98%</strong></div>
-                <div class="bg-[#030917] p-1"><span class="text-slate-500 block text-[9px]">HRV</span><strong id="mini-hrv-C004" class="text-slate-200">38ms</strong></div>
-              </div>
-              <div id="desc-C004" class="hidden"></div>
-            </div>
-          </div>
+    <!-- ========================================================================= -->
+    <!-- 2. SPECIALIZED AEROSPACE ALERT BANNER (DROPS DOWN ON INSTABILITY)          -->
+    <!-- ========================================================================= -->
+    <div id="specialized-alert-banner" class="hud-card border-2 border-rose-500 bg-gradient-to-r from-rose-950/95 via-[#08152e]/95 to-rose-950/95 p-3.5 shadow-2xl transition-all duration-300 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 text-xs font-mono">
+      <div class="flex items-start space-x-3 flex-1">
+        <div class="w-9 h-9 bg-rose-600/30 border border-rose-500 flex items-center justify-center text-rose-300 animate-bounce flex-shrink-0 mt-0.5" id="alert-icon-box">
+          <i data-lucide="alert-octagon" class="w-5 h-5" id="alert-icon"></i>
         </div>
-
-        <!-- 2. HABITAT ENVIRONMENT & LIFE SUPPORT (ECLSS NASA-STD-3001) -->
-        <div class="hud-card p-4 space-y-3">
-          <div class="flex items-center justify-between border-b border-nasa-border/60 pb-2 text-xs font-mono">
-            <span class="text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <i data-lucide="gauge" class="w-4 h-4 text-emerald-400"></i>
-              Entorno Cabina (ECLSS)
+        <div class="space-y-1 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2 py-0.5 bg-rose-600 text-white font-bold text-[10px] animate-pulse" id="alert-badge">CÓDIGO ROJO</span>
+            <span class="text-white font-bold text-xs uppercase tracking-wider" id="alert-title">ALERTA CLÍNICA: DESCOMPENSACIÓN SANS EN VUELO</span>
+            <span class="text-slate-500 text-[10px]">|</span>
+            <span class="text-nasa-pastel-light text-[10px]" id="alert-target">SUJETO ACTIVO: DRA. SIAN PROCTOR (C03)</span>
+          </div>
+          <p class="text-slate-200 text-[11px] leading-tight" id="alert-diagnostic">
+            Sobrepresión sistólica (142 mmHg) y dolor ocular retro-orbitario (Nivel 3/10) por desplazamiento cefálico de fluidos en microgravedad. Riesgo inminente de edema papilar.
+          </p>
+          <!-- Specialized Clinical Indications -->
+          <div class="pt-1 flex flex-wrap gap-1.5 text-[10px]" id="alert-indications">
+            <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+              <strong class="text-rose-400">👉 INDICACIÓN 1:</strong> 45 min en dispositivo de vacío LBNP a -35 mmHg
             </span>
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Soporte Vital Activo"></span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
-            <!-- Cabin Pressure -->
-            <div class="bg-[#051124] p-2 border border-nasa-border/60">
-              <div class="text-slate-400 text-[10px]">Presión Cabina</div>
-              <div class="text-white font-bold text-sm flex items-baseline gap-1">
-                <span id="env-pressure">101.3</span> <span class="text-[10px] text-slate-400">kPa</span>
-              </div>
-              <div class="text-[9px] text-emerald-400">Nominal 14.7 psi</div>
-            </div>
-
-            <!-- CO2 Partial Pressure -->
-            <div class="bg-[#051124] p-2 border border-nasa-border/60">
-              <div class="text-slate-400 text-[10px]">Dióxido de Carbono</div>
-              <div class="text-emerald-400 font-bold text-sm flex items-baseline gap-1">
-                <span id="env-co2">2.85</span> <span class="text-[10px] text-slate-400">mmHg</span>
-              </div>
-              <div class="text-[9px] text-slate-400" id="env-co2-ppm">~3750 ppm (Seguro)</div>
-            </div>
-
-            <!-- Oxygen % -->
-            <div class="bg-[#051124] p-2 border border-nasa-border/60">
-              <div class="text-slate-400 text-[10px]">Oxígeno Cabina</div>
-              <div class="text-white font-bold text-sm flex items-baseline gap-1">
-                <span id="env-o2">20.8</span> <span class="text-[10px] text-slate-400">%</span>
-              </div>
-              <div class="text-[9px] text-emerald-400">ppO2 ~21 kPa</div>
-            </div>
-
-            <!-- Radiation CANS -->
-            <div class="bg-[#051124] p-2 border border-nasa-border/60">
-              <div class="text-slate-400 text-[10px]">Radiación CANS</div>
-              <div class="text-emerald-400 font-bold text-sm flex items-baseline gap-1">
-                <span id="env-rad">32.8</span> <span class="text-[10px] text-slate-400">µSv/h</span>
-              </div>
-              <div class="text-[9px] text-emerald-400">Nivel Seguro LEO</div>
-            </div>
-          </div>
-
-          <!-- Temp & Humidity and CDRA/OGS status -->
-          <div class="bg-[#030a18] p-2 border border-nasa-border/40 text-[10px] font-mono flex items-center justify-between text-slate-300">
-            <div>Temp: <strong class="text-white" id="env-temp">21.8</strong>°C · Humedad: <strong class="text-white" id="env-humidity">46</strong>%</div>
-            <div class="text-emerald-400 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              <span id="status-cdra">CDRA & OGS OK</span>
-            </div>
+            <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+              <strong class="text-rose-400">👉 INDICACIÓN 2:</strong> Ingesta de 500 ml solución salina de rehidratación oral
+            </span>
+            <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+              <strong class="text-rose-400">👉 INDICACIÓN 3:</strong> Atenuar iluminación de cabina y reposo visual 2h
+            </span>
           </div>
         </div>
       </div>
+      <!-- Quick Actions -->
+      <div class="flex items-center space-x-2 self-end lg:self-center flex-shrink-0">
+        <button onclick="triggerOrganInspection('eyes')" class="px-3 py-1.5 bg-[#0b3d91] hover:bg-[#1a56b8] text-white font-bold border border-nasa-pastel/40 transition flex items-center gap-1 text-[11px]">
+          <i data-lucide="scan" class="w-3.5 h-3.5"></i>
+          <span>Examinar en 3D</span>
+        </button>
+        <button onclick="applyAlertProtocol()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition flex items-center gap-1 text-[11px]">
+          <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+          <span>Ejecutar Protocolo</span>
+        </button>
+        <button onclick="dismissSpecializedAlert()" class="px-2.5 py-1.5 bg-[#081833] text-slate-400 hover:text-white border border-nasa-border transition" title="Silenciar Alerta">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
 
-      <!-- ========================================================================= -->
-      <!-- FLANK 2 (CENTER, 5.5 COLS): THE 3D HOLOGRAPHIC BIO-SCANNER HERO TURNTABLE -->
-      <!-- ========================================================================= -->
-      <div class="lg:col-span-8 xl:col-span-6 hud-card p-4 flex flex-col justify-between">
+    <!-- ========================================================================= -->
+    <!-- 3. MAIN COCKPIT: HERO 3D ASTRONAUT + PRINCIPAL METRICS SIDEBAR            -->
+    <!-- ========================================================================= -->
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+
+      <!-- ----------------------------------------------------------------------- -->
+      <!-- LEFT / CENTER STAGE: THE 3D HOLOGRAPHIC BIO-SCANNER (7.5 COLS)          -->
+      <!-- ----------------------------------------------------------------------- -->
+      <div class="xl:col-span-7 lg:col-span-7 col-span-12 hud-card p-4 flex flex-col justify-between relative overflow-hidden">
         
-        <!-- 3D Header -->
+        <!-- Top 3D Control Header -->
         <div>
-          <div class="flex items-center justify-between mb-2">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
             <div class="flex items-center space-x-2">
               <i data-lucide="scan" class="w-4 h-4 text-nasa-pastel"></i>
-              <h3 class="font-bold text-xs tracking-wider uppercase font-mono text-white">Escáner Holográfico Biomédico 3D</h3>
-              <span class="text-[9px] px-1.5 py-0.2 bg-[#0b3d91]/50 border border-nasa-pastel/40 text-nasa-pastel-light font-mono hidden sm:inline">60 FPS REAL-TIME</span>
+              <h3 class="font-bold text-xs tracking-wider uppercase font-mono text-white">Bio-Escáner 3D Reactivo</h3>
+              <span class="text-[9px] px-2 py-0.5 bg-[#0b3d91]/50 border border-nasa-pastel/40 text-nasa-pastel-light font-mono">RAYCASTER ACTIVO</span>
             </div>
-            <!-- Camera Zoom buttons -->
+            <!-- Zoom Buttons -->
             <div class="flex items-center space-x-1">
-              <button onclick="set3dCameraZoom('eyes')" class="px-2 py-0.5 border border-nasa-border bg-[#081833] text-slate-300 hover:border-nasa-pastel/60 text-[10px] font-mono transition" title="Zoom Ojos y Casco">🔍 Cabeza</button>
-              <button onclick="set3dCameraZoom('chest')" class="px-2 py-0.5 border border-nasa-border bg-[#081833] text-slate-300 hover:border-nasa-pastel/60 text-[10px] font-mono transition" title="Zoom Pecho y Corazón">🔍 Pecho</button>
-              <button onclick="set3dCameraZoom('kidneys')" class="px-2 py-0.5 border border-nasa-border bg-[#081833] text-slate-300 hover:border-nasa-pastel/60 text-[10px] font-mono transition" title="Zoom Riñones y Espalda">🔍 Riñones</button>
+              <button onclick="triggerOrganInspection('eyes')" class="px-2 py-0.5 border border-nasa-border bg-[#081833] text-slate-300 hover:border-nasa-pastel/60 text-[10px] font-mono transition" title="Zoom Ojos y Casco">🔍 Cabeza</button>
+              <button onclick="triggerOrganInspection('heart')" class="px-2 py-0.5 border border-nasa-border bg-[#081833] text-slate-300 hover:border-nasa-pastel/60 text-[10px] font-mono transition" title="Zoom Pecho y Corazón">🔍 Pecho</button>
+              <button onclick="triggerOrganInspection('kidneys')" class="px-2 py-0.5 border border-nasa-border bg-[#081833] text-slate-300 hover:border-nasa-pastel/60 text-[10px] font-mono transition" title="Zoom Riñones y Espalda">🔍 Riñones</button>
               <button onclick="set3dCameraZoom('full')" class="px-2 py-0.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light text-[10px] font-mono font-bold transition" title="Cuerpo Completo">🔍 Completo</button>
             </div>
           </div>
@@ -538,8 +509,13 @@
             </div>
           </div>
 
+          <!-- Interactive Click Hint Bar -->
+          <div id="hud-body-hover-hint" class="text-center py-1 px-3 bg-[#051124] border border-nasa-border/60 text-[11px] font-mono text-nasa-pastel-light mb-2 transition-all">
+            💡 Haz clic directamente en la Cabeza, Pecho, Riñones o Piernas del astronauta para ver sus detalles en 3D
+          </div>
+
           <!-- 3D Canvas Viewport Container -->
-          <div class="relative flex-1 flex items-center justify-center bg-[#020714] border border-nasa-border/60 min-h-[440px] overflow-hidden select-none" id="container-3d">
+          <div class="relative flex-1 flex items-center justify-center bg-[#020714] border border-nasa-border/60 min-h-[500px] overflow-hidden select-none" id="container-3d">
             <canvas id="canvas-anatomical-3d" class="w-full h-full cursor-grab active:cursor-grabbing block"></canvas>
 
             <!-- 3D DYNAMIC FLOATING PAIN & WARNING CALLOUT PIN -->
@@ -561,7 +537,7 @@
             <!-- Top-Right Laser Scanner Status -->
             <div class="absolute top-2 right-2 text-[10px] font-mono px-2 py-0.5 bg-[#071329]/90 border border-nasa-border/60 text-emerald-400 pointer-events-none z-10 flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-              <span>LÁSER BIO-MÉTRICO ACTIVO</span>
+              <span>ESCÁNER LÁSER ACTIVO</span>
             </div>
 
             <!-- Floating Pain Summary Bar (Bottom of 3D Viewport) -->
@@ -583,28 +559,101 @@
                 <strong>Síntomas Físicos Reportados:</strong> Cefalea pulsátil frontal, dolor retro-ocular y pérdida transitoria de agudeza visual. Presión sistólica elevada a 144 mmHg por sobrepresión intracraneal.
               </p>
             </div>
+
+            <!-- ========================================================================= -->
+            <!-- REACTIVE 3D ORGAN DETAIL DRAWER (SLIDES IN ON DIRECT 3D CLICK)             -->
+            <!-- ========================================================================= -->
+            <div id="organ-detail-drawer" class="absolute top-2 right-2 bottom-2 w-80 md:w-96 bg-[#06142a]/95 border-2 border-nasa-pastel backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl z-30 transition-all duration-300 transform translate-x-[110%] opacity-0 pointer-events-none">
+              <div>
+                <div class="flex items-center justify-between border-b border-nasa-border/80 pb-2 mb-3">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xl" id="drawer-organ-icon">👁️</span>
+                    <div>
+                      <h4 class="font-bold text-xs font-mono uppercase text-white" id="drawer-organ-title">SISTEMA NEURO-OCULAR (SANS)</h4>
+                      <span class="text-[10px] text-nasa-pastel font-mono" id="drawer-organ-subtitle">Detalles Clínicos 3D</span>
+                    </div>
+                  </div>
+                  <button onclick="closeOrganDrawer()" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <div class="space-y-3 font-mono text-xs">
+                  <div class="p-2.5 bg-[#030917] border border-nasa-border/60">
+                    <div class="flex items-center justify-between text-[11px] mb-1">
+                      <span class="text-slate-400">Estado Clínico:</span>
+                      <span class="px-2 py-0.5 font-bold" id="drawer-organ-status">DERIVA SANS</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] mb-1">
+                      <span class="text-slate-400">Escala de Dolor Físico:</span>
+                      <strong class="text-rose-300" id="drawer-pain-score">3 / 10</strong>
+                    </div>
+                    <div class="w-full bg-[#071329] h-2 rounded overflow-hidden border border-nasa-border/40">
+                      <div id="drawer-pain-bar" class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 transition-all duration-300" style="width: 30%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="p-2.5 bg-[#051124] border border-nasa-border/60 space-y-1">
+                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Fisiopatología en Microgravedad:</span>
+                    <p class="text-[11px] text-slate-200 leading-snug" id="drawer-organ-mechanism">
+                      Migración cefálica de fluidos (+2L de sangre hacia la cabeza). Sobrepresión intracraneal y edema de papila transitorio.
+                    </p>
+                  </div>
+
+                  <div class="p-2.5 bg-[#030917] border border-nasa-border/60 space-y-2">
+                    <span class="text-[10px] text-emerald-400 uppercase font-bold flex items-center gap-1">
+                      <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+                      <span>Indicaciones Clínicas de Intervención:</span>
+                    </span>
+                    <div class="space-y-1.5 text-[10px]" id="drawer-indications-list">
+                      <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                        <input type="checkbox" checked class="mt-0.5 text-emerald-500">
+                        <span class="text-slate-200">1. Sesión de 45 min en dispositivo de vacío LBNP a -35 mmHg.</span>
+                      </label>
+                      <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                        <input type="checkbox" checked class="mt-0.5 text-emerald-500">
+                        <span class="text-slate-200">2. Ingesta de 500 ml solución salina de rehidratación oral.</span>
+                      </label>
+                      <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                        <input type="checkbox" class="mt-0.5 text-emerald-500">
+                        <span class="text-slate-200">3. Reducir luminancia de pantallas de cabina y reposo 2h.</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2.5 border-t border-nasa-border/60 flex items-center space-x-2 font-mono text-xs">
+                <button onclick="applyDrawerTreatment()" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition flex items-center justify-center gap-1">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <span>Aplicar Tratamiento</span>
+                </button>
+                <button onclick="closeOrganDrawer()" class="px-3 py-1.5 bg-[#081833] hover:bg-[#0c244c] text-slate-300 border border-nasa-border">
+                  Cerrar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Quick Organ Target & Pain Simulator Controls -->
+        <!-- Quick Organ Target Buttons (Direct Hotspot Focus) -->
         <div class="mt-3 space-y-2 text-[10px] font-mono">
-          <!-- Row 1: Direct Organ Target Buttons -->
           <div class="grid grid-cols-4 gap-1.5 text-center">
-            <button onclick="focusOrgan3d('eyes')" class="p-1.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition">
-              👁️ Ojos (SANS)
+            <button onclick="triggerOrganInspection('eyes')" class="p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
+              👁️ Cabeza (SANS)
             </button>
-            <button onclick="focusOrgan3d('heart')" class="p-1.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition">
-              ❤️ Corazón (Pecho)
+            <button onclick="triggerOrganInspection('heart')" class="p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
+              ❤️ Pecho (Corazón)
             </button>
-            <button onclick="focusOrgan3d('kidneys')" class="p-1.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition">
-              🩺 Riñones (Espalda)
+            <button onclick="triggerOrganInspection('kidneys')" class="p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
+              🩺 Riñones (Espalda 180°)
             </button>
-            <button onclick="focusOrgan3d('bones')" class="p-1.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition">
-              🦴 Huesos (ARED)
+            <button onclick="triggerOrganInspection('bones')" class="p-2 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition font-bold flex items-center justify-center gap-1">
+              🦴 Piernas / Huesos
             </button>
           </div>
 
-          <!-- Row 2: Pain Symptom Testing -->
+          <!-- Pain Testing Simulation Bar -->
           <div class="flex items-center justify-between gap-1">
             <span class="text-slate-400 font-bold uppercase whitespace-nowrap">Simular Dolor:</span>
             <div class="flex items-center space-x-1 flex-1 justify-end">
@@ -625,23 +674,27 @@
         </div>
       </div>
 
-      <!-- ========================================================================= -->
-      <!-- FLANK 3 (RIGHT, 3.5 COLS): CONSTANTES VITALES + COMPUTADORA DE A BORDO     -->
-      <!-- ========================================================================= -->
-      <div class="lg:col-span-12 xl:col-span-3 space-y-4 flex flex-col">
+      <!-- ----------------------------------------------------------------------- -->
+      <!-- RIGHT FLANK: PRINCIPAL METRICS OF THE ASTRONAUT (4.5 COLS)              -->
+      <!-- ----------------------------------------------------------------------- -->
+      <div class="xl:col-span-5 lg:col-span-5 col-span-12 space-y-4 flex flex-col justify-between">
         
-        <!-- 1. FOCUSED VITAL RANGE GAUGES (4 METERS) -->
+        <!-- 1. ACTIVE ASTRONAUT PROFILE & METRICS CARD -->
         <div class="hud-card p-4 space-y-3">
           <div class="flex items-center justify-between border-b border-nasa-border/60 pb-2 text-xs font-mono">
-            <span class="text-nasa-pastel-light font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <i data-lucide="activity" class="w-4 h-4 text-nasa-pastel"></i>
-              Constantes Vitales Individuales
-            </span>
-            <span class="text-slate-400 text-[10px]">OSD-574 Real-time</span>
+            <div>
+              <div class="font-bold text-sm text-white flex items-center gap-1.5">
+                <span id="active-astronaut-label">Dra. Sian Proctor</span>
+                <span class="text-[10px] text-amber-300 font-normal">· C03</span>
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono" id="current-phase-display">FD-02 (Día 2 en Órbita)</div>
+            </div>
+            <span class="px-2 py-0.5 text-[10px] bg-rose-950 text-rose-300 border border-rose-800 font-mono font-bold animate-pulse" id="badge-urgency">ALERTA SANS</span>
           </div>
 
+          <!-- 4 Core Vitals with Visual Normal Bars -->
           <div class="space-y-3 font-mono">
-            <!-- Heart Rate Meter -->
+            <!-- Heart Rate (FC) -->
             <div>
               <div class="flex justify-between items-center text-xs mb-1">
                 <span class="text-slate-400">Frecuencia Cardíaca</span>
@@ -656,7 +709,7 @@
               </div>
             </div>
 
-            <!-- Blood Pressure Meter -->
+            <!-- Blood Pressure (PA) -->
             <div>
               <div class="flex justify-between items-center text-xs mb-1">
                 <span class="text-slate-400">Presión Arterial</span>
@@ -674,7 +727,7 @@
               </div>
             </div>
 
-            <!-- SpO2 Meter -->
+            <!-- SpO2 -->
             <div>
               <div class="flex justify-between items-center text-xs mb-1">
                 <span class="text-slate-400">Saturación de Oxígeno (SpO₂)</span>
@@ -689,7 +742,7 @@
               </div>
             </div>
 
-            <!-- HRV Stress Meter -->
+            <!-- HRV / Stress -->
             <div>
               <div class="flex justify-between items-center text-xs mb-1">
                 <span class="text-slate-400">Variabilidad Cardíaca (HRV / Estrés)</span>
@@ -706,92 +759,134 @@
           </div>
         </div>
 
-        <!-- 2. SHIP COMPUTER CLINICAL CDSS GUIDANCE -->
-        <div class="hud-card p-4 space-y-3 flex-1 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between border-b border-nasa-border/60 pb-2 text-xs font-mono">
-              <span class="text-amber-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="cpu" class="w-4 h-4 text-amber-400"></i>
-                Computadora de a Bordo (CDSS)
-              </span>
-              <span class="text-[10px] px-1.5 py-0.2 bg-amber-950 text-amber-300 border border-amber-800 font-mono" id="badge-urgency">ALERTA</span>
+        <!-- 2. HABITAT ENVIRONMENT & ECLSS (THAT ASTRONAUT'S CABIN) -->
+        <div class="hud-card p-3 space-y-2">
+          <div class="flex items-center justify-between border-b border-nasa-border/60 pb-1.5 text-xs font-mono">
+            <span class="text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="gauge" class="w-3.5 h-3.5 text-emerald-400"></i>
+              Entorno Hábitat Cabina (ECLSS)
+            </span>
+            <span class="text-emerald-400 text-[10px] flex items-center gap-1" id="status-cdra">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> CDRA & OGS OK
+            </span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-2 text-[10px] font-mono text-center">
+            <div class="bg-[#051124] p-1.5 border border-nasa-border/60">
+              <span class="text-slate-400 block text-[9px]">Presión</span>
+              <strong class="text-white text-xs"><span id="env-pressure">101.3</span> kPa</strong>
             </div>
-
-            <!-- Plain-Language Diagnosis & Interactive Clinical Checklist -->
-            <div class="mt-2.5 space-y-2 text-xs">
-              <div class="p-2.5 bg-[#051124] border-l-2 border-rose-500 text-slate-200">
-                <div class="font-bold text-nasa-pastel-light font-mono text-[11px] mb-1" id="action-title">
-                  Dra. Sian Proctor: Riesgo SANS en Microgravedad
-                </div>
-                <div id="detail-title" class="hidden"></div>
-                <p class="text-[11px] text-slate-300 leading-snug" id="action-desc">
-                  Aumento de presión de pulso sistólico (142 mmHg) y reducción de HRV (22.4 ms). Cefalea frontal pulsátil y riesgo de edema de papila por desplazamiento cefálico de fluidos en microgravedad (SANS Grado I).
-                </p>
-                <div id="detail-summary" class="hidden"></div>
-              </div>
-
-              <!-- Action Checklist for Non-Physician Crew -->
-              <div class="p-2.5 bg-[#030917] border border-nasa-border/50 space-y-1.5 text-[11px] font-mono">
-                <div class="text-slate-400 font-bold uppercase text-[10px] flex items-center justify-between">
-                  <span class="flex items-center gap-1">
-                    <i data-lucide="check-square" class="w-3.5 h-3.5 text-emerald-400"></i>
-                    <span>Protocolo de Intervención Paso a Paso:</span>
-                  </span>
-                  <span class="text-[9px] text-emerald-400">NASA-STD-3001</span>
-                </div>
-                <div id="checklist-container" class="space-y-1 mt-1 text-[10px]">
-                  <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
-                    <input type="checkbox" checked class="mt-0.5 text-emerald-500 rounded bg-[#030917] border-nasa-border">
-                    <span class="text-slate-200">1. Sesión de 45 min en dispositivo de vacío LBNP a -35 mmHg.</span>
-                  </label>
-                  <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
-                    <input type="checkbox" checked class="mt-0.5 text-emerald-500 rounded bg-[#030917] border-nasa-border">
-                    <span class="text-slate-200">2. Ingesta oral obligatoria de 500 ml solución salina isotónica.</span>
-                  </label>
-                  <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
-                    <input type="checkbox" class="mt-0.5 text-emerald-500 rounded bg-[#030917] border-nasa-border">
-                    <span class="text-slate-200">3. Reducir luminancia de pantallas de cabina y reevaluar agudeza en 2h.</span>
-                  </label>
-                </div>
-                <div id="detail-action" class="hidden"></div>
-              </div>
+            <div class="bg-[#051124] p-1.5 border border-nasa-border/60">
+              <span class="text-slate-400 block text-[9px]">ppCO₂</span>
+              <strong class="text-emerald-400 text-xs"><span id="env-co2">2.85</span> mmHg</strong>
+              <span id="env-co2-ppm" class="hidden"></span>
+            </div>
+            <div class="bg-[#051124] p-1.5 border border-nasa-border/60">
+              <span class="text-slate-400 block text-[9px]">Oxígeno</span>
+              <strong class="text-white text-xs"><span id="env-o2">20.8</span>%</strong>
+            </div>
+            <div class="bg-[#051124] p-1.5 border border-nasa-border/60">
+              <span class="text-slate-400 block text-[9px]">Radiación</span>
+              <strong class="text-emerald-400 text-xs"><span id="env-rad">32.8</span> µSv</strong>
             </div>
           </div>
 
-          <!-- Quick Action Buttons -->
-          <div class="mt-3 pt-2.5 border-t border-nasa-border/50 flex items-center justify-between gap-2">
-            <button onclick="openTrendsModal()" class="flex-1 py-1.5 bg-[#081833] hover:bg-[#0c244c] border border-nasa-pastel/40 text-nasa-pastel-light font-mono text-[11px] font-bold transition flex items-center justify-center gap-1.5">
-              <i data-lucide="line-chart" class="w-3.5 h-3.5"></i>
-              <span>Curvas de Tendencia</span>
+          <div class="text-[9px] font-mono text-slate-400 flex justify-between px-1">
+            <span>Temp: <strong class="text-white" id="env-temp">21.8</strong>°C · Humedad: <strong class="text-white" id="env-humidity">46</strong>%</span>
+            <button onclick="openTrendsModal()" class="text-nasa-pastel hover:underline">Ver Gráficos Históricos →</button>
+          </div>
+        </div>
+
+        <!-- 3. SHIP COMPUTER GUIDANCE & CHECKLIST -->
+        <div class="hud-card p-3 space-y-2">
+          <div class="flex items-center justify-between border-b border-nasa-border/60 pb-1.5 text-xs font-mono">
+            <span class="text-amber-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="cpu" class="w-3.5 h-3.5 text-amber-400"></i>
+              Computadora de a Bordo (CDSS)
+            </span>
+            <span class="text-[9px] text-emerald-400 font-mono">NASA-STD-3001</span>
+          </div>
+
+          <div class="space-y-1.5 text-xs">
+            <div class="p-2 bg-[#051124] border-l-2 border-rose-500 text-slate-200">
+              <div class="font-bold text-nasa-pastel-light font-mono text-[11px]" id="action-title">
+                Dra. Sian Proctor: Riesgo SANS en Microgravedad
+              </div>
+              <div id="detail-title" class="hidden"></div>
+              <p class="text-[11px] text-slate-300 leading-snug mt-0.5" id="action-desc">
+                Sobrepresión sistólica (142 mmHg) y dolor ocular retro-orbitario (Nivel 3/10) por desplazamiento de 2L de sangre hacia la cabeza.
+              </p>
+              <div id="detail-summary" class="hidden"></div>
+            </div>
+
+            <div class="p-2 bg-[#030917] border border-nasa-border/50 space-y-1 text-[10px] font-mono">
+              <div class="text-slate-400 font-bold uppercase text-[9px] flex items-center gap-1">
+                <i data-lucide="check-square" class="w-3 h-3 text-emerald-400"></i>
+                <span>Protocolo Prescrito Inmediato:</span>
+              </div>
+              <div id="checklist-container" class="space-y-1 text-[10px]">
+                <label class="flex items-start space-x-2 p-1 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                  <input type="checkbox" checked class="mt-0.5 text-emerald-500">
+                  <span class="text-slate-200">1. Sesión de 45 min en dispositivo de vacío LBNP a -35 mmHg.</span>
+                </label>
+                <label class="flex items-start space-x-2 p-1 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+                  <input type="checkbox" checked class="mt-0.5 text-emerald-500">
+                  <span class="text-slate-200">2. Ingesta de 500 ml solución salina de rehidratación oral.</span>
+                </label>
+              </div>
+              <div id="detail-action" class="hidden"></div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="pt-1 flex items-center justify-between gap-2">
+            <button onclick="applyAlertProtocol()" class="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-[10px] font-bold transition flex items-center justify-center gap-1">
+              <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+              <span>Aplicar Contramedida</span>
             </button>
-            <button onclick="openReportModal()" class="flex-1 py-1.5 bg-[#0e2752] hover:bg-[#153a74] border border-nasa-pastel/60 text-white font-mono text-[11px] font-bold transition flex items-center justify-center gap-1.5">
+            <button onclick="openReportModal()" class="py-1.5 px-3 bg-[#0e2752] hover:bg-[#153a74] border border-nasa-pastel/60 text-white font-mono text-[10px] font-bold transition flex items-center gap-1">
               <i data-lucide="file-text" class="w-3.5 h-3.5 text-nasa-pastel"></i>
-              <span>Bitácora DTN</span>
+              <span>Bitácora</span>
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- BOTTOM CRISIS & EMERGENCY SIMULATOR STRIP -->
+    <!-- ========================================================================= -->
+    <!-- 4. BOTTOM BAR: MISSION TIMELINE & CRISIS SIMULATION INJECTOR              -->
+    <!-- ========================================================================= -->
     <div class="hud-card p-3 flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-mono">
+      <!-- Timeline -->
       <div class="flex items-center space-x-2">
-        <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-400"></i>
-        <span class="text-slate-400 uppercase tracking-wider font-bold">Simulación de Crisis en Vuelo:</span>
+        <i data-lucide="clock" class="w-4 h-4 text-nasa-pastel"></i>
+        <span class="text-slate-400 uppercase tracking-wider font-bold">Línea Temporal:</span>
+        <div class="flex items-center space-x-1">
+          <button onclick="setPhaseIndex(0)" id="phase-0" class="phase-pill px-2.5 py-0.5 border border-nasa-border text-slate-400 hover:text-white transition text-[11px]">L-44 Tierra</button>
+          <button onclick="setPhaseIndex(1)" id="phase-1" class="phase-pill px-2.5 py-0.5 border border-nasa-border text-slate-400 hover:text-white transition text-[11px]">FD-01 Órbita</button>
+          <button onclick="setPhaseIndex(2)" id="phase-2" class="phase-pill px-2.5 py-0.5 border border-nasa-pastel bg-[#0e2752] font-bold text-nasa-pastel-light transition shadow-sm text-[11px]">FD-02 Órbita*</button>
+          <button onclick="setPhaseIndex(3)" id="phase-3" class="phase-pill px-2.5 py-0.5 border border-nasa-border text-slate-400 hover:text-white transition text-[11px]">FD-03 Órbita</button>
+          <button onclick="setPhaseIndex(4)" id="phase-4" class="phase-pill px-2.5 py-0.5 border border-nasa-border text-slate-400 hover:text-white transition text-[11px]">R+1 Retorno</button>
+        </div>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <button onclick="injectCrisis('radiation')" class="px-3 py-1 border border-rose-500/60 bg-rose-950/40 text-rose-300 hover:bg-rose-900/60 transition flex items-center gap-1">
-          💥 Tormenta SPE
-        </button>
-        <button onclick="injectCrisis('co2')" class="px-3 py-1 border border-amber-500/60 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 transition flex items-center gap-1">
-          ⚠️ Fuga CO₂
-        </button>
-        <button onclick="injectCrisis('sans')" class="px-3 py-1 border border-purple-500/60 bg-purple-950/40 text-purple-300 hover:bg-purple-900/60 transition flex items-center gap-1">
-          👁️ Crisis SANS
-        </button>
-        <button onclick="resetNominal()" class="px-3 py-1 border border-emerald-500/60 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/60 transition flex items-center gap-1">
-          🔄 Restablecer Nominal
-        </button>
+
+      <!-- Crisis simulation triggers -->
+      <div class="flex items-center space-x-2">
+        <span class="text-slate-400 font-bold uppercase text-[10px]">Simular Crisis:</span>
+        <div class="flex items-center space-x-1.5">
+          <button onclick="injectCrisis('SPE')" class="px-2.5 py-1 border border-rose-500/60 bg-rose-950/40 text-rose-300 hover:bg-rose-900/60 transition flex items-center gap-1 text-[11px]">
+            💥 Tormenta SPE
+          </button>
+          <button onclick="injectCrisis('CO2')" class="px-2.5 py-1 border border-amber-500/60 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 transition flex items-center gap-1 text-[11px]">
+            ⚠️ Fuga CO₂
+          </button>
+          <button onclick="injectCrisis('SANS')" class="px-2.5 py-1 border border-purple-500/60 bg-purple-950/40 text-purple-300 hover:bg-purple-900/60 transition flex items-center gap-1 text-[11px]">
+            👁️ Crisis SANS
+          </button>
+          <button onclick="resetNominal()" class="px-2.5 py-1 border border-emerald-500/60 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/60 transition flex items-center gap-1 text-[11px]">
+            🔄 Restablecer
+          </button>
+        </div>
       </div>
     </div>
   </main>
@@ -1313,14 +1408,17 @@
         }
       }
 
-      // Synchronize 3D Mannequin Pain & Distress Feedback
+      // Synchronize 3D Mannequin Pain & Distress Feedback & Specialized Alert Banner
       if (typeof setPainSymptom === 'function') {
         if (currentCrew === 'C003' && currentPhaseIndex === 2) {
           setPainSymptom('sans');
+          showSpecializedAlert('SANS');
         } else if (sysVal >= 135) {
           setPainSymptom('heart');
+          showSpecializedAlert('SANS');
         } else {
           setPainSymptom('none');
+          dismissSpecializedAlert();
         }
       }
 
@@ -1922,8 +2020,15 @@
       });
 
       // 5. Mouse & Touch Dragging for 360 Turntable Interaction
+      let pointerDownX = 0;
+      let pointerDownY = 0;
+      let isClickCandidate = false;
+
       canvas.addEventListener('pointerdown', (e) => {
         isDragging3d = true;
+        isClickCandidate = true;
+        pointerDownX = e.clientX;
+        pointerDownY = e.clientY;
         startPointerX = e.clientX;
         startAngleY = targetAngleY;
         autoRotate3d = false;
@@ -1931,13 +2036,26 @@
       });
 
       window.addEventListener('pointermove', (e) => {
-        if (!isDragging3d) return;
-        const deltaX = e.clientX - startPointerX;
-        targetAngleY = startAngleY + deltaX * 0.009;
+        if (isDragging3d) {
+          const deltaX = e.clientX - startPointerX;
+          targetAngleY = startAngleY + deltaX * 0.009;
+          if (Math.hypot(e.clientX - pointerDownX, e.clientY - pointerDownY) > 6) {
+            isClickCandidate = false;
+          }
+        } else {
+          handleCanvasHoverRaycast(e);
+        }
       });
 
-      window.addEventListener('pointerup', () => {
+      window.addEventListener('pointerup', (e) => {
+        if (isDragging3d && isClickCandidate) {
+          const dist = Math.hypot(e.clientX - pointerDownX, e.clientY - pointerDownY);
+          if (dist < 6) {
+            handleCanvasBodyRaycastClick(e);
+          }
+        }
         isDragging3d = false;
+        isClickCandidate = false;
       });
 
       // Initial visual mode
@@ -2105,6 +2223,311 @@
         });
         organMeshGroup.visible = true;
       }
+    }
+
+    
+    // =========================================================================
+    // 3D RAYCASTING CLICK & HOVER DETECTION
+    // =========================================================================
+    function handleCanvasHoverRaycast(e) {
+      if (!camera3d || !scene3d || !astronautGroup) return;
+      const canvas = document.getElementById('canvas-anatomical-3d');
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return;
+
+      const mouse = new THREE.Vector2();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera3d);
+      const intersects = raycaster.intersectObjects([astronautGroup], true);
+
+      const hint = document.getElementById('hud-body-hover-hint');
+      if (intersects.length > 0) {
+        canvas.style.cursor = 'pointer';
+        const hit = intersects[0].point;
+        let part = "Cuerpo";
+        if (hit.y >= 1.95) part = "Cabeza, Visor y Ojos (SANS)";
+        else if (hit.y >= 0.75) part = (hit.z < -0.2) ? "Espalda, Riñones y Mochila PLSS" : "Pecho, Corazón y Pulmones";
+        else if (hit.y >= -0.3) part = (hit.z < -0.2) ? "Espalda Lumbar y Riñones" : "Abdomen y Pelvis";
+        else part = "Piernas, Extremidades y Botas EVA";
+
+        if (hint) {
+          hint.innerHTML = `<span class="text-nasa-pastel font-bold animate-pulse">🎯 Apuntando a:</span> <span class="text-white font-bold">${part}</span> <span class="text-slate-400 text-[10px]">(Haz clic para abrir detalles 3D)</span>`;
+        }
+      } else {
+        canvas.style.cursor = 'grab';
+        if (hint) {
+          hint.innerHTML = `💡 Haz clic directamente en la Cabeza, Pecho, Riñones o Piernas del astronauta para ver sus detalles en 3D`;
+        }
+      }
+    }
+
+    function handleCanvasBodyRaycastClick(e) {
+      if (!camera3d || !scene3d || !astronautGroup) return;
+      const canvas = document.getElementById('canvas-anatomical-3d');
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      const mouse = new THREE.Vector2();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera3d);
+      const intersects = raycaster.intersectObjects([astronautGroup], true);
+
+      if (intersects.length > 0) {
+        const hit = intersects[0].point;
+        if (hit.y >= 1.95) {
+          triggerOrganInspection('eyes');
+        } else if (hit.y >= 0.75) {
+          if (hit.z < -0.2) {
+            triggerOrganInspection('kidneys');
+          } else {
+            triggerOrganInspection('heart');
+          }
+        } else if (hit.y >= -0.3) {
+          if (hit.z < -0.2) {
+            triggerOrganInspection('kidneys');
+          } else {
+            triggerOrganInspection('heart');
+          }
+        } else {
+          triggerOrganInspection('bones');
+        }
+      }
+    }
+
+    // =========================================================================
+    // REACTIVE 3D ORGAN CLINICAL DATA REPOSITORY
+    // =========================================================================
+    const organClinicalData = {
+      eyes: {
+        title: "Sistema Neuro-Ocular y Cráneo (SANS)",
+        subtitle: "Cefalea & Riesgo de Papiledema en 0G",
+        icon: "👁️",
+        status: "DERIVA SANS ACTIVA",
+        statusClass: "px-2 py-0.5 bg-rose-950 text-rose-300 border border-rose-800 text-[10px] font-bold animate-pulse",
+        pain: 3,
+        mechanism: "El desplazamiento cefálico de aproximadamente 2 litros de sangre y líquido cefalorraquídeo en microgravedad incrementa la presión intracraneal y comprime la vaina del nervio óptico, provocando dolor pulsátil frontal y pérdida transitoria de agudeza visual.",
+        indications: [
+          "Sesión obligatoria de 45 min en dispositivo de vacío de cuerpo inferior (LBNP) a -35 mmHg para redistribuir fluidos venosos hacia las piernas.",
+          "Ingesta oral de 500 ml de solución salina isotónica de rehidratación para estabilizar el volumen intravascular.",
+          "Atenuar el brillo de las pantallas de la cabina y descanso visual de 2 horas sin dispositivos electrónicos.",
+          "Registro formal de agudeza visual con tarjeta Snellen en la Bitácora Médica."
+        ]
+      },
+      heart: {
+        title: "Sistema Cardio-Pulmonar & Astroskin",
+        subtitle: "Monitoreo Hemodinámico y Función Torácica",
+        icon: "❤️",
+        status: "ADAPTACIÓN MICROGRAVEDAD",
+        statusClass: "px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold",
+        pain: 1,
+        mechanism: "En ingravidez el volumen sistólico se incrementa transitoriamente mientras se reduce el tono vagal parasimpático (HRV disminuida a 22.4 ms). Los pulmones mantienen un intercambio alveolar adecuado de 16 rpm con saturación SpO2 del 97.2%.",
+        indications: [
+          "Mantener la sesión diaria de 30 min de ejercicio aeróbico en ciclo-ergómetro para prevenir el desacondicionamiento miocárdico.",
+          "Vigilancia continua del arnés telemétrico Astroskin para detección de extrasístoles ventriculares.",
+          "Mantener hidratación basal de 2.0 litros diarios de agua tratada en cabina."
+        ]
+      },
+      kidneys: {
+        title: "Sistema Renal & Soporte de Vida PLSS",
+        subtitle: "Riesgo de Hipercalciuria y Litiasis en Microgravedad",
+        icon: "🩺",
+        status: "PREVENCIÓN METABÓLICA",
+        statusClass: "px-2 py-0.5 bg-amber-950 text-amber-300 border border-amber-800 text-[10px] font-bold",
+        pain: 1,
+        mechanism: "La ausencia de carga mecánica sobre el esqueleto induce resorción ósea acelerada, liberando fosfato y calcio al torrente sanguíneo. Esto sobrecarga la filtración renal y eleva sustancialmente el riesgo de formación de micro-cálculos de oxalato de calcio.",
+        indications: [
+          "Ingesta profiláctica obligatoria de citrato de potasio (15 mEq diarios) para alcalinizar la orina e inhibir la cristalización de calcio.",
+          "Incremento de ingesta de líquidos a un mínimo de 2.5 litros cada 24 horas.",
+          "Verificación del lazo de purificación de agua en el soporte vital de la mochila PLSS y en el módulo central de cabina."
+        ]
+      },
+      bones: {
+        title: "Sistema Musculoesquelético & Densidad Ósea",
+        subtitle: "Atrofia Postural y Prevención de Osteopenia en 0G",
+        icon: "🦴",
+        status: "PROTOCOLO ARED REQUERIDO",
+        statusClass: "px-2 py-0.5 bg-nasa-pastel/20 text-nasa-pastel-light border border-nasa-pastel/50 text-[10px] font-bold",
+        pain: 0,
+        mechanism: "En ingravidez, los músculos posturales antigravitatorios sufren atrofia acelerada, con una pérdida de masa ósea en fémur y vértebras lumbares de hasta 1.0% por mes si no se aplica resistencia axial pesada.",
+        indications: [
+          "Completar sesión obligatoria de 150 min en el dispositivo de ejercicio resistivo avanzado ARED (sentadillas y peso muerto axial).",
+          "Suplementación de Vitamina D3 (1000 UI) y bifosfonatos según directriz médica NASA-STD-3001.",
+          "Verificación del estado de fijación y amortiguación de las botas EVA para evitar micro-traumas articulares."
+        ]
+      }
+    };
+
+    function triggerOrganInspection(organId) {
+      if (!organId) organId = 'eyes';
+      playCockpitSound('blip');
+
+      // 1. Smooth Camera Zoom & Positioning
+      set3dCameraZoom(organId);
+
+      // 2. Set Callout Pin & Mannequin Symptom
+      setPainSymptom(organId);
+
+      // 3. Open Reactive Organ Drawer
+      const data = organClinicalData[organId] || organClinicalData.eyes;
+      const drawer = document.getElementById('organ-detail-drawer');
+      if (drawer) {
+        document.getElementById('drawer-organ-icon').innerText = data.icon;
+        document.getElementById('drawer-organ-title').innerText = data.title;
+        document.getElementById('drawer-organ-subtitle').innerText = data.subtitle;
+        
+        const statusElem = document.getElementById('drawer-organ-status');
+        statusElem.innerText = data.status;
+        statusElem.className = data.statusClass;
+
+        document.getElementById('drawer-pain-score').innerText = `${data.pain} / 10`;
+        document.getElementById('drawer-pain-bar').style.width = `${data.pain * 10}%`;
+        document.getElementById('drawer-organ-mechanism').innerText = data.mechanism;
+
+        // Indications checklist
+        const list = document.getElementById('drawer-indications-list');
+        list.innerHTML = data.indications.map((ind, i) => `
+          <label class="flex items-start space-x-2 p-1.5 bg-[#06142a] border border-nasa-border/60 cursor-pointer">
+            <input type="checkbox" ${i < 2 ? 'checked' : ''} class="mt-0.5 text-emerald-500 rounded bg-[#030917] border-nasa-border">
+            <span class="text-slate-200">${ind}</span>
+          </label>
+        `).join('');
+
+        drawer.classList.remove('translate-x-[110%]', 'opacity-0', 'pointer-events-none');
+        drawer.classList.add('translate-x-0', 'opacity-100');
+      }
+
+      lucide.createIcons();
+    }
+
+    function closeOrganDrawer() {
+      playCockpitSound('blip');
+      const drawer = document.getElementById('organ-detail-drawer');
+      if (drawer) {
+        drawer.classList.add('translate-x-[110%]', 'opacity-0', 'pointer-events-none');
+        drawer.classList.remove('translate-x-0', 'opacity-100');
+      }
+      set3dCameraZoom('full');
+    }
+
+    function applyDrawerTreatment() {
+      playCockpitSound('chime');
+      const score = document.getElementById('drawer-pain-score');
+      if (score) score.innerText = "1 / 10 (Aliviado)";
+      const bar = document.getElementById('drawer-pain-bar');
+      if (bar) bar.style.width = "10%";
+      const st = document.getElementById('drawer-organ-status');
+      if (st) {
+        st.innerText = "CONTRAMEDIDA ACTIVA";
+        st.className = "px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold";
+      }
+
+      // Check all checkboxes
+      const checks = document.querySelectorAll('#drawer-indications-list input[type="checkbox"]');
+      checks.forEach(c => c.checked = true);
+
+      // Lower pain on main card too
+      if (typeof setPainSymptom === 'function') {
+        const pin = document.getElementById('callout-pin-text');
+        if (pin) pin.innerText = "✓ ALIVIO DE DOLOR EN PROGRESO (1/10)";
+      }
+
+      dismissSpecializedAlert();
+    }
+
+    // =========================================================================
+    // SPECIALIZED AEROSPACE ALERT SYSTEM
+    // =========================================================================
+    function showSpecializedAlert(type) {
+      const banner = document.getElementById('specialized-alert-banner');
+      if (!banner) return;
+
+      const title = document.getElementById('alert-title');
+      const badge = document.getElementById('alert-badge');
+      const target = document.getElementById('alert-target');
+      const diag = document.getElementById('alert-diagnostic');
+      const indications = document.getElementById('alert-indications');
+      const astro = telemetryDataset[currentCrew];
+
+      banner.classList.remove('hidden');
+
+      if (type === 'SPE') {
+        playCockpitSound('alarm');
+        badge.innerText = "CÓDIGO ROJO";
+        badge.className = "px-2 py-0.5 bg-rose-600 text-white font-bold text-[10px] animate-pulse";
+        banner.className = "hud-card border-2 border-rose-500 bg-gradient-to-r from-rose-950/95 via-[#08152e]/95 to-rose-950/95 p-3.5 shadow-2xl transition-all duration-300 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 text-xs font-mono";
+        title.innerText = "EMERGENCIA NIVEL 1 — TORMENTA SOLAR DE ALTA ENERGÍA (SPE)";
+        target.innerText = `ALERTA DE FLOTA · RADIACIÓN CANS: 184.2 µSv/h`;
+        diag.innerText = "Flujo masivo de protones y neutrones galácticos detectado por el sensor CANS de la Agencia Espacial Canadiense. El nivel excede los límites biológicos SPELs establecidos por NASA.";
+        indications.innerHTML = `
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <strong class="text-rose-400">👉 INDICACIÓN 1:</strong> Evacuación inmediata de los 4 tripulantes al módulo central blindado (Storm Shelter).
+          </span>
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <strong class="text-rose-400">👉 INDICACIÓN 2:</strong> Administrar cóctel radioprotector antioxidante oral a cada astronauta (Botiquín Bravo).
+          </span>
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <strong class="text-rose-400">👉 INDICACIÓN 3:</strong> Fijar dosímetros pasivos CANS en mamparo interior y emitir telemetría de emergencia a Houston.
+          </span>
+        `;
+      } else if (type === 'CO2') {
+        playCockpitSound('warning');
+        badge.innerText = "CÓDIGO ÁMBAR";
+        badge.className = "px-2 py-0.5 bg-amber-600 text-white font-bold text-[10px] animate-pulse";
+        banner.className = "hud-card border-2 border-amber-500 bg-gradient-to-r from-amber-950/95 via-[#08152e]/95 to-amber-950/95 p-3.5 shadow-2xl transition-all duration-300 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 text-xs font-mono";
+        title.innerText = "ALERTA ECLSS NIVEL 1 — ACUMULACIÓN CRÍTICA DE DIÓXIDO DE CARBONO";
+        target.innerText = `CABINA HÁBITAT · ppCO₂: 3.85 mmHg`;
+        diag.innerText = "La presión parcial de CO₂ en la atmósfera de la cabina supera 3.8 mmHg (límite NASA-STD-3001). Riesgo de acidosis respiratoria, cefalea aguda e hipercapnia.";
+        indications.innerHTML = `
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
+            <strong class="text-amber-400">👉 INDICACIÓN 1:</strong> Conmutar el subsistema CDRA a ciclo forzado de desorción y regeneración de lechos de zeolita.
+          </span>
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
+            <strong class="text-amber-400">👉 INDICACIÓN 2:</strong> Activar ventiladores portátiles de ventilación forzada para disipar bolsas de CO₂ estancadas.
+          </span>
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-amber-500/50 text-amber-200 flex items-center gap-1">
+            <strong class="text-amber-400">👉 INDICACIÓN 3:</strong> Colocar máscara de oxígeno de emergencia O₂ al 100% a astronautas con molestia cefálica.
+          </span>
+        `;
+      } else {
+        // Default SANS Alert for active astronaut
+        badge.innerText = "CÓDIGO ROJO SANS";
+        badge.className = "px-2 py-0.5 bg-rose-600 text-white font-bold text-[10px] animate-pulse";
+        banner.className = "hud-card border-2 border-rose-500 bg-gradient-to-r from-rose-950/95 via-[#08152e]/95 to-rose-950/95 p-3.5 shadow-2xl transition-all duration-300 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 text-xs font-mono";
+        title.innerText = "ALERTA CLÍNICA: DESCOMPENSACIÓN SANS DETECTADA EN VUELO";
+        target.innerText = `SUJETO ACTIVO: ${astro.name.toUpperCase()} (${currentCrew})`;
+        diag.innerText = "Sobrepresión sistólica (142 mmHg) y dolor ocular retro-orbitario (Nivel 3/10) por desplazamiento cefálico de 2 litros de sangre en microgravedad. Riesgo inminente de edema papilar.";
+        indications.innerHTML = `
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <strong class="text-rose-400">👉 INDICACIÓN 1:</strong> Iniciar sesión de 45 min en dispositivo de vacío LBNP a -35 mmHg para redistribuir fluidos hacia miembros inferiores.
+          </span>
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <strong class="text-rose-400">👉 INDICACIÓN 2:</strong> Ingesta de 500 ml solución salina de rehidratación oral obligatoria para estabilizar volumen vascular.
+          </span>
+          <span class="px-2 py-0.5 bg-[#030917]/90 border border-rose-500/50 text-rose-200 flex items-center gap-1">
+            <strong class="text-rose-400">👉 INDICACIÓN 3:</strong> Atenuar iluminación de pantallas de cabina y reposo visual durante 2 horas.
+          </span>
+        `;
+      }
+
+      lucide.createIcons();
+    }
+
+    function dismissSpecializedAlert() {
+      playCockpitSound('blip');
+      const banner = document.getElementById('specialized-alert-banner');
+      if (banner) banner.classList.add('hidden');
+    }
+
+    function applyAlertProtocol() {
+      playCockpitSound('chime');
+      applyDrawerTreatment();
+      dismissSpecializedAlert();
     }
 
     function set3dAngle(rad) {
