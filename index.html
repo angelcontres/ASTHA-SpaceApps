@@ -10,6 +10,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Three.js CDN for 3D Turntable Holographic Mannequin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   
   <script>
     tailwind.config = {
@@ -752,45 +754,41 @@
     <section id="view-triage" class="space-y-6 hidden">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- ANATOMICAL 3D WIREFRAME BODY (5 COLS) -->
+        <!-- ANATOMICAL 3D TURNTABLE HOLOGRAPHIC MODEL (5 COLS) -->
         <div class="lg:col-span-5 hud-card p-5 flex flex-col">
-          <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center justify-between mb-2">
             <div class="flex items-center space-x-2">
               <i data-lucide="scan" class="w-4 h-4 text-nasa-pastel"></i>
-              <h3 class="font-bold text-xs tracking-wider uppercase font-mono text-white">Mapa Anatómico Táctico</h3>
+              <h3 class="font-bold text-xs tracking-wider uppercase font-mono text-white">Modelo Anatómico 3D Giratorio (Turntable 360°)</h3>
             </div>
-            <span class="text-[11px] text-nasa-pastel-soft/70 font-mono">Toca un órgano para triage</span>
+            <span class="text-[10px] text-nasa-pastel-light font-mono bg-[#0c224a] px-2 py-0.5 border border-nasa-pastel/40">Arrastra para girar</span>
           </div>
 
-          <div class="relative flex-1 flex items-center justify-center p-4 bg-[#050e1f] border border-nasa-border/60 min-h-[340px]">
-            <!-- SVG HUMAN FIGURE -->
-            <svg viewBox="0 0 200 380" class="w-44 h-auto drop-shadow-xl">
-              <!-- Head & Eyes -->
-              <path id="organ-head" onclick="selectOrgan('eyes')" class="organ-hover" d="M 85,25 C 85,10 115,10 115,25 C 115,45 85,45 85,25 Z M 93,45 L 93,58 L 107,58 L 107,45 Z" fill="#79a7df" opacity="0.85"/>
-              <circle id="organ-eyes" onclick="selectOrgan('eyes')" class="organ-hover" cx="100" cy="25" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+          <!-- Turntable Camera Angle Buttons & Auto-Rotate Toggle -->
+          <div class="flex items-center justify-between gap-1.5 mb-2 text-[10px] font-mono">
+            <div class="flex items-center space-x-1">
+              <button onclick="set3dAngle(0)" id="btn-ang-0" class="px-2 py-0.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-bold transition">Frente (0°)</button>
+              <button onclick="set3dAngle(Math.PI/2)" id="btn-ang-90" class="px-2 py-0.5 border border-nasa-border text-slate-300 hover:border-nasa-pastel/60 transition">Perfil (90°)</button>
+              <button onclick="set3dAngle(Math.PI)" id="btn-ang-180" class="px-2 py-0.5 border border-nasa-border text-slate-300 hover:border-nasa-pastel/60 transition">Espalda (180°)</button>
+            </div>
+            <button onclick="toggleAutoRotate3d()" id="btn-autorotate" class="px-2 py-0.5 border border-nasa-pastel/60 bg-[#071736] text-nasa-pastel-light flex items-center gap-1 transition">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="dot-autorotate"></span>
+              <span id="text-autorotate">⟳ Giro 360°</span>
+            </button>
+          </div>
 
-              <!-- Chest / Heart -->
-              <path id="organ-chest" onclick="selectOrgan('heart')" class="organ-hover" d="M 75,58 L 125,58 L 118,140 L 82,140 Z" fill="#79a7df" opacity="0.85"/>
-              <circle id="organ-heart-hotspot" onclick="selectOrgan('heart')" class="organ-hover" cx="105" cy="85" r="8" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
+          <!-- 3D WebGL Canvas Viewport -->
+          <div class="relative flex-1 flex items-center justify-center bg-[#020714] border border-nasa-border/60 min-h-[380px] overflow-hidden select-none" id="container-3d">
+            <canvas id="canvas-anatomical-3d" class="w-full h-full cursor-grab active:cursor-grabbing block"></canvas>
 
-              <!-- Abdomen / Kidneys -->
-              <path id="organ-lumbar" onclick="selectOrgan('kidneys')" class="organ-hover" d="M 82,140 L 118,140 L 115,185 L 85,185 Z" fill="#79a7df" opacity="0.8"/>
-              <circle id="organ-kidney-left" onclick="selectOrgan('kidneys')" class="organ-hover" cx="91" cy="160" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2"/>
-              <circle id="organ-kidney-right" onclick="selectOrgan('kidneys')" class="organ-hover" cx="109" cy="160" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2"/>
-
-              <!-- Arms -->
-              <path class="organ-hover" onclick="selectOrgan('bones')" d="M 75,60 L 55,120 L 45,175 L 53,178 L 65,125 L 79,75 Z" fill="#79a7df" opacity="0.7"/>
-              <path class="organ-hover" onclick="selectOrgan('bones')" d="M 125,60 L 145,120 L 155,175 L 147,178 L 135,125 L 121,75 Z" fill="#79a7df" opacity="0.7"/>
-
-              <!-- Legs / Bones -->
-              <path id="organ-femur-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 85,185 L 98,185 L 94,270 L 80,270 Z" fill="#79a7df" opacity="0.8"/>
-              <path id="organ-femur-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 102,185 L 115,185 L 120,270 L 106,270 Z" fill="#79a7df" opacity="0.8"/>
-              <path id="organ-feet-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 80,272 L 94,272 L 91,355 L 75,355 Z" fill="#79a7df" opacity="0.7"/>
-              <path id="organ-feet-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 106,272 L 120,272 L 125,355 L 109,355 Z" fill="#79a7df" opacity="0.7"/>
-            </svg>
+            <!-- Holographic Overlay Badge -->
+            <div class="absolute top-2 left-2 text-[10px] font-mono px-2 py-0.5 bg-[#071329]/90 border border-nasa-border/60 text-nasa-pastel-light pointer-events-none z-10 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-nasa-pastel"></span>
+              <span>ÁNGULO: <strong id="hud-angle-display">0° (Anterior / Frente)</strong></span>
+            </div>
 
             <!-- Floating Details Card -->
-            <div class="absolute bottom-3 left-3 right-3 bg-[#07152b]/95 border border-nasa-pastel/60 p-3">
+            <div class="absolute bottom-2 left-2 right-2 bg-[#07152b]/95 border border-nasa-pastel/60 p-2.5 backdrop-blur-md z-10 shadow-xl">
               <div class="flex items-center justify-between text-xs mb-1">
                 <span class="font-bold text-nasa-pastel-light" id="info-organ-name">Sistema Neuro-Ocular (Ojos y Cerebro)</span>
                 <span class="px-1.5 py-0.5 text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40" id="info-organ-status">DERIVA SANS</span>
@@ -799,6 +797,22 @@
                 Desplazamiento cefálico de fluidos en microgravedad. Presión sistólica elevada aumenta riesgo de edema papilar en nervio óptico (NASA-STD-3001).
               </p>
             </div>
+          </div>
+
+          <!-- Quick Organ Target Buttons (Direct Focus & Angle Shift) -->
+          <div class="mt-2.5 grid grid-cols-4 gap-1.5 text-[10px] font-mono text-center">
+            <button onclick="focusOrgan3d('eyes')" class="p-1.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition">
+              👁️ Ojos (SANS)
+            </button>
+            <button onclick="focusOrgan3d('heart')" class="p-1.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition">
+              ❤️ Corazón
+            </button>
+            <button onclick="focusOrgan3d('kidneys')" class="p-1.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition">
+              🩺 Riñones (Espalda)
+            </button>
+            <button onclick="focusOrgan3d('bones')" class="p-1.5 border border-nasa-border bg-[#051124] hover:border-nasa-pastel/60 text-slate-200 transition">
+              🦴 Huesos (ARED)
+            </button>
           </div>
         </div>
 
@@ -1123,7 +1137,21 @@
         indicator.innerText = "Control Ambiental & Soporte de Vida (ECLSS NASA-STD-3001)";
         initEnvChart();
       } else if (tabId === 'triage') {
-        indicator.innerText = "Triage Anatómico por Órganos & Protocolos Clínicos";
+        indicator.innerText = "Triage Anatómico 3D Giratorio & Protocolos Clínicos";
+        setTimeout(() => {
+          if (!threeInitialized) {
+            init3dAnatomy();
+          } else if (renderer3d && camera3d) {
+            const container = document.getElementById('container-3d');
+            if (container) {
+              const width = container.clientWidth || 400;
+              const height = container.clientHeight || 380;
+              camera3d.aspect = width / height;
+              camera3d.updateProjectionMatrix();
+              renderer3d.setSize(width, height);
+            }
+          }
+        }, 60);
       } else if (tabId === 'crisis') {
         indicator.innerText = "Inyector de Emergencias Espaciales para Evaluación";
       }
@@ -1393,6 +1421,308 @@
     }
 
     // 6. INTERACTIVE ORGAN SELECTION (TAB 3)
+        // =========================================================================
+    // 3D ANATOMICAL TURNTABLE MANNEQUIN ENGINE (THREE.JS RETRO-FUTURISTIC 360)
+    // =========================================================================
+    let scene3d, camera3d, renderer3d, mannequinGroup;
+    let meshEyesNode, meshHeartNode, meshKidneyLeft, meshKidneyRight;
+    let autoRotate3d = true;
+    let targetAngleY = 0;
+    let isDragging3d = false;
+    let startPointerX = 0;
+    let startAngleY = 0;
+    let threeInitialized = false;
+
+    function init3dAnatomy() {
+      if (threeInitialized) return;
+      const container = document.getElementById('container-3d');
+      const canvas = document.getElementById('canvas-anatomical-3d');
+      if (!container || !canvas || typeof THREE === 'undefined') return;
+
+      const width = container.clientWidth || 400;
+      const height = container.clientHeight || 380;
+
+      scene3d = new THREE.Scene();
+      camera3d = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+      camera3d.position.set(0, 0.6, 9.5);
+
+      renderer3d = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer3d.setSize(width, height);
+      renderer3d.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+      scene3d.add(ambientLight);
+
+      const dirLightFront = new THREE.DirectionalLight(0x79a7df, 1.4);
+      dirLightFront.position.set(5, 8, 7);
+      scene3d.add(dirLightFront);
+
+      const dirLightBack = new THREE.DirectionalLight(0x38bdf8, 1.0);
+      dirLightBack.position.set(-5, -3, -7);
+      scene3d.add(dirLightBack);
+
+      mannequinGroup = new THREE.Group();
+      scene3d.add(mannequinGroup);
+
+      const wireMat = new THREE.MeshStandardMaterial({
+        color: 0x79a7df,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.85
+      });
+      const solidCoreMat = new THREE.MeshStandardMaterial({
+        color: 0x051329,
+        roughness: 0.4,
+        metalness: 0.8,
+        transparent: true,
+        opacity: 0.75
+      });
+      const glowMatPastel = new THREE.MeshBasicMaterial({ color: 0x9fc5f8 });
+      const glowMatEyes = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+      const glowMatHeart = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+      const glowMatKidneys = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+
+      // Holographic Base
+      const baseGeo = new THREE.CylinderGeometry(2.6, 2.7, 0.1, 32);
+      const baseMesh = new THREE.Mesh(baseGeo, wireMat);
+      baseMesh.position.y = -3.4;
+      mannequinGroup.add(baseMesh);
+
+      const ringGeo = new THREE.RingGeometry(2.3, 2.35, 32);
+      const ringMesh = new THREE.Mesh(ringGeo, glowMatPastel);
+      ringMesh.rotation.x = -Math.PI / 2;
+      ringMesh.position.y = -3.34;
+      mannequinGroup.add(ringMesh);
+
+      // Legs & Feet
+      [-0.55, 0.55].forEach(x => {
+        const foot = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.18, 0.65), wireMat);
+        foot.position.set(x, -3.28, 0.12);
+        mannequinGroup.add(foot);
+
+        const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 1.3, 10), wireMat);
+        shin.position.set(x, -2.5, 0);
+        mannequinGroup.add(shin);
+
+        const knee = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), glowMatPastel);
+        knee.position.set(x, -1.75, 0);
+        mannequinGroup.add(knee);
+
+        const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.2, 1.3, 10), wireMat);
+        thigh.position.set(x, -1.0, 0);
+        mannequinGroup.add(thigh);
+      });
+
+      // Pelvis
+      const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.55, 0.55, 12), wireMat);
+      pelvis.position.y = -0.25;
+      mannequinGroup.add(pelvis);
+
+      // Lumbar & Spine
+      const lumbarCore = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.68, 0.75, 12), solidCoreMat);
+      lumbarCore.position.y = 0.4;
+      mannequinGroup.add(lumbarCore);
+
+      const lumbarWire = new THREE.Mesh(new THREE.CylinderGeometry(0.66, 0.69, 0.76, 12), wireMat);
+      lumbarWire.position.y = 0.4;
+      mannequinGroup.add(lumbarWire);
+
+      for (let i = 0; i < 6; i++) {
+        const vert = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.1, 8), glowMatPastel);
+        vert.rotation.x = Math.PI / 2;
+        vert.position.set(0, 0.1 + i * 0.25, -0.36);
+        mannequinGroup.add(vert);
+      }
+
+      meshKidneyLeft = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 10), glowMatKidneys);
+      meshKidneyLeft.position.set(-0.32, 0.5, -0.3);
+      mannequinGroup.add(meshKidneyLeft);
+
+      meshKidneyRight = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 10), glowMatKidneys);
+      meshKidneyRight.position.set(0.32, 0.5, -0.3);
+      mannequinGroup.add(meshKidneyRight);
+
+      // Chest
+      const chestCore = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.68, 1.15, 14), solidCoreMat);
+      chestCore.position.y = 1.35;
+      mannequinGroup.add(chestCore);
+
+      const chestWire = new THREE.Mesh(new THREE.CylinderGeometry(0.86, 0.69, 1.16, 14), wireMat);
+      chestWire.position.y = 1.35;
+      mannequinGroup.add(chestWire);
+
+      meshHeartNode = new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), glowMatHeart);
+      meshHeartNode.position.set(0.12, 1.45, 0.22);
+      mannequinGroup.add(meshHeartNode);
+
+      // Arms
+      [-1.05, 1.05].forEach(x => {
+        const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.24, 10, 10), glowMatPastel);
+        shoulder.position.set(x, 1.8, 0);
+        mannequinGroup.add(shoulder);
+
+        const bicep = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.9, 8), wireMat);
+        bicep.position.set(x * 1.08, 1.25, 0);
+        mannequinGroup.add(bicep);
+
+        const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), glowMatPastel);
+        elbow.position.set(x * 1.12, 0.72, 0);
+        mannequinGroup.add(elbow);
+
+        const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.13, 0.85, 8), wireMat);
+        forearm.position.set(x * 1.14, 0.2, 0);
+        mannequinGroup.add(forearm);
+
+        const hand = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.22, 0.14), wireMat);
+        hand.position.set(x * 1.15, -0.32, 0);
+        mannequinGroup.add(hand);
+      });
+
+      // Head / Helmet
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.26, 0.35, 10), wireMat);
+      neck.position.y = 2.1;
+      mannequinGroup.add(neck);
+
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.58, 16, 16), wireMat);
+      head.position.y = 2.68;
+      mannequinGroup.add(head);
+
+      const headCore = new THREE.Mesh(new THREE.SphereGeometry(0.56, 16, 16), solidCoreMat);
+      headCore.position.y = 2.68;
+      mannequinGroup.add(headCore);
+
+      const visorGeo = new THREE.SphereGeometry(0.54, 16, 16, -Math.PI / 2, Math.PI, 0, Math.PI / 1.4);
+      const visorMat = new THREE.MeshStandardMaterial({
+        color: 0x38bdf8,
+        roughness: 0.1,
+        metalness: 0.9,
+        transparent: true,
+        opacity: 0.55
+      });
+      const visor = new THREE.Mesh(visorGeo, visorMat);
+      visor.position.set(0, 2.68, 0.04);
+      mannequinGroup.add(visor);
+
+      const eyeGeo = new THREE.SphereGeometry(0.09, 10, 10);
+      const eyeL = new THREE.Mesh(eyeGeo, glowMatEyes);
+      eyeL.position.set(-0.16, 2.7, 0.42);
+      mannequinGroup.add(eyeL);
+
+      const eyeR = new THREE.Mesh(eyeGeo, glowMatEyes);
+      eyeR.position.set(0.16, 2.7, 0.42);
+      mannequinGroup.add(eyeR);
+      meshEyesNode = [eyeL, eyeR];
+
+      // Dragging Interaction
+      canvas.addEventListener('pointerdown', (e) => {
+        isDragging3d = true;
+        startPointerX = e.clientX;
+        startAngleY = targetAngleY;
+        autoRotate3d = false;
+        updateAutoRotateUI();
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!isDragging3d) return;
+        const deltaX = e.clientX - startPointerX;
+        targetAngleY = startAngleY + deltaX * 0.009;
+      });
+
+      window.addEventListener('pointerup', () => {
+        isDragging3d = false;
+      });
+
+      threeInitialized = true;
+      animate3d();
+    }
+
+    function animate3d() {
+      requestAnimationFrame(animate3d);
+      if (!mannequinGroup) return;
+
+      if (autoRotate3d && !isDragging3d) {
+        targetAngleY += 0.007;
+      }
+
+      mannequinGroup.rotation.y += (targetAngleY - mannequinGroup.rotation.y) * 0.08;
+
+      if (meshHeartNode) {
+        const curHr = (telemetryDataset && telemetryDataset[currentCrew]) ? telemetryDataset[currentCrew].phases[currentPhaseIndex].hr : 80;
+        const pulse = 1 + 0.18 * Math.sin(Date.now() * 0.006 * (curHr / 75));
+        meshHeartNode.scale.set(pulse, pulse, pulse);
+      }
+
+      if (meshEyesNode && meshEyesNode.length === 2) {
+        const curAstro = (telemetryDataset && telemetryDataset[currentCrew]) ? telemetryDataset[currentCrew].phases[currentPhaseIndex] : null;
+        const isSans = curAstro && curAstro.status === 'CRITICAL';
+        const eyeColor = isSans ? 0xef4444 : (curAstro && curAstro.status === 'WARNING' ? 0xf59e0b : 0x10b981);
+        meshEyesNode[0].material.color.setHex(eyeColor);
+        meshEyesNode[1].material.color.setHex(eyeColor);
+      }
+
+      const angleDeg = Math.round((((mannequinGroup.rotation.y % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) * (180 / Math.PI));
+      const hudAngle = document.getElementById('hud-angle-display');
+      if (hudAngle) {
+        let viewLabel = "Anterior (Frente)";
+        if (angleDeg >= 45 && angleDeg < 135) viewLabel = "Lateral (Perfil Der.)";
+        else if (angleDeg >= 135 && angleDeg < 225) viewLabel = "Posterior (Espalda)";
+        else if (angleDeg >= 225 && angleDeg < 315) viewLabel = "Lateral (Perfil Izq.)";
+        hudAngle.innerText = `${angleDeg}° (${viewLabel})`;
+      }
+
+      renderer3d.render(scene3d, camera3d);
+    }
+
+    function set3dAngle(rad) {
+      targetAngleY = rad;
+      autoRotate3d = false;
+      updateAutoRotateUI();
+
+      ['btn-ang-0', 'btn-ang-90', 'btn-ang-180'].forEach(b => {
+        const el = document.getElementById(b);
+        if (el) el.className = "px-2 py-0.5 border border-nasa-border text-slate-300 hover:border-nasa-pastel/60 transition";
+      });
+      if (rad === 0 && document.getElementById('btn-ang-0')) {
+        document.getElementById('btn-ang-0').className = "px-2 py-0.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-bold transition";
+      } else if (rad === Math.PI / 2 && document.getElementById('btn-ang-90')) {
+        document.getElementById('btn-ang-90').className = "px-2 py-0.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-bold transition";
+      } else if (rad === Math.PI && document.getElementById('btn-ang-180')) {
+        document.getElementById('btn-ang-180').className = "px-2 py-0.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-bold transition";
+      }
+    }
+
+    function toggleAutoRotate3d() {
+      autoRotate3d = !autoRotate3d;
+      updateAutoRotateUI();
+    }
+
+    function updateAutoRotateUI() {
+      const dot = document.getElementById('dot-autorotate');
+      const text = document.getElementById('text-autorotate');
+      if (dot && text) {
+        if (autoRotate3d) {
+          dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse";
+          text.innerText = "⟳ Giro 360°";
+        } else {
+          dot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
+          text.innerText = "⏸ Pausado";
+        }
+      }
+    }
+
+    function focusOrgan3d(organ) {
+      selectOrgan(organ);
+      if (organ === 'eyes') {
+        set3dAngle(0);
+      } else if (organ === 'heart') {
+        set3dAngle(0);
+      } else if (organ === 'kidneys') {
+        set3dAngle(Math.PI);
+      } else if (organ === 'bones') {
+        set3dAngle(Math.PI / 4);
+      }
+    }
+
     function selectOrgan(organ) {
       const title = document.getElementById('info-organ-name');
       const desc = document.getElementById('info-organ-desc');
