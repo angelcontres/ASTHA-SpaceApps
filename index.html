@@ -794,26 +794,64 @@
           <div class="relative flex-1 flex items-center justify-center bg-[#020714] border border-nasa-border/60 min-h-[410px] overflow-hidden select-none" id="container-3d">
             <canvas id="canvas-anatomical-3d" class="w-full h-full cursor-grab active:cursor-grabbing block"></canvas>
 
+            <!-- 3D DYNAMIC FLOATING PAIN & WARNING CALLOUT PIN (TRACKS 3D ORGAN POSITION) -->
+            <div id="callout-3d-pin" class="absolute pointer-events-none z-20 flex flex-col items-center" style="display: none; transform: translate(-50%, -100%);">
+              <div class="px-2.5 py-1 bg-rose-950/95 border-2 border-rose-500 text-rose-200 font-mono text-xs font-bold shadow-2xl flex items-center gap-1.5 animate-bounce" id="callout-pin-box">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping" id="callout-pin-dot"></span>
+                <span id="callout-pin-text">⚠️ DOLOR: CEFALEA OCULAR (SANS)</span>
+              </div>
+              <div class="w-0.5 h-7 bg-gradient-to-b from-rose-500 to-transparent"></div>
+              <div class="w-3 h-3 rounded-full border-2 border-rose-400 bg-rose-600/40 animate-ping"></div>
+            </div>
+
             <!-- Holographic Overlay Badges -->
             <div class="absolute top-2 left-2 text-[10px] font-mono px-2 py-0.5 bg-[#071329]/90 border border-nasa-border/60 text-nasa-pastel-light pointer-events-none z-10 flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-nasa-pastel"></span>
               <span>ÁNGULO: <strong id="hud-angle-display">0° (Anterior / Frente)</strong></span>
             </div>
 
-            <div class="absolute top-2 right-2 text-[10px] font-mono px-2 py-0.5 bg-[#071329]/90 border border-nasa-border/60 text-slate-300 pointer-events-none z-10 flex items-center gap-1.5">
+            <div class="absolute top-2 right-2 text-[10px] font-mono px-2 py-0.5 bg-[#071329]/90 border border-nasa-border/60 text-slate-300 pointer-events-none z-10 flex items-center gap-1.5" id="hud-scanner-badge">
               <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-              <span>ESCÁNER LÁSER ACTIVO</span>
+              <span>ESCÁNER MÉDICO ACTIVO</span>
             </div>
 
-            <!-- Floating Details Card -->
-            <div class="absolute bottom-2 left-2 right-2 bg-[#07152b]/95 border border-nasa-pastel/60 p-2.5 backdrop-blur-md z-10 shadow-xl">
+            <!-- Floating Details Card with Real-time Pain & Symptom Gauge -->
+            <div class="absolute bottom-2 left-2 right-2 bg-[#07152b]/95 border border-nasa-pastel/60 p-3 backdrop-blur-md z-10 shadow-xl" id="box-pain-summary">
               <div class="flex items-center justify-between text-xs mb-1">
-                <span class="font-bold text-nasa-pastel-light" id="info-organ-name">Sistema Neuro-Ocular (Ojos y Cerebro)</span>
-                <span class="px-1.5 py-0.5 text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40" id="info-organ-status">DERIVA SANS</span>
+                <span class="font-bold text-nasa-pastel-light flex items-center gap-1.5" id="info-organ-name">
+                  <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500" id="icon-pain-alert"></i>
+                  <span>Foco de Dolor: Sistema Neuro-Ocular y Ojos (SANS)</span>
+                </span>
+                <span class="px-2 py-0.5 text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold" id="info-organ-status">
+                  DOLOR: 7 / 10 (SEVERO)
+                </span>
+              </div>
+              <!-- Visual Pain Intensity Level Bar -->
+              <div class="w-full bg-[#06152b] h-1.5 rounded overflow-hidden mb-1.5 border border-nasa-border/40">
+                <div class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 transition-all duration-300" id="bar-pain-level" style="width: 70%;"></div>
               </div>
               <p class="text-[11px] text-slate-300 leading-tight" id="info-organ-desc">
-                Desplazamiento cefálico de fluidos en microgravedad. Presión sistólica elevada aumenta riesgo de edema papilar en nervio óptico (NASA-STD-3001).
+                <strong>Síntomas Físicos Reportados:</strong> Cefalea pulsátil frontal, dolor retro-ocular y pérdida transitoria de agudeza visual. Presión sistólica elevada a 144 mmHg por sobrepresión intracraneal.
               </p>
+            </div>
+          </div>
+
+          <!-- Symptom & Pain Testing Controls (Direct Interactive Feedback) -->
+          <div class="mt-2.5 flex items-center justify-between gap-1 text-[10px] font-mono">
+            <span class="text-slate-400 font-bold uppercase whitespace-nowrap">Probar Foco:</span>
+            <div class="flex items-center space-x-1 flex-1 justify-end">
+              <button onclick="setPainSymptom('sans')" id="btn-pain-sans" class="px-2 py-1 border border-rose-500 bg-rose-950/60 text-rose-300 font-bold hover:bg-rose-900 transition flex items-center gap-1">
+                🤕 Cefalea (SANS)
+              </button>
+              <button onclick="setPainSymptom('heart')" id="btn-pain-heart" class="px-2 py-1 border border-nasa-border bg-[#051124] text-slate-300 hover:border-amber-500/60 transition flex items-center gap-1">
+                ❤️ Dolor Pecho
+              </button>
+              <button onclick="setPainSymptom('kidneys')" id="btn-pain-kidneys" class="px-2 py-1 border border-nasa-border bg-[#051124] text-slate-300 hover:border-amber-500/60 transition flex items-center gap-1">
+                🩺 Dolor Lumbar (180°)
+              </button>
+              <button onclick="setPainSymptom('none')" id="btn-pain-none" class="px-2 py-1 border border-emerald-500/50 bg-[#051124] text-emerald-400 hover:bg-emerald-950/50 transition flex items-center gap-1">
+                ✓ Sin Dolor
+              </button>
             </div>
           </div>
 
@@ -1396,6 +1434,17 @@
       document.getElementById('detail-summary').innerText = data.summary;
       document.getElementById('detail-action').innerText = data.action;
 
+      // Synchronize 3D Mannequin Pain & Distress Feedback
+      if (typeof setPainSymptom === 'function') {
+        if (currentCrew === 'C003' && currentPhaseIndex === 2) {
+          setPainSymptom('sans');
+        } else if (sysVal >= 135) {
+          setPainSymptom('heart');
+        } else {
+          setPainSymptom('none');
+        }
+      }
+
       // Update Environmental Tab 2 metrics
       document.getElementById('env-co2').innerText = data.co2;
       document.getElementById('env-co2-ppm').innerText = `~${Math.round(data.co2 * 1315.8)} ppm`;
@@ -1453,6 +1502,148 @@
     let startPointerX = 0;
     let startAngleY = 0;
     let threeInitialized = false;
+
+        // 3D Warning Halos & Pain Distress Beacon
+    let headHaloMesh, chestHaloMesh, lumbarHaloMesh, painDistressLight;
+    let currentPainSymptom = 'sans'; // 'sans', 'heart', 'kidneys', 'none'
+
+    function createWarningHalos() {
+      // 1. Head Warning Halos (Concentric pulsing red rings for SANS Headache)
+      const headHaloGeo = new THREE.TorusGeometry(0.82, 0.03, 8, 32);
+      const matHeadHalo = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.85, wireframe: true });
+      headHaloMesh = new THREE.Mesh(headHaloGeo, matHeadHalo);
+      headHaloMesh.rotation.x = Math.PI / 2;
+      headHaloMesh.position.y = 2.78;
+      astronautGroup.add(headHaloMesh);
+
+      // 2. Chest Warning Halos (Pulsing rings for Tachycardia / Chest pain)
+      const chestHaloGeo = new THREE.TorusGeometry(1.05, 0.035, 8, 32);
+      const matChestHalo = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.85, wireframe: true });
+      chestHaloMesh = new THREE.Mesh(chestHaloGeo, matChestHalo);
+      chestHaloMesh.rotation.x = Math.PI / 2;
+      chestHaloMesh.position.y = 1.45;
+      astronautGroup.add(chestHaloMesh);
+
+      // 3. Lumbar Warning Halos (Pulsing rings around kidneys and lower back)
+      const lumbarHaloGeo = new THREE.TorusGeometry(0.85, 0.03, 8, 32);
+      const matLumbarHalo = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.85, wireframe: true });
+      lumbarHaloMesh = new THREE.Mesh(lumbarHaloGeo, matLumbarHalo);
+      lumbarHaloMesh.rotation.x = Math.PI / 2;
+      lumbarHaloMesh.position.set(0, 0.52, -0.35);
+      astronautGroup.add(lumbarHaloMesh);
+
+      // 4. Point Light Distress Beacon (Casts intense alarm light on the affected body part)
+      painDistressLight = new THREE.PointLight(0xef4444, 2.5, 6);
+      painDistressLight.position.set(0, 2.8, 0.6);
+      scene3d.add(painDistressLight);
+    }
+
+    function setPainSymptom(symptom) {
+      currentPainSymptom = symptom;
+
+      ['sans', 'heart', 'kidneys', 'none'].forEach(s => {
+        const btn = document.getElementById(`btn-pain-${s}`);
+        if (btn) {
+          if (s === symptom) {
+            btn.className = "px-2 py-1 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-bold transition flex items-center gap-1";
+          } else {
+            btn.className = "px-2 py-1 border border-nasa-border bg-[#051124] text-slate-300 hover:border-nasa-pastel/60 transition flex items-center gap-1";
+          }
+        }
+      });
+
+      const pinBox = document.getElementById('callout-pin-box');
+      const pinText = document.getElementById('callout-pin-text');
+      const pinDot = document.getElementById('callout-pin-dot');
+      const nameElem = document.getElementById('info-organ-name');
+      const statusElem = document.getElementById('info-organ-status');
+      const barElem = document.getElementById('bar-pain-level');
+      const descElem = document.getElementById('info-organ-desc');
+
+      if (symptom === 'sans') {
+        set3dAngle(0); // Face front
+        if (headHaloMesh) headHaloMesh.visible = true;
+        if (chestHaloMesh) chestHaloMesh.visible = false;
+        if (lumbarHaloMesh) lumbarHaloMesh.visible = false;
+        if (painDistressLight) {
+          painDistressLight.color.setHex(0xef4444);
+          painDistressLight.position.set(0, 2.8, 0.6);
+          painDistressLight.intensity = 2.8;
+        }
+
+        pinBox.className = "px-2.5 py-1 bg-rose-950/95 border-2 border-rose-500 text-rose-200 font-mono text-xs font-bold shadow-2xl flex items-center gap-1.5 animate-bounce";
+        pinDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-ping";
+        pinText.innerText = "⚠️ DOLOR: CEFALEA OCULAR (SANS)";
+        nameElem.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500"></i><span>Foco de Dolor: Región Cefálica y Ocular (SANS)</span>';
+        statusElem.innerText = "DOLOR: 7 / 10 (SEVERO)";
+        statusElem.className = "px-2 py-0.5 text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold";
+        barElem.style.width = "70%";
+        barElem.className = "h-full bg-rose-500 transition-all duration-300";
+        descElem.innerHTML = "<strong>Síntomas Físicos Reportados:</strong> Cefalea pulsátil frontal, dolor retro-ocular y pérdida transitoria de agudeza visual. Presión sistólica elevada a 144 mmHg por sobrepresión intracraneal.";
+        selectOrgan('eyes');
+      } else if (symptom === 'heart') {
+        set3dAngle(0); // Face front
+        if (headHaloMesh) headHaloMesh.visible = false;
+        if (chestHaloMesh) chestHaloMesh.visible = true;
+        if (lumbarHaloMesh) lumbarHaloMesh.visible = false;
+        if (painDistressLight) {
+          painDistressLight.color.setHex(0xf59e0b);
+          painDistressLight.position.set(0.15, 1.48, 0.6);
+          painDistressLight.intensity = 2.5;
+        }
+
+        pinBox.className = "px-2.5 py-1 bg-amber-950/95 border-2 border-amber-500 text-amber-200 font-mono text-xs font-bold shadow-2xl flex items-center gap-1.5 animate-bounce";
+        pinDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
+        pinText.innerText = "⚠️ ADVERTENCIA: TAQUICARDIA Y PRESIÓN ALTA";
+        nameElem.innerHTML = '<i data-lucide="heart" class="w-4 h-4 text-amber-400"></i><span>Foco de Tensión: Sistema Cardiovascular</span>';
+        statusElem.innerText = "SOBRECARGA: 6 / 10 (MODERADA)";
+        statusElem.className = "px-2 py-0.5 text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold";
+        barElem.style.width = "60%";
+        barElem.className = "h-full bg-amber-500 transition-all duration-300";
+        descElem.innerHTML = "<strong>Síntomas Físicos Reportados:</strong> Palpitaciones perceptibles, opresión torácica leve y caída de variabilidad HRV (19.5 ms) debido a fatiga autonómica en microgravedad.";
+        selectOrgan('heart');
+      } else if (symptom === 'kidneys') {
+        set3dAngle(Math.PI); // Rotate 180 to back to show lumbar and kidneys!
+        if (headHaloMesh) headHaloMesh.visible = false;
+        if (chestHaloMesh) chestHaloMesh.visible = false;
+        if (lumbarHaloMesh) lumbarHaloMesh.visible = true;
+        if (painDistressLight) {
+          painDistressLight.color.setHex(0xf59e0b);
+          painDistressLight.position.set(0, 0.52, -0.8);
+          painDistressLight.intensity = 2.5;
+        }
+
+        pinBox.className = "px-2.5 py-1 bg-amber-950/95 border-2 border-amber-500 text-amber-200 font-mono text-xs font-bold shadow-2xl flex items-center gap-1.5 animate-bounce";
+        pinDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
+        pinText.innerText = "⚠️ DOLOR: COLUMNA LUMBAR Y RIÑÓN (CÁLCULO)";
+        nameElem.innerHTML = '<i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i><span>Foco de Dolor: Región Renal y Columna Lumbar</span>';
+        statusElem.innerText = "DOLOR: 5 / 10 (CÓLICO LEVE)";
+        statusElem.className = "px-2 py-0.5 text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold";
+        barElem.style.width = "50%";
+        barElem.className = "h-full bg-amber-500 transition-all duration-300";
+        descElem.innerHTML = "<strong>Síntomas Físicos Reportados:</strong> Molestia cólica sorda en flanco lumbar izquierdo. Pérdida ósea del 1.5% libera calcio a la orina; riesgo de precipitación de oxalato cálcico.";
+        selectOrgan('kidneys');
+      } else {
+        // None / Nominal
+        if (headHaloMesh) headHaloMesh.visible = false;
+        if (chestHaloMesh) chestHaloMesh.visible = false;
+        if (lumbarHaloMesh) lumbarHaloMesh.visible = false;
+        if (painDistressLight) {
+          painDistressLight.intensity = 0;
+        }
+
+        pinBox.className = "px-2.5 py-1 bg-emerald-950/95 border-2 border-emerald-500 text-emerald-200 font-mono text-xs font-bold shadow-2xl flex items-center gap-1.5";
+        pinDot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        pinText.innerText = "✓ ESTADO NOMINAL: SIN DOLOR (100% FIT)";
+        nameElem.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span>Sin Focos de Dolor: Estado Óptimo</span>';
+        statusElem.innerText = "DOLOR: 0 / 10 (ASINTOMÁTICO)";
+        statusElem.className = "px-2 py-0.5 text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold";
+        barElem.style.width = "5%";
+        barElem.className = "h-full bg-emerald-400 transition-all duration-300";
+        descElem.innerHTML = "<strong>Evaluación Fisiológica:</strong> El astronauta no refiere dolor ni tensión. Constantes vitales dentro de las tolerancias óptimas de NASA-STD-3001.";
+      }
+      lucide.createIcons();
+    }
 
     function init3dAnatomy() {
       if (threeInitialized) return;
@@ -1873,6 +2064,7 @@
       // Initial visual mode
       setAvatarMode('hybrid');
 
+      createWarningHalos();
       threeInitialized = true;
       animate3d();
     }
@@ -1921,6 +2113,46 @@
       }
       if (chestBeacon) {
         chestBeacon.material.color.setHex(statusColor);
+      }
+
+      // Pulsate Warning Halos
+      const haloPulse = 1.0 + 0.18 * Math.sin(Date.now() * 0.009);
+      if (headHaloMesh && headHaloMesh.visible) {
+        headHaloMesh.scale.set(haloPulse, haloPulse, haloPulse);
+        headHaloMesh.material.opacity = 0.5 + 0.4 * Math.sin(Date.now() * 0.009);
+      }
+      if (chestHaloMesh && chestHaloMesh.visible) {
+        chestHaloMesh.scale.set(haloPulse, haloPulse, haloPulse);
+        chestHaloMesh.material.opacity = 0.5 + 0.4 * Math.sin(Date.now() * 0.009);
+      }
+      if (lumbarHaloMesh && lumbarHaloMesh.visible) {
+        lumbarHaloMesh.scale.set(haloPulse, haloPulse, haloPulse);
+        lumbarHaloMesh.material.opacity = 0.5 + 0.4 * Math.sin(Date.now() * 0.009);
+      }
+
+      // Update 3D Floating Pin Position projected onto 2D screen
+      const calloutPin = document.getElementById('callout-3d-pin');
+      const container3d = document.getElementById('container-3d');
+      if (calloutPin && container3d && camera3d) {
+        const targetWorldPos = new THREE.Vector3();
+        if (currentPainSymptom === 'sans') targetWorldPos.set(0, 2.9, 0.45);
+        else if (currentPainSymptom === 'heart') targetWorldPos.set(0.15, 1.5, 0.3);
+        else if (currentPainSymptom === 'kidneys') targetWorldPos.set(0, 0.55, -0.4);
+        else targetWorldPos.set(0, 3.4, 0);
+
+        // Apply astronaut group's rotation
+        targetWorldPos.applyAxisAngle(new THREE.Vector3(0, 1, 0), astronautGroup.rotation.y);
+
+        // Project to 2D
+        targetWorldPos.project(camera3d);
+        const w = container3d.clientWidth;
+        const h = container3d.clientHeight;
+        const sx = (targetWorldPos.x * 0.5 + 0.5) * w;
+        const sy = (-targetWorldPos.y * 0.5 + 0.5) * h;
+
+        calloutPin.style.left = `${sx}px`;
+        calloutPin.style.top = `${sy}px`;
+        calloutPin.style.display = (targetWorldPos.z < 1 && currentPainSymptom !== 'none') ? 'flex' : 'none';
       }
 
       // Update HUD angle display
@@ -2143,6 +2375,7 @@ function selectOrgan(organ) {
       telemetryDataset["C001"].phases[0].o2 = 20.9;
       document.getElementById('status-cdra').innerText = "ACTIVO";
       document.getElementById('status-cdra').className = "px-2 py-0.5 text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800";
+      if (typeof setPainSymptom === 'function') setPainSymptom('none');
       updateUI();
       switchTab('vitals');
     }
