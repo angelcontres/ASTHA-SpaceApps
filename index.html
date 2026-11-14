@@ -128,9 +128,44 @@
     .organ-hover:hover {
       filter: drop-shadow(0 0 14px rgba(121, 167, 223, 0.95));
     }
+
+    /* ======================================================== */
+    /* MODO M / FORMATO M: CERO REDONDEADOS / BORDES RECTOS 90° */
+    /* ======================================================== */
+    body.modo-m * {
+      border-radius: 0px !important;
+    }
+    body.modo-m .hud-card {
+      border-radius: 0px !important;
+      border: 1px solid rgba(121, 167, 223, 0.45) !important;
+    }
+    body.modo-m .hud-card::before {
+      top: -1px;
+      left: -1px;
+      width: 14px;
+      height: 14px;
+      border-top: 2.5px solid #79a7df;
+      border-left: 2.5px solid #79a7df;
+    }
+    body.modo-m .hud-card::after {
+      bottom: -1px;
+      right: -1px;
+      width: 14px;
+      height: 14px;
+      border-bottom: 2.5px solid #79a7df;
+      border-right: 2.5px solid #79a7df;
+    }
+    body.modo-m .crew-btn,
+    body.modo-m .phase-step,
+    body.modo-m button,
+    body.modo-m input,
+    body.modo-m header,
+    body.modo-m div {
+      border-radius: 0px !important;
+    }
   </style>
 </head>
-<body class="nasa-insane-grid text-slate-100 font-sans min-h-screen flex flex-col custom-scrollbar select-none">
+<body class="nasa-insane-grid text-slate-100 font-sans min-h-screen flex flex-col custom-scrollbar select-none modo-m">
 
   <!-- TOP APP BAR WITH NASA MEATBALL & PASTEL AESTHETICS -->
   <header class="border-b border-nasa-border/60 bg-[#071329]/85 backdrop-blur-md px-6 py-3 sticky top-0 z-40 flex items-center justify-between shadow-2xl">
@@ -152,11 +187,17 @@
     </div>
 
     <!-- HABITAT STATUS BADGES & API EXPLORER TRIGGER -->
-    <div class="flex items-center space-x-4 text-xs font-mono">
+    <div class="flex items-center space-x-3 text-xs font-mono">
+      <!-- MODO M (FORMATO M) TOGGLE BUTTON -->
+      <button onclick="toggleModoM()" id="btn-modo-m" class="flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-mono text-xs font-bold transition shadow-md" title="Alternar entre Formato M (Bordes Rectos) y Modo Redondeado">
+        <i data-lucide="square" class="w-3.5 h-3.5 text-nasa-pastel"></i>
+        <span id="modo-m-label">Formato M (Recto)</span>
+      </button>
+
       <!-- NASA OSDR API Modal Trigger Button -->
       <button onclick="openOsdrModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#0c1f3d] border border-nasa-pastel/60 text-nasa-pastel-light hover:bg-[#122b54] transition shadow-lg shadow-blue-950/50">
         <i data-lucide="satellite" class="w-4 h-4 text-nasa-pastel"></i>
-        <span class="font-bold">NASA OSDR API (116 Estudios)</span>
+        <span class="font-bold">NASA OSDR API</span>
       </button>
 
       <!-- LIVE STREAM TOGGLE -->
@@ -932,6 +973,20 @@
         btn.disabled = false;
         btn.innerHTML = `<i data-lucide="radio" class="w-3.5 h-3.5"></i> Probar Conexión`;
         lucide.createIcons();
+      }
+    }
+
+    // 9. MODO M / FORMATO M TOGGLE (CERO REDONDEADOS TÁCTICOS)
+    function toggleModoM() {
+      const isModoM = document.body.classList.toggle('modo-m');
+      const label = document.getElementById('modo-m-label');
+      const btn = document.getElementById('btn-modo-m');
+      if (isModoM) {
+        label.innerText = "Formato M (Recto)";
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-mono text-xs font-bold transition shadow-md";
+      } else {
+        label.innerText = "Modo M (Inactivo)";
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-border bg-nasa-dark text-slate-400 font-mono text-xs transition";
       }
     }
 
