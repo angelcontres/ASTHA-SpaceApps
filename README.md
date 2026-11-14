@@ -7,6 +7,7 @@
 [![Requirements](https://img.shields.io/badge/Requirements-ISO%2FIEC%2FIEEE%2029148-green.svg)](docs/SRS%20–%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md)
 [![NASA OSDR API](https://img.shields.io/badge/NASA%20OSDR%20API-116%20Human%20Studies-blueviolet.svg)](https://visualization.osdr.nasa.gov/biodata/api/v2/)
 [![User Stories](https://img.shields.io/badge/User%20Stories-20%20Agile%20BDD%20%28NASA%29-yellow.svg)](docs/User-historias/README.md)
+[![Use Cases](https://img.shields.io/badge/Use%20Cases-12%20UML%20%28ISO%2029148%29-cyan.svg)](docs/Casos-de-uso/README.md)
 [![Architecture](https://img.shields.io/badge/Architecture-100%25%20Edge%20%2F%20Mars--Zero--Ping-red.svg)](#)
 
 ---
@@ -91,6 +92,12 @@ Nasa-Project/
 │   │   ├── HU-03-Protocolos-Contramedidas-Emergencia.md        # Épica 3: Checklists no médicos, SPE, LBNP y ARED
 │   │   ├── HU-04-Arquitectura-Edge-Red-Malla.md                # Épica 4: Zero-ping offline, DTN y tolerancia SEU
 │   │   └── HU-05-Explorador-NASA-OSDR.md                       # Épica 5: API NASA OSDR, Inspiration4 y simulador
+│   ├── Casos-de-uso/                                           # Especificación Formal de 12 Casos de Uso (UML / ISO 29148)
+│   │   ├── README.md                                           # Modelo de actores, diagrama Mermaid y matriz
+│   │   ├── CU-01-Monitoreo-Telemetria-Ingesta.md               # CU-01 Ingesta continua, CU-02 CO2/CANS, CU-03 Síntomas
+│   │   ├── CU-02-Triage-Diagnostico-Soporte.md                 # CU-04 Mapa anatómico, CU-05 SANS, CU-06 Z-Score
+│   │   ├── CU-03-Contramedidas-Emergencias-Vuelo.md            # CU-07 Checklists, CU-08 Tormenta SPE, CU-09 LBNP
+│   │   └── CU-04-Arquitectura-Red-Resiliencia-Edge.md          # CU-10 Red Malla P2P, CU-11 DTN Houston, CU-12 EPS <5W
 │   ├── SRS – Software de Monitoreo de Salud para Astronautas.md   # Especificación formal ISO/IEC/IEEE 29148
 │   ├── VALIDACION_FUENTES_OFICIALES_NASA.md                    # Certificación cruzada contra NASA-STD-3001
 │   ├── DOCUMENTO_DOMINIO_Y_PROBLEMATICA_ESPACIAL.md            # Análisis de dominio operacional
