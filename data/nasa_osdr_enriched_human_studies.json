@@ -1,0 +1,96 @@
+[
+  {
+    "accession": "OSD-574",
+    "title": "SpaceX Inspiration4 Deltoid Skin and Microbiome Data: Spatial Transcriptomics (NanoString GeoMx), Metageomics, and Metatranscriptomics",
+    "mission": "SpaceX Inspiration4",
+    "organism": "Homo sapiens",
+    "assay_type": [
+      "Metagenomic sequencing",
+      "transcription profiling",
+      "metatranscriptome sequencing assay"
+    ],
+    "flight_program": "",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-574/"
+  },
+  {
+    "accession": "OSD-715",
+    "title": "Characterization of mouse ocular response to a 35-day spaceflight mission: Evidence of blood-retinal barrier disruption and ocular adaptations - Proteomics data",
+    "mission": "SpaceX-12",
+    "organism": "Homo sapiens",
+    "assay_type": "protein expression profiling",
+    "flight_program": "Rodent Research (RR)",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-715/"
+  },
+  {
+    "accession": "OSD-53",
+    "title": "Spaceflight Modulates Gene Expression in Astronauts",
+    "mission": "",
+    "organism": "Homo sapiens",
+    "assay_type": "transcription profiling",
+    "flight_program": "",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-53/"
+  },
+  {
+    "accession": "OSD-2",
+    "title": "Response of human lymphoblastoid cells to HZE (iron ions) or gamma-rays",
+    "mission": "",
+    "organism": "Homo sapiens",
+    "assay_type": "transcription profiling",
+    "flight_program": "",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-2/"
+  },
+  {
+    "accession": "OSD-51",
+    "title": "Woman skeletal muscle transcriptome with bed rest and countermeasures.",
+    "mission": "",
+    "organism": "Homo sapiens",
+    "assay_type": "",
+    "flight_program": "",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-51/"
+  },
+  {
+    "accession": "OSD-52",
+    "title": "Expression data from SPHINX (SPaceflight of Huvec: an INtegrated eXperiment)",
+    "mission": "Expedition 25",
+    "organism": "Homo sapiens",
+    "assay_type": "transcription profiling",
+    "flight_program": "International Space Station (ISS)",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-52/"
+  },
+  {
+    "accession": "OSD-54",
+    "title": "Immune responses to the in vitro LPS assault engineered in the spaceflight multi-omics study",
+    "mission": "STS-135",
+    "organism": "Homo sapiens",
+    "assay_type": "transcription profiling",
+    "flight_program": "Space Transportation System (STS)",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-54/"
+  },
+  {
+    "accession": "OSD-55",
+    "title": "microRNA expression profiles in human peripheral blood lymphocytes cultured in modeled microgravity",
+    "mission": "",
+    "organism": "Homo sapiens",
+    "assay_type": "transcription profiling",
+    "flight_program": "",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-55/"
+  },
+  {
+    "accession": "OSD-56",
+    "title": "Gene expression profiling of human peripheral blood lymphocytes cultured in modeled microgravity",
+    "mission": "",
+    "organism": "Homo sapiens",
+    "assay_type": "transcription profiling",
+    "flight_program": "",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-56/"
+  },
+  {
+    "accession": "OSD-9",
+    "title": "Response of human lymphoblastoid cells to activated medium",
+    "mission": "",
+    "organism": "Homo sapiens",
+    "assay_type": "transcription profiling",
+    "flight_program": "",
+    "rest_url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-9/"
+  }
+]
