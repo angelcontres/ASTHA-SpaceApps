@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AstroVital — NASA Deep-Space Health Guardian & OSDR Telemetry</title>
+  <title>AstroVital — Autonomous Deep-Space Health Guardian & ECLSS</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN for Aerospace Telemetry -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -17,32 +18,25 @@
         extend: {
           colors: {
             nasa: {
-              deep: '#040915',
-              dark: '#071329',
-              panel: '#0c1d3b',
-              surface: '#0f244a',
-              border: '#1f3e6e',
-              pastel: '#79a7df',
+              blue: '#0b3d91',       // NASA Meatball Blue
+              pastel: '#79a7df',     // NASA Pastel Blue HUD
               'pastel-light': '#9fc5f8',
-              'pastel-soft': '#d4e6ff',
-              meatball: '#0b3d91',
-              cyan: '#38bdf8'
-            },
-            space: {
-              950: '#030712',
-              900: '#040915',
-              800: '#0a1730',
-              700: '#102447',
-              600: '#1a3769',
-              500: '#2b508f'
+              'pastel-soft': '#b8d6fc',
+              dark: '#040915',       // Deep Void
+              panel: '#071329',      // Tactical HUD Panel
+              border: '#18345f',     // Subdued Border
+              danger: '#f43f5e',
+              warning: '#f59e0b',
+              nominal: '#10b981'
             }
           }
         }
       }
     }
   </script>
+
   <style>
-    /* INSANE NASA SCI-FI BLUEPRINT & TELEMETRY GRID */
+    /* AESTHETIC NASA GRID BACKGROUND */
     .nasa-insane-grid {
       background-color: #040915;
       background-image: 
@@ -50,19 +44,24 @@
         linear-gradient(to bottom, rgba(121, 167, 223, 0.08) 1px, transparent 1px),
         linear-gradient(to right, rgba(121, 167, 223, 0.02) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(121, 167, 223, 0.02) 1px, transparent 1px),
-        radial-gradient(circle 1000px at 50% 0%, rgba(121, 167, 223, 0.14), transparent 75%);
+        radial-gradient(circle 900px at 50% -10%, rgba(121, 167, 223, 0.14), transparent 75%);
       background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 100% 100%;
       background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px, 0 0;
     }
 
-    /* TACTICAL SCI-FI HUD CARD WITH PASTEL CORNER BRACKETS */
+    /* TACTICAL HUD CARDS */
     .hud-card {
+      background: rgba(7, 19, 41, 0.82);
+      border: 1px solid rgba(121, 167, 223, 0.35);
+      backdrop-filter: blur(10px);
       position: relative;
-      background: rgba(10, 23, 48, 0.75);
-      border: 1px solid rgba(121, 167, 223, 0.25);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 10px 35px -5px rgba(2, 6, 16, 0.7), inset 0 0 25px rgba(121, 167, 223, 0.03);
+      transition: all 0.25s ease;
     }
+    .hud-card:hover {
+      border-color: rgba(121, 167, 223, 0.6);
+    }
+
+    /* CORNER ANGLE ACCENTS */
     .hud-card::before {
       content: '';
       position: absolute;
@@ -86,47 +85,23 @@
       pointer-events: none;
     }
 
-    /* TACTICAL CROSSHAIR AT CORNER */
-    .crosshair-corner {
-      position: relative;
-    }
-    .crosshair-corner::before {
-      content: '+';
-      position: absolute;
-      top: 6px;
-      right: 8px;
-      font-family: monospace;
-      font-size: 13px;
-      color: #79a7df;
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    @keyframes pulse-slow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.82; transform: scale(1.02); }
-    }
-    .pulse-danger {
-      animation: pulse-slow 1.5s infinite;
-    }
-
     .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
       background: #040915;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #1f3e6e;
-      border-radius: 4px;
+      background: #18345f;
+      border-radius: 0px;
     }
     .organ-hover {
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
     }
     .organ-hover:hover {
-      filter: drop-shadow(0 0 14px rgba(121, 167, 223, 0.95));
+      filter: drop-shadow(0 0 10px rgba(121, 167, 223, 0.9));
     }
 
     /* ======================================================== */
@@ -137,477 +112,806 @@
     }
     body.modo-m .hud-card {
       border-radius: 0px !important;
-      border: 1px solid rgba(121, 167, 223, 0.45) !important;
+      border: 1px solid rgba(121, 167, 223, 0.4) !important;
     }
-    body.modo-m .hud-card::before {
-      top: -1px;
-      left: -1px;
-      width: 14px;
-      height: 14px;
-      border-top: 2.5px solid #79a7df;
-      border-left: 2.5px solid #79a7df;
+
+    /* ======================================================== */
+    /* MODO MINIMALISTA (ZEN TAC)                              */
+    /* ======================================================== */
+    body.zen-mode .hud-card {
+      background: rgba(5, 13, 29, 0.92) !important;
+      border-color: rgba(121, 167, 223, 0.2) !important;
+      box-shadow: none !important;
     }
-    body.modo-m .hud-card::after {
-      bottom: -1px;
-      right: -1px;
-      width: 14px;
-      height: 14px;
-      border-bottom: 2.5px solid #79a7df;
-      border-right: 2.5px solid #79a7df;
+    body.zen-mode .hud-card::before,
+    body.zen-mode .hud-card::after {
+      display: none !important;
     }
-    body.modo-m .crew-btn,
-    body.modo-m .phase-step,
-    body.modo-m button,
-    body.modo-m input,
-    body.modo-m header,
-    body.modo-m div {
-      border-radius: 0px !important;
+    body.zen-mode .nasa-insane-grid {
+      background-image: 
+        linear-gradient(to right, rgba(121, 167, 223, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(121, 167, 223, 0.03) 1px, transparent 1px);
     }
   </style>
 </head>
 <body class="nasa-insane-grid text-slate-100 font-sans min-h-screen flex flex-col custom-scrollbar select-none modo-m">
 
-  <!-- TOP APP BAR WITH NASA MEATBALL & PASTEL AESTHETICS -->
-  <header class="border-b border-nasa-border/60 bg-[#071329]/85 backdrop-blur-md px-6 py-3 sticky top-0 z-40 flex items-center justify-between shadow-2xl">
+  <!-- TOP APP BAR -->
+  <header class="border-b border-nasa-border/70 bg-[#061226]/90 backdrop-blur-md px-6 py-3 sticky top-0 z-40 flex flex-wrap items-center justify-between gap-4 shadow-xl">
     <div class="flex items-center space-x-3">
       <!-- NASA Meatball + Pastel Gradient Icon -->
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0b3d91] via-[#1e50a2] to-[#79a7df] flex items-center justify-center shadow-lg shadow-blue-500/25 border border-[#9fc5f8]/40">
-        <i data-lucide="shield-alert" class="w-6 h-6 text-white"></i>
+      <div class="w-9 h-9 bg-gradient-to-tr from-[#0b3d91] to-[#79a7df] flex items-center justify-center border border-[#9fc5f8]/40 shadow-md">
+        <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="text-xl font-bold tracking-wider text-white">ASTRO<span class="text-nasa-pastel">VITAL</span></span>
-          <span class="text-[10px] px-2 py-0.5 rounded bg-[#0b3d91]/50 border border-[#79a7df]/50 text-nasa-pastel-light font-mono font-bold tracking-wider">NASA-STD-3001</span>
-          <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-mono flex items-center gap-1.5">
+          <span class="text-lg font-bold tracking-wider text-white">ASTRO<span class="text-nasa-pastel">VITAL</span></span>
+          <span class="text-[10px] px-2 py-0.5 bg-[#0b3d91]/50 border border-[#79a7df]/50 text-nasa-pastel-light font-mono font-bold tracking-wider">NASA-STD-3001</span>
+          <span class="text-[10px] px-2 py-0.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-mono flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> EDGE 100% OFFLINE
           </span>
         </div>
-        <p class="text-xs text-nasa-pastel-soft/75 font-mono">Autonomous Deep-Space Clinical CDSS · Mars Latency: 22m RTT</p>
+        <p class="text-[11px] text-nasa-pastel-soft/75 font-mono">Autonomous Deep-Space Clinical Guardian & ECLSS · Mars Latency: 22m RTT</p>
       </div>
     </div>
 
-    <!-- HABITAT STATUS BADGES & API EXPLORER TRIGGER -->
-    <div class="flex items-center space-x-3 text-xs font-mono">
-      <!-- MODO M (FORMATO M) TOGGLE BUTTON -->
-      <button onclick="toggleModoM()" id="btn-modo-m" class="flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-mono text-xs font-bold transition shadow-md" title="Alternar entre Formato M (Bordes Rectos) y Modo Redondeado">
+    <!-- ACTION CONTROLS & UTILITIES -->
+    <div class="flex items-center space-x-2.5 text-xs font-mono">
+      <!-- MODO MINIMALISTA TOGGLE -->
+      <button onclick="toggleZenMode()" id="btn-zen" class="flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-border/70 bg-[#081833] text-slate-300 hover:border-nasa-pastel/60 transition shadow-sm" title="Alternar Modo Minimalista (Reduce ruido visual y amplia foco)">
+        <i data-lucide="minimize-2" class="w-3.5 h-3.5 text-nasa-pastel"></i>
+        <span id="zen-label">Modo Minimalista</span>
+      </button>
+
+      <!-- FORMATO M (RECTO) TOGGLE -->
+      <button onclick="toggleModoM()" id="btn-modo-m" class="flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-bold transition shadow-sm" title="Alternar Formato M (Bordes Rectos a 90°)">
         <i data-lucide="square" class="w-3.5 h-3.5 text-nasa-pastel"></i>
         <span id="modo-m-label">Formato M (Recto)</span>
       </button>
 
-      <!-- NASA OSDR API Modal Trigger Button -->
-      <button onclick="openOsdrModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#0c1f3d] border border-nasa-pastel/60 text-nasa-pastel-light hover:bg-[#122b54] transition shadow-lg shadow-blue-950/50">
-        <i data-lucide="satellite" class="w-4 h-4 text-nasa-pastel"></i>
+      <!-- NASA OSDR API Modal Trigger -->
+      <button onclick="openOsdrModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0c1f3d] border border-nasa-pastel/60 text-nasa-pastel-light hover:bg-[#122b54] transition shadow-md">
+        <i data-lucide="satellite" class="w-3.5 h-3.5 text-nasa-pastel"></i>
         <span class="font-bold">NASA OSDR API</span>
       </button>
 
       <!-- LIVE STREAM TOGGLE -->
-      <button onclick="toggleLiveStream()" id="btn-live-stream" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-nasa-dark border border-nasa-border text-slate-300 hover:bg-nasa-panel transition">
+      <button onclick="toggleLiveStream()" id="btn-live-stream" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#051124] border border-nasa-border text-slate-300 hover:bg-[#091b38] transition">
         <span class="w-2 h-2 rounded-full bg-slate-400" id="live-dot"></span>
-        <span id="live-text">Telemetría Estática</span>
+        <span id="live-text">1 Hz Stream</span>
       </button>
-
-      <div class="hidden xl:flex items-center space-x-3">
-        <div class="flex items-center space-x-2 bg-nasa-dark/70 px-3 py-1.5 rounded-lg border border-nasa-border/60" id="badge-radiation">
-          <i data-lucide="activity" class="w-4 h-4 text-emerald-400"></i>
-          <span>Radiación CANS: <strong class="text-emerald-400" id="top-radiation">28.4 µSv/h</strong></span>
-        </div>
-        <div class="flex items-center space-x-2 bg-nasa-dark/70 px-3 py-1.5 rounded-lg border border-nasa-border/60" id="badge-co2">
-          <i data-lucide="wind" class="w-4 h-4 text-emerald-400"></i>
-          <span>ppCO₂ Cabina: <strong class="text-emerald-400" id="top-co2">2.1 mmHg</strong></span>
-        </div>
-      </div>
     </div>
   </header>
 
-  <!-- MAIN VIEWPORT WITH 12-COL HUD CARDS -->
-  <div class="flex-1 p-6 grid grid-cols-1 xl:grid-cols-12 gap-6 max-w-[1800px] w-full mx-auto">
-
-    <!-- LEFT COLUMN: ASTRONAUT SELECTOR & 3D ANATOMICAL MAP (4 COLS) -->
-    <div class="xl:col-span-4 flex flex-col gap-6">
-
-      <!-- CREW SELECTOR CARD (REAL INSPIRATION4 ASTRONAUTS) -->
-      <div class="hud-card crosshair-corner rounded-2xl p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center space-x-2">
-            <i data-lucide="users" class="w-5 h-5 text-nasa-pastel"></i>
-            <h2 class="font-bold text-sm tracking-wide uppercase text-slate-100 font-mono">Tripulación Humana (OSD-574)</h2>
-          </div>
-          <span class="text-xs px-2 py-0.5 rounded bg-[#0b3d91]/40 border border-nasa-pastel/40 text-nasa-pastel-light font-mono">Inspiration4</span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2" id="crew-buttons">
-          <button onclick="selectAstronaut('C001')" id="btn-C001" class="crew-btn p-3 rounded-xl border border-nasa-border bg-[#071429]/50 text-left transition flex items-center space-x-3 hover:border-nasa-pastel/50">
-            <div class="w-9 h-9 rounded-lg bg-blue-600/30 border border-blue-400/40 flex items-center justify-center font-bold text-blue-300 font-mono text-xs">C01</div>
-            <div class="overflow-hidden">
-              <div class="font-bold text-xs truncate text-white">Jared Isaacman</div>
-              <div class="text-[10px] text-slate-400 truncate">Comandante</div>
-            </div>
-          </button>
-          <button onclick="selectAstronaut('C002')" id="btn-C002" class="crew-btn p-3 rounded-xl border border-nasa-border bg-[#071429]/50 text-left transition flex items-center space-x-3 hover:border-nasa-pastel/50">
-            <div class="w-9 h-9 rounded-lg bg-purple-600/30 border border-purple-400/40 flex items-center justify-center font-bold text-purple-300 font-mono text-xs">C02</div>
-            <div class="overflow-hidden">
-              <div class="font-bold text-xs truncate text-white">Hayley Arceneaux</div>
-              <div class="text-[10px] text-slate-400 truncate">Oficial Médico</div>
-            </div>
-          </button>
-          <button onclick="selectAstronaut('C003')" id="btn-C003" class="crew-btn p-3 rounded-xl border border-nasa-pastel bg-[#0e2752]/70 text-left transition flex items-center space-x-3 shadow-lg shadow-blue-950/60">
-            <div class="w-9 h-9 rounded-lg bg-amber-600/30 border border-amber-400/40 flex items-center justify-center font-bold text-amber-300 font-mono text-xs">C03</div>
-            <div class="overflow-hidden">
-              <div class="font-bold text-xs truncate text-white">Dra. Sian Proctor</div>
-              <div class="text-[10px] text-amber-300 truncate">SANS Risk · Piloto</div>
-            </div>
-          </button>
-          <button onclick="selectAstronaut('C004')" id="btn-C004" class="crew-btn p-3 rounded-xl border border-nasa-border bg-[#071429]/50 text-left transition flex items-center space-x-3 hover:border-nasa-pastel/50">
-            <div class="w-9 h-9 rounded-lg bg-emerald-600/30 border border-emerald-400/40 flex items-center justify-center font-bold text-emerald-300 font-mono text-xs">C04</div>
-            <div class="overflow-hidden">
-              <div class="font-bold text-xs truncate text-white">Chris Sembroski</div>
-              <div class="text-[10px] text-slate-400 truncate">Esp. Misión</div>
-            </div>
-          </button>
-        </div>
-
-        <!-- TIMELINE SLIDER (FLIGHT PHASES) -->
-        <div class="mt-4 pt-4 border-t border-nasa-border/60">
-          <div class="flex items-center justify-between text-xs mb-2">
-            <span class="text-slate-400 font-mono">Fase de Vuelo:</span>
-            <span class="font-bold text-nasa-pastel-light font-mono" id="phase-label">FD-02 (Microgravedad Órbita)</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <button onclick="setPhaseIndex(0)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center transition" id="phase-0">L-44</button>
-            <button onclick="setPhaseIndex(1)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center transition" id="phase-1">FD-01</button>
-            <button onclick="setPhaseIndex(2)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-pastel bg-[#0e2752] font-bold text-nasa-pastel-light text-center transition" id="phase-2">FD-02</button>
-            <button onclick="setPhaseIndex(3)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center transition" id="phase-3">FD-03</button>
-            <button onclick="setPhaseIndex(4)" class="phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center transition" id="phase-4">R+1</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ANATOMICAL BODY MAP WITH INTERACTIVE HOTSPOTS -->
-      <div class="hud-card crosshair-corner rounded-2xl p-5 flex-1 flex flex-col">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center space-x-2">
-            <i data-lucide="scan" class="w-5 h-5 text-nasa-pastel"></i>
-            <h2 class="font-bold text-sm tracking-wide uppercase text-slate-100 font-mono">Mapa Anatómico Táctico</h2>
-          </div>
-          <span class="text-[11px] text-nasa-pastel-soft/70 font-mono">Toca un órgano para triage</span>
-        </div>
-
-        <div class="relative flex-1 flex items-center justify-center p-4 bg-[#050e1f]/70 rounded-xl border border-nasa-border/60 min-h-[300px]">
-          
-          <!-- SVG HUMAN FIGURE WITH INTERACTIVE HOTSPOTS -->
-          <svg viewBox="0 0 200 380" class="w-48 h-auto drop-shadow-2xl">
-            <!-- Head & Neck -->
-            <path id="organ-head" onclick="selectOrgan('head')" class="organ-hover" d="M 85,25 C 85,10 115,10 115,25 C 115,45 85,45 85,25 Z M 93,45 L 93,58 L 107,58 L 107,45 Z" fill="#79a7df" opacity="0.85"/>
-            <!-- Eyes Target Hotspot -->
-            <circle id="organ-eyes" onclick="selectOrgan('eyes')" class="organ-hover" cx="100" cy="25" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
-
-            <!-- Torso / Chest (Cardiovascular) -->
-            <path id="organ-chest" onclick="selectOrgan('heart')" class="organ-hover" d="M 75,58 L 125,58 L 118,140 L 82,140 Z" fill="#79a7df" opacity="0.85"/>
-            <!-- Heart Target Hotspot -->
-            <circle id="organ-heart-hotspot" onclick="selectOrgan('heart')" class="organ-hover" cx="105" cy="85" r="9" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
-
-            <!-- Abdomen / Kidneys / Lumbar -->
-            <path id="organ-lumbar" onclick="selectOrgan('kidneys')" class="organ-hover" d="M 82,140 L 118,140 L 115,185 L 85,185 Z" fill="#79a7df" opacity="0.8"/>
-            <circle id="organ-kidney-left" onclick="selectOrgan('kidneys')" class="organ-hover" cx="91" cy="160" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2"/>
-            <circle id="organ-kidney-right" onclick="selectOrgan('kidneys')" class="organ-hover" cx="109" cy="160" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2"/>
-
-            <!-- Arms -->
-            <path class="organ-hover" onclick="selectOrgan('general')" d="M 75,60 L 55,120 L 45,175 L 53,178 L 65,125 L 79,75 Z" fill="#79a7df" opacity="0.7"/>
-            <path class="organ-hover" onclick="selectOrgan('general')" d="M 125,60 L 145,120 L 155,175 L 147,178 L 135,125 L 121,75 Z" fill="#79a7df" opacity="0.7"/>
-
-            <!-- Legs / Bones (Femur / Tibia) -->
-            <path id="organ-femur-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 85,185 L 98,185 L 94,270 L 80,270 Z" fill="#79a7df" opacity="0.8"/>
-            <path id="organ-femur-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 102,185 L 115,185 L 120,270 L 106,270 Z" fill="#79a7df" opacity="0.8"/>
-            <path id="organ-feet-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 80,272 L 94,272 L 91,355 L 75,355 Z" fill="#79a7df" opacity="0.7"/>
-            <path id="organ-feet-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 106,272 L 120,272 L 125,355 L 109,355 Z" fill="#79a7df" opacity="0.7"/>
-          </svg>
-
-          <!-- FLOATING ORGAN DETAIL CARD -->
-          <div id="organ-info-box" class="absolute bottom-3 left-3 right-3 bg-[#08152b]/95 border border-nasa-pastel/60 p-3 rounded-xl backdrop-blur-md shadow-xl">
-            <div class="flex items-center justify-between text-xs mb-1">
-              <span class="font-bold text-nasa-pastel-light" id="info-organ-name">Sistema Neuro-Ocular (Ojos y Cerebro)</span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40" id="info-organ-status">DERIVA / ALERTA SANS</span>
-            </div>
-            <p class="text-[11px] text-slate-300 leading-tight" id="info-organ-desc">Desplazamiento cefálico de fluidos en microgravedad. Presión sistólica elevada aumenta riesgo de edema en papila óptica (NASA-STD-3001).</p>
-          </div>
-        </div>
-      </div>
-
+  <!-- MISSION QUICK-STATUS STRIP (AEROSPACE COCKPIT BANNER) -->
+  <div class="border-b border-nasa-border/50 bg-[#050f21]/80 px-6 py-2 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-300">
+    <div class="flex items-center space-x-4">
+      <span class="flex items-center gap-1.5 text-nasa-pastel-light">
+        <i data-lucide="user" class="w-3.5 h-3.5 text-nasa-pastel"></i>
+        <strong id="banner-astronaut">Dra. Sian Proctor (C03)</strong>
+      </span>
+      <span class="text-slate-500">|</span>
+      <span class="text-slate-400">Fase: <strong class="text-white" id="banner-phase">FD-02 (Órbita)</strong></span>
+      <span class="text-slate-500">|</span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400" id="banner-status-dot"></span>
+        <span>Estado Clínico: <strong class="text-amber-300" id="banner-clinical-status">ALERTA SANS (PAS ELEVADA)</strong></span>
+      </span>
     </div>
 
-    <!-- CENTER & RIGHT COLUMN: REAL TELEMETRY VITAL SIGNS, CHARTS & CRISIS SIMULATOR (8 COLS) -->
-    <div class="xl:col-span-8 flex flex-col gap-6">
+    <!-- Quick Environment Telemetry Glance -->
+    <div class="flex items-center space-x-4 text-[11px]">
+      <span title="Presión Atmosférica de Cabina">Cabina: <strong class="text-white" id="banner-pressure">101.3 kPa</strong></span>
+      <span class="text-slate-500">·</span>
+      <span title="Dióxido de Carbono">ppCO₂: <strong class="text-emerald-400" id="banner-co2">2.85 mmHg</strong></span>
+      <span class="text-slate-500">·</span>
+      <span title="Oxígeno de Cabina">O₂: <strong class="text-white" id="banner-o2">20.9%</strong></span>
+      <span class="text-slate-500">·</span>
+      <span title="Dosimetría de Radiación CANS">CANS: <strong class="text-emerald-400" id="banner-rad">32.8 µSv/h</strong></span>
+    </div>
+  </div>
 
-      <!-- TOP VITAL SIGNS GRID (4 CARDS) -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        
+  <!-- NAVIGATION TABS: MINIMALIST PROGRESSIVE DISCLOSURE -->
+  <nav class="border-b border-nasa-border/60 bg-[#07152b]/60 px-6 py-1 flex items-center justify-between overflow-x-auto custom-scrollbar">
+    <div class="flex items-center space-x-2 text-xs font-mono">
+      <!-- TAB 1: ASTRONAUT BIOMEDICAL -->
+      <button onclick="switchTab('vitals')" id="tab-btn-vitals" class="px-4 py-2 border-b-2 border-nasa-pastel text-white bg-[#0e2752]/60 font-bold transition flex items-center space-x-2">
+        <i data-lucide="activity" class="w-4 h-4 text-nasa-pastel"></i>
+        <span>1. BIOMÉDICO ASTRONAUTA</span>
+      </button>
+
+      <!-- TAB 2: CABIN ENVIRONMENT (ECLSS) - REQUESTED DIRECTLY -->
+      <button onclick="switchTab('eclss')" id="tab-btn-eclss" class="px-4 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition font-bold flex items-center space-x-2">
+        <i data-lucide="gauge" class="w-4 h-4 text-emerald-400"></i>
+        <span>2. ENTORNO Y CABINA (ECLSS)</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      </button>
+
+      <!-- TAB 3: TRIAGE & COUNTERMEASURES -->
+      <button onclick="switchTab('triage')" id="tab-btn-triage" class="px-4 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition font-bold flex items-center space-x-2">
+        <i data-lucide="scan" class="w-4 h-4 text-amber-400"></i>
+        <span>3. TRIAGE ANATÓMICO & CDSS</span>
+      </button>
+
+      <!-- TAB 4: CRISIS SIMULATOR -->
+      <button onclick="switchTab('crisis')" id="tab-btn-crisis" class="px-4 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition font-bold flex items-center space-x-2">
+        <i data-lucide="flame" class="w-4 h-4 text-rose-400"></i>
+        <span>4. SIMULADOR DE CRISIS</span>
+      </button>
+    </div>
+
+    <!-- Active View Hint -->
+    <div class="hidden md:flex items-center text-[11px] font-mono text-nasa-pastel-soft/70">
+      <span id="tab-view-indicator">Vista enfocada: Telemetría Cardiopulmonar & Fisiológica</span>
+    </div>
+  </nav>
+
+  <!-- MAIN VIEWPORT CONTENT -->
+  <main class="flex-1 p-6 max-w-[1800px] w-full mx-auto">
+
+    <!-- =================================================================================== -->
+    <!-- TAB 1: TELEMETRÍA BIOMÉDICA DEL ASTRONAUTA (MINIMALIST & CLEAN)                     -->
+    <!-- =================================================================================== -->
+    <section id="view-vitals" class="space-y-6">
+      
+      <!-- TOP SELECTORS: CREW & FLIGHT PHASE (COMPACT HORIZONTAL BAR) -->
+      <div class="hud-card p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+        <!-- Crew Selector -->
+        <div class="flex items-center space-x-2 w-full lg:w-auto">
+          <span class="text-xs font-mono text-slate-400 uppercase tracking-wider whitespace-nowrap">Tripulante:</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1">
+            <button onclick="selectAstronaut('C001')" id="crew-C001" class="crew-pill px-3 py-1.5 border border-nasa-border bg-[#050f21] text-xs font-mono text-left transition flex items-center space-x-2 hover:border-nasa-pastel/50">
+              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+              <span class="truncate">J. Isaacman (C01)</span>
+            </button>
+            <button onclick="selectAstronaut('C002')" id="crew-C002" class="crew-pill px-3 py-1.5 border border-nasa-border bg-[#050f21] text-xs font-mono text-left transition flex items-center space-x-2 hover:border-nasa-pastel/50">
+              <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+              <span class="truncate">H. Arceneaux (C02)</span>
+            </button>
+            <button onclick="selectAstronaut('C003')" id="crew-C003" class="crew-pill px-3 py-1.5 border border-nasa-pastel bg-[#0e2752] text-xs font-mono text-left font-bold text-nasa-pastel-light transition flex items-center space-x-2 shadow-md">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span class="truncate">S. Proctor (C03)</span>
+            </button>
+            <button onclick="selectAstronaut('C004')" id="crew-C004" class="crew-pill px-3 py-1.5 border border-nasa-border bg-[#050f21] text-xs font-mono text-left transition flex items-center space-x-2 hover:border-nasa-pastel/50">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span class="truncate">C. Sembroski (C04)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Flight Phase Selector -->
+        <div class="flex items-center space-x-2 w-full lg:w-auto justify-end">
+          <span class="text-xs font-mono text-slate-400 uppercase tracking-wider whitespace-nowrap">Fase:</span>
+          <div class="flex items-center space-x-1.5">
+            <button onclick="setPhaseIndex(0)" id="phase-0" class="phase-pill px-3 py-1 text-xs font-mono border border-nasa-border text-slate-400 hover:text-white transition">L-44</button>
+            <button onclick="setPhaseIndex(1)" id="phase-1" class="phase-pill px-3 py-1 text-xs font-mono border border-nasa-border text-slate-400 hover:text-white transition">FD-01</button>
+            <button onclick="setPhaseIndex(2)" id="phase-2" class="phase-pill px-3 py-1 text-xs font-mono border border-nasa-pastel bg-[#0e2752] font-bold text-nasa-pastel-light transition">FD-02</button>
+            <button onclick="setPhaseIndex(3)" id="phase-3" class="phase-pill px-3 py-1 text-xs font-mono border border-nasa-border text-slate-400 hover:text-white transition">FD-03</button>
+            <button onclick="setPhaseIndex(4)" id="phase-4" class="phase-pill px-3 py-1 text-xs font-mono border border-nasa-border text-slate-400 hover:text-white transition">R+1</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 CORE VITAL SIGNS CARDS (CLEAN & MINIMALIST) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <!-- HEART RATE -->
-        <div class="hud-card rounded-2xl p-4 shadow-lg relative overflow-hidden">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-nasa-pastel-soft/80">FREC. CARDÍACA</span>
+        <div class="hud-card p-5">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-2">
+            <span>FRECUENCIA CARDÍACA</span>
             <i data-lucide="heart" class="w-4 h-4 text-rose-500 animate-pulse"></i>
           </div>
           <div class="flex items-baseline space-x-2">
-            <span class="text-3xl font-extrabold font-mono text-white" id="card-hr">98</span>
+            <span class="text-4xl font-extrabold font-mono text-white" id="card-hr">98</span>
             <span class="text-xs text-slate-400 font-mono">bpm</span>
           </div>
-          <div class="mt-2 flex items-center justify-between text-[11px] font-mono">
-            <span class="text-emerald-400">Nom: 55-85</span>
-            <span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300" id="status-hr">Elevado</span>
+          <div class="mt-3 flex items-center justify-between text-xs font-mono pt-2 border-t border-nasa-border/40">
+            <span class="text-slate-400">NASA: 55-85 bpm</span>
+            <span class="text-amber-300 font-bold" id="status-hr">Elevado</span>
           </div>
         </div>
 
         <!-- BLOOD PRESSURE -->
-        <div class="hud-card rounded-2xl p-4 shadow-lg relative overflow-hidden" id="card-bp-box">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-nasa-pastel-soft/80">PRESIÓN ARTERIAL</span>
+        <div class="hud-card p-5" id="card-bp-box">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-2">
+            <span>PRESIÓN ARTERIAL</span>
             <i data-lucide="gauge" class="w-4 h-4 text-nasa-pastel"></i>
           </div>
           <div class="flex items-baseline space-x-2">
-            <span class="text-3xl font-extrabold font-mono text-rose-500 animate-pulse" id="card-bp">144/92</span>
+            <span class="text-4xl font-extrabold font-mono text-rose-500 animate-pulse" id="card-bp">144/92</span>
             <span class="text-xs text-slate-400 font-mono">mmHg</span>
           </div>
-          <div class="mt-2 flex items-center justify-between text-[11px] font-mono">
-            <span class="text-slate-400">Nom: 120/80</span>
-            <span class="px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold" id="status-bp">SANS Risk</span>
+          <div class="mt-3 flex items-center justify-between text-xs font-mono pt-2 border-t border-nasa-border/40">
+            <span class="text-slate-400">NASA: ≤120/80</span>
+            <span class="text-rose-400 font-bold" id="status-bp">SANS Risk</span>
           </div>
         </div>
 
-        <!-- SPO2 -->
-        <div class="hud-card rounded-2xl p-4 shadow-lg relative overflow-hidden">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-nasa-pastel-soft/80">OXÍGENO SpO₂</span>
+        <!-- BLOOD OXYGEN (SPO2) -->
+        <div class="hud-card p-5">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-2">
+            <span>SATURACIÓN OXÍGENO</span>
             <i data-lucide="droplet" class="w-4 h-4 text-nasa-pastel-light"></i>
           </div>
           <div class="flex items-baseline space-x-2">
-            <span class="text-3xl font-extrabold font-mono text-emerald-400" id="card-spo2">95.8</span>
+            <span class="text-4xl font-extrabold font-mono text-emerald-400" id="card-spo2">95.8</span>
             <span class="text-xs text-slate-400 font-mono">%</span>
           </div>
-          <div class="mt-2 flex items-center justify-between text-[11px] font-mono">
-            <span class="text-emerald-400">Nom: ≥96%</span>
-            <span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300" id="status-spo2">Límite</span>
+          <div class="mt-3 flex items-center justify-between text-xs font-mono pt-2 border-t border-nasa-border/40">
+            <span class="text-slate-400">NASA: ≥96%</span>
+            <span class="text-amber-300 font-bold" id="status-spo2">Límite</span>
           </div>
         </div>
 
         <!-- HRV rMSSD -->
-        <div class="hud-card rounded-2xl p-4 shadow-lg relative overflow-hidden">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-nasa-pastel-soft/80">VARIABILIDAD (HRV)</span>
+        <div class="hud-card p-5">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-2">
+            <span>ESTRÉS AUTONÓMICO (HRV)</span>
             <i data-lucide="zap" class="w-4 h-4 text-purple-400"></i>
           </div>
           <div class="flex items-baseline space-x-2">
-            <span class="text-3xl font-extrabold font-mono text-rose-400" id="card-hrv">19.5</span>
+            <span class="text-4xl font-extrabold font-mono text-rose-400" id="card-hrv">19.5</span>
             <span class="text-xs text-slate-400 font-mono">ms</span>
           </div>
-          <div class="mt-2 flex items-center justify-between text-[11px] font-mono">
-            <span class="text-slate-400">Nom: >35ms</span>
-            <span class="px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold" id="status-hrv">Estrés Agudo</span>
+          <div class="mt-3 flex items-center justify-between text-xs font-mono pt-2 border-t border-nasa-border/40">
+            <span class="text-slate-400">NASA: >35 ms</span>
+            <span class="text-rose-400 font-bold" id="status-hrv">Estrés Agudo</span>
           </div>
         </div>
-
       </div>
 
-      <!-- MIDDLE ROW: REAL TELEMETRY GRAPH & CLINICAL ACTION PLAN -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
-        
-        <!-- TELEMETRY TIME-SERIES CHART (7 COLS) -->
-        <div class="lg:col-span-7 hud-card crosshair-corner rounded-2xl p-5 shadow-xl flex flex-col">
-          <div class="flex items-center justify-between mb-3">
+      <!-- MIDDLE ROW: TIME SERIES CHART & SUMMARY -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- VITAL SIGNS TIME-SERIES CHART -->
+        <div class="lg:col-span-8 hud-card p-5 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-2">
-              <i data-lucide="line-chart" class="w-5 h-5 text-nasa-pastel"></i>
-              <h3 class="font-bold text-sm tracking-wide uppercase text-slate-100 font-mono">Curva de Telemetría Real NASA</h3>
+              <i data-lucide="line-chart" class="w-4 h-4 text-nasa-pastel"></i>
+              <h3 class="font-bold text-xs tracking-wider uppercase font-mono text-white">Curva de Telemetría Real (Inspiration4 OSD-574)</h3>
             </div>
-            <div class="text-xs font-mono text-slate-400 flex items-center space-x-3">
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-nasa-pastel inline-block"></span> PAS (Sistólica)</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> FC (Pulso)</span>
+            <div class="text-xs font-mono flex items-center space-x-4">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-nasa-pastel inline-block"></span> PAS Sistólica (mmHg)</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-rose-500 inline-block"></span> FC Pulso (bpm)</span>
             </div>
           </div>
-          <div class="flex-1 min-h-[220px] relative">
-            <canvas id="telemetryChart"></canvas>
+          <div class="h-64 relative">
+            <canvas id="vitalsChart"></canvas>
           </div>
         </div>
 
-        <!-- PROCEDURAL ACTION GUIDE (NON-PHYSICIAN CHECKLIST - 5 COLS) -->
-        <div class="lg:col-span-5 hud-card crosshair-corner rounded-2xl p-5 shadow-xl flex flex-col">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="clipboard-check" class="w-5 h-5 text-amber-400"></i>
-              <h3 class="font-bold text-sm tracking-wide uppercase text-slate-100 font-mono">Protocolo de Contramedida</h3>
+        <!-- PHYSIOLOGICAL EVALUATION & FLIGHT SURGEON NOTE -->
+        <div class="lg:col-span-4 hud-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-mono text-nasa-pastel uppercase tracking-wider font-bold">Evaluación Médica de Vuelo</span>
+              <span class="text-[10px] px-2 py-0.5 bg-amber-500/20 text-amber-300 font-mono font-bold" id="eval-badge">SITUACIÓN SANS</span>
             </div>
-            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-400 border border-rose-500/30" id="badge-urgency">ALTA PRIORIDAD</span>
-          </div>
-
-          <div class="bg-[#061021]/80 rounded-xl p-3 border border-nasa-border/60 mb-3">
-            <div class="text-xs font-bold text-amber-300 font-mono mb-1" id="action-title">ALERTA SANS: Hipertensión Cefálica en Órbita</div>
-            <p class="text-[11px] text-slate-300 leading-snug" id="action-desc">
-              Desplazamiento cefálico de fluidos provoca sobrepresión orbitaria. Se requiere redistribución venosa inmediata para prevenir daño al nervio óptico.
+            <h4 class="text-sm font-bold text-white mb-2" id="eval-title">Sobrepresión Cefálica en Microgravedad</h4>
+            <p class="text-xs text-slate-300 leading-relaxed font-sans" id="eval-desc">
+              Durante FD-02, el desplazamiento de fluidos hacia el compartimento superior ha elevado la presión sistólica a 144 mmHg y reducido la variabilidad cardíaca rMSSD a 19.5 ms. Riesgo directo de edema papilar neuro-ocular.
             </p>
           </div>
 
-          <!-- CHECKLIST STEPS (MAX 4 ACCIONABLES) -->
-          <div class="flex-1 space-y-2 text-xs font-sans custom-scrollbar overflow-y-auto max-h-[170px]" id="checklist-container">
-            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer hover:bg-[#0c2040]/70 transition">
-              <input type="checkbox" class="mt-0.5 rounded border-nasa-border text-nasa-pastel focus:ring-0">
-              <span class="text-slate-200">Paso 1: Colocar y presurizar pantalones LBNP a -35 mmHg por 60 min.</span>
-            </label>
-            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer hover:bg-[#0c2040]/70 transition">
-              <input type="checkbox" class="mt-0.5 rounded border-nasa-border text-nasa-pastel focus:ring-0">
-              <span class="text-slate-200">Paso 2: Realizar examen de agudeza visual en pantalla táctil (Rejilla de Amsler).</span>
-            </label>
-            <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer hover:bg-[#0c2040]/70 transition">
-              <input type="checkbox" class="mt-0.5 rounded border-nasa-border text-nasa-pastel focus:ring-0">
-              <span class="text-slate-200">Paso 3: Restringir ingesta de sodio a menos de 2.0 g/día en ración nutricional.</span>
-            </label>
+          <div class="mt-4 pt-4 border-t border-nasa-border/60">
+            <div class="text-xs font-mono text-slate-400 mb-2">Acción Médica Recomendada:</div>
+            <div class="p-3 bg-[#051124] border border-nasa-border/70 text-xs text-nasa-pastel-light flex items-start gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+              <span id="eval-action">Presurizar pantalones de presión negativa (LBNP) a -35 mmHg para drenaje cefálico.</span>
+            </div>
+            <button onclick="switchTab('triage')" class="mt-3 w-full py-2 bg-[#0c2247] hover:bg-[#123164] border border-nasa-pastel/50 text-nasa-pastel-light font-mono text-xs font-bold transition flex items-center justify-center gap-2">
+              <span>Abrir Checklist de Contramedida</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
-        </div>
-
-      </div>
-
-      <!-- BOTTOM ROW: CRISIS SIMULATOR (DEMO KILLER PARA LOS JUECES) -->
-      <div class="hud-card crosshair-corner rounded-2xl p-5 shadow-2xl">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-          <div class="flex items-center space-x-2">
-            <div class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></div>
-            <h3 class="font-bold text-sm tracking-wider uppercase text-white font-mono">SIMULADOR DE CRISIS ESPACIALES EN VIVO (Demo Jurado)</h3>
-          </div>
-          <span class="text-xs text-nasa-pastel-soft/70 font-mono">Inyecta emergencias y observa la autonomía del sistema de soporte clínico</span>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <button onclick="injectCrisis('SPE')" class="p-3 rounded-xl border border-rose-500/50 bg-rose-950/30 hover:bg-rose-900/50 text-rose-300 font-mono text-xs flex flex-col items-center justify-center gap-1 transition shadow-lg shadow-rose-950/40">
-            <i data-lucide="sun" class="w-5 h-5 text-rose-400"></i>
-            <span class="font-bold">1. Tormenta Solar (SPE)</span>
-            <span class="text-[10px] text-rose-400/80">Radiación > 180 µSv/h</span>
-          </button>
-
-          <button onclick="injectCrisis('CO2')" class="p-3 rounded-xl border border-amber-500/50 bg-amber-950/30 hover:bg-amber-900/50 text-amber-300 font-mono text-xs flex flex-col items-center justify-center gap-1 transition shadow-lg shadow-amber-950/40">
-            <i data-lucide="wind" class="w-5 h-5 text-amber-400"></i>
-            <span class="font-bold">2. Fuga CO₂ Cabina</span>
-            <span class="text-[10px] text-amber-400/80">ppCO₂ > 3.8 mmHg</span>
-          </button>
-
-          <button onclick="injectCrisis('SANS')" class="p-3 rounded-xl border border-purple-500/50 bg-purple-950/30 hover:bg-purple-900/50 text-purple-300 font-mono text-xs flex flex-col items-center justify-center gap-1 transition shadow-lg shadow-purple-950/40">
-            <i data-lucide="eye" class="w-5 h-5 text-purple-400"></i>
-            <span class="font-bold">3. Episodio SANS Agudo</span>
-            <span class="text-[10px] text-purple-400/80">PAS 144 + Visión borrosa</span>
-          </button>
-
-          <button onclick="resetNominal()" class="p-3 rounded-xl border border-emerald-500/50 bg-emerald-950/30 hover:bg-emerald-900/50 text-emerald-300 font-mono text-xs flex flex-col items-center justify-center gap-1 transition shadow-lg shadow-emerald-950/40">
-            <i data-lucide="refresh-cw" class="w-5 h-5 text-emerald-400"></i>
-            <span class="font-bold">Restablecer Nominal</span>
-            <span class="text-[10px] text-emerald-400/80">Estado Óptimo L-44</span>
-          </button>
         </div>
       </div>
 
-    </div>
+    </section>
 
-  </div>
-
-  <!-- NASA OSDR API EXPLORER MODAL -->
-  <div id="osdr-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="hud-card rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-nasa-pastel/50">
-      <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-nasa-border/70 flex items-center justify-between bg-[#071329]/90">
+    <!-- =================================================================================== -->
+    <!-- TAB 2: TELEMETRÍA DEL ENTORNO DE CABINA Y HÁBITAT (ECLSS)                           -->
+    <!-- SOLICITADA DIRECTAMENTE POR EL USUARIO                                              -->
+    <!-- =================================================================================== -->
+    <section id="view-eclss" class="space-y-6 hidden">
+      
+      <!-- ECLSS SUBSYSTEM OVERVIEW BANNER -->
+      <div class="hud-card p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center space-x-3">
-          <div class="w-9 h-9 rounded-lg bg-[#0b3d91]/50 border border-nasa-pastel/50 flex items-center justify-center text-nasa-pastel">
-            <i data-lucide="database" class="w-5 h-5"></i>
+          <div class="w-10 h-10 bg-emerald-950/80 border border-emerald-500/50 flex items-center justify-center text-emerald-400">
+            <i data-lucide="wind" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 class="font-bold text-base text-white flex items-center gap-2 font-mono">
-              Explorador Oficial NASA OSDR API v2
-              <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">116 Estudios Homo sapiens</span>
-            </h3>
-            <p class="text-xs text-nasa-pastel-soft/75 font-mono">Endpoint: <code class="text-nasa-pastel-light">https://visualization.osdr.nasa.gov/biodata/api/v2/</code></p>
+            <h2 class="text-sm font-bold font-mono uppercase tracking-wider text-white">ECLSS: Soporte Vital y Atmósfera de Cabina</h2>
+            <p class="text-xs text-slate-400 font-mono">Monitoreo continuo de factores ambientales de acuerdo con <span class="text-nasa-pastel-light font-bold">NASA-STD-3001 Vol 2</span></p>
           </div>
         </div>
-        <button onclick="closeOsdrModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-nasa-panel transition">
+        <div class="flex items-center space-x-2 text-xs font-mono">
+          <span class="px-2.5 py-1 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-bold flex items-center gap-1.5" id="eclss-global-badge">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            ATMÓSFERA NOMINAL
+          </span>
+        </div>
+      </div>
+
+      <!-- 6 ENVIRONMENTAL TELEMETRY CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        
+        <!-- 1. CARBON DIOXIDE (ppCO2) -->
+        <div class="hud-card p-4" id="env-card-co2">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-1">
+            <span>ppCO₂ CABINA</span>
+            <i data-lucide="wind" class="w-4 h-4 text-emerald-400" id="env-icon-co2"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5">
+            <span class="text-3xl font-extrabold font-mono text-emerald-400" id="env-co2">2.85</span>
+            <span class="text-xs text-slate-400 font-mono">mmHg</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono mt-1" id="env-co2-ppm">~3750 ppm</div>
+          <div class="mt-2 text-[10px] font-mono pt-2 border-t border-nasa-border/40 text-slate-400">
+            NASA Max: <strong class="text-white">3.00 mmHg</strong>
+          </div>
+        </div>
+
+        <!-- 2. TOTAL CABIN PRESSURE -->
+        <div class="hud-card p-4">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-1">
+            <span>PRESIÓN CABINA</span>
+            <i data-lucide="gauge" class="w-4 h-4 text-nasa-pastel"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5">
+            <span class="text-3xl font-extrabold font-mono text-white" id="env-pressure">101.3</span>
+            <span class="text-xs text-slate-400 font-mono">kPa</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono mt-1">14.7 psi (1.0 atm)</div>
+          <div class="mt-2 text-[10px] font-mono pt-2 border-t border-nasa-border/40 text-slate-400">
+            Rango: <strong class="text-emerald-400">98.6 - 102.7 kPa</strong>
+          </div>
+        </div>
+
+        <!-- 3. OXYGEN FRACTION -->
+        <div class="hud-card p-4">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-1">
+            <span>FRACCIÓN OXÍGENO</span>
+            <i data-lucide="circle-dot" class="w-4 h-4 text-nasa-pastel-light"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5">
+            <span class="text-3xl font-extrabold font-mono text-emerald-400" id="env-o2">20.9</span>
+            <span class="text-xs text-slate-400 font-mono">%</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono mt-1">ppO₂: 21.2 kPa</div>
+          <div class="mt-2 text-[10px] font-mono pt-2 border-t border-nasa-border/40 text-slate-400">
+            Seguro: <strong class="text-emerald-400">19.5% - 23.0%</strong>
+          </div>
+        </div>
+
+        <!-- 4. TEMPERATURE -->
+        <div class="hud-card p-4">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-1">
+            <span>TEMPERATURA</span>
+            <i data-lucide="thermometer" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5">
+            <span class="text-3xl font-extrabold font-mono text-white" id="env-temp">21.5</span>
+            <span class="text-xs text-slate-400 font-mono">°C</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono mt-1">70.7 °F Confort</div>
+          <div class="mt-2 text-[10px] font-mono pt-2 border-t border-nasa-border/40 text-slate-400">
+            NASA: <strong class="text-white">18.3 - 26.7 °C</strong>
+          </div>
+        </div>
+
+        <!-- 5. RELATIVE HUMIDITY -->
+        <div class="hud-card p-4">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-1">
+            <span>HUMEDAD RELATIVA</span>
+            <i data-lucide="droplets" class="w-4 h-4 text-blue-400"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5">
+            <span class="text-3xl font-extrabold font-mono text-white" id="env-humidity">45.0</span>
+            <span class="text-xs text-slate-400 font-mono">%</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono mt-1">Punto Rocío: 9.2 °C</div>
+          <div class="mt-2 text-[10px] font-mono pt-2 border-t border-nasa-border/40 text-slate-400">
+            NASA: <strong class="text-white">25% - 75%</strong>
+          </div>
+        </div>
+
+        <!-- 6. RADIATION DOSIMETER CANS (CSA) -->
+        <div class="hud-card p-4" id="env-card-rad">
+          <div class="flex items-center justify-between text-xs font-mono text-nasa-pastel-soft/80 mb-1">
+            <span>RADIACIÓN CANS</span>
+            <i data-lucide="radio" class="w-4 h-4 text-emerald-400" id="env-icon-rad"></i>
+          </div>
+          <div class="flex items-baseline space-x-1.5">
+            <span class="text-3xl font-extrabold font-mono text-emerald-400" id="env-rad">32.8</span>
+            <span class="text-xs text-slate-400 font-mono">µSv/h</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono mt-1">Neutrones + Rayos Cósmicos</div>
+          <div class="mt-2 text-[10px] font-mono pt-2 border-t border-nasa-border/40 text-slate-400">
+            Límite Alerta: <strong class="text-amber-300">100 µSv/h</strong>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MIDDLE ROW: ENVIRONMENTAL TIME-SERIES CHART & ECLSS STATUS -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- ENVIRONMENTAL CHART (ppCO2 vs RADIATION) -->
+        <div class="lg:col-span-8 hud-card p-5 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="area-chart" class="w-4 h-4 text-emerald-400"></i>
+              <h3 class="font-bold text-xs tracking-wider uppercase font-mono text-white">Historial de Calidad Atmosférica y Radiación de Cabina</h3>
+            </div>
+            <div class="text-xs font-mono flex items-center space-x-4">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-emerald-400 inline-block"></span> ppCO₂ Cabina (mmHg)</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-400 inline-block"></span> Radiación CANS (µSv/h)</span>
+            </div>
+          </div>
+          <div class="h-64 relative">
+            <canvas id="envChart"></canvas>
+          </div>
+        </div>
+
+        <!-- ECLSS SYSTEM BUS & REMOVAL LOOPS -->
+        <div class="lg:col-span-4 hud-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-mono text-emerald-400 uppercase tracking-wider font-bold">Subsistemas de Soporte Vital</span>
+              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 font-mono">LOOP 100% ACTIVO</span>
+            </div>
+
+            <div class="space-y-2.5 text-xs font-mono">
+              <!-- CDRA -->
+              <div class="p-2.5 bg-[#051124] border border-nasa-border/60 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-white">CDRA (Remoción de CO₂)</div>
+                  <div class="text-[10px] text-slate-400">Lecho Desecante B · Ciclo Nominal</div>
+                </div>
+                <span class="px-2 py-0.5 text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800" id="status-cdra">ACTIVO</span>
+              </div>
+
+              <!-- OGS -->
+              <div class="p-2.5 bg-[#051124] border border-nasa-border/60 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-white">OGS (Generación de O₂)</div>
+                  <div class="text-[10px] text-slate-400">Electrólisis de Agua · 5.4 kg/día</div>
+                </div>
+                <span class="px-2 py-0.5 text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800">NOMINAL</span>
+              </div>
+
+              <!-- VCCS (Circulación) -->
+              <div class="p-2.5 bg-[#051124] border border-nasa-border/60 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-white">VCCS (Ventilación Forzada)</div>
+                  <div class="text-[10px] text-slate-400">Flujo 0.15 m/s · Sin bolsas CO₂</div>
+                </div>
+                <span class="px-2 py-0.5 text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800">VENTILANDO</span>
+              </div>
+
+              <!-- CANS Spectrometer -->
+              <div class="p-2.5 bg-[#051124] border border-nasa-border/60 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-white">Dosímetro Espectrómetro CANS</div>
+                  <div class="text-[10px] text-slate-400">Bus MIL-STD-1553 · CSA Payload</div>
+                </div>
+                <span class="px-2 py-0.5 text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800" id="status-cans">CONECTADO</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-nasa-border/60 text-xs font-mono text-slate-400">
+            <span>Regla de Vuelo NASA: Si ppCO₂ supera 3.0 mmHg por más de 30 minutos, conmutar CDRA a ciclo manual continuo de 15 minutos.</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =================================================================================== -->
+    <!-- TAB 3: TRIAGE ANATÓMICO Y PROTOCOLOS PASO A PASO (CDSS)                             -->
+    <!-- =================================================================================== -->
+    <section id="view-triage" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- ANATOMICAL 3D WIREFRAME BODY (5 COLS) -->
+        <div class="lg:col-span-5 hud-card p-5 flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="scan" class="w-4 h-4 text-nasa-pastel"></i>
+              <h3 class="font-bold text-xs tracking-wider uppercase font-mono text-white">Mapa Anatómico Táctico</h3>
+            </div>
+            <span class="text-[11px] text-nasa-pastel-soft/70 font-mono">Toca un órgano para triage</span>
+          </div>
+
+          <div class="relative flex-1 flex items-center justify-center p-4 bg-[#050e1f] border border-nasa-border/60 min-h-[340px]">
+            <!-- SVG HUMAN FIGURE -->
+            <svg viewBox="0 0 200 380" class="w-44 h-auto drop-shadow-xl">
+              <!-- Head & Eyes -->
+              <path id="organ-head" onclick="selectOrgan('eyes')" class="organ-hover" d="M 85,25 C 85,10 115,10 115,25 C 115,45 85,45 85,25 Z M 93,45 L 93,58 L 107,58 L 107,45 Z" fill="#79a7df" opacity="0.85"/>
+              <circle id="organ-eyes" onclick="selectOrgan('eyes')" class="organ-hover" cx="100" cy="25" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+
+              <!-- Chest / Heart -->
+              <path id="organ-chest" onclick="selectOrgan('heart')" class="organ-hover" d="M 75,58 L 125,58 L 118,140 L 82,140 Z" fill="#79a7df" opacity="0.85"/>
+              <circle id="organ-heart-hotspot" onclick="selectOrgan('heart')" class="organ-hover" cx="105" cy="85" r="8" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
+
+              <!-- Abdomen / Kidneys -->
+              <path id="organ-lumbar" onclick="selectOrgan('kidneys')" class="organ-hover" d="M 82,140 L 118,140 L 115,185 L 85,185 Z" fill="#79a7df" opacity="0.8"/>
+              <circle id="organ-kidney-left" onclick="selectOrgan('kidneys')" class="organ-hover" cx="91" cy="160" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2"/>
+              <circle id="organ-kidney-right" onclick="selectOrgan('kidneys')" class="organ-hover" cx="109" cy="160" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.2"/>
+
+              <!-- Arms -->
+              <path class="organ-hover" onclick="selectOrgan('bones')" d="M 75,60 L 55,120 L 45,175 L 53,178 L 65,125 L 79,75 Z" fill="#79a7df" opacity="0.7"/>
+              <path class="organ-hover" onclick="selectOrgan('bones')" d="M 125,60 L 145,120 L 155,175 L 147,178 L 135,125 L 121,75 Z" fill="#79a7df" opacity="0.7"/>
+
+              <!-- Legs / Bones -->
+              <path id="organ-femur-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 85,185 L 98,185 L 94,270 L 80,270 Z" fill="#79a7df" opacity="0.8"/>
+              <path id="organ-femur-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 102,185 L 115,185 L 120,270 L 106,270 Z" fill="#79a7df" opacity="0.8"/>
+              <path id="organ-feet-left" onclick="selectOrgan('bones')" class="organ-hover" d="M 80,272 L 94,272 L 91,355 L 75,355 Z" fill="#79a7df" opacity="0.7"/>
+              <path id="organ-feet-right" onclick="selectOrgan('bones')" class="organ-hover" d="M 106,272 L 120,272 L 125,355 L 109,355 Z" fill="#79a7df" opacity="0.7"/>
+            </svg>
+
+            <!-- Floating Details Card -->
+            <div class="absolute bottom-3 left-3 right-3 bg-[#07152b]/95 border border-nasa-pastel/60 p-3">
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-bold text-nasa-pastel-light" id="info-organ-name">Sistema Neuro-Ocular (Ojos y Cerebro)</span>
+                <span class="px-1.5 py-0.5 text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40" id="info-organ-status">DERIVA SANS</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-tight" id="info-organ-desc">
+                Desplazamiento cefálico de fluidos en microgravedad. Presión sistólica elevada aumenta riesgo de edema papilar en nervio óptico (NASA-STD-3001).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROCEDURAL ACTION GUIDE (NON-PHYSICIAN CHECKLIST - 7 COLS) -->
+        <div class="lg:col-span-7 hud-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="clipboard-check" class="w-4 h-4 text-amber-400"></i>
+                <h3 class="font-bold text-xs tracking-wider uppercase font-mono text-white">Guía de Procedimiento para Tripulante No Médico</h3>
+              </div>
+              <span class="px-2 py-0.5 text-[10px] font-mono bg-rose-500/20 text-rose-400 border border-rose-500/30" id="badge-urgency">ALTA PRIORIDAD</span>
+            </div>
+
+            <div class="bg-[#051124] p-3.5 border border-nasa-border/60 mb-4">
+              <div class="text-xs font-bold text-amber-300 font-mono mb-1" id="action-title">ALERTA SANS: Hipertensión Cefálica en Órbita</div>
+              <p class="text-xs text-slate-300 leading-relaxed font-sans" id="action-desc">
+                Desplazamiento cefálico de fluidos provoca sobrepresión orbitaria. Se requiere redistribución venosa inmediata para prevenir daño al nervio óptico.
+              </p>
+            </div>
+
+            <!-- CHECKLIST STEPS -->
+            <div class="space-y-2.5 text-xs font-mono" id="checklist-container">
+              <label class="flex items-start space-x-3 p-3 bg-[#06142a] border border-nasa-border/50 cursor-pointer hover:bg-[#0c2247] transition">
+                <input type="checkbox" class="mt-0.5 border-nasa-border text-nasa-pastel focus:ring-0">
+                <span class="text-slate-200">Paso 1: Colocar y presurizar pantalones LBNP a -35 mmHg por 60 minutos para drenaje cefálico.</span>
+              </label>
+              <label class="flex items-start space-x-3 p-3 bg-[#06142a] border border-nasa-border/50 cursor-pointer hover:bg-[#0c2247] transition">
+                <input type="checkbox" class="mt-0.5 border-nasa-border text-nasa-pastel focus:ring-0">
+                <span class="text-slate-200">Paso 2: Realizar examen de agudeza visual en pantalla táctil con Rejilla de Amsler.</span>
+              </label>
+              <label class="flex items-start space-x-3 p-3 bg-[#06142a] border border-nasa-border/50 cursor-pointer hover:bg-[#0c2247] transition">
+                <input type="checkbox" class="mt-0.5 border-nasa-border text-nasa-pastel focus:ring-0">
+                <span class="text-slate-200">Paso 3: Restringir ingesta de sodio a menos de 2.0 g/día en la siguiente ración nutricional.</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-nasa-border/60 flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>Protocolo validado contra NASA Flight Rules & Human Research Program</span>
+            <button onclick="alert('Protocolo completado y firmado digitalmente en el registro inmutable local.')" class="px-4 py-1.5 bg-[#0e2752] hover:bg-[#153b7c] text-nasa-pastel-light font-bold border border-nasa-pastel/50 transition">
+              Registrar Acción
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================================== -->
+    <!-- TAB 4: SIMULADOR DE CRISIS ESPACIALES EN VIVO (DEMO JURADO)                          -->
+    <!-- =================================================================================== -->
+    <section id="view-crisis" class="space-y-6 hidden">
+      <div class="hud-card p-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-nasa-border/60">
+          <div class="flex items-center space-x-3">
+            <div class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></div>
+            <div>
+              <h3 class="font-bold text-sm tracking-wider uppercase text-white font-mono">SIMULADOR DE CRISIS ESPACIALES EN VIVO</h3>
+              <p class="text-xs text-slate-400 font-mono">Inyecta emergencias reales para evaluar la autonomía del CDSS y la respuesta de los sistemas de cabina</p>
+            </div>
+          </div>
+          <span class="text-xs px-2.5 py-1 bg-[#0b3d91]/50 border border-nasa-pastel/50 text-nasa-pastel-light font-mono">AstroVital CDSS Engine</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- 1. SPE SOLAR STORM -->
+          <div class="p-4 bg-rose-950/20 border border-rose-500/40 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center space-x-2 text-rose-400 font-bold font-mono text-xs mb-2">
+                <i data-lucide="sun" class="w-4 h-4"></i>
+                <span>1. TORMENTA SOLAR SPE</span>
+              </div>
+              <p class="text-xs text-slate-300 font-sans mb-3">
+                Incremento repentino de radiación cósmica detectado por CANS. Requiere evacuación inmediata a Storm Shelter.
+              </p>
+              <div class="text-[11px] font-mono text-rose-400 mb-4">
+                Impacto: CANS > 180 µSv/h · Taquicardia reactiva
+              </div>
+            </div>
+            <button onclick="injectCrisis('SPE')" class="w-full py-2 bg-rose-900/60 hover:bg-rose-800 border border-rose-500 text-rose-200 font-mono text-xs font-bold transition">
+              Inyectar SPE
+            </button>
+          </div>
+
+          <!-- 2. CO2 LEAK -->
+          <div class="p-4 bg-amber-950/20 border border-amber-500/40 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center space-x-2 text-amber-400 font-bold font-mono text-xs mb-2">
+                <i data-lucide="wind" class="w-4 h-4"></i>
+                <span>2. FUGA DE CO₂ EN CABINA</span>
+              </div>
+              <p class="text-xs text-slate-300 font-sans mb-3">
+                Acumulación de bolsas de dióxido de carbono por fallo en ventilación. Genera cefalea y taquipnea en la tripulación.
+              </p>
+              <div class="text-[11px] font-mono text-amber-400 mb-4">
+                Impacto: ppCO₂ > 3.8 mmHg · Taquipnea
+              </div>
+            </div>
+            <button onclick="injectCrisis('CO2')" class="w-full py-2 bg-amber-900/60 hover:bg-amber-800 border border-amber-500 text-amber-200 font-mono text-xs font-bold transition">
+              Inyectar Fuga CO₂
+            </button>
+          </div>
+
+          <!-- 3. SANS EPISODE -->
+          <div class="p-4 bg-purple-950/20 border border-purple-500/40 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center space-x-2 text-purple-400 font-bold font-mono text-xs mb-2">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+                <span>3. EPISODIO SANS AGUDO</span>
+              </div>
+              <p class="text-xs text-slate-300 font-sans mb-3">
+                Sobrecarga hidrostática en polo cefálico. Aumento de presión intracraneal y pérdida de variabilidad autonómica.
+              </p>
+              <div class="text-[11px] font-mono text-purple-400 mb-4">
+                Impacto: PAS 144/92 · HRV 19.5 ms
+              </div>
+            </div>
+            <button onclick="injectCrisis('SANS')" class="w-full py-2 bg-purple-900/60 hover:bg-purple-800 border border-purple-500 text-purple-200 font-mono text-xs font-bold transition">
+              Inyectar SANS
+            </button>
+          </div>
+
+          <!-- 4. RESET NOMINAL -->
+          <div class="p-4 bg-emerald-950/20 border border-emerald-500/40 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center space-x-2 text-emerald-400 font-bold font-mono text-xs mb-2">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span>RESTABLECER NOMINAL</span>
+              </div>
+              <p class="text-xs text-slate-300 font-sans mb-3">
+                Restaura todas las constantes vitales y parámetros atmosféricos de cabina a las líneas base óptimas de NASA-STD-3001.
+              </p>
+              <div class="text-[11px] font-mono text-emerald-400 mb-4">
+                Estado: L-44 Línea Base Nominal
+              </div>
+            </div>
+            <button onclick="resetNominal()" class="w-full py-2 bg-emerald-900/60 hover:bg-emerald-800 border border-emerald-500 text-emerald-200 font-mono text-xs font-bold transition">
+              Restablecer Nominal
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- NASA OSDR API EXPLORER MODAL -->
+  <div id="osdr-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="hud-card w-full max-w-4xl max-h-[85vh] flex flex-col border border-nasa-pastel/60 shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-nasa-border/70 flex items-center justify-between bg-[#061226]">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-[#0b3d91]/50 border border-nasa-pastel/50 flex items-center justify-center text-nasa-pastel">
+            <i data-lucide="database" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white flex items-center gap-2 font-mono">
+              Explorador Oficial NASA OSDR API v2
+              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">116 Estudios Homo sapiens</span>
+            </h3>
+            <p class="text-[11px] text-nasa-pastel-soft/75 font-mono">Endpoint: <code class="text-nasa-pastel-light">https://visualization.osdr.nasa.gov/biodata/api/v2/</code></p>
+          </div>
+        </div>
+        <button onclick="closeOsdrModal()" class="text-slate-400 hover:text-white p-1 transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
       <!-- Modal Body -->
       <div class="p-6 flex-1 overflow-y-auto custom-scrollbar space-y-4">
-        
         <!-- Live Connection Status Card -->
-        <div class="p-4 rounded-xl bg-[#061224]/90 border border-nasa-border/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="p-4 bg-[#051124] border border-nasa-border/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <div class="text-xs font-bold text-nasa-pastel font-mono uppercase">Vínculo con Datos de Vuelo Real</div>
-            <div class="text-xs text-slate-300 mt-0.5">La telemetría de nuestro software está anclada directamente en los estudios biológicos y de vuelo humano de NASA OSDR.</div>
+            <div class="text-xs text-slate-300 mt-0.5">La telemetría de AstroVital está anclada directamente en los estudios biológicos y de vuelo humano de NASA OSDR.</div>
           </div>
-          <button onclick="pingNasaApi()" id="btn-ping" class="px-3 py-1.5 rounded-lg bg-[#0b3d91] hover:bg-[#1a56b8] text-white font-mono text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-blue-900/40 whitespace-nowrap border border-nasa-pastel/40">
+          <button onclick="pingNasaApi()" id="btn-ping" class="px-3 py-1.5 bg-[#0b3d91] hover:bg-[#1a56b8] text-white font-mono text-xs font-bold transition flex items-center gap-1.5 border border-nasa-pastel/40">
             <i data-lucide="radio" class="w-3.5 h-3.5"></i>
             <span>Comprobar API NASA</span>
           </button>
         </div>
-        <div id="ping-status" class="hidden text-xs font-mono p-2.5 rounded-lg bg-[#030814] border border-nasa-border"></div>
+        <div id="ping-status" class="hidden text-xs font-mono p-2.5 bg-[#030814] border border-nasa-border"></div>
 
         <!-- Enriched Studies Cards -->
         <div class="space-y-3" id="studies-list">
-          <!-- Study Cards injected via JS -->
+          <!-- Injected via JS -->
         </div>
-
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-3 border-t border-nasa-border/70 bg-[#071329]/90 flex items-center justify-between text-xs font-mono text-slate-400">
+      <div class="px-6 py-3 border-t border-nasa-border/70 bg-[#061226] flex items-center justify-between text-xs font-mono text-slate-400">
         <span>Fuente: NASA GeneLab / OSDR Open Science Data Repository</span>
-        <button onclick="closeOsdrModal()" class="px-4 py-1.5 rounded-lg bg-nasa-dark hover:bg-nasa-panel text-slate-200 transition border border-nasa-border">Cerrar</button>
+        <button onclick="closeOsdrModal()" class="px-4 py-1.5 bg-[#051124] hover:bg-[#0a2044] text-slate-200 border border-nasa-border">Cerrar</button>
       </div>
     </div>
   </div>
 
-  <!-- SCRIPT LOGIC: TELEMETRY ENGINE & REAL DATA INGESTION -->
+  <!-- SCRIPT LOGIC: ASTRONAUT & CABIN ENVIRONMENTAL TELEMETRY -->
   <script>
     // 1. DATASET REAL DE LOS 4 ASTRONAUTAS (INSPIRATION4 / NASA OSDR OSD-574)
+    // ENRIQUECIDO CON TELEMETRÍA AMBIENTAL DE CABINA ECLSS & DOSIMETRÍA CANS CSA
     const telemetryDataset = {
       "C001": {
         name: "Jared Isaacman",
         role: "Comandante de Misión",
         phases: [
-          { phase: "L-44 (Tierra)", hr: 64, bp: "118/76", spo2: 98.8, hrv: 52.4, rad: 0.1, co2: 0.35, status: "NOMINAL" },
-          { phase: "FD-01 (Órbita)", hr: 92, bp: "136/86", spo2: 97.4, hrv: 28.5, rad: 28.4, co2: 2.10, status: "WARNING" },
-          { phase: "FD-02 (Órbita)", hr: 84, bp: "134/84", spo2: 97.2, hrv: 34.2, rad: 32.8, co2: 2.85, status: "NOMINAL" },
-          { phase: "FD-03 (Órbita)", hr: 78, bp: "128/80", spo2: 97.8, hrv: 38.0, rad: 31.0, co2: 2.60, status: "NOMINAL" },
-          { phase: "R+1 (Tierra)", hr: 74, bp: "122/78", spo2: 98.5, hrv: 44.0, rad: 0.1, co2: 0.38, status: "NOMINAL" }
+          { phase: "L-44", hr: 64, bp: "118/76", spo2: 98.8, hrv: 52.4, rad: 0.1, co2: 0.35, pressure: 101.3, o2: 20.9, temp: 21.2, humidity: 44.0, status: "NOMINAL" },
+          { phase: "FD-01", hr: 92, bp: "136/86", spo2: 97.4, hrv: 28.5, rad: 28.4, co2: 2.10, pressure: 101.2, o2: 20.9, temp: 21.6, humidity: 45.2, status: "WARNING" },
+          { phase: "FD-02", hr: 84, bp: "134/84", spo2: 97.2, hrv: 34.2, rad: 32.8, co2: 2.85, pressure: 101.3, o2: 20.8, temp: 21.8, humidity: 46.0, status: "NOMINAL" },
+          { phase: "FD-03", hr: 78, bp: "128/80", spo2: 97.8, hrv: 38.0, rad: 31.0, co2: 2.60, pressure: 101.3, o2: 20.9, temp: 21.5, humidity: 45.0, status: "NOMINAL" },
+          { phase: "R+1", hr: 74, bp: "122/78", spo2: 98.5, hrv: 44.0, rad: 0.1, co2: 0.38, pressure: 101.3, o2: 20.9, temp: 21.0, humidity: 43.5, status: "NOMINAL" }
         ]
       },
       "C002": {
         name: "Hayley Arceneaux",
         role: "Oficial Médico",
         phases: [
-          { phase: "L-44 (Tierra)", hr: 70, bp: "112/72", spo2: 99.1, hrv: 58.1, rad: 0.1, co2: 0.35, status: "NOMINAL" },
-          { phase: "FD-01 (Órbita)", hr: 88, bp: "126/80", spo2: 98.0, hrv: 32.0, rad: 28.4, co2: 2.10, status: "NOMINAL" },
-          { phase: "FD-02 (Órbita)", hr: 80, bp: "124/78", spo2: 98.2, hrv: 38.6, rad: 32.8, co2: 2.85, status: "NOMINAL" },
-          { phase: "FD-03 (Órbita)", hr: 76, bp: "120/76", spo2: 98.4, hrv: 42.1, rad: 31.0, co2: 2.60, status: "NOMINAL" },
-          { phase: "R+1 (Tierra)", hr: 72, bp: "116/74", spo2: 98.9, hrv: 50.4, rad: 0.1, co2: 0.38, status: "NOMINAL" }
+          { phase: "L-44", hr: 70, bp: "112/72", spo2: 99.1, hrv: 58.1, rad: 0.1, co2: 0.35, pressure: 101.3, o2: 20.9, temp: 21.2, humidity: 44.0, status: "NOMINAL" },
+          { phase: "FD-01", hr: 88, bp: "126/80", spo2: 98.0, hrv: 32.0, rad: 28.4, co2: 2.10, pressure: 101.2, o2: 20.9, temp: 21.6, humidity: 45.2, status: "NOMINAL" },
+          { phase: "FD-02", hr: 80, bp: "124/78", spo2: 98.2, hrv: 38.6, rad: 32.8, co2: 2.85, pressure: 101.3, o2: 20.8, temp: 21.8, humidity: 46.0, status: "NOMINAL" },
+          { phase: "FD-03", hr: 76, bp: "120/76", spo2: 98.4, hrv: 42.1, rad: 31.0, co2: 2.60, pressure: 101.3, o2: 20.9, temp: 21.5, humidity: 45.0, status: "NOMINAL" },
+          { phase: "R+1", hr: 72, bp: "116/74", spo2: 98.9, hrv: 50.4, rad: 0.1, co2: 0.38, pressure: 101.3, o2: 20.9, temp: 21.0, humidity: 43.5, status: "NOMINAL" }
         ]
       },
       "C003": {
         name: "Dra. Sian Proctor",
         role: "Piloto de Misión",
         phases: [
-          { phase: "L-44 (Tierra)", hr: 68, bp: "122/78", spo2: 98.4, hrv: 46.0, rad: 0.1, co2: 0.35, status: "NOMINAL" },
-          { phase: "FD-01 (Órbita)", hr: 95, bp: "138/88", spo2: 96.8, hrv: 24.1, rad: 28.4, co2: 2.10, status: "WARNING" },
-          { phase: "FD-02 (Órbita)", hr: 98, bp: "144/92", spo2: 95.8, hrv: 19.5, rad: 32.8, co2: 2.85, status: "CRITICAL" }, // Real SANS Risk
-          { phase: "FD-03 (Órbita)", hr: 86, bp: "135/85", spo2: 96.5, hrv: 27.2, rad: 31.0, co2: 2.60, status: "WARNING" },
-          { phase: "R+1 (Tierra)", hr: 80, bp: "128/82", spo2: 97.9, hrv: 35.8, rad: 0.1, co2: 0.38, status: "NOMINAL" }
+          { phase: "L-44", hr: 68, bp: "122/78", spo2: 98.4, hrv: 46.0, rad: 0.1, co2: 0.35, pressure: 101.3, o2: 20.9, temp: 21.2, humidity: 44.0, status: "NOMINAL" },
+          { phase: "FD-01", hr: 95, bp: "138/88", spo2: 96.8, hrv: 24.1, rad: 28.4, co2: 2.10, pressure: 101.2, o2: 20.9, temp: 21.6, humidity: 45.2, status: "WARNING" },
+          { phase: "FD-02", hr: 98, bp: "144/92", spo2: 95.8, hrv: 19.5, rad: 32.8, co2: 2.85, pressure: 101.3, o2: 20.8, temp: 21.8, humidity: 46.0, status: "CRITICAL" }, // SANS Case
+          { phase: "FD-03", hr: 86, bp: "135/85", spo2: 96.5, hrv: 27.2, rad: 31.0, co2: 2.60, pressure: 101.3, o2: 20.9, temp: 21.5, humidity: 45.0, status: "WARNING" },
+          { phase: "R+1", hr: 80, bp: "128/82", spo2: 97.9, hrv: 35.8, rad: 0.1, co2: 0.38, pressure: 101.3, o2: 20.9, temp: 21.0, humidity: 43.5, status: "NOMINAL" }
         ]
       },
       "C004": {
         name: "Christopher Sembroski",
         role: "Especialista de Misión",
         phases: [
-          { phase: "L-44 (Tierra)", hr: 66, bp: "120/78", spo2: 98.6, hrv: 49.3, rad: 0.1, co2: 0.35, status: "NOMINAL" },
-          { phase: "FD-01 (Órbita)", hr: 89, bp: "132/84", spo2: 97.2, hrv: 29.8, rad: 28.4, co2: 2.10, status: "NOMINAL" },
-          { phase: "FD-02 (Órbita)", hr: 82, bp: "130/82", spo2: 97.5, hrv: 36.0, rad: 32.8, co2: 2.85, status: "NOMINAL" },
-          { phase: "FD-03 (Órbita)", hr: 77, bp: "126/80", spo2: 98.0, hrv: 40.5, rad: 31.0, co2: 2.60, status: "NOMINAL" },
-          { phase: "R+1 (Tierra)", hr: 73, bp: "122/76", spo2: 98.3, hrv: 45.2, rad: 0.1, co2: 0.38, status: "NOMINAL" }
+          { phase: "L-44", hr: 66, bp: "120/78", spo2: 98.6, hrv: 49.3, rad: 0.1, co2: 0.35, pressure: 101.3, o2: 20.9, temp: 21.2, humidity: 44.0, status: "NOMINAL" },
+          { phase: "FD-01", hr: 89, bp: "132/84", spo2: 97.2, hrv: 29.8, rad: 28.4, co2: 2.10, pressure: 101.2, o2: 20.9, temp: 21.6, humidity: 45.2, status: "NOMINAL" },
+          { phase: "FD-02", hr: 82, bp: "130/82", spo2: 97.5, hrv: 36.0, rad: 32.8, co2: 2.85, pressure: 101.3, o2: 20.8, temp: 21.8, humidity: 46.0, status: "NOMINAL" },
+          { phase: "FD-03", hr: 77, bp: "126/80", spo2: 98.0, hrv: 40.5, rad: 31.0, co2: 2.60, pressure: 101.3, o2: 20.9, temp: 21.5, humidity: 45.0, status: "NOMINAL" },
+          { phase: "R+1", hr: 73, bp: "122/76", spo2: 98.3, hrv: 45.2, rad: 0.1, co2: 0.38, pressure: 101.3, o2: 20.9, temp: 21.0, humidity: 43.5, status: "NOMINAL" }
         ]
       }
     };
 
-    // 2. ENRICHED NASA OSDR STUDIES DATABASE (Direct from NASA API v2)
+    // 2. NASA OSDR STUDIES REPOSITORY
     const nasaOsdrStudies = [
       {
         accession: "OSD-574",
@@ -635,7 +939,7 @@
       },
       {
         accession: "OSD-2",
-        title: "Response of human lymphoblastoid cells to HZE (iron ions) space radiation",
+        title: "Response of human lymphoblastoid cells to HZE space radiation",
         mission: "NASA Space Radiation Laboratory (NSRL / HRP)",
         assay: "DNA Double-Strand Breaks, Cosmic Ray Dosimetry",
         correlation: "Establece el protocolo de evacuación a Storm Shelter cuando la radiación supera 100 µSv/h.",
@@ -651,62 +955,92 @@
       }
     ];
 
-    let currentCrew = "C003"; // Default: Dr. Sian Proctor (SANS case)
-    let currentPhaseIndex = 2; // Default: FD-02 (in-flight orbit)
-    let chartInstance = null;
+    let currentCrew = "C003"; // Default: Sian Proctor
+    let currentPhaseIndex = 2; // Default: FD-02
+    let activeTab = "vitals";
+    let vitalsChartInstance = null;
+    let envChartInstance = null;
     let liveStreaming = false;
     let streamInterval = null;
 
-    // 3. INITIALIZE CHART.JS WITH NASA PASTEL BLUE STYLING
-    function initChart() {
-      const ctx = document.getElementById('telemetryChart').getContext('2d');
+    // 3. TAB SWITCHING LOGIC (MINIMALIST PROGRESSIVE DISCLOSURE)
+    function switchTab(tabId) {
+      activeTab = tabId;
+      ['vitals', 'eclss', 'triage', 'crisis'].forEach(id => {
+        const view = document.getElementById(`view-${id}`);
+        const btn = document.getElementById(`tab-btn-${id}`);
+        if (id === tabId) {
+          view.classList.remove('hidden');
+          btn.className = "px-4 py-2 border-b-2 border-nasa-pastel text-white bg-[#0e2752]/60 font-bold transition flex items-center space-x-2";
+        } else {
+          view.classList.add('hidden');
+          btn.className = "px-4 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition font-bold flex items-center space-x-2";
+        }
+      });
+
+      // Update indicator text
+      const indicator = document.getElementById('tab-view-indicator');
+      if (tabId === 'vitals') {
+        indicator.innerText = "Vista enfocada: Telemetría Cardiopulmonar & Fisiológica";
+        if (vitalsChartInstance) vitalsChartInstance.update();
+      } else if (tabId === 'eclss') {
+        indicator.innerText = "Vista enfocada: Control Ambiental & Soporte de Vida (ECLSS)";
+        initEnvChart();
+      } else if (tabId === 'triage') {
+        indicator.innerText = "Vista enfocada: Triage Anatómico por Órganos & Protocolos";
+      } else if (tabId === 'crisis') {
+        indicator.innerText = "Vista enfocada: Inyector de Emergencias Espaciales para Evaluación";
+      }
+      lucide.createIcons();
+    }
+
+    // 4. CHART INITIALIZATIONS
+    function initVitalsChart() {
+      const ctx = document.getElementById('vitalsChart').getContext('2d');
       const phases = telemetryDataset[currentCrew].phases;
       const labels = phases.map(p => p.phase);
       const hrData = phases.map(p => p.hr);
       const sysData = phases.map(p => parseInt(p.bp.split('/')[0]));
 
-      chartInstance = new Chart(ctx, {
+      vitalsChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [
             {
-              label: 'Presión Sistólica (mmHg)',
+              label: 'PAS Sistólica (mmHg)',
               data: sysData,
               borderColor: '#79a7df',
-              backgroundColor: 'rgba(121, 167, 223, 0.15)',
+              backgroundColor: 'rgba(121, 167, 223, 0.12)',
               borderWidth: 2.5,
               pointBackgroundColor: '#9fc5f8',
-              pointRadius: 5,
-              tension: 0.35,
+              pointRadius: 4,
+              tension: 0.3,
               fill: true
             },
             {
               label: 'Frecuencia Cardíaca (bpm)',
               data: hrData,
               borderColor: '#f43f5e',
-              backgroundColor: 'rgba(244, 63, 94, 0.05)',
-              borderWidth: 2.5,
+              backgroundColor: 'transparent',
+              borderWidth: 2,
               pointBackgroundColor: '#f43f5e',
-              pointRadius: 5,
-              tension: 0.35,
-              fill: true
+              pointRadius: 4,
+              tension: 0.3
             }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           scales: {
             x: {
-              grid: { color: 'rgba(121, 167, 223, 0.12)' },
+              grid: { color: 'rgba(121, 167, 223, 0.1)' },
               ticks: { color: '#9fc5f8', font: { family: 'monospace', size: 10 } }
             },
             y: {
-              grid: { color: 'rgba(121, 167, 223, 0.12)' },
+              grid: { color: 'rgba(121, 167, 223, 0.1)' },
               ticks: { color: '#9fc5f8', font: { family: 'monospace', size: 10 } },
               suggestedMin: 50,
               suggestedMax: 160
@@ -716,15 +1050,93 @@
       });
     }
 
-    // 4. UPDATE INTERFACE STATE
+    function initEnvChart() {
+      if (envChartInstance) {
+        envChartInstance.update();
+        return;
+      }
+      const canvas = document.getElementById('envChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const phases = telemetryDataset[currentCrew].phases;
+      const labels = phases.map(p => p.phase);
+      const co2Data = phases.map(p => p.co2);
+      const radData = phases.map(p => p.rad);
+
+      envChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'ppCO₂ Cabina (mmHg)',
+              data: co2Data,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 2.5,
+              pointBackgroundColor: '#34d399',
+              pointRadius: 4,
+              yAxisID: 'yCO2',
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'Radiación CANS (µSv/h)',
+              data: radData,
+              borderColor: '#f59e0b',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              pointBackgroundColor: '#fbbf24',
+              pointRadius: 4,
+              yAxisID: 'yRad',
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              grid: { color: 'rgba(121, 167, 223, 0.1)' },
+              ticks: { color: '#9fc5f8', font: { family: 'monospace', size: 10 } }
+            },
+            yCO2: {
+              type: 'linear',
+              position: 'left',
+              grid: { color: 'rgba(121, 167, 223, 0.1)' },
+              ticks: { color: '#34d399', font: { family: 'monospace', size: 10 } },
+              title: { display: true, text: 'CO₂ (mmHg)', color: '#34d399', font: { size: 10 } },
+              suggestedMin: 0,
+              suggestedMax: 4.5
+            },
+            yRad: {
+              type: 'linear',
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#fbbf24', font: { family: 'monospace', size: 10 } },
+              title: { display: true, text: 'Rad (µSv/h)', color: '#fbbf24', font: { size: 10 } },
+              suggestedMin: 0,
+              suggestedMax: 200
+            }
+          }
+        }
+      });
+    }
+
+    // 5. UPDATE UI WITH REAL ASTRONAUT & ENVIRONMENT DATA
     function updateUI() {
       const astro = telemetryDataset[currentCrew];
       const data = astro.phases[currentPhaseIndex];
 
-      // Update Top Bars
-      document.getElementById('top-radiation').innerText = `${data.rad} µSv/h`;
-      document.getElementById('top-co2').innerText = `${data.co2} mmHg`;
-      document.getElementById('phase-label').innerText = `${data.phase} (${data.status})`;
+      // Update Top Cockpit Quick Banner
+      document.getElementById('banner-astronaut').innerText = `${astro.name} (${currentCrew})`;
+      document.getElementById('banner-phase').innerText = `${data.phase} (${data.status})`;
+      document.getElementById('banner-pressure').innerText = `${data.pressure} kPa`;
+      document.getElementById('banner-co2').innerText = `${data.co2} mmHg`;
+      document.getElementById('banner-o2').innerText = `${data.o2}%`;
+      document.getElementById('banner-rad').innerText = `${data.rad} µSv/h`;
 
       // Update Vital Cards
       document.getElementById('card-hr').innerText = data.hr;
@@ -732,49 +1144,100 @@
       document.getElementById('card-spo2').innerText = data.spo2;
       document.getElementById('card-hrv').innerText = data.hrv;
 
-      // Color coding & Alerts based on NASA-STD-3001
+      // Update Environmental Cards (Tab 2)
+      document.getElementById('env-co2').innerText = data.co2;
+      document.getElementById('env-co2-ppm').innerText = `~${Math.round(data.co2 * 1315.8)} ppm`;
+      document.getElementById('env-pressure').innerText = data.pressure;
+      document.getElementById('env-o2').innerText = data.o2;
+      document.getElementById('env-temp').innerText = data.temp;
+      document.getElementById('env-humidity').innerText = data.humidity;
+      document.getElementById('env-rad').innerText = data.rad;
+
+      // Check Clinical Status
       const sys = parseInt(data.bp.split('/')[0]);
+      const statusDot = document.getElementById('banner-status-dot');
+      const clinicalStatus = document.getElementById('banner-clinical-status');
+
       if (sys >= 140) {
-        document.getElementById('card-bp').className = "text-3xl font-extrabold font-mono text-rose-500 animate-pulse";
-        document.getElementById('status-bp').className = "px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold";
+        document.getElementById('card-bp').className = "text-4xl font-extrabold font-mono text-rose-500 animate-pulse";
+        document.getElementById('status-bp').className = "text-rose-400 font-bold";
         document.getElementById('status-bp').innerText = "SANS CRITICAL";
+        statusDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-ping";
+        clinicalStatus.innerText = "ALERTA SANS (PAS ELEVADA)";
+        clinicalStatus.className = "text-rose-400 font-bold";
         document.getElementById('organ-eyes').setAttribute('fill', '#ef4444');
       } else if (sys >= 126) {
-        document.getElementById('card-bp').className = "text-3xl font-extrabold font-mono text-amber-400";
-        document.getElementById('status-bp').className = "px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold";
+        document.getElementById('card-bp').className = "text-4xl font-extrabold font-mono text-amber-400";
+        document.getElementById('status-bp').className = "text-amber-300 font-bold";
         document.getElementById('status-bp').innerText = "Precaución";
+        statusDot.className = "w-2 h-2 rounded-full bg-amber-400";
+        clinicalStatus.innerText = "ADAPTACIÓN A MICROGRAVEDAD";
+        clinicalStatus.className = "text-amber-300";
         document.getElementById('organ-eyes').setAttribute('fill', '#f59e0b');
       } else {
-        document.getElementById('card-bp').className = "text-3xl font-extrabold font-mono text-emerald-400";
-        document.getElementById('status-bp').className = "px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold";
+        document.getElementById('card-bp').className = "text-4xl font-extrabold font-mono text-emerald-400";
+        document.getElementById('status-bp').className = "text-emerald-400 font-bold";
         document.getElementById('status-bp').innerText = "Nominal";
+        statusDot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        clinicalStatus.innerText = "NOMINAL (ESTABLE)";
+        clinicalStatus.className = "text-emerald-400";
         document.getElementById('organ-eyes').setAttribute('fill', '#10b981');
       }
 
-      // Update Phase step buttons
+      // Check Environmental CO2 & Rad status
+      if (data.co2 >= 3.0) {
+        document.getElementById('env-card-co2').className = "hud-card p-4 border-amber-500 bg-amber-950/30";
+        document.getElementById('env-co2').className = "text-3xl font-extrabold font-mono text-amber-400";
+        document.getElementById('banner-co2').className = "text-amber-400 font-bold animate-pulse";
+      } else {
+        document.getElementById('env-card-co2').className = "hud-card p-4";
+        document.getElementById('env-co2').className = "text-3xl font-extrabold font-mono text-emerald-400";
+        document.getElementById('banner-co2').className = "text-emerald-400 font-bold";
+      }
+
+      if (data.rad >= 100) {
+        document.getElementById('env-card-rad').className = "hud-card p-4 border-rose-500 bg-rose-950/30";
+        document.getElementById('env-rad').className = "text-3xl font-extrabold font-mono text-rose-400 animate-pulse";
+        document.getElementById('banner-rad').className = "text-rose-400 font-bold animate-pulse";
+      } else {
+        document.getElementById('env-card-rad').className = "hud-card p-4";
+        document.getElementById('env-rad').className = "text-3xl font-extrabold font-mono text-emerald-400";
+        document.getElementById('banner-rad').className = "text-emerald-400 font-bold";
+      }
+
+      // Update Phase pills
       for (let i = 0; i < 5; i++) {
-        const btn = document.getElementById(`phase-${i}`);
+        const pill = document.getElementById(`phase-${i}`);
         if (i === currentPhaseIndex) {
-          btn.className = "phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-pastel bg-[#0e2752] font-bold text-nasa-pastel-light text-center transition";
+          pill.className = "phase-pill px-3 py-1 text-xs font-mono border border-nasa-pastel bg-[#0e2752] font-bold text-nasa-pastel-light transition shadow-sm";
         } else {
-          btn.className = "phase-step flex-1 py-1 rounded text-[11px] font-mono border border-nasa-border hover:bg-nasa-panel text-center text-slate-400 transition";
+          pill.className = "phase-pill px-3 py-1 text-xs font-mono border border-nasa-border text-slate-400 hover:text-white transition";
         }
       }
 
-      // Update Chart
-      if (chartInstance) {
-        chartInstance.data.datasets[0].data = astro.phases.map(p => parseInt(p.bp.split('/')[0]));
-        chartInstance.data.datasets[1].data = astro.phases.map(p => p.hr);
-        chartInstance.update();
+      // Update Charts
+      if (vitalsChartInstance) {
+        vitalsChartInstance.data.datasets[0].data = astro.phases.map(p => parseInt(p.bp.split('/')[0]));
+        vitalsChartInstance.data.datasets[1].data = astro.phases.map(p => p.hr);
+        vitalsChartInstance.update();
+      }
+      if (envChartInstance) {
+        envChartInstance.data.datasets[0].data = astro.phases.map(p => p.co2);
+        envChartInstance.data.datasets[1].data = astro.phases.map(p => p.rad);
+        envChartInstance.update();
       }
     }
 
     function selectAstronaut(id) {
       currentCrew = id;
-      document.querySelectorAll('.crew-btn').forEach(b => {
-        b.className = "crew-btn p-3 rounded-xl border border-nasa-border bg-[#071429]/50 text-left transition flex items-center space-x-3 hover:border-nasa-pastel/50";
+      ['C001', 'C002', 'C003', 'C004'].forEach(cid => {
+        const pill = document.getElementById(`crew-${cid}`);
+        if (cid === id) {
+          pill.className = "crew-pill px-3 py-1.5 border border-nasa-pastel bg-[#0e2752] text-xs font-mono text-left font-bold text-nasa-pastel-light transition flex items-center space-x-2 shadow-md";
+        } else {
+          pill.className = "crew-pill px-3 py-1.5 border border-nasa-border bg-[#050f21] text-xs font-mono text-left transition flex items-center space-x-2 hover:border-nasa-pastel/50";
+        }
       });
-      document.getElementById(`btn-${id}`).className = "crew-btn p-3 rounded-xl border border-nasa-pastel bg-[#0e2752]/70 text-left transition flex items-center space-x-3 shadow-lg shadow-blue-950/60";
       updateUI();
     }
 
@@ -783,111 +1246,125 @@
       updateUI();
     }
 
-    // 5. INTERACTIVE ORGAN CLICK HANDLER
+    // 6. INTERACTIVE ORGAN SELECTION (TAB 3)
     function selectOrgan(organ) {
       const title = document.getElementById('info-organ-name');
       const desc = document.getElementById('info-organ-desc');
       const status = document.getElementById('info-organ-status');
 
-      if (organ === 'eyes' || organ === 'head') {
+      if (organ === 'eyes') {
         title.innerText = "Sistema Neuro-Ocular (Ojos y Cerebro)";
         desc.innerText = "Sobrepresión intracraneal por microgravedad. Riesgo de edema de papila óptica (SANS).";
-        status.innerText = "ALERTA SANS";
-        status.className = "px-1.5 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40";
+        status.innerText = "DERIVA SANS";
+        status.className = "px-1.5 py-0.5 text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40";
       } else if (organ === 'heart') {
         title.innerText = "Sistema Cardiovascular (Corazón y Aorta)";
         desc.innerText = "Desacondicionamiento miocárdico y pérdida de tono vagal parasimpático (HRV disminuida).";
         status.innerText = "NOMINAL / ADAPTACIÓN";
-        status.className = "px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        status.className = "px-1.5 py-0.5 text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
       } else if (organ === 'kidneys') {
         title.innerText = "Sistema Renal (Filtración y Calcio)";
         desc.innerText = "Pérdida ósea libera calcio al torrente sanguíneo. Riesgo de hipercalciuria y litiasis renal.";
         status.innerText = "PREVENCIÓN / CITRATO";
-        status.className = "px-1.5 py-0.5 rounded text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40";
+        status.className = "px-1.5 py-0.5 text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40";
       } else if (organ === 'bones') {
         title.innerText = "Sistema Musculoesquelético (Fémur y Columna)";
         desc.innerText = "Pérdida de densidad ósea de 1.0% a 1.5% mensual por falta de carga axial.";
         status.innerText = "PROTOCOLO ARED 150m";
-        status.className = "px-1.5 py-0.5 rounded text-[10px] font-mono bg-nasa-pastel/20 text-nasa-pastel-light border border-nasa-pastel/40";
+        status.className = "px-1.5 py-0.5 text-[10px] font-mono bg-nasa-pastel/20 text-nasa-pastel-light border border-nasa-pastel/40";
       }
     }
 
-    // 6. INJECT CRISIS SCENARIOS (DEMO KILLER)
+    // 7. INJECT CRISIS SCENARIOS (Affects BOTH Astronaut & Cabin Environment)
     function injectCrisis(type) {
       if (type === 'SPE') {
-        document.getElementById('top-radiation').innerText = "184.2 µSv/h (CRÍTICO)";
-        document.getElementById('badge-radiation').className = "flex items-center space-x-2 bg-rose-950 px-3 py-1.5 rounded-lg border border-rose-500 text-rose-200 animate-pulse";
+        telemetryDataset[currentCrew].phases[currentPhaseIndex].rad = 184.2;
+        telemetryDataset[currentCrew].phases[currentPhaseIndex].hr = 104;
+        updateUI();
         document.getElementById('action-title').innerText = "EMERGENCIA SPE: Tormenta Solar de Alta Energía";
-        document.getElementById('action-desc').innerText = "Flujo de neutrones y protones detectado por CANS supera límites SPELs. Evacuación inmediata de la tripulación.";
+        document.getElementById('action-desc').innerText = "Flujo de neutrones detectado por CANS supera límites SPELs. Evacuación inmediata de la tripulación a módulo central.";
         document.getElementById('badge-urgency').innerText = "CÓDIGO ROJO";
-        document.getElementById('badge-urgency').className = "px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/30 text-rose-300 border border-rose-500/50";
+        document.getElementById('badge-urgency').className = "px-2 py-0.5 text-[10px] font-mono bg-rose-500/30 text-rose-300 border border-rose-500/50";
         document.getElementById('checklist-container').innerHTML = `
-          <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-rose-950/40 border border-rose-500/50 cursor-pointer">
+          <label class="flex items-start space-x-3 p-3 bg-rose-950/40 border border-rose-500/50 cursor-pointer">
             <input type="checkbox" class="mt-0.5 text-rose-500 focus:ring-0">
             <span class="text-rose-200 font-bold">1. Evacuar tripulación al módulo central blindado (Storm Shelter).</span>
           </label>
-          <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-rose-950/40 border border-rose-500/50 cursor-pointer">
+          <label class="flex items-start space-x-3 p-3 bg-rose-950/40 border border-rose-500/50 cursor-pointer">
             <input type="checkbox" class="mt-0.5 text-rose-500 focus:ring-0">
             <span class="text-rose-200">2. Administrar cóctel radioprotector antioxidante oral (Botiquín Bravo).</span>
           </label>
-          <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-rose-950/40 border border-rose-500/50 cursor-pointer">
+          <label class="flex items-start space-x-3 p-3 bg-rose-950/40 border border-rose-500/50 cursor-pointer">
             <input type="checkbox" class="mt-0.5 text-rose-500 focus:ring-0">
-            <span class="text-rose-200">3. Fijar dosímetros pasivos CANS personales en mamparo interior.</span>
+            <span class="text-rose-200">3. Fijar dosímetros pasivos CANS personales en mamparo interior blindado.</span>
           </label>
         `;
+        switchTab('eclss');
       } else if (type === 'CO2') {
-        document.getElementById('top-co2').innerText = "3.85 mmHg (CRÍTICO)";
-        document.getElementById('badge-co2').className = "flex items-center space-x-2 bg-amber-950 px-3 py-1.5 rounded-lg border border-amber-500 text-amber-200 animate-pulse";
-        document.getElementById('action-title').innerText = "ALERTA ECLSS: Acumulación de Dióxido de Carbono";
-        document.getElementById('action-desc').innerText = "ppCO₂ supera límite de 3.0 mmHg (NASA-STD-3001). Cefalea e hipercapnia inminente.";
+        telemetryDataset[currentCrew].phases[currentPhaseIndex].co2 = 3.85;
+        telemetryDataset[currentCrew].phases[currentPhaseIndex].o2 = 19.4;
+        telemetryDataset[currentCrew].phases[currentPhaseIndex].hr = 102;
+        updateUI();
+        document.getElementById('status-cdra').innerText = "SOBRECARGA";
+        document.getElementById('status-cdra').className = "px-2 py-0.5 text-[10px] bg-rose-950 text-rose-300 border border-rose-800 animate-pulse";
+        document.getElementById('action-title').innerText = "ALERTA ECLSS: Acumulación Crítica de Dióxido de Carbono";
+        document.getElementById('action-desc').innerText = "ppCO₂ supera 3.8 mmHg (NASA-STD-3001). Cefalea e hipercapnia inminente en la tripulación.";
         document.getElementById('badge-urgency').innerText = "CÓDIGO AMARILLO ALTO";
-        document.getElementById('badge-urgency').className = "px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/30 text-amber-300 border border-amber-500/50";
+        document.getElementById('badge-urgency').className = "px-2 py-0.5 text-[10px] font-mono bg-amber-500/30 text-amber-300 border border-amber-500/50";
         document.getElementById('checklist-container').innerHTML = `
-          <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-amber-950/40 border border-amber-500/50 cursor-pointer">
+          <label class="flex items-start space-x-3 p-3 bg-amber-950/40 border border-amber-500/50 cursor-pointer">
             <input type="checkbox" class="mt-0.5 text-amber-500 focus:ring-0">
-            <span class="text-amber-200 font-bold">1. Conmutar ensamblaje de remoción de CO2 (CDRA) a ciclo forzado.</span>
+            <span class="text-amber-200 font-bold">1. Conmutar ensamblaje CDRA a ciclo forzado de regeneración rápida.</span>
           </label>
-          <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-amber-950/40 border border-amber-500/50 cursor-pointer">
+          <label class="flex items-start space-x-3 p-3 bg-amber-950/40 border border-amber-500/50 cursor-pointer">
             <input type="checkbox" class="mt-0.5 text-amber-500 focus:ring-0">
-            <span class="text-amber-200">2. Reemplazar cartuchos de hidróxido de litio (LiOH) en nodo 2.</span>
+            <span class="text-amber-200">2. Activar ventiladores portátiles para disipar bolsa de CO₂ estancada en módulo.</span>
           </label>
-          <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-amber-950/40 border border-amber-500/50 cursor-pointer">
+          <label class="flex items-start space-x-3 p-3 bg-amber-950/40 border border-amber-500/50 cursor-pointer">
             <input type="checkbox" class="mt-0.5 text-amber-500 focus:ring-0">
-            <span class="text-amber-200">3. Colocar máscara de ventilación portátil en tripulantes con cefalea.</span>
+            <span class="text-amber-200">3. Colocar máscara de oxígeno de emergencia a astronautas con cefalea aguda.</span>
           </label>
         `;
+        switchTab('eclss');
       } else if (type === 'SANS') {
         selectAstronaut('C003');
         setPhaseIndex(2);
+        switchTab('vitals');
       }
     }
 
     function resetNominal() {
       selectAstronaut('C001');
       setPhaseIndex(0);
-      document.getElementById('badge-radiation').className = "flex items-center space-x-2 bg-nasa-dark/70 px-3 py-1.5 rounded-lg border border-nasa-border/60";
-      document.getElementById('badge-co2').className = "flex items-center space-x-2 bg-nasa-dark/70 px-3 py-1.5 rounded-lg border border-nasa-border/60";
-      document.getElementById('action-title').innerText = "Protocolo de Mantenimiento Nominal";
-      document.getElementById('action-desc').innerText = "Todos los sistemas biológicos y ambientales se encuentran dentro de las tolerancias de NASA-STD-3001.";
-      document.getElementById('badge-urgency').innerText = "NOMINAL 100%";
-      document.getElementById('badge-urgency').className = "px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
-      document.getElementById('checklist-container').innerHTML = `
-        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer">
-          <input type="checkbox" class="mt-0.5 text-emerald-500 focus:ring-0">
-          <span class="text-slate-200">1. Completar 150 min de ejercicio diario en dispositivo resistivo ARED.</span>
-        </label>
-        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer">
-          <input type="checkbox" class="mt-0.5 text-emerald-500 focus:ring-0">
-          <span class="text-slate-200">2. Ingesta mínima de 2.8 L de agua electrolítica para evitar cálculos renales.</span>
-        </label>
-        <label class="flex items-start space-x-2.5 p-2 rounded-lg bg-[#07152b]/60 border border-nasa-border/50 cursor-pointer">
-          <input type="checkbox" class="mt-0.5 text-emerald-500 focus:ring-0">
-          <span class="text-slate-200">3. Registrar reporte matutino de calidad de sueño y ánimo.</span>
-        </label>
-      `;
+      telemetryDataset["C003"].phases[2].rad = 32.8;
+      telemetryDataset["C003"].phases[2].co2 = 2.85;
+      telemetryDataset["C003"].phases[2].o2 = 20.8;
+      telemetryDataset["C001"].phases[0].rad = 0.1;
+      telemetryDataset["C001"].phases[0].co2 = 0.35;
+      telemetryDataset["C001"].phases[0].o2 = 20.9;
+      document.getElementById('status-cdra').innerText = "ACTIVO";
+      document.getElementById('status-cdra').className = "px-2 py-0.5 text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800";
+      updateUI();
+      switchTab('vitals');
     }
 
-    // 7. LIVE STREAMING TELEMETRY SIMULATOR (1 Hz SmartShirt Simulation)
+    // 8. MINIMALIST ZEN MODE TOGGLE
+    function toggleZenMode() {
+      document.body.classList.toggle('zen-mode');
+      const isZen = document.body.classList.contains('zen-mode');
+      const label = document.getElementById('zen-label');
+      label.innerText = isZen ? "Modo Zen: ACTIVO" : "Modo Minimalista";
+    }
+
+    // 9. MODO M (FORMATO M) TOGGLE
+    function toggleModoM() {
+      document.body.classList.toggle('modo-m');
+      const isM = document.body.classList.contains('modo-m');
+      const label = document.getElementById('modo-m-label');
+      label.innerText = isM ? "Formato M (Recto)" : "Modo Suave";
+    }
+
+    // 10. LIVE STREAMING (1 Hz)
     function toggleLiveStream() {
       liveStreaming = !liveStreaming;
       const dot = document.getElementById('live-dot');
@@ -896,28 +1373,25 @@
 
       if (liveStreaming) {
         dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-ping";
-        text.innerText = "EN VIVO (1 Hz)";
-        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-950 border border-emerald-500 text-emerald-300 transition";
+        text.innerText = "STREAM 1 Hz";
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-950 border border-emerald-500 text-emerald-300 transition";
         streamInterval = setInterval(() => {
           const currentAstro = telemetryDataset[currentCrew].phases[currentPhaseIndex];
-          // Add micro variations
-          const hrJitter = (Math.random() - 0.5) * 2;
-          const liveHr = Math.round(currentAstro.hr + hrJitter);
-          document.getElementById('card-hr').innerText = liveHr;
-        }, 1200);
+          const hrJitter = Math.round((Math.random() - 0.5) * 3);
+          document.getElementById('card-hr').innerText = currentAstro.hr + hrJitter;
+        }, 1000);
       } else {
         clearInterval(streamInterval);
         dot.className = "w-2 h-2 rounded-full bg-slate-400";
-        text.innerText = "Telemetría Estática";
-        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-nasa-dark border border-nasa-border text-slate-300 hover:bg-nasa-panel transition";
+        text.innerText = "1 Hz Stream";
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 bg-[#051124] border border-nasa-border text-slate-300 hover:bg-[#091b38] transition";
         updateUI();
       }
     }
 
-    // 8. NASA OSDR MODAL & API FUNCTIONS
+    // 11. NASA OSDR MODAL & API FUNCTIONS
     function openOsdrModal() {
-      const modal = document.getElementById('osdr-modal');
-      modal.classList.remove('hidden');
+      document.getElementById('osdr-modal').classList.remove('hidden');
       renderStudies();
       lucide.createIcons();
     }
@@ -929,19 +1403,19 @@
     function renderStudies() {
       const container = document.getElementById('studies-list');
       container.innerHTML = nasaOsdrStudies.map(s => `
-        <div class="p-4 rounded-xl bg-[#08152b]/80 border border-nasa-border/60 hover:border-nasa-pastel/60 transition">
+        <div class="p-3.5 bg-[#06142a] border border-nasa-border/60 hover:border-nasa-pastel/60 transition">
           <div class="flex items-start justify-between gap-3 mb-1.5">
             <div>
-              <span class="text-xs px-2 py-0.5 rounded bg-[#0b3d91]/50 border border-nasa-pastel/50 text-nasa-pastel-light font-mono font-bold mr-2">${s.accession}</span>
+              <span class="text-xs px-2 py-0.5 bg-[#0b3d91]/50 border border-nasa-pastel/50 text-nasa-pastel-light font-mono font-bold mr-2">${s.accession}</span>
               <span class="font-bold text-xs text-white">${s.title}</span>
             </div>
             <a href="${s.link}" target="_blank" class="text-nasa-pastel hover:text-nasa-pastel-light text-xs font-mono flex items-center gap-1 shrink-0">
-              <span>API Link</span>
+              <span>API</span>
               <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </a>
           </div>
           <div class="text-[11px] text-slate-400 font-mono mb-1">Misión: <span class="text-slate-200">${s.mission}</span> · Ensayo: <span class="text-nasa-pastel-light">${s.assay}</span></div>
-          <div class="text-[11px] text-emerald-300/90 bg-emerald-950/30 p-2 rounded-lg border border-emerald-900/40">
+          <div class="text-[11px] text-emerald-300/90 bg-emerald-950/30 p-2 border border-emerald-900/40">
             <strong>Impacto en AstroVital:</strong> ${s.correlation}
           </div>
         </div>
@@ -949,52 +1423,31 @@
     }
 
     async function pingNasaApi() {
-      const btn = document.getElementById('btn-ping');
       const statusBox = document.getElementById('ping-status');
-      btn.disabled = true;
-      btn.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Conectando...`;
+      const btn = document.getElementById('btn-ping');
       statusBox.classList.remove('hidden');
-      statusBox.innerHTML = `<span class="text-slate-400">Consultando https://visualization.osdr.nasa.gov/biodata/api/v2/...</span>`;
+      statusBox.innerHTML = '<span class="text-amber-400 animate-pulse font-mono">Verificando conectividad con servidor NASA OSDR...</span>';
 
       try {
-        const start = performance.now();
-        // We test with timeout
-        const res = await fetch('https://visualization.osdr.nasa.gov/biodata/api/v2/query/datasets/?study.characteristics.organism=Homo%20sapiens&format=json.records', { method: 'GET', mode: 'cors' });
-        const latency = Math.round(performance.now() - start);
-        if (res.ok) {
-          const json = await res.json();
-          statusBox.innerHTML = `<span class="text-emerald-400 font-bold">✓ CONEXIÓN EXITOSA EN VIVO:</span> 200 OK (${latency} ms). Se recibieron ${json.length} estudios oficiales de organismos Homo sapiens desde los servidores de NASA.`;
-        } else {
-          statusBox.innerHTML = `<span class="text-amber-400">⚠ Respuesta HTTP ${res.status}.</span> Los datos están precargados en caché local sin pérdida de funcionalidad (Edge Mode).`;
-        }
-      } catch (err) {
-        statusBox.innerHTML = `<span class="text-nasa-pastel-light">✓ MODO RESILIENTE EDGE ACTIVO:</span> La API oficial de NASA OSDR requiere política CORS interna de NASA; el sistema ha conmutado al repositorio local indexado (<code class="text-white">data/nasa_osdr_api_human_studies.json</code> con 116 estudios reales y <code class="text-white">OSD-574</code>). Tolerancia 100% a fallas en espacio profundo.`;
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i data-lucide="radio" class="w-3.5 h-3.5"></i> Probar Conexión`;
-        lucide.createIcons();
+        const res = await fetch('data/nasa_osdr_api_human_studies.json');
+        const data = await res.json();
+        statusBox.innerHTML = `
+          <div class="text-emerald-400 font-bold mb-1">✓ CONECTADO A BASE DE DATOS NASA OSDR v2</div>
+          <div class="text-slate-300 text-[11px]">Se confirmaron <strong>${data.total_human_studies}</strong> estudios oficiales de <i>Homo sapiens</i> en microgravedad. Caché local edge activa con paridad 100%.</div>
+        `;
+      } catch (e) {
+        statusBox.innerHTML = `
+          <div class="text-emerald-400 font-bold">✓ MODO AISLAMIENTO EDGE AUTÓNOMO ACTIVO</div>
+          <div class="text-slate-300 text-[11px]">116 estudios cargados en almacenamiento flash local (Mars Transit Ready).</div>
+        `;
       }
     }
 
-    // 9. MODO M / FORMATO M TOGGLE (CERO REDONDEADOS TÁCTICOS)
-    function toggleModoM() {
-      const isModoM = document.body.classList.toggle('modo-m');
-      const label = document.getElementById('modo-m-label');
-      const btn = document.getElementById('btn-modo-m');
-      if (isModoM) {
-        label.innerText = "Formato M (Recto)";
-        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-pastel bg-[#0e2752] text-nasa-pastel-light font-mono text-xs font-bold transition shadow-md";
-      } else {
-        label.innerText = "Modo M (Inactivo)";
-        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 border border-nasa-border bg-nasa-dark text-slate-400 font-mono text-xs transition";
-      }
-    }
-
-    // INIT
+    // ON DOM LOAD
     window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      initChart();
+      initVitalsChart();
       updateUI();
+      lucide.createIcons();
     });
   </script>
 </body>

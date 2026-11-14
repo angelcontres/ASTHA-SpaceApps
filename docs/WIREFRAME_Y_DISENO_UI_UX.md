@@ -139,3 +139,29 @@ Este archivo permite a los evaluadores alternar en tiempo real entre:
 1. **Vista Wireframe Blueprint (Baja Fidelidad):** Líneas de acotación ortogonales, cuadrícula técnica espacial y medidas en píxeles.
 2. **Vista UI Táctica (Alta Fidelidad):** Colores de vuelo reales, gráficos de telemetría y animaciones de pulso.
 3. **Modo Crisis (Código Rojo):** Demostración del layout de evacuación inmediata ante tormentas solares.
+
+---
+
+## 🧘 6. Arquitectura Minimalista y Telemetría Ambiental (ECLSS)
+
+### 6.1. Reducción de Carga Cognitiva mediante Divulgación Progresiva (*Progressive Disclosure*)
+En situaciones de contingencia de vuelo espacial (como tormentas solares o fallos atmosféricos), la sobrecarga sensorial y la exposición excesiva de información simultánea incrementan la tasa de error humano. Siguiendo el estándar **NASA-STD-3001 Vol 2 (Capítulo 10: "Crew Interfaces - Minimizing Display Clutter")**:
+* El dashboard organiza la información en **pestañas tácticas independientes**:
+  1. `[👤 1. Biomédico Astronauta]`: Signos vitales esenciales (FC, PA, SpO₂, HRV) y curva de adaptación.
+  2. `[🛰️ 2. Entorno y Cabina (ECLSS)]`: Telemetría ambiental de la nave y estado de los sistemas de soporte vital.
+  3. `[🧬 3. Triage Anatómico & CDSS]`: Mapa corporal interactivo y checklists de intervención clínica.
+  4. `[⚡ 4. Simulador de Crisis]`: Inyección controlada de escenarios para pruebas y evaluación.
+* **Cinta de Estado Rápido (*Quick-Status Strip*)**: Proporciona conciencia situacional instantánea en 1 línea fija bajo la cabecera: astronauta activo, fase de vuelo, presión de cabina, $ppCO_2$, radiación CANS y semáforo médico general.
+
+### 6.2. Especificación de Telemetría Ambiental de Cabina (ECLSS & CANS)
+El entorno de hábitat espacial supervisa 6 parámetros críticos correlacionados con la fisiología del astronauta:
+1. **Dióxido de Carbono ($ppCO_2$):** Presión parcial en cabina ($2.10 - 2.85\text{ mmHg} \approx 2760 - 3750\text{ ppm}$). Límite de alerta NASA-STD-3001: $3.0\text{ mmHg}$.
+2. **Presión Atmosférica Total ($P_{cab}$):** $101.3\text{ kPa}$ ($14.7\text{ psi}$ / $1.0\text{ atm}$). Rango seguro: $98.6 - 102.7\text{ kPa}$.
+3. **Concentración de Oxígeno ($pO_2$ / $\%O_2$):** $20.9\%$ ($ppO_2 \approx 21.2\text{ kPa}$). Margen operativo: $19.5\% - 23.0\%$.
+4. **Temperatura Ambiente ($T_{cab}$):** $21.5^\circ\text{C}$ ($70.7^\circ\text{F}$). Rango de confort NASA: $18.3 - 26.7^\circ\text{C}$.
+5. **Humedad Relativa ($RH\%$):** $45.0\%$. Rango nominal: $25\% - 75\%$.
+6. **Dosimetría de Radiación CANS (CSA):** Tasa de dosis en tiempo real ($28.4 - 32.8\ \mu\text{Sv/h}$). Límite de evacuación a Storm Shelter: $> 100\ \mu\text{Sv/h}$.
+
+### 6.3. Modo Zen Minimalista y Formato M (Recto)
+* **Modo Zen:** Al activarse, oculta bordes decorativos, resalta exclusivamente las cifras críticas con tipografía sobredimensionada y amplía el espaciado para lectura a distancia sin distracciones.
+* **Formato M (Recto):** Aplica directiva de 90° ortogonal (`border-radius: 0px`) en toda la interfaz, emulando la estética de las pantallas de aviónica militar y espacial de Orion y Dragon.
