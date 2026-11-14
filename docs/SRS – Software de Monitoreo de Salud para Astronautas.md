@@ -141,22 +141,54 @@ Prioridad según MoSCoW: **M** (debe), **S** (debería), **C** (podría). Cada r
 | RF-REG-02 | Debe generar un resumen asíncrono exportable para el Flight Surgeon. | S | AC-01 |
 | RF-REG-03 | Debe permitir modo de alto contraste y texto grande. | S | AC-03 |
 
-## 4. Requisitos no funcionales
+## 4. Requisitos no funcionales (RNF)
 
-| ID | Categoría | Requisito | Medida de verificación |
+Esta sección define las restricciones de calidad, rendimiento, eficiencia energética, ergonomía espacial, seguridad criptográfica y comunicación multi-nodo que gobiernan a AstroVital bajo el estándar ISO/IEC/IEEE 29148 y NASA-STD-3001.
+
+### 4.1 Eficiencia energética, rendimiento y huella de recursos (Ultra-Low Power & Resource Footprint)
+
+En hábitats espaciales y vehículos en tránsito planetario, la potencia eléctrica es un recurso escaso y crítico suministrado por paneles solares o celdas de combustible. El software debe operar bajo un régimen de ultra-bajo consumo energético:
+
+| ID | Requisito de Rendimiento y Energía | Especificación Técnica Medible | Medida de Verificación |
 | --- | --- | --- | --- |
-| RNF-01 | Disponibilidad offline | La aplicación debe cargar y operar completa sin red, tras la primera carga. | Cero solicitudes de red en el panel de red del navegador con el cable desconectado |
-| RNF-02 | Rendimiento | Evaluar un tripulante y actualizar la interfaz en menos de 100 ms; abrir la app en menos de 2 s en hardware modesto. | Medición con performance.now() sobre 180 días de datos |
-| RNF-03 | Usabilidad | Registrar una toma de signos vitales en 3 toques o menos desde el panel; objetivos táctiles de 48 px o más. | Prueba con usuario, con y sin guantes |
-| RNF-04 | Accesibilidad | Contraste AA (4,5:1); estado nunca indicado solo por color; navegación por teclado. | Revisión con simulador de daltonismo |
-| RNF-05 | Fiabilidad clínica | Ningún valor en rango crítico puede clasificarse como nominal (cero falsos negativos en rojos). | Pruebas automáticas de frontera sobre cada umbral |
-| RNF-06 | Explicabilidad | Toda alerta debe poder rastrearse a una regla y a valores concretos. | Inspección de la bitácora |
-| RNF-07 | Privacidad | Los datos médicos permanecen en el dispositivo; no hay analítica ni telemetría saliente. | Análisis de tráfico y de código |
-| RNF-08 | Persistencia | El estado y la bitácora sobreviven a recargas y cierres; datos corruptos se detectan y se restauran el valor por defecto. | Prueba de recarga y de almacenamiento dañado |
-| RNF-09 | Mantenibilidad | Umbrales, reglas y contramedidas deben estar definidos como datos, separados de la interfaz. | Cambiar un umbral sin tocar la lógica de vista |
-| RNF-10 | Portabilidad | Debe funcionar en navegadores modernos de escritorio y tabletas, y empaquetarse como un solo archivo. | Prueba en Chrome, Firefox y Safari |
-| RNF-11 | Carga cognitiva | La pantalla de alerta debe mostrar una acción principal clara; máximo 7 pasos por protocolo. | Revisión de protocolos |
-| RNF-12 | Idioma | Interfaz en español, con textos separados para poder agregar inglés. | Revisión de cadenas |
+| **RNF-POW-01** | **Perfil de ultra-bajo consumo en CPU** | La aplicación no debe ejecutar bucles activos de sondeo (*polling*) en primer ni segundo plano. Debe utilizar observadores de eventos reactivos (`requestIdleCallback`, Web Workers para cómputos de regresión de tendencias). El uso sostenido de CPU en estado de monitoreo pasivo no debe exceder el **3.0%**. | Perfilado de CPU con Chrome DevTools Performance Profiler en modo throttling x4. |
+| **RNF-POW-02** | **Extensión de autonomía de batería** | En tabletas y consolas portátiles de tripulación, el consumo energético de la aplicación debe permitir una operación continua mínima de **16 horas** con una sola carga de batería ($< 350\text{ mW}$ atribuibles al proceso del software). | Medición de drenaje de batería en dispositivo táctil de prueba durante 8 horas continuas. |
+| **RNF-POW-03** | **Huella de memoria RAM ultraligera** | El consumo de memoria de trabajo (RAM) no debe superar los **150 MB**, incluso tras cargar y procesar los 180 días de telemetría de toda la tripulación, previniendo reinicios forzados por el gestor de memoria del sistema operativo (*OOM killer*). | Inspección de memoria Heap mediante Memory Snapshot en el navegador. |
+| **RNF-POW-04** | **Peso de paquete ultracompacto (Bundle Size)** | El tamaño total de la aplicación empaquetada (código, lógica clínica, estilos y activos visuales) no debe exceder los **5.0 MB** transferibles y cacheados mediante Service Workers (PWA). | Medición del peso total de los archivos generados en compilación de producción (`npm run build`). |
+| **RNF-PER-01** | **Latencia de evaluación clínica instantánea** | El ciclo completo de ingesta, cálculo de Z-score modificado, correlación cruzada ambiental y actualización visual del modelo anatómico debe completarse en menos de **50 ms**. | Registro con `performance.now()` en la ejecución de la función de triage clínico. |
+| **RNF-PER-02** | **Arranque en frío (Cold Start)** | El tiempo de arranque de la aplicación desde el almacenamiento local hasta el despliegue del panel principal debe ser inferior a **1.5 segundos** en hardware de gama media. | Métrica First Contentful Paint (FCP) y Time to Interactive (TTI) con Lighthouse en modo offline. |
+
+### 4.2 Usabilidad espacial, accesibilidad y factores humanos (Astronaut-Grade UX & Ergonomics)
+
+El diseño de interacción debe adaptarse a tripulantes sometidos a fatiga extrema, microgravedad, estrés agudo y uso con indumentaria de vuelo:
+
+| ID | Requisito de Usabilidad y Ergonomía | Especificación Técnica Medible | Medida de Verificación |
+| --- | --- | --- | --- |
+| **RNF-USA-01** | **Operabilidad táctil con guantes de vuelo** | Todos los elementos interactivos primarios (botones, casillas de verificación, selectores de síntomas) deben poseer un área de pulsación mínima de **$48 \times 48\text{ px}$** con una separación mínima de **$12\text{ px}$**, evitando pulsaciones erróneas por temblor muscular o guantes presurizados IVA/EVA. | Inspección de layout en CSS y prueba de pulsación con guante térmico. |
+| **RNF-USA-02** | **Regla de oro de los 3 toques** | Cualquier acción crítica de emergencia (reportar un síntoma incapacitante, consultar un procedimiento de contramedida o activar el protocolo de refugio solar) debe alcanzarse en un máximo de **3 toques de pantalla** desde cualquier vista. | Auditoría de árbol de navegación y conteo de interacciones por caso de uso. |
+| **RNF-USA-03** | **Ergonomía visual y preservación circadiana** | Cumplimiento del nivel **WCAG 2.1 AAA** en relaciones de contraste ($\ge 7:1$). Debe implementar dos modos cromáticos: (1) Modo Táctico Oscuro (para trabajo diurno en cabina), y (2) Modo Espectral Rojo ($\approx 630\text{ nm}$ monocrómico) para guardias nocturnas, evitando la supresión de melatonina y preservando la visión nocturna de la tripulación. | Validación de contraste mediante analizador de accesibilidad y selector de modo nocturno. |
+| **RNF-USA-04** | **Mitigación de fatiga por alarmas (Alarm Fatigue)** | Los estados de alerta deben diferenciarse por canales sensoriales redundantes: (1) Nivel Precaución (Amarillo): visual estático sin sonido intrusivo; (2) Nivel Crítico (Rojo): visual intermitente de alta prioridad con tono acústico en banda $800 - 1200\text{ Hz}$ según norma **ISO 9703-2** (Alarmas médicas aeroespaciales). | Inspección de espectro de audio y patrones de renderizado CSS. |
+| **RNF-USA-05** | **Diseño adaptado para no médicos** | Toda pantalla de contramedida debe estructurarse estrictamente en: (1) Qué ocurre anatómicamente, (2) Severidad y tiempo estimado de impacto, y (3) Lista de tareas secuenciales con casillas de verificación ejecutables, con un máximo de **7 pasos por procedimiento**. | Revisión de legibilidad contra escala Flesch-Kincaid en español/inglés. |
+
+### 4.3 Seguridad biomédica, integridad criptográfica y resiliencia a radiación (Space-Grade Security & Integrity)
+
+| ID | Requisito de Seguridad y Resiliencia | Especificación Técnica Medible | Medida de Verificación |
+| --- | --- | --- | --- |
+| **RNF-SEC-01** | **Cifrado en reposo local (Zero-Knowledge)** | Todos los expedientes médicos, bitácoras y registros biomédicos persistidos localmente en el dispositivo deben estar cifrados mediante el estándar **AES-GCM de 256 bits** a través de la API nativa `window.crypto.subtle`, garantizando cumplimiento con HIPAA y la NASA Privacy Act. | Intento de lectura en crudo de la base de datos IndexedDB/localStorage sin llave criptográfica derivada. |
+| **RNF-SEC-02** | **Control de acceso local basado en roles (Local RBAC)** | El sistema debe implementar segregación estricta de privilegios locales: (1) Rol *Astronauta*: acceso a su propia telemetría y ejecución de contramedidas personales; (2) Rol *Crew Medical Officer (CMO)*: visión agregada de la tripulación, anulación de falsos positivos y desbloqueo de protocolos farmacológicos del botiquín. | Pruebas de autorización y escalamiento de privilegios por usuario. |
+| **RNF-SEC-03** | **Resiliencia ante inversión de bits por radiación (SEU / Bit-Flip Protection)** | Debido a que los rayos cósmicos galácticos (GCR) inducen *Single Event Upsets* (SEUs) que voltean bits en memoria y almacenamiento en espacio profundo, cada registro de telemetría debe almacenarse con una suma de verificación criptográfica (**SHA-256**). Si se detecta un hash inválido al leer un registro, el sistema lo aísla y restaura el último estado consistente sin colapsar la aplicación. | Inyección de fallas por corrupción de bytes en el almacenamiento local y verificación de auto-recuperación. |
+| **RNF-SEC-04** | **Inmutabilidad de la bitácora clínica (Append-Only Audit Trail)** | La bitácora de eventos médicos, alarmas disparadas y medicamentos suministrados debe operar bajo un esquema criptográfico encadenado de solo inserción (*Append-Only Ledger*). No existirá ninguna operación de eliminación o edición de eventos pasados. | Pruebas de intentos de mutación sobre registros históricos de la bitácora. |
+
+### 4.4 Interoperabilidad y sincronización en malla local (Offline LAN & Peer-to-Peer Mesh Sync)
+
+En el vehículo o hábitat espacial, existen múltiples dispositivos (tabletas individuales de los astronautas, consola médica del CMO en el módulo central y pantallas de telemetría de cabina):
+
+| ID | Requisito de Red y Comunicación Multi-Dispositivo | Especificación Técnica Medible | Medida de Verificación |
+| --- | --- | --- | --- |
+| **RNF-NET-01** | **Sincronización multi-dispositivo sin Internet** | Los nodos de la nave deben ser capaces de comunicarse y sincronizar su estado a través de la red de área local cerrada de la nave (Wi-Fi de a bordo o red Ethernet local aislada) mediante WebSockets locales o canales de datos P2P, con **cero paquetes dirigidos a pasarelas de Internet externas**. | Análisis de captura de paquetes (Wireshark) en la interfaz de red local comprobando ausencia de tráfico WAN. |
+| **RNF-NET-02** | **Tolerancia a particiones y convergencia (CRDTs)** | Si un tripulante registra datos o completa contramedidas en un módulo aislado o esclusa sin cobertura Wi-Fi local (*modo desconectado temporal*), al restablecer la conexión local con los otros nodos, el sistema debe fusionar automáticamente los registros utilizando Tipos de Datos Replicados Libres de Conflicto (**CRDTs / Last-Write-Wins con marcas de tiempo vectoriales**), garantizando **cero pérdida de datos y cero sobrescrituras destructivas**. | Desconexión intencional de un nodo, registro de datos concurrentes y prueba de fusión automática al reconectar. |
+| **RNF-NET-03** | **Descubrimiento autónomo de nodos (Zero-Configuration)** | Los dispositivos clientes deben descubrir automáticamente el nodo de sincronización de la nave en la LAN mediante protocolos de descubrimiento local (mDNS / Bonjour o broadcast local de baliza en puerto configurado), sin requerir que los astronautas configuren direcciones IP manuales. | Conexión de un nuevo dispositivo a la red local y verificación de enlace automático en $< 3\text{ segundos}$. |
+| **RNF-NET-04** | **Formato interoperable de exportación médica** | El sistema debe permitir la exportación consolidada de la bitácora y tendencias en un archivo estandarizado JSON firmado criptográficamente, listo para ser transmitido por el enlace de radio de espacio profundo (*Deep Space Network - DSN*) hacia el Flight Surgeon en Tierra durante las ventanas de comunicación disponibles. | Validación del esquema JSON exportado contra la especificación formal del modelo de datos de la Sección 5.1. |
 
 ## 5. Requisitos de datos e interfaces
 
@@ -243,10 +275,10 @@ Un valor que cae entre dos bandas se clasifica en la más grave. Por ejemplo, la
 
 | Criterio de aceptación | Requisitos que lo cubren | Verificación |
 | --- | --- | --- |
-| AC-01 Autonomía diagnóstica local | RF-ING-01, RF-EVA-01, RF-EVA-02, RF-EVA-05, RF-EVA-07, RF-DSH-01, RNF-01, RNF-05 | Sin red, cada tripulante recibe Nominal, Precaución o Crítico; pruebas de frontera en cada umbral |
-| AC-02 Detección de deriva precoz | RF-ING-03, RF-DER-01 a RF-DER-04, RF-DSH-02 | En el dataset de 180 días, la alerta precoz se emite antes de que el indicador cruce el umbral |
-| AC-03 Trazabilidad anatómica | RF-EVA-03, RF-EVA-06, RF-ANA-01 a RF-ANA-04, RF-ING-04, RF-REG-01 | Cada alerta muestra su sistema de órganos y región del cuerpo |
-| AC-04 Guía de contramedidas | RF-GUI-01 a RF-GUI-04, RF-GAM-01, RF-GAM-02 | Cada desviación tiene tres bloques y pasos verificables con recursos a bordo |
-| AC-05 Resiliencia ante eventos extremos | RF-ING-02, RF-EVA-04, RF-DSH-04, RF-SIM-01 a RF-SIM-05 | Los escenarios A a D cambian el estado y activan el protocolo en menos de 1 s |
+| AC-01 Autonomía diagnóstica local | RF-ING-01, RF-EVA-01, RF-EVA-02, RF-EVA-05, RF-EVA-07, RF-DSH-01, RNF-POW-01, RNF-POW-04, RNF-PER-01, RNF-SEC-01 | Sin red externa, cada tripulante recibe estado Nominal, Precaución o Crítico en menos de 50 ms; pruebas de frontera en cada umbral; datos cifrados localmente. |
+| AC-02 Detección de deriva precoz | RF-ING-03, RF-DER-01 a RF-DER-04, RF-DSH-02, RNF-PER-01 | En el dataset de 180 días, la alerta precoz por Z-score modificado o regresión se emite antes de que el indicador cruce el umbral crítico. |
+| AC-03 Trazabilidad anatómica y usabilidad | RF-EVA-03, RF-EVA-06, RF-ANA-01 a RF-ANA-04, RF-ING-04, RF-REG-01, RNF-USA-01 a RNF-USA-05 | Cada alerta mapea a su sistema de órganos y región táctil ($\ge 48\text{ px}$); modo espectral nocturno validado; bitácora inmutable con SHA-256. |
+| AC-04 Guía de contramedidas | RF-GUI-01 a RF-GUI-04, RF-GAM-01, RF-GAM-02, RNF-USA-02, RNF-USA-05 | Cada desviación ofrece contramedidas en 3 toques o menos con recursos a bordo; máximo 7 pasos secuenciales verificables. |
+| AC-05 Resiliencia ante eventos extremos y sync | RF-ING-02, RF-EVA-04, RF-DSH-04, RF-SIM-01 a RF-SIM-05, RNF-SEC-03, RNF-NET-01 a RNF-NET-03 | Los escenarios A a D activan el protocolo en $< 50\text{ ms}$; auto-recuperación ante bit-flips; sincronización P2P multi-dispositivo sin Internet en LAN de la nave. |
 
 **Plan de pruebas.** (1) Pruebas unitarias de cada umbral en el valor exacto, uno por debajo y uno por encima. (2) Pruebas de las reglas R-ENV, R-SANS, R-RAD, R-COG, R-REN y R-CARD. (3) Reproducción del dataset de 180 días verificando D-01 a D-03. (4) Ejecución de los cuatro escenarios del simulador. (5) Prueba sin red y recarga con persistencia.
