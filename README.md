@@ -6,6 +6,7 @@
 [![Standard](https://img.shields.io/badge/Standard-NASA--STD--3001%20Vol%201%20%26%202-blue.svg)](https://standards.nasa.gov/)
 [![Requirements](https://img.shields.io/badge/Requirements-ISO%2FIEC%2FIEEE%2029148-green.svg)](docs/SRS%20–%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md)
 [![NASA OSDR API](https://img.shields.io/badge/NASA%20OSDR%20API-116%20Human%20Studies-blueviolet.svg)](https://visualization.osdr.nasa.gov/biodata/api/v2/)
+[![User Stories](https://img.shields.io/badge/User%20Stories-20%20Agile%20BDD%20%28NASA%29-yellow.svg)](docs/User-historias/README.md)
 [![Architecture](https://img.shields.io/badge/Architecture-100%25%20Edge%20%2F%20Mars--Zero--Ping-red.svg)](#)
 
 ---
@@ -83,13 +84,24 @@ Un valor $|M_i| \ge 2.5$ dispara una alerta preventiva de deriva fisiológica an
 ```text
 Nasa-Project/
 ├── docs/
+│   ├── User-historias/                                         # Catálogo de 20 Historias de Usuario BDD Aeroespaciales
+│   │   ├── README.md                                           # Mapa de épicas, arquetipos (personas) y DoD
+│   │   ├── HU-01-Monitoreo-Telemetria-Vital.md                 # Épica 1: Ingesta continua, sueño y ambientales
+│   │   ├── HU-02-Triage-Clinico-Modelo-Anatomico.md            # Épica 2: Hotspots corporales, SANS y Z-score
+│   │   ├── HU-03-Protocolos-Contramedidas-Emergencia.md        # Épica 3: Checklists no médicos, SPE, LBNP y ARED
+│   │   ├── HU-04-Arquitectura-Edge-Red-Malla.md                # Épica 4: Zero-ping offline, DTN y tolerancia SEU
+│   │   └── HU-05-Explorador-NASA-OSDR.md                       # Épica 5: API NASA OSDR, Inspiration4 y simulador
 │   ├── SRS – Software de Monitoreo de Salud para Astronautas.md   # Especificación formal ISO/IEC/IEEE 29148
 │   ├── VALIDACION_FUENTES_OFICIALES_NASA.md                    # Certificación cruzada contra NASA-STD-3001
 │   ├── DOCUMENTO_DOMINIO_Y_PROBLEMATICA_ESPACIAL.md            # Análisis de dominio operacional
 │   └── HEALTH_MONITORING_SOFTWARE_SPEC.md                      # Especificación técnica inicial
 ├── data/
-│   ├── human_telemetry_astronauts.json                         # 360 registros longitudinales (4 astronautas, 90 días)
-│   └── human_telemetry_astronauts.csv                          # Dataset tabular listo para análisis ML
+│   ├── nasa_real_human_telemetry.json                          # Telemetría 100% real Inspiration4 (OSD-574)
+│   ├── nasa_osdr_api_human_studies.json                        # 116 estudios oficiales humanos de NASA OSDR API
+│   ├── nasa_osdr_enriched_human_studies.json                   # 10 estudios enriquecidos (Inspiration4, SANS, etc.)
+│   └── nasa_official_telemetry/                                # Paquetes reales ISS y tablas ISA-Tab
+├── index.html                                                  # Dashboard táctico interactivo 100% offline
+├── .nojekyll                                                   # Soporte para despliegue en GitHub Pages
 ├── .gitignore
 └── README.md
 ```
