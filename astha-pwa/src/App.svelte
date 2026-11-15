@@ -146,7 +146,7 @@
         <button type="button" class="btn" onclick={() => (ui.settingsOpen = false)}>Close</button>
       </div>
       {#if bridge.activeRole !== 'commander'}
-        <p class="muted small">Manual Survival Mode can only be toggled by the Commander (ADR-019); triggers automatically on critical battery.</p>
+        <p class="muted small">Manual Survival Mode can only be toggled by the Commander; triggers automatically on critical battery.</p>
       {/if}
     </section>
   {/if}

@@ -147,7 +147,7 @@
           <span class="hud-tag">OFFLINE EDGE</span>
         </div>
         <span class="label">
-          {cabin ? 'Public Cabin Monitor (ADR-014)' : 'Security Lock Screen'} · {fd(bridge.data.day || 1)}
+          {cabin ? 'Public Cabin Monitor' : 'Security Lock Screen'} · {fd(bridge.data.day || 1)}
         </span>
       </div>
     </div>
@@ -189,7 +189,7 @@
   {/if}
 
   <section aria-labelledby="crew-h">
-    <h2 id="crew-h" class="label">Crew Global Status · zero clinical values exposed (ADR-014)</h2>
+    <h2 id="crew-h" class="label">Crew Global Status · private clinical values protected</h2>
     <ul class="crew">
       {#each bridge.data.crew as c (c.id)}
         {@const st = bridge.crewStatus[c.id] ?? 'none'}
@@ -218,7 +218,7 @@
 
     {#if !cabin}
       <section class="panel unlock" aria-labelledby="pin-h">
-        <h2 id="pin-h" class="label">Rapid Clinical Unlock (&lt; 1.5 s · ADR-015)</h2>
+        <h2 id="pin-h" class="label">Rapid Clinical Unlock (&lt; 1.5 s)</h2>
         <div class="row people" role="group" aria-label="Select crew identity">
           {#each bridge.data.crew as c (c.id)}
             <button type="button" class="btn" aria-pressed={person === c.id} onclick={() => selectPerson(c.id)}>
@@ -260,7 +260,7 @@
         {#if error}<p class="err" role="alert">✕ {error.message}</p>{/if}
         {#if bridge.data.provisioning}<p class="muted small">Provisioning device cryptographic keyring…</p>{/if}
         <p class="muted small">
-          Demo PINs: 1001–1004 (C002 is CMO), keyboard 0–9/Enter, or NFC badge tap (ADR-020).
+          Demo PINs: 1001–1004 (C002 is CMO), keyboard 0–9/Enter, or NFC badge tap.
         </p>
       </section>
     {/if}
@@ -268,7 +268,7 @@
 
   <footer class="label foot">
     UI mounted {mountMs != null ? `${fmt(mountMs, 0)} ms` : '…'} · telemetry ready
-    {readyMs != null ? `${fmt(readyMs, 0)} ms` : '…'} (budget 1500 ms, RNF-PER-02) · node {bridge.data.nodeId || '—'}
+    {readyMs != null ? `${fmt(readyMs, 0)} ms` : '…'} (target &lt; 1500 ms) · node {bridge.data.nodeId || '—'}
     <br />Synthetic demo telemetry · not measured NASA flight data.
   </footer>
 </main>

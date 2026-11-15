@@ -70,7 +70,7 @@
       class="btn"
       aria-pressed={survival}
       disabled={bridge.activeRole !== 'commander'}
-      title={bridge.activeRole === 'commander' ? 'Power survival mode < 5 W (ADR-019)' : 'Commander only (ADR-019)'}
+      title={bridge.activeRole === 'commander' ? 'Power survival mode < 5 W' : 'Commander only'}
       onclick={() => bridge.setPref('survival', !survival)}
     >
       Survival

@@ -61,7 +61,7 @@
       <div><dt class="label">Motor (4 tripulantes)</dt><dd>{fmt(bridge.engineMs, 2)} ms</dd></div>
       <div><dt class="label">Peor triage individual</dt><dd>{fmt(maxLatency, 2)} ms</dd></div>
       <div><dt class="label">Ciclo acción → UI</dt><dd>{fmt(bridge.cycleMs, 1)} ms</dd></div>
-      <div><dt class="label">Presupuesto RNF-PER-01</dt><dd>&lt; 50 ms</dd></div>
+      <div><dt class="label">Presupuesto del motor</dt><dd>&lt; 50 ms</dd></div>
     </dl>
   </section>
 

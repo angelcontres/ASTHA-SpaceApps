@@ -68,7 +68,7 @@
           </li>
         {/each}
       </ul>
-      <h2 class="label">Escalada automática (ADR-013)</h2>
+      <h2 class="label">Escalada automática</h2>
       <ol class="esc">
         <li class="on">0-10 s · tono local 960 Hz</li>
         <li>2 min · consola del CMO</li>
