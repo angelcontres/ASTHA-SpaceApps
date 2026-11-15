@@ -121,6 +121,8 @@ describe('[UI-09] Biomedical & Environment Views, Zen Mode & Survival Mode (< 5W
     expect(bio).toContain('Zen Mode: essential crew vitals');
     expect(bio).toContain('CountermeasureGuide');
     expect(bio).toContain('Biomedical Vitals');
+    expect(bio).toContain('scroll-snap-type: x mandatory');
+    expect(bio).toContain('Encapsulated telemetry decks');
     expect(bio).toContain('ECLSS Habitat Telemetry · 6 Parameters');
     expect(bio).toContain('Adherence &amp; Habits');
     expect(bio).toContain('Crew Roster Summary');

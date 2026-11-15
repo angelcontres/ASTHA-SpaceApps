@@ -30,6 +30,44 @@
   const topProtocol = $derived(topAlert ? resolveProtocol(topAlert.countermeasureId) : null);
   const gam = $derived(a?.gamification ?? null);
   const multiCrew = $derived((bridge.data.session?.allowedCrew.length ?? 0) > 1);
+
+  type DeckId = 0 | 1 | 2;
+  let deck = $state<DeckId>(0);
+  let deckTrack = $state<HTMLDivElement | null>(null);
+
+  const worstOf = (items: Array<IndicatorState | undefined>) => {
+    let critical = 0;
+    let caution = 0;
+    for (const x of items) {
+      if (x?.status === 'critical') critical += 1;
+      else if (x?.status === 'caution') caution += 1;
+    }
+    return { status: critical > 0 ? 'critical' : caution > 0 ? 'caution' : 'nominal', count: critical + caution };
+  };
+
+  const deckBadges = $derived([
+    { id: 0 as DeckId, title: 'Trend & Protocol', tag: '01', status: topAlert?.status ?? 'nominal', count: topAlert ? 1 : 0 },
+    { id: 1 as DeckId, title: 'Metabolic (5)', tag: '02', ...worstOf(SECONDARY.map((id) => get(id))) },
+    { id: 2 as DeckId, title: 'Habitat & Log', tag: '03', ...worstOf(bridge.habitatTelemetry.indicators) },
+  ]);
+
+  function goDeck(next: DeckId) {
+    deck = next;
+    const slide = deckTrack?.children[next] as HTMLElement | undefined;
+    const reduced = survival || (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+    slide?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', inline: 'start', block: 'nearest' });
+  }
+
+  function onTrackScroll() {
+    if (!deckTrack || !deckTrack.clientWidth) return;
+    const idx = Math.round(deckTrack.scrollLeft / deckTrack.clientWidth);
+    if (idx >= 0 && idx <= 2 && idx !== deck) deck = idx as DeckId;
+  }
+
+  function onTabKey(e: KeyboardEvent) {
+    if (e.key === 'ArrowRight') goDeck(((deck + 1) % 3) as DeckId);
+    else if (e.key === 'ArrowLeft') goDeck(((deck + 2) % 3) as DeckId);
+  }
 </script>
 
 {#if !a}
@@ -59,11 +97,11 @@
     </section>
 
     <div class="main">
-      <!-- COMP-03 -->
+      <!-- COMP-03 · Core 4 Primary Vitals always pinned (zero cognitive overload) -->
       <section aria-labelledby="vit-h">
         <div class="hud-head">
           <h2 id="vit-h" class="label">Biomedical Vitals · {bridge.data.crew.find((c) => c.id === a.crewId)?.name}</h2>
-          <span class="hud-tag">COMP-03 // NASA-STD-3001</span>
+          <span class="hud-tag">COMP-03 // CORE VITALS</span>
         </div>
         <div class="vitals">
           {#each ['hr', 'sbp', 'spo2', 'hrv'] as id (id)}
@@ -74,125 +112,261 @@
                 second={id === 'sbp' ? get('dbp') : null}
                 variant={id === 'sbp' ? 'compound' : 'vital'}
                 active={ui.bioIndicator === id}
-                onopen={() => (ui.bioIndicator = id as IndicatorId)}
+                onopen={() => { ui.bioIndicator = id as IndicatorId; goDeck(0); }}
               />
             {/if}
           {/each}
         </div>
-        <div class="secondary">
-          {#each SECONDARY as id (id)}
-            {@const ind = get(id)}
-            {#if ind}<IndicatorCard indicator={ind} active={ui.bioIndicator === id} onopen={() => (ui.bioIndicator = id)} />{/if}
-          {/each}
-        </div>
       </section>
 
-      <!-- COMP-03B -->
-      <section aria-labelledby="eclss-h">
-        <div class="hud-head">
-          <h2 id="eclss-h" class="label">ECLSS Habitat Telemetry · 6 Parameters</h2>
-          <span class="hud-tag">COMP-03B // CABIN ECLSS</span>
-        </div>
-        <div class="eclss">
-          {#each bridge.habitatTelemetry.indicators as ind (ind.id)}
-            <IndicatorCard indicator={ind} variant="habitat" onopen={() => { ui.envIndicator = ind.id; ui.tab = 'env'; }} />
-          {/each}
-        </div>
-      </section>
-
-      <div class="split">
-        <!-- COMP-04 -->
-        <section class="panel trend" aria-labelledby="trend-h">
-          <div class="hud-head">
-            <h2 id="trend-h" class="label">Trend · {activeTrend ? indLabel(activeTrend) : ''}</h2>
-            <span class="hud-tag">COMP-04 // UPLOT 2D</span>
-          </div>
-          {#if survival}
-            <table class="tab num">
-              <thead><tr><th>Flight Day</th><th>{activeTrend ? indShort(activeTrend) : ''} ({activeTrend?.unit ?? ''})</th></tr></thead>
-              <tbody>
-                {#each bridge.series.measurements.slice(-7).reverse() as m (m.day)}
-                  <tr><td>{fd(m.day)}</td><td>{fmt(m[ui.bioIndicator as CrewIndicator] as number, activeTrend?.decimals ?? 0)}</td></tr>
-                {/each}
-              </tbody>
-            </table>
-          {:else if days.length}
-            <TrendChart indicator={ui.bioIndicator} {days} values={seriesValues(ui.bioIndicator as CrewIndicator)} />
-          {/if}
-        </section>
-
-        <!-- COMP-05 -->
-        <section class="check" aria-label="Active countermeasure protocol">
-          {#if topAlert && topProtocol}
-            <CountermeasureGuide protocol={topProtocol} alert={topAlert} oncheck={(s, c) => bridge.checkStep(topAlert, s, c)} />
-          {:else}
-            <div class="panel st nominal"><span class="sym" aria-hidden="true"></span> No active emergency protocols. Maintain daily ARED, hydration, and sleep schedule.</div>
-          {/if}
-        </section>
-      </div>
-    </div>
-  </div>
-
-  <div class="lower">
-    <details class="panel" open={!todayRow?.manual}>
-      <summary class="label">Morning Self-Report &amp; Symptoms Log</summary>
-      <EntrySymptomPad
-        crewId={a.crewId}
-        today={todayRow}
-        symptoms={bridge.data.symptoms[a.crewId] ?? []}
-        onsubmit={(f) => bridge.manualEntry(a.crewId, f)}
-        onsymptom={(s, on) => bridge.toggleSymptom(a.crewId, s, on)}
-      />
-    </details>
-
-    {#if gam}
-      <!-- Gamification strictly below clinical alerts per RF-GAM-03 -->
-      <section class="panel gam" aria-labelledby="gam-h">
-        <h2 id="gam-h" class="label">Adherence &amp; Habits</h2>
-        <p><span class="value num">{gam.xp}</span> <span class="unit">XP · Level {gam.level} · {gam.streak}-day streak</span></p>
-        <ul class="medals">
-          {#each gam.medals as m (m.id)}<li class:earned={m.earnedToday}>{m.earnedToday ? '★' : '☆'} {m.label}</li>{/each}
-        </ul>
-      </section>
-    {/if}
-
-    {#if multiCrew}
-      <section class="panel" aria-labelledby="crew-h">
-        <h2 id="crew-h" class="label">Crew Roster Summary</h2>
-        <div class="row">
-          {#each bridge.data.crew as c (c.id)}
-            {@const ca = bridge.assessments.find((x) => x.crewId === c.id)}
-            {#if ca && !ca.statusOnly}
+      <!-- Encapsulated Swipeable Telemetry Decks (1 active capsule at a time + alert-aware tabs) -->
+      <section class="panel deck-shell" aria-label="Encapsulated telemetry decks">
+        <div class="deck-bar">
+          <div class="deck-tabs" role="tablist" aria-label="Telemetry decks" tabindex="-1" onkeydown={onTabKey}>
+            {#each deckBadges as d (d.id)}
               <button
                 type="button"
-                class="btn crewcard st {ca.global}"
-                onclick={() => bridge.selectCrew(c.id)}
-                aria-label="{c.name}, {ROLE_LABEL[c.role]}, {STATUS_LABEL[ca.global]}"
+                role="tab"
+                class="btn deck-tab"
+                class:active={deck === d.id}
+                aria-selected={deck === d.id}
+                onclick={() => goDeck(d.id)}
               >
-                <BodySvg regions={ca.regions} compact label={c.name} />
-                <span><strong>{c.id}</strong><br /><span class="sym" aria-hidden="true"></span> {STATUS_LABEL[ca.global]}</span>
+                <span class="deck-num num">{d.tag}</span>
+                <span>{d.title}</span>
+                {#if d.count > 0}
+                  <span class="deck-alert st {d.status}" aria-label="{d.count} alerts">
+                    <span class="sym" aria-hidden="true"></span> {d.count}
+                  </span>
+                {/if}
               </button>
-            {/if}
-          {/each}
+            {/each}
+          </div>
+          <div class="deck-nav" aria-label="Swipe deck controls">
+            <button
+              type="button"
+              class="btn deck-arrow"
+              disabled={deck === 0}
+              aria-label="Previous telemetry deck"
+              onclick={() => goDeck((deck - 1) as DeckId)}
+            >‹</button>
+            <span class="num muted deck-pos">{deck + 1} / 3</span>
+            <button
+              type="button"
+              class="btn deck-arrow"
+              disabled={deck === 2}
+              aria-label="Next telemetry deck"
+              onclick={() => goDeck((deck + 1) as DeckId)}
+            >›</button>
+          </div>
+        </div>
+
+        <div class="deck-track" bind:this={deckTrack} onscroll={onTrackScroll}>
+          <!-- Deck 1: Trend & Active Countermeasure -->
+          <div class="deck-slide" role="tabpanel" aria-label="Trend and active countermeasure">
+            <div class="split">
+              <!-- COMP-04 -->
+              <section class="panel trend" aria-labelledby="trend-h">
+                <div class="hud-head">
+                  <h2 id="trend-h" class="label">Trend · {activeTrend ? indLabel(activeTrend) : ''}</h2>
+                  <span class="hud-tag">COMP-04 // UPLOT 2D</span>
+                </div>
+                {#if survival}
+                  <table class="tab num">
+                    <thead><tr><th>Flight Day</th><th>{activeTrend ? indShort(activeTrend) : ''} ({activeTrend?.unit ?? ''})</th></tr></thead>
+                    <tbody>
+                      {#each bridge.series.measurements.slice(-7).reverse() as m (m.day)}
+                        <tr><td>{fd(m.day)}</td><td>{fmt(m[ui.bioIndicator as CrewIndicator] as number, activeTrend?.decimals ?? 0)}</td></tr>
+                      {/each}
+                    </tbody>
+                  </table>
+                {:else if days.length}
+                  <TrendChart indicator={ui.bioIndicator} {days} values={seriesValues(ui.bioIndicator as CrewIndicator)} />
+                {/if}
+              </section>
+
+              <!-- COMP-05 -->
+              <section class="check" aria-label="Active countermeasure protocol">
+                {#if topAlert && topProtocol}
+                  <CountermeasureGuide protocol={topProtocol} alert={topAlert} oncheck={(s, c) => bridge.checkStep(topAlert, s, c)} />
+                {:else}
+                  <div class="panel st nominal"><span class="sym" aria-hidden="true"></span> No active emergency protocols. Maintain daily ARED, hydration, and sleep schedule.</div>
+                {/if}
+              </section>
+            </div>
+          </div>
+
+          <!-- Deck 2: Secondary Metabolic & Wellness (5 metrics) -->
+          <div class="deck-slide" role="tabpanel" aria-label="Metabolic and neuro-wellness metrics">
+            <div class="hud-head">
+              <h2 class="label">Metabolic, Sleep &amp; Renal Markers · 5 Secondary Metrics</h2>
+              <span class="hud-tag">COMP-03S // TAP TO CHART</span>
+            </div>
+            <div class="secondary">
+              {#each SECONDARY as id (id)}
+                {@const ind = get(id)}
+                {#if ind}
+                  <IndicatorCard
+                    indicator={ind}
+                    active={ui.bioIndicator === id}
+                    onopen={() => { ui.bioIndicator = id; goDeck(0); }}
+                  />
+                {/if}
+              {/each}
+            </div>
+          </div>
+
+          <!-- Deck 3: ECLSS Habitat Telemetry (6), Morning Log & Habits -->
+          <div class="deck-slide" role="tabpanel" aria-label="ECLSS habitat telemetry and daily log">
+            <section aria-labelledby="eclss-h">
+              <div class="hud-head">
+                <h2 id="eclss-h" class="label">ECLSS Habitat Telemetry · 6 Parameters</h2>
+                <span class="hud-tag">COMP-03B // CABIN ECLSS</span>
+              </div>
+              <div class="eclss">
+                {#each bridge.habitatTelemetry.indicators as ind (ind.id)}
+                  <IndicatorCard indicator={ind} variant="habitat" onopen={() => { ui.envIndicator = ind.id; ui.tab = 'env'; }} />
+                {/each}
+              </div>
+            </section>
+
+            <div class="lower-capsule">
+              <details class="panel">
+                <summary class="label">
+                  Morning Self-Report &amp; Symptoms Log
+                  {#if !todayRow?.manual}<span class="pill-pending">Pending</span>{/if}
+                </summary>
+                <EntrySymptomPad
+                  crewId={a.crewId}
+                  today={todayRow}
+                  symptoms={bridge.data.symptoms[a.crewId] ?? []}
+                  onsubmit={(f) => bridge.manualEntry(a.crewId, f)}
+                  onsymptom={(s, on) => bridge.toggleSymptom(a.crewId, s, on)}
+                />
+              </details>
+
+              {#if gam}
+                <!-- Gamification strictly below clinical alerts per RF-GAM-03 -->
+                <section class="panel gam" aria-labelledby="gam-h">
+                  <h2 id="gam-h" class="label">Adherence &amp; Habits</h2>
+                  <p><span class="value num">{gam.xp}</span> <span class="unit">XP · Level {gam.level} · {gam.streak}-day streak</span></p>
+                  <ul class="medals">
+                    {#each gam.medals as m (m.id)}<li class:earned={m.earnedToday}>{m.earnedToday ? '★' : '☆'} {m.label}</li>{/each}
+                  </ul>
+                </section>
+              {/if}
+            </div>
+          </div>
         </div>
       </section>
-    {/if}
+
+      {#if multiCrew}
+        <section class="panel" aria-labelledby="crew-h">
+          <h2 id="crew-h" class="label">Crew Roster Summary</h2>
+          <div class="row">
+            {#each bridge.data.crew as c (c.id)}
+              {@const ca = bridge.assessments.find((x) => x.crewId === c.id)}
+              {#if ca && !ca.statusOnly}
+                <button
+                  type="button"
+                  class="btn crewcard st {ca.global}"
+                  onclick={() => bridge.selectCrew(c.id)}
+                  aria-label="{c.name}, {ROLE_LABEL[c.role]}, {STATUS_LABEL[ca.global]}"
+                >
+                  <BodySvg regions={ca.regions} compact label={c.name} />
+                  <span><strong>{c.id}</strong><br /><span class="sym" aria-hidden="true"></span> {STATUS_LABEL[ca.global]}</span>
+                </button>
+              {/if}
+            {/each}
+          </div>
+        </section>
+      {/if}
+    </div>
   </div>
 {/if}
 
 <style>
-  .cockpit { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); }
+  .cockpit { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: start; }
   .anatomy { grid-column: span 4; }
   .main { grid-column: span 8; display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
   .vitals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); margin-top: 8px; }
-  .secondary { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: var(--gap); margin-top: var(--gap); }
+
+  /* Encapsulated Swipeable Telemetry Deck */
+  .deck-shell { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .deck-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .deck-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .deck-tab {
+    min-height: var(--touch);
+    padding: 0 12px;
+    gap: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-color: var(--border);
+    color: var(--text-muted);
+  }
+  .deck-tab.active {
+    border-color: var(--accent);
+    color: var(--text);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+  .deck-num { font-size: 0.75rem; opacity: 0.72; }
+  .deck-alert {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1px solid var(--st);
+    color: var(--st-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .deck-nav { display: inline-flex; align-items: center; gap: 6px; }
+  .deck-arrow { min-width: var(--touch); min-height: var(--touch); font-size: 1.25rem; padding: 0; }
+  .deck-pos { font-size: 0.8125rem; min-width: 34px; text-align: center; }
+
+  .deck-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    touch-action: pan-x pan-y;
+    gap: 16px;
+  }
+  .deck-track::-webkit-scrollbar { display: none; }
+  .deck-slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+  }
+
+  .secondary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin-top: 8px; }
   .secondary :global(.value) { font-size: 1.375rem; }
   .eclss { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin-top: 8px; }
   .split { display: grid; grid-template-columns: 7fr 5fr; gap: var(--gap); }
   .trend, .check { min-width: 0; }
-  .lower { display: grid; grid-template-columns: 2fr 1fr; gap: var(--gap); margin-top: var(--gap); }
-  .lower > :last-child:nth-child(3) { grid-column: 1 / -1; }
-  summary { cursor: pointer; min-height: var(--touch); display: flex; align-items: center; }
+  .lower-capsule { display: grid; grid-template-columns: 3fr 2fr; gap: var(--gap); align-items: start; }
+  summary { cursor: pointer; min-height: var(--touch); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .pill-pending {
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--alert-yellow);
+    color: var(--alert-yellow-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
   .medals { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 4px; }
   .medals .earned { color: var(--alert-yellow); }
   .crewcard { height: auto; padding: 8px 12px; gap: 12px; border-color: var(--st); }
@@ -200,11 +374,14 @@
   .zen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
   .tab { width: 100%; border-collapse: collapse; margin-top: 8px; }
   .tab th, .tab td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  @media (min-width: 1280px) {
+    .anatomy { position: sticky; top: 88px; }
+  }
   @media (max-width: 1279px) {
     .anatomy, .main { grid-column: 1 / -1; }
-    .split, .lower { grid-template-columns: 1fr; }
+    .split, .lower-capsule { grid-template-columns: 1fr; }
   }
   @media (max-width: 767px) {
-    .vitals, .eclss, .zen { grid-template-columns: 1fr; }
+    .vitals, .secondary, .eclss, .zen { grid-template-columns: 1fr; }
   }
 </style>

@@ -98,19 +98,32 @@ vi.mock('three', () => {
     }
   }
 
+  class MockCurve {
+    constructor(..._args: unknown[]) {}
+  }
+
   return {
+    BoxGeometry: MockGeometry,
     CapsuleGeometry: MockGeometry,
+    CircleGeometry: MockGeometry,
     Color: MockColor,
+    CubicBezierCurve3: MockCurve,
     CylinderGeometry: MockGeometry,
     DirectionalLight: MockLight,
     Group: MockGroup,
     HemisphereLight: MockLight,
     Mesh: MockMesh,
+    MeshBasicMaterial: MockMaterial,
     MeshLambertMaterial: MockMaterial,
+    MeshStandardMaterial: MockMaterial,
     PerspectiveCamera: MockCamera,
+    PlaneGeometry: MockGeometry,
     Raycaster: MockRaycaster,
+    RingGeometry: MockGeometry,
     Scene: MockScene,
     SphereGeometry: MockGeometry,
+    TorusGeometry: MockGeometry,
+    TubeGeometry: MockGeometry,
     Vector2: Vec2,
     Vector3: Vec3,
     WebGLRenderer: MockWebGLRenderer,
