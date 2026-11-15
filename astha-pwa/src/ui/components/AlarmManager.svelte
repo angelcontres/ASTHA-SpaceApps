@@ -147,7 +147,7 @@
     bridge.acknowledge(a);
   }
 
-  const stageText = { 1: 'Tono local', 2: 'Escalado al CMO (2 min)', 3: 'Difundido a cabina (5 min)' } as const;
+  const stageText = { 1: 'Local chime', 2: 'CMO escalation (2 min)', 3: 'Cabin broadcast (5 min)' } as const;
 </script>
 
 {#if top}
@@ -156,26 +156,26 @@
       <span class="sym big" aria-hidden="true"></span>
       <div class="msg">
         <strong class="alarm-title">
-          {isRedacted ? 'Alerta crítica en cabina (sesión bloqueada)' : `Alerta crítica · ${SYSTEM_LABEL[top.organ]}`}
+          {isRedacted ? 'Cabin Critical Alert (session locked)' : `Critical Alert · ${SYSTEM_LABEL[top.organ]}`}
         </strong>
-        <span>{isRedacted ? 'Desbloquea con PIN o NFC para inspeccionar el protocolo clínico.' : top.explanation}</span>
+        <span>{isRedacted ? 'Unlock via PIN or NFC to inspect the clinical protocol.' : top.explanation}</span>
         <span class="label">
-          Regla {top.ruleId}{isRedacted ? ' · tripulación' : top.crewId !== 'HAB' ? ` · ${top.crewId}` : ' · hábitat'}
+          Rule {top.ruleId}{isRedacted ? ' · crew' : top.crewId !== 'HAB' ? ` · ${top.crewId}` : ' · habitat'}
           {#if ui.alertStage[top.id]} · {stageText[ui.alertStage[top.id]]}{/if}
-          {#if top.acknowledged} · reconocida{/if}
-          {#if visible.length > 1} · {visible.length} alertas{/if}
+          {#if top.acknowledged} · acknowledged{/if}
+          {#if visible.length > 1} · {visible.length} alerts{/if}
         </span>
       </div>
       <div class="row">
         {#if !locked}
-          <button type="button" class="btn primary" onclick={() => ui.openProtocol(top.id, top.region)}>Abrir protocolo</button>
+          <button type="button" class="btn primary" onclick={() => ui.openProtocol(top.id, top.region)}>Open Protocol</button>
         {/if}
         {#if !locked && !top.acknowledged && bridge.activeRole}
-          <button type="button" class="btn danger" onclick={() => ack(top)}>Reconocer y silenciar</button>
+          <button type="button" class="btn danger" onclick={() => ack(top)}>Acknowledge &amp; Silence</button>
         {/if}
         {#if !audioOn}
           <button type="button" class="btn" onclick={() => { unlockAudio(); audioOn = audioReady(); playCritical(1); }}>
-            <HudIcon name="volume-off" size={16} /> Activar sonido
+            <HudIcon name="volume-off" size={16} /> Enable Audio
           </button>
         {/if}
       </div>
@@ -184,11 +184,11 @@
     <div class="alarm st caution" role="status" aria-live="polite">
       <span class="sym big" aria-hidden="true"></span>
       <div class="msg">
-        <strong>Precaución · {SYSTEM_LABEL[top.organ]} · {STATUS_LABEL[top.status]}</strong>
+        <strong>Caution · {SYSTEM_LABEL[top.organ]} · {STATUS_LABEL[top.status]}</strong>
         <span>{top.explanation}</span>
-        {#if visible.length > 1}<span class="label">{visible.length} alertas</span>{/if}
+        {#if visible.length > 1}<span class="label">{visible.length} alerts</span>{/if}
       </div>
-      <button type="button" class="btn" onclick={() => ui.openProtocol(top.id, top.region)}>Ver contramedida</button>
+      <button type="button" class="btn" onclick={() => ui.openProtocol(top.id, top.region)}>View Countermeasure</button>
     </div>
   {/if}
 {/if}

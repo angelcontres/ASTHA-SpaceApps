@@ -34,7 +34,7 @@
 </script>
 
 {#if !a}
-  <p class="panel muted">Esperando la evaluación del tripulante…</p>
+  <p class="panel muted">Waiting for crew assessment…</p>
 {:else}
   <div class="triage">
     <section class="panel body" aria-label="Anatomical avatar">
@@ -50,10 +50,10 @@
 
     <section class="detail stack" aria-labelledby="reg-h">
       <header class="row between">
-        <h2 id="reg-h">{region ? REGION_LABEL[region] : 'Todas las regiones'}</h2>
+        <h2 id="reg-h">{region ? REGION_LABEL[region] : 'All Regions'}</h2>
         {#if region}
           <span class="st {a.regions[region].status} badge"><span class="sym" aria-hidden="true"></span> {STATUS_LABEL[a.regions[region].status]}</span>
-          <button type="button" class="btn" onclick={() => (ui.selectedRegion = null)}>Ver todas</button>
+          <button type="button" class="btn" onclick={() => (ui.selectedRegion = null)}>Show All</button>
         {/if}
       </header>
 
@@ -64,7 +64,7 @@
       {/if}
 
       {#if regionAlerts.length}
-        <div class="row alerts" role="group" aria-label="Alertas de la región">
+        <div class="row alerts" role="group" aria-label="Region alerts">
           {#each regionAlerts as al (al.id)}
             <button type="button" class="btn st {al.status}" aria-pressed={open?.id === al.id} onclick={() => (ui.openAlertId = al.id)}>
               <span class="sym" aria-hidden="true"></span> {al.ruleId}
@@ -78,14 +78,14 @@
           oncheck={(s, c, p) => bridge.checkStep(open, s, c, p)} />
         <div class="row">
           {#if open.status === 'critical' && !open.acknowledged}
-            <button type="button" class="btn danger" onclick={() => bridge.acknowledge(open)}>Reconocer alerta</button>
+            <button type="button" class="btn danger" onclick={() => bridge.acknowledge(open)}>Acknowledge Alert</button>
           {/if}
           {#if isCmo}
-            <button type="button" class="btn" onclick={() => bridge.override(open, 'Falso positivo confirmado por el CMO')}>Anular (falso positivo)</button>
+            <button type="button" class="btn" onclick={() => bridge.override(open, 'False positive confirmed by CMO')}>Override (False Positive)</button>
           {/if}
         </div>
       {:else}
-        <p class="panel st nominal"><span class="sym" aria-hidden="true"></span> Sin alertas en esta región.</p>
+        <p class="panel st nominal"><span class="sym" aria-hidden="true"></span> No active alerts in this region.</p>
       {/if}
     </section>
   </div>

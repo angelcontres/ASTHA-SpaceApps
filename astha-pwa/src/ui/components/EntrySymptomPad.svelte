@@ -45,24 +45,24 @@
 </script>
 
 <section class="pad stack" aria-labelledby="pad-title">
-  <h2 id="pad-title">Registro matutino</h2>
+  <h2 id="pad-title">Morning Vital Entry</h2>
   <div class="fields">
     {#each MANUAL_FIELDS as f (f)}
       <div class="field card" class:touched={touched[f]}>
         <span class="label">{INDICATORS[f].short}</span>
         <div class="stepper">
-          <button type="button" class="btn icon" aria-label="Bajar {INDICATORS[f].label}" onclick={() => bump(f, -1)}>−</button>
+          <button type="button" class="btn icon" aria-label="Decrease {INDICATORS[f].label}" onclick={() => bump(f, -1)}>−</button>
           <output class="value num" aria-live="off">{fmt(values[f], INDICATORS[f].decimals)}</output>
-          <button type="button" class="btn icon" aria-label="Subir {INDICATORS[f].label}" onclick={() => bump(f, 1)}>+</button>
+          <button type="button" class="btn icon" aria-label="Increase {INDICATORS[f].label}" onclick={() => bump(f, 1)}>+</button>
         </div>
         <span class="unit">{INDICATORS[f].unit}</span>
       </div>
     {/each}
   </div>
-  <button type="button" class="btn primary" onclick={submit}>Confirmar registro (+20 XP)</button>
+  <button type="button" class="btn primary" onclick={submit}>Confirm Entry (+20 XP)</button>
 
-  <h3>Síntomas de hoy · un toque</h3>
-  <div class="row" role="group" aria-label="Síntomas">
+  <h3>Today's Symptoms · One-Tap</h3>
+  <div class="row" role="group" aria-label="Symptoms">
     {#each SYMPTOMS as s (s)}
       <button type="button" class="btn" aria-pressed={active.has(s)} onclick={() => onsymptom(s, !active.has(s))}>
         {active.has(s) ? '● ' : '○ '}{SYMPTOM_LABEL[s]}

@@ -15,10 +15,10 @@ describe('UI-10 · COMP-05 Countermeasures Guide (ADR-017, AC-CLIN-06)', () => {
     }
     const comp = read('src/ui/components/CountermeasureGuide.svelte');
     expect(comp).toContain('protocol.steps.slice(0, 4)');
-    expect(comp).toContain('1 · Qué ocurre');
-    expect(comp).toContain('2 · Severidad e impacto');
-    expect(comp).toContain('3 · Acciones');
-    expect(comp).toContain('Qué enviar al Flight Surgeon');
+    expect(comp).toContain('1 · Situation');
+    expect(comp).toContain('2 · Severity &amp; Impact');
+    expect(comp).toContain('3 · Action Steps');
+    expect(comp).toContain('Report to Flight Surgeon');
     expect(comp).toContain("variant?: 'inline' | 'emergency' | 'daily'");
     expect(comp).toContain('min-height: var(--touch)');
     expect(comp).toContain('gap: 12px');
@@ -63,7 +63,7 @@ describe('UI-10 · View B Code Red SPE & Complementary Modals', () => {
     expect(cr).toContain('border: 3px solid var(--alert-red)');
     expect(cr).toContain('var(--alert-red-text)');
     expect(cr).toContain('variant="emergency"');
-    expect(cr).toContain('Estado de resguardo por tripulante');
+    expect(cr).toContain('Crew Shelter Status');
     expect(cr).toContain('ui.alertStage');
   });
 

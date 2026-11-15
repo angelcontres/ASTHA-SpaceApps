@@ -102,7 +102,7 @@
 
     <section class="em-sec stack" aria-label="Recent event records">
       <div class="sec-row">
-        <span class="label">Recent Bitácora Records</span>
+        <span class="label">Recent Audit Records</span>
         <button type="button" class="btn compact" onclick={() => { ui.tab = 'sim'; close(); }}>
           Full Ledger <HudIcon name="arrow-right" size={14} />
         </button>

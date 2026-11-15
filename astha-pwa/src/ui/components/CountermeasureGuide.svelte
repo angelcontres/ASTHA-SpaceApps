@@ -19,7 +19,7 @@
   }
   let { protocol: base, alert, variant = 'inline', oncheck }: Props = $props();
 
-  const PRIORITY_LABEL: Record<Priority, string> = { high: 'Prioridad alta', medium: 'Prioridad media', low: 'Prioridad baja' };
+  const PRIORITY_LABEL: Record<Priority, string> = { high: 'High Priority', medium: 'Medium Priority', low: 'Low Priority' };
   const resolution = $derived(resolveForAlert(alert, unavailableFrom(alert.completedSteps)));
   const protocol = $derived(resolution?.protocol ?? base);
   // Cognitive cap (ADR-017, AC-CLIN-06): strictly <= 4 actionable steps rendered simultaneously.
@@ -35,29 +35,29 @@
     <span class="sym big" aria-hidden="true"></span>
     <div>
       <h2 id="g-{protocol.id}-{alert.id}" class:alarm-title={alert.status === 'critical'}>{protocol.title}</h2>
-      <p class="label">{SYSTEM_LABEL[alert.organ]} · {STATUS_LABEL[alert.status]} · regla {alert.ruleId}</p>
+      <p class="label">{SYSTEM_LABEL[alert.organ]} · {STATUS_LABEL[alert.status]} · rule {alert.ruleId}</p>
       {#if resolution?.substitutedFor}
-        <p class="alt" role="status">Alternativa: {inventoryLabel(resolution.substitutedFor)} no operativo.</p>
+        <p class="alt" role="status">Alternative: {inventoryLabel(resolution.substitutedFor)} offline.</p>
       {/if}
     </div>
   </header>
 
   <div class="block">
-    <h3>1 · Qué ocurre</h3>
+    <h3>1 · Situation</h3>
     <p>{protocol.what}</p>
   </div>
 
   <div class="block">
-    <h3>2 · Severidad e impacto</h3>
+    <h3>2 · Severity &amp; Impact</h3>
     <p>
       {#if resolution}<span class="badge prio {resolution.priority}">{PRIORITY_LABEL[resolution.priority]}</span>{/if}
-      <strong class="sev">{protocol.severity}</strong> · actuar en: {protocol.timeToImpact}
+      <strong class="sev">{protocol.severity}</strong> · action window: {protocol.timeToImpact}
     </p>
-    <p class="why"><span class="label">Por qué</span> {alert.explanation}</p>
+    <p class="why"><span class="label">Reason</span> {alert.explanation}</p>
   </div>
 
   <div class="block">
-    <h3>3 · Acciones</h3>
+    <h3>3 · Action Steps</h3>
     <ol class="steps">
       {#each visibleSteps as s, i (s.id)}
         <li class:done={done.has(s.id)} class:next={next === s.id}>
@@ -66,34 +66,34 @@
               type="checkbox"
               checked={done.has(s.id)}
               onchange={(e) => oncheck(s.id, e.currentTarget.checked, protocol.id)}
-              aria-label="Paso {i + 1} de {visibleSteps.length}: {s.text}"
+              aria-label="Step {i + 1} of {visibleSteps.length}: {s.text}"
             />
             <span class="txt">
               <span class="n num">{i + 1}</span>
               {s.text}
-              {#if s.resource}<span class="unit res">Recurso: {inventoryLabel(s.resource)}</span>{/if}
+              {#if s.resource}<span class="unit res">Resource: {inventoryLabel(s.resource)}</span>{/if}
             </span>
           </label>
           {#if s.resource && protocol.alternatives?.[s.resource] && !done.has(s.id)}
             <button type="button" class="btn unavail" onclick={() => oncheck(`${UNAVAILABLE_PREFIX}${s.resource}`, true, protocol.id)}>
-              {inventoryLabel(s.resource)} no disponible
+              {inventoryLabel(s.resource)} unavailable
             </button>
           {/if}
         </li>
       {/each}
     </ol>
-    {#if outOfOrder && !complete}<p class="muted small">Pasos marcados fuera de orden: revisa el paso resaltado.</p>{/if}
-    {#if complete}<p class="complete" role="status"><HudIcon name="check" size={15} /> Protocolo completado y registrado en la bitácora</p>{/if}
+    {#if outOfOrder && !complete}<p class="muted small">Steps checked out of order: review the highlighted step.</p>{/if}
+    {#if complete}<p class="complete" role="status"><HudIcon name="check" size={15} /> Protocol completed and logged to audit ledger</p>{/if}
     {#if complete && resolution?.chain.length}
-      <p class="chain">Continúa con: <strong>{resolution.chain.map((p) => p.title).join(' → ')}</strong></p>
+      <p class="chain">Continue with: <strong>{resolution.chain.map((p) => p.title).join(' → ')}</strong></p>
     {/if}
   </div>
 
   {#if alert.status === 'critical' && protocol.fsMessage}
     <details class="block fs" open={variant === 'emergency'}>
-      <summary><h3>Qué enviar al Flight Surgeon</h3></summary>
+      <summary><h3>Report to Flight Surgeon</h3></summary>
       <p>{protocol.fsMessage}</p>
-      <p class="muted small">Mensaje asíncrono: no esperes respuesta para seguir el protocolo.</p>
+      <p class="muted small">Asynchronous report: do not wait for reply before continuing.</p>
     </details>
   {/if}
 </section>
