@@ -22,10 +22,12 @@
   const PRIORITY_LABEL: Record<Priority, string> = { high: 'Prioridad alta', medium: 'Prioridad media', low: 'Prioridad baja' };
   const resolution = $derived(resolveForAlert(alert, unavailableFrom(alert.completedSteps)));
   const protocol = $derived(resolution?.protocol ?? base);
+  // Cognitive cap (ADR-017, AC-CLIN-06): strictly <= 4 actionable steps rendered simultaneously.
+  const visibleSteps = $derived(protocol.steps.slice(0, 4));
   const done = $derived(new Set(alert.completedSteps));
-  const next = $derived(protocol.steps.find((s) => !done.has(s.id))?.id ?? null);
-  const complete = $derived(protocol.steps.every((s) => done.has(s.id)));
-  const outOfOrder = $derived(protocol.steps.some((s, i) => done.has(s.id) && protocol.steps.slice(0, i).some((p) => !done.has(p.id))));
+  const next = $derived(visibleSteps.find((s) => !done.has(s.id))?.id ?? null);
+  const complete = $derived(visibleSteps.every((s) => done.has(s.id)));
+  const outOfOrder = $derived(visibleSteps.some((s, i) => done.has(s.id) && visibleSteps.slice(0, i).some((p) => !done.has(p.id))));
 </script>
 
 <section class="guide st {alert.status} {variant}" aria-labelledby="g-{protocol.id}-{alert.id}">
@@ -57,14 +59,14 @@
   <div class="block">
     <h3>3 · Acciones</h3>
     <ol class="steps">
-      {#each protocol.steps as s, i (s.id)}
+      {#each visibleSteps as s, i (s.id)}
         <li class:done={done.has(s.id)} class:next={next === s.id}>
           <label>
             <input
               type="checkbox"
               checked={done.has(s.id)}
               onchange={(e) => oncheck(s.id, e.currentTarget.checked, protocol.id)}
-              aria-label="Paso {i + 1} de {protocol.steps.length}: {s.text}"
+              aria-label="Paso {i + 1} de {visibleSteps.length}: {s.text}"
             />
             <span class="txt">
               <span class="n num">{i + 1}</span>
@@ -142,4 +144,5 @@
   .fs summary { cursor: pointer; min-height: var(--touch); display: flex; align-items: center; }
   .fs summary h3 { margin: 0; color: var(--alert-red-text); }
   .emergency { border-width: 3px; }
+  .daily { border-style: dashed; }
 </style>

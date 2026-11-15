@@ -16,6 +16,9 @@ class UiState {
   view = $state<'front' | 'back'>('front');
   settingsOpen = $state(false);
   emergencyOpen = $state(false);
+  bioPassportOpen = $state(false);
+  /** Reactive escalation stage per alert ID (1: 0-8s local, 2: 2 min CMO, 3: 5 min cabin). */
+  alertStage = $state<Record<string, 1 | 2 | 3>>({});
   /** Local 630 nm night-mode toggle on the Lock Screen before authentication (ADR-014 read-only CRDT). */
   lockRedMode = $state(false);
   /** View B (full-screen Code Red) currently open for this alert ID. */

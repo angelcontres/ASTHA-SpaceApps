@@ -1,11 +1,16 @@
 <script lang="ts">
-  // Right-edge peek drawer for quick Emergency Records & Active Protocols inspection.
+  // Master Caution right-edge peek drawer: active anomalies sorted by severity + bitacora records.
   import { STATUS_LABEL, SYSTEM_LABEL, ui } from '../bridge/uiState.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
   import HudIcon from './HudIcon.svelte';
 
+  const SEV_RANK = { critical: 0, caution: 1, nominal: 2, none: 3 } as const;
+  const URG_RANK = { emergency: 0, high: 1, routine: 2 } as const;
+
   const alerts = $derived(
-    bridge.activeAlerts.filter((a) => !a.overridden && a.status !== 'nominal'),
+    bridge.activeAlerts
+      .filter((a) => !a.overridden && a.status !== 'nominal')
+      .toSorted((a, b) => SEV_RANK[a.status] - SEV_RANK[b.status] || URG_RANK[a.urgency] - URG_RANK[b.urgency]),
   );
   const recentRecords = $derived([...bridge.ledgerEntries].reverse().slice(0, 6));
 
@@ -33,7 +38,7 @@
       <div class="em-title">
         <HudIcon name="alert" size={18} />
         <div>
-          <h2 id="em-drawer-h">Emergency &amp; Records</h2>
+          <h2 id="em-drawer-h">Master Caution · Records</h2>
           <span class="label">{alerts.length} active alert{alerts.length === 1 ? '' : 's'} · {bridge.ledgerEntries.length} ledger entries</span>
         </div>
       </div>

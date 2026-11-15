@@ -9,8 +9,8 @@
   import { bridge, type ActiveAlert } from '../bridge/workerBridge.svelte';
   import { fd, fmt, STATUS_LABEL, ui } from '../bridge/uiState.svelte';
 
-  interface Props { alert: ActiveAlert }
-  let { alert }: Props = $props();
+  interface Props { alert: ActiveAlert; locked?: boolean }
+  let { alert, locked = false }: Props = $props();
 
   const protocol = $derived(resolveProtocol(alert.countermeasureId));
   const value = $derived(Object.entries(alert.values).find(([, v]) => typeof v === 'number'));
@@ -18,6 +18,8 @@
   const isRad = $derived(alert.organ === 'radiation');
   const dose = $derived(isRad ? accumulatedDose(bridge.series.habitat) : null);
   const sheltered = $derived(new Set(alert.completedSteps.filter((s) => s.startsWith('shelter:')).map((s) => s.slice(8))));
+  const redactPhi = $derived(locked && alert.crewId !== 'HAB');
+  const escStage = $derived(ui.alertStage[alert.id] ?? 1);
 
   function close() {
     ui.codeRedDismissed = [...ui.codeRedDismissed, alert.id];
@@ -33,25 +35,34 @@
   }
 </script>
 
-<div class="codered" role="alertdialog" aria-modal="true" aria-labelledby="cr-title" aria-describedby="cr-desc">
+<div class="codered" class:pulse={!alert.acknowledged} role="alertdialog" aria-modal="true" aria-labelledby="cr-title" aria-describedby="cr-desc">
   <header class="bar st critical pulse">
     <span class="sym big" aria-hidden="true"></span>
-    <h1 id="cr-title" class="alarm-title">CÓDIGO ROJO · {protocol?.title ?? alert.ruleId}</h1>
+    <h1 id="cr-title" class="alarm-title">CÓDIGO ROJO · {redactPhi ? `Alerta de cabina (${alert.ruleId})` : (protocol?.title ?? alert.ruleId)}</h1>
     <div class="row">
-      {#if !alert.acknowledged}<button type="button" class="btn danger" onclick={silence}>Silenciar aviso</button>{/if}
+      {#if !locked && !alert.acknowledged}<button type="button" class="btn danger" onclick={silence}>Silenciar aviso</button>{/if}
       <button type="button" class="btn" onclick={close}>Cerrar vista</button>
     </div>
   </header>
 
   <p id="cr-desc" class="exposure">
-    {#if value}<strong class="num">{value[0]} {fmt(value[1] as number, 1)}</strong> · {/if}
-    {alert.explanation} · {fd(alert.day)}
-    {#if dose}<br /><strong class="num">Dosis del evento SPE: {fmt(dose.speEventMsv, 1)} mSv</strong> de {SPE_EVENT_LIMIT_MSV} mSv permitidos · misión {fmt(dose.missionMsv, 1)} mSv{/if}
+    {#if redactPhi}
+      Sesión bloqueada: desbloquea con PIN o NFC para ver biomarcadores individuales.
+    {:else}
+      {#if value}<strong class="num">{value[0]} {fmt(value[1] as number, 1)}</strong> · {/if}
+      {alert.explanation} · {fd(alert.day)}
+      {#if dose}<br /><strong class="num">Dosis del evento SPE: {fmt(dose.speEventMsv, 1)} mSv</strong> de {SPE_EVENT_LIMIT_MSV} mSv permitidos · misión {fmt(dose.missionMsv, 1)} mSv{/if}
+    {/if}
   </p>
 
   <div class="cols">
-    {#if protocol}
-      <CountermeasureGuide {protocol} {alert} variant="emergency" oncheck={(s, c, p) => bridge.checkStep(alert, s, c, p)} />
+    {#if protocol && !redactPhi}
+      <CountermeasureGuide {protocol} {alert} variant="emergency" oncheck={(s, c, p) => { if (!locked) bridge.checkStep(alert, s, c, p); }} />
+    {:else if redactPhi}
+      <section class="panel stack">
+        <h2 class="alarm-title">Protocolo clínico protegido (ADR-014)</h2>
+        <p class="muted">Difusión de cabina tras escalada de 5 min. Cierra esta vista o desbloquea con PIN/NFC para ejecutar contramedidas.</p>
+      </section>
     {/if}
 
     <aside class="panel stack" aria-labelledby="crew-h">
@@ -62,7 +73,7 @@
           <li class="row">
             <span class="st {ok ? 'nominal' : 'critical'} who"><span class="sym" aria-hidden="true"></span> {c.id}</span>
             <span class="state">{ok ? 'En refugio / confirmado' : 'Sin confirmar'}</span>
-            {#if !ok && allowed.has(c.id)}
+            {#if !locked && !ok && allowed.has(c.id)}
               <button type="button" class="btn" onclick={() => bridge.checkStep(alert, `shelter:${c.id}`, true)}>Confirmar</button>
             {/if}
           </li>
@@ -70,15 +81,17 @@
       </ul>
       <h2 class="label">Escalada automática</h2>
       <ol class="esc">
-        <li class="on">0-8 s · aviso acústico local suave</li>
-        <li>2 min · consola del CMO</li>
-        <li>5 min · difusión a cabina</li>
+        <li class:on={escStage >= 1}>0-8 s · aviso acústico local suave</li>
+        <li class:on={escStage >= 2}>2 min · consola del CMO</li>
+        <li class:on={escStage >= 3}>5 min · difusión a cabina</li>
       </ol>
       <p class="muted small">Estado: {STATUS_LABEL[alert.status]}{alert.acknowledged ? ' · reconocida' : ' · sin reconocer'}</p>
     </aside>
   </div>
 
-  <button type="button" class="btn danger confirm" onclick={confirmAll}>Confirmar resguardo completado</button>
+  {#if !locked}
+    <button type="button" class="btn danger confirm" onclick={confirmAll}>Confirmar resguardo completado</button>
+  {/if}
 </div>
 
 <style>
