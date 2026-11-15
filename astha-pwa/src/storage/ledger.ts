@@ -68,6 +68,13 @@ export class Ledger {
     return run;
   }
 
+  /** SHA-256 of this device's newest audit-chain entry (GENESIS if empty): the tip signed into DSN exports. */
+  async tip(): Promise<string> {
+    await this.tail;
+    if (this.head) return this.head.hash;
+    return (await this.db.ledgerByNode(this.device.nodeId)).at(-1)?.hash ?? GENESIS;
+  }
+
   /**
    * Fusiona entradas de otros dispositivos (G-Set por clave). Una clave ya presente con distinto hash
    * se rechaza: nunca se reemplaza una entrada existente.
