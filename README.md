@@ -6,7 +6,7 @@
 [![NASA Space Apps](https://img.shields.io/badge/NASA%20Space%20Apps-2026%20Challenge-orange.svg)](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/?tab=resources)
 [![Standard](https://img.shields.io/badge/Standard-NASA--STD--3001%20Vol%201%20%26%202-blue.svg)](https://standards.nasa.gov/)
 [![Requirements](https://img.shields.io/badge/Requirements-ISO%2FIEC%2FIEEE%2029148-green.svg)](docs/SRS%20–%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md)
-[![Design SDD](https://img.shields.io/badge/Design%20SDD-IEEE%201016%20%2F%20NASA--STD--8739.8-blue.svg)](docs/SDD%20–%20Software%20Design%20Description%20ASTHA.md)
+[![Design SDD](https://img.shields.io/badge/Design%20SDD-IEEE%201016%20%2F%20NASA--STD--8739.8-blue.svg)](docs/SDD/README.md)
 [![NASA OSDR API](https://img.shields.io/badge/NASA%20OSDR%20API-116%20Human%20Studies-blueviolet.svg)](https://visualization.osdr.nasa.gov/biodata/api/v2/)
 [![User Stories](https://img.shields.io/badge/User%20Stories-20%20Agile%20BDD%20%28NASA%29-yellow.svg)](docs/User-historias/README.md)
 [![Use Cases](https://img.shields.io/badge/Use%20Cases-12%20UML%20%28ISO%2029148%29-cyan.svg)](docs/Casos-de-uso/README.md)
@@ -113,7 +113,16 @@ Nasa-Project/
 │   ├── GLOSARIO_TERMINOLOGICO_AEROESPACIAL.md                  # Glosario formal con >60 términos (SANS, LBNP, CANS, etc.)
 │   ├── WIREFRAME_Y_DISENO_UI_UX.md                             # Especificación de ergonomía táctil y diseño UI/UX
 │   ├── SRS – Software de Monitoreo de Salud para Astronautas.md   # Especificación formal ISO/IEC/IEEE 29148
-│   ├── SDD – Software Design Description ASTHA.md                 # Diseño Detallado SDD (UML Clases, Secuencia, Componentes, Despliegue)
+│   ├── SDD/                                                    # Carpeta de Diseño Detallado SDD (Colección Modular UML)
+│   │   ├── README.md                                           # Índice Maestro y Control de Versiones IEEE 1016 / NASA-STD-8739.8
+│   │   ├── 01-Arquitectura-Global-del-Sistema.md               # SDD-01: Arquitectura Hexagonal y Reactive Edge Core
+│   │   ├── 02-Diagrama-de-Clases-UML.md                        # SDD-02: Diagrama de Clases UML y Dominio Clínico
+│   │   ├── 03-Diagramas-de-Secuencia-UML.md                    # SDD-03: Diagramas de Secuencia UML (3 Escenarios Críticos)
+│   │   ├── 04-Diagrama-de-Componentes-UML.md                   # SDD-04: Diagrama de Componentes UML y Puertos
+│   │   ├── 05-Diagrama-de-Despliegue-UML.md                    # SDD-05: Diagrama de Despliegue UML (Topología DST-1 / DSN)
+│   │   ├── 06-Diseno-de-Datos-y-Contratos-de-Interfaz.md       # SDD-06: Esquemas JSON Schema, DTN RFC 9171 y SQLite
+│   │   └── 07-Matriz-de-Trazabilidad-SRS-a-SDD.md              # SDD-07: Matriz de Trazabilidad Requisitos SRS a SDD
+│   ├── SDD – Software Design Description ASTHA.md                 # Documento técnico consolidado complementario
 │   ├── VALIDACION_FUENTES_OFICIALES_NASA.md                    # Certificación cruzada contra NASA-STD-3001
 │   ├── DOCUMENTO_DOMINIO_Y_PROBLEMATICA_ESPACIAL.md            # Análisis de dominio operacional
 │   └── HEALTH_MONITORING_SOFTWARE_SPEC.md                      # Especificación técnica inicial

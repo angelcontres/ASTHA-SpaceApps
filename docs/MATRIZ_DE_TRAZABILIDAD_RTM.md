@@ -29,7 +29,7 @@ flowchart TD
     subgraph DisenoAgil["3. Diseño Operacional y Arquitectura SDD"]
         CU["12 Casos de Uso Formales (CU-01 a CU-12)<br/>UML 2.5"]
         HU["20 Historias de Usuario (HU-01 a HU-20)<br/>BDD Gherkin"]
-        SDD["Diseño Detallado SDD (IEEE 1016 / NASA-STD-8739.8)<br/>UML Clases, Secuencia, Componentes, Despliegue"]
+        SDD["Colección Modular SDD (IEEE 1016 / NASA-STD-8739.8)<br/>docs/SDD/ (01 a 07: Clases, Secuencia, Componentes, Despliegue)"]
     end
 
     subgraph Implementacion["4. Implementación en Código (Edge Prototype)"]

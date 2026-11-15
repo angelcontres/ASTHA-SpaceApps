@@ -16,6 +16,18 @@
 
 ---
 
+> 💡 **Colección Modular Disponible:**  
+> Este documento técnico contiene la especificación consolidada. Para una exploración modular por áreas especializadas con diagramas UML dedicados, consulte el directorio [**docs/SDD/**](SDD/README.md) y sus 7 módulos:
+> * [**SDD-01:** Arquitectura Global del Sistema](SDD/01-Arquitectura-Global-del-Sistema.md)
+> * [**SDD-02:** Diagrama de Clases UML](SDD/02-Diagrama-de-Clases-UML.md)
+> * [**SDD-03:** Diagramas de Secuencia UML (3 Escenarios)](SDD/03-Diagramas-de-Secuencia-UML.md)
+> * [**SDD-04:** Diagrama de Componentes UML](SDD/04-Diagrama-de-Componentes-UML.md)
+> * [**SDD-05:** Diagrama de Despliegue UML (Topología DST-1)](SDD/05-Diagrama-de-Despliegue-UML.md)
+> * [**SDD-06:** Diseño de Datos y Contratos de Interfaz (JSON Schema)](SDD/06-Diseno-de-Datos-y-Contratos-de-Interfaz.md)
+> * [**SDD-07:** Matriz de Trazabilidad Requisitos a Diseño (RTM)](SDD/07-Matriz-de-Trazabilidad-SRS-a-SDD.md)
+
+---
+
 ## 📑 Tabla de Contenidos
 1. [Introducción y Alcance del Sistema](#1-introducción-y-alcance-del-sistema)
 2. [Visión General de la Arquitectura de Software](#2-visión-general-de-la-arquitectura-de-software)
