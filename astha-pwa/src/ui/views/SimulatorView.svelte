@@ -71,7 +71,7 @@
     <dl class="metrics num">
       <div><dt class="label">Recovered from replica</dt><dd>{bridge.data.recoveredCount}</dd></div>
       <div><dt class="label">Quarantined records</dt><dd>{bridge.quarantinedCount}</dd></div>
-      <div><dt class="label">Sync Hub</dt><dd>{bridge.syncStatus === 'unauthorized' ? 'not enrolled on hub' : bridge.syncStatus}</dd></div>
+      <div><dt class="label">Sync Hub</dt><dd>{bridge.syncStatus}</dd></div>
       <div><dt class="label">Battery</dt><dd>{power.supported && power.level !== null ? `${Math.round(power.level * 100)}%${power.charging ? ' · charging' : ''}` : 'API unavailable'}{power.low ? ' · critical mode' : ''}</dd></div>
       <div><dt class="label">Node</dt><dd>{bridge.data.nodeId}</dd></div>
     </dl>
