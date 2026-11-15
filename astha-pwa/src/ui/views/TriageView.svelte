@@ -7,6 +7,7 @@
   import AnatomyViewer from '../components/AnatomyViewer.svelte';
   import CountermeasureGuide from '../components/CountermeasureGuide.svelte';
   import IndicatorCard from '../components/IndicatorCard.svelte';
+  import OsdrStudies from '../components/OsdrStudies.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
   import { REGION_LABEL, regionOfIndicator, STATUS_LABEL, ui } from '../bridge/uiState.svelte';
 
@@ -89,6 +90,8 @@
     </section>
   </div>
 {/if}
+
+<OsdrStudies />
 
 <style>
   .triage { display: grid; grid-template-columns: 5fr 7fr; gap: var(--gap); }

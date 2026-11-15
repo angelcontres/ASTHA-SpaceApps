@@ -99,6 +99,10 @@
       Importar historial firmado (.json)
       <input type="file" accept="application/json,.json" class="sr-only" onchange={importFile} />
     </label>
+    <button type="button" class="btn" disabled={bridge.activeRole !== 'cmo'} onclick={() => bridge.loadReferenceDataset()}>
+      Load reference dataset (OSD-574-calibrated, 90 days)
+    </button>
+    <p class="muted small">Offline alternative source bundled with the app. Overrides days 1–90 for the whole crew (CMO only).</p>
   </section>
 
   <section class="panel log" aria-labelledby="log-h">
@@ -135,4 +139,5 @@
   .entries li { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
   .detail { flex: 1 1 100%; color: var(--text-muted); font-size: 0.9375rem; }
   @media (max-width: 1023px) { .sim { grid-template-columns: 1fr; } }
+  .small { font-size: 0.875rem; }
 </style>
