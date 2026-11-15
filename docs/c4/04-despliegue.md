@@ -1,6 +1,6 @@
 # C4 · Nivel 4 — Diagrama de Despliegue
 
-**Fuente de autoridad:** [SRS](../../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md) §4.4 (dispositivos de la nave) · **Trazabilidad:** [RTM](../../MATRIZ_DE_TRAZABILIDAD_RTM.md) · Convenciones en [01-contexto](01-contexto.md)
+**Fuente de autoridad:** [SRS](../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md) §4.4 (dispositivos de la nave) · **Trazabilidad:** [RTM](../MATRIZ_DE_TRAZABILIDAD_RTM.md) · Convenciones en [01-contexto](01-contexto.md)
 
 ## Diagrama
 

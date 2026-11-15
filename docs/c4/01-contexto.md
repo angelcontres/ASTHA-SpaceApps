@@ -1,6 +1,6 @@
 # C4 · Nivel 1 — Diagrama de Contexto
 
-**Sistema:** ASTHA (Autonomous Space Telemetry & Health Analytics) · **Fuente de autoridad:** [SRS](../../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md) §2, §4.4, §5.2 · **Trazabilidad:** [RTM existente](../../MATRIZ_DE_TRAZABILIDAD_RTM.md) (no se crea una matriz nueva; ver [00-README](00-README.md) para GAPs)
+**Sistema:** ASTHA (Autonomous Space Telemetry & Health Analytics) · **Fuente de autoridad:** [SRS](../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md) §2, §4.4, §5.2 · **Trazabilidad:** [RTM existente](../MATRIZ_DE_TRAZABILIDAD_RTM.md) (no se crea una matriz nueva; ver [00-README](00-README.md) para GAPs)
 
 > Convenciones: los IDs `RF-*`, `RNF-*`, `R-*`, `D-*` y `AC-0x` son los del SRS. Los `CU-xx` se citan como **CU-xx (SRS §7)** o **CU-xx (carpeta)** porque los dos catálogos usan los mismos números con significados distintos. `GAP` = sin cobertura en el repo. `⚠` = el repo se contradice o contradice el encargo.
 

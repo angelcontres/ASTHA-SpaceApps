@@ -48,6 +48,7 @@ docs/SDD/
 | [**SDD-05**](05-Diagrama-de-Despliegue-UML.md) | **Diagrama de Despliegue UML** | Vista Física y Topología de Red: Despliegue en tránsito a Marte (*Deep Space Transport DST-1*), sensores vestibles Astroskin, bus ECLSS 1553, servidor redundante edge y enlace DSN/DTN a JSC Houston. | Diagrama de despliegue `flowchart TB` con protocolos (BLE 5.0, Mil-Std-1553, CCSDS DTN). |
 | [**SDD-06**](06-Diseno-de-Datos-y-Contratos-de-Interfaz.md) | **Diseño de Datos y Contratos de Interfaz** | Vista de Información y Contratos: Esquemas JSON formales para telemetría unificada y directivas de contramedidas, estructura del DTN Bundle Payload y esquema de persistencia local en SQLite/IndexedDB. | Esquemas JSON Schema Draft-07 y tabla relacional de base de datos. |
 | [**SDD-07**](07-Matriz-de-Trazabilidad-SRS-a-SDD.md) | **Matriz de Trazabilidad SRS a SDD** | Vista de Aseguramiento de Calidad: Mapeo bidireccional riguroso entre los 8 Requisitos Funcionales (RF-01..08) y 3 No Funcionales (RNF-01..03) del SRS y los componentes de diseño del SDD. | Matriz RTM completa (Cero requisitos huérfanos). |
+| [**SDD-08**](08-Architecture-decisions.md) | **Decisiones de Arquitectura (ADR)** | Registro consolidado de las 20 decisiones de arquitectura (ADR-001..020): contexto, decisión, consecuencias y alternativas. | Registro ADR con índice y backlog de brechas. |
 
 ---
 

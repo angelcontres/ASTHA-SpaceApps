@@ -1,6 +1,6 @@
 # C4 · Nivel 3 — Diagramas de Componentes
 
-**Fuente de autoridad:** [SRS](../../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md) §3, §4, §5 y §6 · **Trazabilidad:** [RTM](../../MATRIZ_DE_TRAZABILIDAD_RTM.md) · **Tokens visuales:** [WIREFRAME §4](../../WIREFRAME_Y_DISENO_UI_UX.md) · Convenciones en [01-contexto](01-contexto.md)
+**Fuente de autoridad:** [SRS](../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md) §3, §4, §5 y §6 · **Trazabilidad:** [RTM](../MATRIZ_DE_TRAZABILIDAD_RTM.md) · **Tokens visuales:** [WIREFRAME §4](../WIREFRAME_Y_DISENO_UI_UX.md) · Convenciones en [01-contexto](01-contexto.md)
 
 Contenido:
 
@@ -58,11 +58,11 @@ C4Component
 | Threshold Classifier | TS + `thresholds.json` (SRS §6.1 como datos) | Una búsqueda por indicador. Los valores entre bandas se asignan a la más grave (SRS §6.1, último párrafo) | RF-EVA-01 · AC-01 · **GAP**: el SRS dice que los umbrales con \* son "editables como datos (RNF-09)", pero RNF-09 no existe |
 | Sustained Tracker | TS, estado por tripulante y día | Condiciones sostenidas por días consecutivos | RF-EVA-05 |
 | Correlation Rules | TS + `rules.json` | Las 10 reglas de SRS §6.2, evaluadas como predicados sobre el último estado más los síntomas activos | RF-EVA-04, R-ENV-01, R-ENV-02, R-SANS-01, R-SANS-02, R-RAD-01, R-RAD-02, R-COG-01, R-REN-01, R-REN-02, R-CARD-01 · AC-05 |
-| Drift Detector | TS. Sumas móviles (Σx, Σy, Σxy, Σx²) por indicador. Línea base de los días 1-14 con mediana y MAD | D-01 (proyección a 7 días cruza el umbral de precaución con el valor actual nominal), D-02 con Z modificado (\|M\| ≥ 2,5, [ADR-011](../adr/ADR-011-deriva-z-modificado-mad.md)), D-03 (sueño ↓ y diastólica ↑) | RF-DER-01..04, D-01..D-03 · AC-02 · ⚠ RF-DER-03 en el SRS todavía dice media y desviación |
+| Drift Detector | TS. Sumas móviles (Σx, Σy, Σxy, Σx²) por indicador. Línea base de los días 1-14 con mediana y MAD | D-01 (proyección a 7 días cruza el umbral de precaución con el valor actual nominal), D-02 con Z modificado (\|M\| ≥ 2,5, [ADR-011](../SDD/08-Architecture-decisions.md#adr-011)), D-03 (sueño ↓ y diastólica ↑) | RF-DER-01..04, D-01..D-03 · AC-02 · ⚠ RF-DER-03 en el SRS todavía dice media y desviación |
 | Organ Mapper | TS + `organs.json` | Asigna 7 sistemas a 5 regiones del cuerpo (ojos/cabeza, tórax/corazón, lumbar/riñones, piernas/fémur, general/sangre) | RF-EVA-03, RF-ANA-02 · AC-03 · **GAP**: el SRS no dice a qué región van "cognitivo", "radiación" y "respiratorio/ambiental". Se propone: cognitivo → cabeza; radiación y respiratorio → general |
 | Status Aggregator | TS | Peor estado entre indicadores y reglas activas, por tripulante y por región | RF-EVA-02 |
 | Explainer | TS | Para cada alerta: `ruleId`, valores, umbral, unidad y texto no médico | RF-EVA-06, RF-GUI-04 |
-| Countermeasure Resolver | TS + `countermeasures.json` | Bloques "qué ocurre / severidad y tiempo / acciones". Comprueba ≤ 4 pasos ([ADR-017](../adr/ADR-017-protocolos-4-pasos.md)) y que cada recurso esté en la lista de inventario | RF-GUI-01..04, RNF-USA-05 · AC-04 · AC-CLIN-06 · ⚠ RNF-USA-05 en el SRS todavía permite 7 |
+| Countermeasure Resolver | TS + `countermeasures.json` | Bloques "qué ocurre / severidad y tiempo / acciones". Comprueba ≤ 4 pasos ([ADR-017](../SDD/08-Architecture-decisions.md#adr-017)) y que cada recurso esté en la lista de inventario | RF-GUI-01..04, RNF-USA-05 · AC-04 · AC-CLIN-06 · ⚠ RNF-USA-05 en el SRS todavía permite 7 |
 | Gamification Scorer | TS, se ejecuta después de enviar el Assessment | XP por 150 min de ejercicio, informe matutino e hidratación. No puede retrasar ni tapar alertas | RF-GAM-01..03 |
 
 **Contrato de salida (`Assessment`):** `{crewId, day, global, regions[5], indicators[{id, value, unit, status, slope, daysToCaution, z, dubious}], alerts[{id, ruleId, organ, status, urgency, values, threshold, explanation, countermeasureId}], latencyMs}`. El campo `latencyMs` permite verificar RNF-PER-01 en producción.
@@ -133,7 +133,7 @@ Tomados de WIREFRAME §4.1. Los ratios de contraste son medidos (WCAG 2.1, sobre
 | `alert-green` | `#10b981` | 7,94 / 7,36 | Texto y relleno ✓ |
 | `alert-yellow` | `#f59e0b` | 9,37 / 8,69 | Texto y relleno ✓ |
 | `alert-red` | `#ef4444` | **5,35 / 4,96** | ⚠ **No cumple 7:1 para texto.** Solo para rellenos y bordes |
-| `alert-red-text` ([ADR-018](../adr/ADR-018-paleta-rojo-texto.md)) | `#fca5a5` | 10,61 / 9,83 | Texto sobre estados críticos ✓ |
+| `alert-red-text` ([ADR-018](../SDD/08-Architecture-decisions.md#adr-018)) | `#fca5a5` | 10,61 / 9,83 | Texto sobre estados críticos ✓ |
 | `cyan-400` | `#38bdf8` | 9,40 / 8,71 | Acento ✓ |
 
 **Modo espectral rojo (RNF-USA-03):** en monocromo de unos 630 nm, verde, amarillo y rojo no se distinguen. Por eso cada estado lleva siempre **patrón + símbolo + etiqueta** (RF-ANA-03) y nunca depende solo del color: ✓ Nominal (sin patrón), ▲ Precaución (rayado diagonal), ✕ Crítico (retícula y pulso).
@@ -459,7 +459,7 @@ export function startCritical() {
 }
 ```
 
-**Escalada:** según [ADR-013](../adr/ADR-013-escalada-alarmas.md), el tono de 10 s se repite a los 2 min sin reconocimiento y se replica en la consola del CMO; a los 5 min se avisa en las pantallas de cabina.
+**Escalada:** según [ADR-013](../SDD/08-Architecture-decisions.md#adr-013), el tono de 10 s se repite a los 2 min sin reconocimiento y se replica en la consola del CMO; a los 5 min se avisa en las pantallas de cabina.
 
 ---
 
@@ -531,8 +531,8 @@ C4Component
 
 ## Preguntas abiertas
 
-1. ~~Desbloqueo con PIN frente a RNF-PER-02~~ **Resuelta en [ADR-015](../adr/ADR-015-arranque-hasta-bloqueo.md):** los 1,5 s se miden hasta la pantalla de bloqueo con hábitat y semáforo global.
-2. ~~¿Z-score clásico o modificado?~~ **Resuelta en [ADR-011](../adr/ADR-011-deriva-z-modificado-mad.md):** Z modificado (MAD).
-3. ~~¿Qué pueden mostrar las pantallas de cabina?~~ **Resuelta en [ADR-014](../adr/ADR-014-pantallas-cabina-semaforo.md):** hábitat y semáforo global por tripulante, sin valores clínicos.
-4. ~~Escalada de alarmas no reconocidas~~ **Resuelta en [ADR-013](../adr/ADR-013-escalada-alarmas.md):** repetir a los 2 min y replicar al CMO; a los 5 min, avisar en las pantallas de cabina.
+1. ~~Desbloqueo con PIN frente a RNF-PER-02~~ **Resuelta en [ADR-015](../SDD/08-Architecture-decisions.md#adr-015):** los 1,5 s se miden hasta la pantalla de bloqueo con hábitat y semáforo global.
+2. ~~¿Z-score clásico o modificado?~~ **Resuelta en [ADR-011](../SDD/08-Architecture-decisions.md#adr-011):** Z modificado (MAD).
+3. ~~¿Qué pueden mostrar las pantallas de cabina?~~ **Resuelta en [ADR-014](../SDD/08-Architecture-decisions.md#adr-014):** hábitat y semáforo global por tripulante, sin valores clínicos.
+4. ~~Escalada de alarmas no reconocidas~~ **Resuelta en [ADR-013](../SDD/08-Architecture-decisions.md#adr-013):** repetir a los 2 min y replicar al CMO; a los 5 min, avisar en las pantallas de cabina.
 5. **Asignación de cognitivo, radiación y respiratorio a regiones anatómicas** (ver Organ Mapper).
