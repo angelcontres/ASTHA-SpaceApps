@@ -124,6 +124,12 @@ Nasa-Project/
 │   │   ├── 07-Matriz-de-Trazabilidad-SRS-a-SDD.md              # SDD-07: Trazabilidad 100% (42 RF + 19 RNF + 10 R-* + 3 D-*)
 │   │   └── 08-Architecture-decisions.md                          # SDD-08: Registro Consolidado de 20 ADRs (ADR-001..020)
 │   ├── c4/                                                     # Modelo de Arquitectura C4 (Contexto, Contenedores, Componentes, Despliegue)
+│   ├── Modelo-datos-y-APIs/                                    # Modelo de Datos (ERD, Diccionario) & Contratos OpenAPI 3.1.0
+│   │   ├── README.md                                           # Índice y principios de cifrado/CRDT/LAN
+│   │   ├── 01-Diagrama-Entidad-Relacion.md                     # Diagrama Entidad-Relación (ERD) e IndexedDB Object Stores
+│   │   ├── 02-Diccionario-de-Datos.md                          # Diccionario completo con umbrales NASA-STD-3001
+│   │   ├── 03-Contratos-API-OpenAPI-y-Eventos.md               # Guía REST/WSS (Sync Hub), postMessage Workers y Export DSN
+│   │   └── openapi.yaml                                        # Especificación formal importable OpenAPI 3.1.0
 │   ├── SDD – Software Design Description ASTHA.md                 # Documento técnico consolidado complementario
 │   ├── VALIDACION_FUENTES_OFICIALES_NASA.md                    # Certificación cruzada contra NASA-STD-3001
 │   ├── DOCUMENTO_DOMINIO_Y_PROBLEMATICA_ESPACIAL.md            # Análisis de dominio operacional

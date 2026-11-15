@@ -1,0 +1,429 @@
+openapi: 3.1.0
+info:
+  title: ASTHA Local Sync Hub & Telemetry Adapter API
+  version: 3.0.0
+  description: |
+    Especificación formal OpenAPI 3.1.0 de las interfaces de red local (LAN aislada de la nave espacial, Zero-WAN)
+    y contratos de datos de ASTHA (Autonomous Space Telemetry & Health Analytics).
+    Alineado con SRS v1.0, Modelo C4 y ADRs 001..020 (especialmente ADR-006, ADR-007, ADR-008, ADR-009, ADR-010, ADR-012 y ADR-014).
+  contact:
+    name: ASTHA Engineering Team — NASA Space Apps Challenge 2026
+    url: https://github.com/angelcontres/AstroVital-SpaceApps
+servers:
+  - url: https://astha.local:8443/api/v1
+    description: Sync Hub LAN Cerrada de la Nave (TLS 1.3 con CA Interna - ADR-007 / ADR-008)
+  - url: http://localhost:8443/api/v1
+    description: Entorno de Desarrollo / Demostración Local
+
+tags:
+  - name: SyncHub
+    description: Sincronización CRDT Zero-Knowledge en estrella (ADR-008 / ADR-009)
+  - name: CabinDisplay
+    description: Telemetría de hábitat y semáforo global sin datos clínicos (ADR-014)
+  - name: TelemetryAdapter
+    description: Contrato de ingesta para sensores físicos futuros (SRS §5.2)
+
+paths:
+  /health:
+    get:
+      tags: [SyncHub]
+      summary: Verifica estado del Sync Hub y versión del bundle PWA
+      operationId: getHubHealth
+      responses:
+        "200":
+          description: Sync Hub operativo en la LAN cerrada
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, hubVersion, bundleHashSha256, oplogSequence, mdnsHost]
+                properties:
+                  status:
+                    type: string
+                    enum: [ONLINE, DEGRADED]
+                  hubVersion:
+                    type: string
+                    example: "3.0.0"
+                  bundleHashSha256:
+                    type: string
+                    description: Hash SHA-256 del app shell para Service Worker (RNF-POW-04)
+                  oplogSequence:
+                    type: integer
+                    minimum: 0
+                  mdnsHost:
+                    type: string
+                    example: "astha.local"
+
+  /sync/handshake:
+    post:
+      tags: [SyncHub]
+      summary: Intercambia VersionVector y valida firma Ed25519 del dispositivo cliente
+      description: Implementa descubrimiento y verificación de pares inscritos en Tierra (ADR-009, ADR-020).
+      operationId: postSyncHandshake
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deviceId, versionVector, timestampUtc, ed25519Signature]
+              properties:
+                deviceId:
+                  type: string
+                  example: "tablet-c001"
+                versionVector:
+                  $ref: "#/components/schemas/VersionVector"
+                timestampUtc:
+                  type: string
+                  format: date-time
+                ed25519Signature:
+                  type: string
+      responses:
+        "200":
+          description: Handshake aceptado; retorna lista de sobres faltantes para el cliente
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [hubVersionVector, missingEnvelopeIds]
+                properties:
+                  hubVersionVector:
+                    $ref: "#/components/schemas/VersionVector"
+                  missingEnvelopeIds:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+        "401":
+          description: Dispositivo no inscrito en la CA interna o firma Ed25519 inválida
+
+  /sync/deltas:
+    get:
+      tags: [SyncHub]
+      summary: Descarga deltas EncryptedEnvelope faltantes (Zero-Knowledge en el Hub)
+      description: El Sync Hub entrega únicamente sobres cifrados AES-GCM-256; nunca tiene acceso a datos clínicos en claro (ADR-012).
+      operationId: getSyncDeltas
+      parameters:
+        - name: since_hlc
+          in: query
+          required: false
+          description: Reloj Lógico Híbrido (HLC) desde el cual recuperar deltas
+          schema:
+            type: string
+            example: "1794800000000:0000:tablet-c001"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+      responses:
+        "200":
+          description: Lote de sobres cifrados ordenados por HLC
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [envelopes, hubVersionVector]
+                properties:
+                  envelopes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EncryptedEnvelope"
+                  hubVersionVector:
+                    $ref: "#/components/schemas/VersionVector"
+
+    post:
+      tags: [SyncHub]
+      summary: Envía nuevos sobres cifrados CRDT al Op-Log append-only del Sync Hub
+      operationId: postSyncDeltas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deviceId, envelopes]
+              properties:
+                deviceId:
+                  type: string
+                envelopes:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/EncryptedEnvelope"
+      responses:
+        "202":
+          description: Sobres verificados (SHA-256 + Ed25519) y anexados al Op-Log
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [acceptedCount, rejectedIds, oplogTipSeq]
+                properties:
+                  acceptedCount:
+                    type: integer
+                  rejectedIds:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  oplogTipSeq:
+                    type: integer
+        "422":
+          description: Falla de verificación criptográfica SHA-256 (SEU) o firma Ed25519
+
+  /habitat/status:
+    get:
+      tags: [CabinDisplay]
+      summary: Telemetría ambiental ECLSS/CANS y semáforo global por tripulante (ADR-014)
+      description: |
+        Consumido por pantallas públicas de cabina. Por Privacy Act / HIPAA (ADR-012 y ADR-014),
+        tiene estrictamente prohibido incluir valores biomédicos individuales, órganos afectados o diagnósticos.
+      operationId: getCabinGlobalStatus
+      responses:
+        "200":
+          description: Estado ambiental del hábitat y semáforo agregado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CabinGlobalStatus"
+
+  /ingest/telemetry:
+    post:
+      tags: [TelemetryAdapter]
+      summary: Contrato JSON para adaptador futuro de sensores (SRS §5.2)
+      description: |
+        Permite acoplar trajes bio-monitores reales (Astroskin) o buses ECLSS sin modificar el núcleo clínico.
+        Cumple RF-ING-05: valores fuera de rango fisiológico se marcan isSuspect=true sin descartar.
+      operationId: postIngestTelemetry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [crewId, measurement, habitat]
+              properties:
+                crewId:
+                  type: string
+                  enum: [C001, C002, C003, C004]
+                measurement:
+                  $ref: "#/components/schemas/DailyMeasurement"
+                habitat:
+                  $ref: "#/components/schemas/HabitatTelemetry"
+                symptoms:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/SubjectiveSymptomType"
+      responses:
+        "201":
+          description: Registro validado y encolado al Clinical Engine Worker
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [recordId, isSuspect, evaluationLatencyBudgetMs]
+                properties:
+                  recordId:
+                    type: string
+                    format: uuid
+                  isSuspect:
+                    type: boolean
+                  evaluationLatencyBudgetMs:
+                    type: number
+                    example: 50.0
+
+components:
+  schemas:
+    VersionVector:
+      type: object
+      description: Mapa de secuencia lógica HLC por cada dispositivo de la nave (ADR-009)
+      additionalProperties:
+        type: string
+        example: "1794800000000:0004:tablet-c001"
+
+    EncryptedEnvelope:
+      type: object
+      description: Sobre criptográfico IndexedDB / Op-Log (ADR-006, RNF-SEC-01/03/04)
+      required: [id, hlc, autor, iv, ct, sha256, firma]
+      properties:
+        id:
+          type: string
+          format: uuid
+        hlc:
+          type: string
+          pattern: '^\d+:\d+:[a-zA-Z0-9-]+$'
+          example: "1794800000000:0001:tablet-c001"
+        autor:
+          type: string
+          example: "tablet-c001"
+        iv:
+          type: string
+          description: Vector de inicialización AES-GCM 96-bit en Base64
+        ct:
+          type: string
+          description: Carga útil cifrada AES-GCM-256 en Base64
+        sha256:
+          type: string
+          pattern: '^[a-fA-F0-9]{64}$'
+          description: Checksum anti bit-flip por radiación cósmica SEU (RNF-SEC-03)
+        firma:
+          type: string
+          description: Firma digital Ed25519 del dispositivo emisor
+
+    DailyMeasurement:
+      type: object
+      description: Medición fisiológica diaria con las 9 variables obligatorias de RF-ING-01 (ADR-016)
+      required: [missionDay, hr, hrvRmssd, pas, pad, spo2, glucose, tempC, sleepHours, mood]
+      properties:
+        missionDay:
+          type: integer
+          minimum: 1
+          maximum: 180
+        hr:
+          type: integer
+          minimum: 25
+          maximum: 220
+        hrvRmssd:
+          type: number
+          minimum: 5
+          maximum: 200
+        pas:
+          type: integer
+          minimum: 60
+          maximum: 260
+        pad:
+          type: integer
+          minimum: 35
+          maximum: 160
+        spo2:
+          type: number
+          minimum: 65
+          maximum: 100
+        glucose:
+          type: number
+          minimum: 30
+          maximum: 400
+        tempC:
+          type: number
+          minimum: 34.0
+          maximum: 42.0
+        sleepHours:
+          type: number
+          minimum: 0
+          maximum: 24
+        mood:
+          type: integer
+          minimum: 1
+          maximum: 10
+        urinaryCalciumMgDay:
+          type: number
+          minimum: 0
+          maximum: 1000
+        isSuspect:
+          type: boolean
+          default: false
+
+    HabitatTelemetry:
+      type: object
+      description: Telemetría ambiental ECLSS y dosimetría CANS (RF-ING-02, RF-DSH-04)
+      required: [missionDay, ppCo2Mmhg, cabinPressureKpa, o2Percent, radiationUSvH]
+      properties:
+        missionDay:
+          type: integer
+          minimum: 1
+          maximum: 180
+        ppCo2Mmhg:
+          type: number
+        cabinPressureKpa:
+          type: number
+        o2Percent:
+          type: number
+        radiationUSvH:
+          type: number
+
+    SubjectiveSymptomType:
+      type: string
+      description: Catálogo cerrado de 6 síntomas táctiles (SRS §5.1 + RF-ING-04)
+      enum:
+        - blurredVision
+        - headache
+        - nausea
+        - lumbarPain
+        - orthostaticDizziness
+        - extremeFatigue
+
+    CabinGlobalStatus:
+      type: object
+      description: Vista pública de mamparo conforme a ADR-014 (sin datos biomédicos privados)
+      required: [updatedAtHlc, habitat, crewTrafficLights]
+      properties:
+        updatedAtHlc:
+          type: string
+        habitat:
+          $ref: "#/components/schemas/HabitatTelemetry"
+        crewTrafficLights:
+          type: array
+          items:
+            type: object
+            required: [crewId, globalStatus, hasUnacknowledgedCritical5Min]
+            properties:
+              crewId:
+                type: string
+                enum: [C001, C002, C003, C004]
+              globalStatus:
+                type: string
+                enum: [NOMINAL, CAUTION, CRITICAL]
+              hasUnacknowledgedCritical5Min:
+                type: boolean
+                description: Escalada automática tras 5 min sin acuse (ADR-013)
+
+    CountermeasureProtocol:
+      type: object
+      description: Protocolo de contramedida estrictamente limitado a <= 4 pasos (ADR-017)
+      required: [protocolId, anatomicalImpactBlock, severityTimeBlock, onboardResource, steps]
+      properties:
+        protocolId:
+          type: string
+        anatomicalImpactBlock:
+          type: string
+        severityTimeBlock:
+          type: string
+        onboardResource:
+          type: string
+          enum: [ARED, LBNP, BOTIQUIN, REFUGIO_SPE, FILTROS_LIOH_CDRA]
+        steps:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            type: string
+        chainedNextProtocolId:
+          type: string
+          nullable: true
+
+    SignedDsnExport:
+      type: object
+      description: Paquete JSON firmado con Ed25519 entregado fuera de ASTHA al router DTN de la nave (ADR-010, RNF-NET-04)
+      required: [exportSchemaVersion, generatedAtUtc, missionId, isAnonymized, signerDeviceId, auditChainTipSha256, ed25519Signature]
+      properties:
+        exportSchemaVersion:
+          type: string
+          example: "astha-dsn-v1.0"
+        generatedAtUtc:
+          type: string
+          format: date-time
+        missionId:
+          type: string
+          example: "DST-1-MARS-TRANSIT"
+        isAnonymized:
+          type: boolean
+          description: Obligatorio true si el destino es uso estadístico no médico (ADR-012)
+        signerDeviceId:
+          type: string
+        auditChainTipSha256:
+          type: string
+          pattern: '^[a-fA-F0-9]{64}$'
+        ed25519Signature:
+          type: string
