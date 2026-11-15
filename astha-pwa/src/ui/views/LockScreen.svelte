@@ -157,6 +157,7 @@
       </button>
     </div>
   </header>
+  <div class="nasa-spectrum" aria-hidden="true"></div>
 
   {#if habCritical.length}
     <section class="hab-alert st critical pulse" role="alert">

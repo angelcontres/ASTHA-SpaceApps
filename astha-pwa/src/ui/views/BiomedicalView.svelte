@@ -1,7 +1,7 @@
 <script lang="ts">
-  // Pestaña 1 · Cockpit biomédico (docs/Diseno-UI-UX/01 §3, Vista A): COMP-02 anatomía (4 col) · COMP-03 vitales
-  // 2×2 · COMP-03B ECLSS · COMP-04 tendencia (7) · COMP-05 checklist (5) · registro matutino y gamificación.
-  // Modo Zen: solo vitales esenciales ampliados. Modo Supervivencia: sin 3D ni uPlot, lectura tabular (ADR-019).
+  // Tab 1 · Biomedical Cockpit (WIREFRAME §6.1, View A): 12-col grid (COMP-02 anatomy 4 cols, COMP-03 vitals 2x2,
+  // COMP-03B ECLSS 6 metrics, COMP-04 uPlot trend 7 cols, COMP-05 action checklist 5 cols), morning log & habits.
+  // Zen Mode: essential vitals enlarged cleanly. Survival Mode (<5 W, ADR-019): disables 3D & uPlot with static tables.
   import { resolveProtocol } from '../../engine/countermeasures';
   import type { CrewIndicator, IndicatorId, IndicatorState } from '../../engine/types';
   import AnatomyViewer from '../components/AnatomyViewer.svelte';
@@ -11,10 +11,10 @@
   import IndicatorCard from '../components/IndicatorCard.svelte';
   import TrendChart from '../components/TrendChart.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
-  import { fmt, ROLE_LABEL, STATUS_LABEL, ui } from '../bridge/uiState.svelte';
+  import { fd, fmt, indLabel, indShort, ROLE_LABEL, STATUS_LABEL, ui } from '../bridge/uiState.svelte';
 
   interface Props { zen: boolean; survival: boolean }
-  let { zen, survival }: Props = $props();
+  const { zen, survival }: Props = $props();
 
   const a = $derived(bridge.currentAssessment);
   const byId = $derived(new Map((a?.indicators ?? []).map((i) => [i.id, i])));
@@ -24,6 +24,7 @@
   const days = $derived(bridge.series.measurements.map((m) => m.day));
   const seriesValues = (id: CrewIndicator) => bridge.series.measurements.map((m) => (typeof m[id] === 'number' ? (m[id] as number) : null));
   const todayRow = $derived(bridge.series.measurements.find((m) => m.day === bridge.data.day) ?? null);
+  const activeTrend = $derived(get(ui.bioIndicator));
 
   const topAlert = $derived(bridge.activeAlerts.find((x) => !x.overridden && x.status !== 'nominal' && (x.crewId === a?.crewId || x.crewId === 'HAB')) ?? null);
   const topProtocol = $derived(topAlert ? resolveProtocol(topAlert.countermeasureId) : null);
@@ -32,9 +33,9 @@
 </script>
 
 {#if !a}
-  <p class="panel muted">Esperando la evaluación del tripulante…</p>
+  <p class="panel muted">Awaiting crew clinical assessment…</p>
 {:else if zen}
-  <section class="zen" aria-label="Modo Zen: vitales esenciales">
+  <section class="zen" aria-label="Zen Mode: essential crew vitals">
     {#each ['hr', 'sbp', 'spo2', 'hrv'] as id (id)}
       {@const ind = get(id as IndicatorId)}
       {#if ind}<IndicatorCard indicator={ind} second={id === 'sbp' ? get('dbp') : null} variant="zen" />{/if}
@@ -56,13 +57,18 @@
     <div class="main">
       <!-- COMP-03 -->
       <section aria-labelledby="vit-h">
-        <h2 id="vit-h" class="label">Monitoreo biomédico · {bridge.data.crew.find((c) => c.id === a.crewId)?.name}</h2>
+        <h2 id="vit-h" class="label">Biomedical Vitals · {bridge.data.crew.find((c) => c.id === a.crewId)?.name}</h2>
         <div class="vitals">
           {#each ['hr', 'sbp', 'spo2', 'hrv'] as id (id)}
             {@const ind = get(id as IndicatorId)}
             {#if ind}
-              <IndicatorCard indicator={ind} second={id === 'sbp' ? get('dbp') : null} variant={id === 'sbp' ? 'compound' : 'vital'}
-                active={ui.bioIndicator === id} onopen={() => (ui.bioIndicator = id as IndicatorId)} />
+              <IndicatorCard
+                indicator={ind}
+                second={id === 'sbp' ? get('dbp') : null}
+                variant={id === 'sbp' ? 'compound' : 'vital'}
+                active={ui.bioIndicator === id}
+                onopen={() => (ui.bioIndicator = id as IndicatorId)}
+              />
             {/if}
           {/each}
         </div>
@@ -76,7 +82,7 @@
 
       <!-- COMP-03B -->
       <section aria-labelledby="eclss-h">
-        <h2 id="eclss-h" class="label">Entorno ECLSS · 6 parámetros</h2>
+        <h2 id="eclss-h" class="label">ECLSS Habitat Telemetry · 6 Parameters</h2>
         <div class="eclss">
           {#each bridge.habitatTelemetry.indicators as ind (ind.id)}
             <IndicatorCard indicator={ind} variant="habitat" onopen={() => { ui.envIndicator = ind.id; ui.tab = 'env'; }} />
@@ -87,13 +93,13 @@
       <div class="split">
         <!-- COMP-04 -->
         <section class="panel trend" aria-labelledby="trend-h">
-          <h2 id="trend-h" class="label">Tendencia · {get(ui.bioIndicator)?.label ?? ''}</h2>
+          <h2 id="trend-h" class="label">Trend · {activeTrend ? indLabel(activeTrend) : ''}</h2>
           {#if survival}
             <table class="tab num">
-              <thead><tr><th>Día</th><th>{get(ui.bioIndicator)?.short}</th></tr></thead>
+              <thead><tr><th>Flight Day</th><th>{activeTrend ? indShort(activeTrend) : ''} ({activeTrend?.unit ?? ''})</th></tr></thead>
               <tbody>
                 {#each bridge.series.measurements.slice(-7).reverse() as m (m.day)}
-                  <tr><td>FD-{m.day}</td><td>{fmt(m[ui.bioIndicator as CrewIndicator] as number, get(ui.bioIndicator)?.decimals ?? 0)}</td></tr>
+                  <tr><td>{fd(m.day)}</td><td>{fmt(m[ui.bioIndicator as CrewIndicator] as number, activeTrend?.decimals ?? 0)}</td></tr>
                 {/each}
               </tbody>
             </table>
@@ -103,11 +109,11 @@
         </section>
 
         <!-- COMP-05 -->
-        <section class="check" aria-label="Contramedida activa">
+        <section class="check" aria-label="Active countermeasure protocol">
           {#if topAlert && topProtocol}
             <CountermeasureGuide protocol={topProtocol} alert={topAlert} oncheck={(s, c) => bridge.checkStep(topAlert, s, c)} />
           {:else}
-            <div class="panel st nominal"><span class="sym" aria-hidden="true"></span> Sin contramedidas activas. Mantén la rutina diaria (ARED, hidratación, sueño).</div>
+            <div class="panel st nominal"><span class="sym" aria-hidden="true"></span> No active emergency protocols. Maintain daily ARED, hydration, and sleep schedule.</div>
           {/if}
         </section>
       </div>
@@ -116,7 +122,7 @@
 
   <div class="lower">
     <details class="panel" open={!todayRow?.manual}>
-      <summary class="label">Registro matutino y síntomas</summary>
+      <summary class="label">Morning Self-Report &amp; Symptoms Log</summary>
       <EntrySymptomPad
         crewId={a.crewId}
         today={todayRow}
@@ -127,10 +133,10 @@
     </details>
 
     {#if gam}
-      <!-- Gamificación: después de las alertas y nunca por encima de ellas (RF-GAM-03) -->
+      <!-- Gamification strictly below clinical alerts per RF-GAM-03 -->
       <section class="panel gam" aria-labelledby="gam-h">
-        <h2 id="gam-h" class="label">Hábitos</h2>
-        <p><span class="value">{gam.xp}</span> <span class="unit">XP · nivel {gam.level} · racha {gam.streak} días</span></p>
+        <h2 id="gam-h" class="label">Adherence &amp; Habits</h2>
+        <p><span class="value num">{gam.xp}</span> <span class="unit">XP · Level {gam.level} · {gam.streak}-day streak</span></p>
         <ul class="medals">
           {#each gam.medals as m (m.id)}<li class:earned={m.earnedToday}>{m.earnedToday ? '★' : '☆'} {m.label}</li>{/each}
         </ul>
@@ -139,13 +145,17 @@
 
     {#if multiCrew}
       <section class="panel" aria-labelledby="crew-h">
-        <h2 id="crew-h" class="label">Resumen de tripulación</h2>
+        <h2 id="crew-h" class="label">Crew Roster Summary</h2>
         <div class="row">
           {#each bridge.data.crew as c (c.id)}
             {@const ca = bridge.assessments.find((x) => x.crewId === c.id)}
             {#if ca && !ca.statusOnly}
-              <button type="button" class="btn crewcard st {ca.global}" onclick={() => bridge.selectCrew(c.id)}
-                aria-label="{c.name}, {ROLE_LABEL[c.role]}, {STATUS_LABEL[ca.global]}">
+              <button
+                type="button"
+                class="btn crewcard st {ca.global}"
+                onclick={() => bridge.selectCrew(c.id)}
+                aria-label="{c.name}, {ROLE_LABEL[c.role]}, {STATUS_LABEL[ca.global]}"
+              >
                 <BodySvg regions={ca.regions} compact label={c.name} />
                 <span><strong>{c.id}</strong><br /><span class="sym" aria-hidden="true"></span> {STATUS_LABEL[ca.global]}</span>
               </button>
@@ -175,7 +185,7 @@
   .crewcard { height: auto; padding: 8px 12px; gap: 12px; border-color: var(--st); }
   .crewcard .sym { color: var(--st-text); }
   .zen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
-  .tab { width: 100%; border-collapse: collapse; }
+  .tab { width: 100%; border-collapse: collapse; margin-top: 8px; }
   .tab th, .tab td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
   @media (max-width: 1279px) {
     .anatomy, .main { grid-column: 1 / -1; }

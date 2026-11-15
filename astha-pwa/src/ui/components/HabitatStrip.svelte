@@ -25,7 +25,10 @@
   <div class="brand">
     <img class="logo-img" src="./icon.svg" alt="" width="30" height="30" />
     <div>
-      <strong>ASTHA</strong>
+      <div class="brand-row">
+        <strong>ASTHA</strong>
+        <span class="edge-pill label">OFFLINE EDGE</span>
+      </div>
       <span class="label">{fd(bridge.data.day)} · of {bridge.data.maxDay}</span>
     </div>
   </div>
@@ -85,6 +88,7 @@
     </button>
   </div>
 </header>
+<div class="nasa-spectrum" aria-hidden="true"></div>
 
 <style>
   .strip {
@@ -100,6 +104,14 @@
     border-bottom: 1px solid var(--border);
   }
   .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-row { display: flex; align-items: center; gap: 8px; }
+  .edge-pill {
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid color-mix(in srgb, var(--alert-green) 70%, transparent);
+    background: var(--nominal-fill);
+    color: var(--alert-green);
+  }
   .logo-img { display: block; width: 30px; height: 30px; flex: 0 0 auto; border-radius: 6px; }
   .brand strong { display: block; letter-spacing: 0.12em; }
   .who { display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-left: 3px solid var(--st); }

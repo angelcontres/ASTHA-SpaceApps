@@ -1,64 +1,98 @@
 <script lang="ts">
-  // Indicator Card (COMP-03 / COMP-03B, C4 §3.2): valor, unidad, semáforo con icono, flecha de tendencia,
-  // rango nominal y chip de deriva (días a precaución) SIN teñir la tarjeta (el estado sigue siendo nominal).
+  // Indicator Card (COMP-03 / COMP-03B, C4 §3.2): telemetry value, unit, dual-coded badge, trend slope arrow,
+  // NASA-STD-3001 range gauge bar, and baseline drift chip WITHOUT coloring nominal cards yellow ([UI-09]).
+  import { INDICATORS } from '../../engine/classifier';
   import type { IndicatorState } from '../../engine/types';
-  import { fmt, STATUS_LABEL } from '../bridge/uiState.svelte';
+  import { fmt, indLabel, STATUS_LABEL } from '../bridge/uiState.svelte';
 
   interface Props {
     indicator: IndicatorState;
-    /** Segundo valor para la variante compuesta (PA sistólica/diastólica). */
+    /** Secondary reading for compound cards (systolic/diastolic Blood Pressure). */
     second?: IndicatorState | null;
     variant?: 'vital' | 'habitat' | 'compound' | 'zen';
     active?: boolean;
     onopen?: () => void;
   }
-  let { indicator, second = null, variant = 'vital', active = false, onopen }: Props = $props();
+  const { indicator, second = null, variant = 'vital', active = false, onopen }: Props = $props();
 
   const SEV = { none: -1, nominal: 0, caution: 1, critical: 2 } as const;
   const status = $derived(second && SEV[second.status] > SEV[indicator.status] ? second.status : indicator.status);
-  // AC-CLIN-03 / CU-09: con PAS ≥ 140 la tarjeta de presión dice "SANS CRÍTICO", no solo "Crítico".
-  const statusText = $derived(indicator.id === 'sbp' && indicator.status === 'critical' ? 'SANS CRÍTICO' : STATUS_LABEL[status]);
+  // AC-CLIN-03 / CU-09: SBP >= 140 displays explicit "CRITICAL SANS" severity tag.
+  const statusText = $derived(indicator.id === 'sbp' && indicator.status === 'critical' ? 'CRITICAL SANS' : STATUS_LABEL[status]);
+  const title = $derived(second ? 'Blood Pressure' : indLabel(indicator));
   const slope = $derived(indicator.slope);
   const arrow = $derived(slope == null ? '' : slope > 0.05 ? '↑' : slope < -0.05 ? '↓' : '→');
-  const trendWord = $derived(arrow === '↑' ? 'ascendente' : arrow === '↓' ? 'descendente' : arrow ? 'estable' : '');
+  const trendWord = $derived(arrow === '↑' ? 'rising' : arrow === '↓' ? 'falling' : arrow ? 'steady' : '');
+
+  // Drift chip policy (UI-09): while still nominal, display drift chip without turning the card yellow.
   const drift = $derived(
     status === 'nominal' && indicator.daysToCaution != null && indicator.daysToCaution <= 7 ? indicator.daysToCaution : null,
   );
   const zDrift = $derived(status === 'nominal' && indicator.z != null && Math.abs(indicator.z) >= 2.5);
+
   const valueText = $derived(
     second
       ? `${fmt(indicator.value, indicator.decimals)}/${fmt(second.value, second.decimals)}`
       : fmt(indicator.value, indicator.decimals),
   );
+
+  // Normalized gauge bar across NASA-STD-3001 threshold span + safe nominal band.
+  const gauge = $derived.by(() => {
+    if (indicator.value == null) return null;
+    const def = INDICATORS[indicator.id];
+    const nom = def?.bands.find((b) => b.status === 'nominal');
+    const finite = def?.bands.flatMap((b) => [b.min, b.max]).filter((v): v is number => v !== undefined) ?? [];
+    if (!finite.length || !nom) return null;
+    const rawLo = Math.min(...finite, indicator.value);
+    const rawHi = Math.max(...finite, indicator.value);
+    const span = rawHi - rawLo || 1;
+    const lo = rawLo - span * 0.1;
+    const hi = rawHi + span * 0.1;
+    const pct = (v: number) => Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100));
+    const safeLeft = pct(nom.min ?? lo);
+    const safeRight = pct(nom.max ?? hi);
+    return {
+      safeLeft,
+      safeWidth: Math.max(4, safeRight - safeLeft),
+      pointer: Math.max(2, Math.min(98, pct(indicator.value))),
+    };
+  });
+
   const aria = $derived(
-    `${second ? 'Presión arterial' : indicator.label}, ${valueText} ${indicator.unit}, ${statusText}` +
-      (trendWord ? `, tendencia ${trendWord}` : '') +
+    `${title}, ${valueText} ${indicator.unit}, ${statusText}` +
+      (trendWord ? `, trend ${trendWord}` : '') +
       `, nominal ${indicator.nominalRange}` +
-      (drift ? `, precaución en ${drift} días` : '') +
-      (indicator.isSuspect ? ', dato dudoso' : ''),
+      (drift ? `, caution projected in ${drift} days` : '') +
+      (indicator.isSuspect ? ', suspect reading' : ''),
   );
 </script>
 
 <article class="card ind st {status} {variant}" class:active aria-label={aria}>
   <button type="button" class="hit" onclick={onopen} aria-label={aria} aria-pressed={active}>
     <span class="head">
-      <span class="label">{second ? 'Presión arterial' : indicator.label}</span>
+      <span class="label">{title}</span>
       <span class="badge"><span class="sym" aria-hidden="true"></span> {statusText}</span>
     </span>
     <span class="main">
-      <span class="value st-value">{valueText}</span>
-      {#if indicator.isSuspect || second?.isSuspect}<span class="suspect" title="Fuera del rango fisiológico posible">?</span>{/if}
+      <span class="value num st-value">{valueText}</span>
+      {#if indicator.isSuspect || second?.isSuspect}<span class="suspect" title="Outside plausible physiological range">?</span>{/if}
       <span class="unit">{indicator.unit}</span>
       {#if arrow}<span class="arrow" aria-hidden="true">{arrow}</span>{/if}
     </span>
     {#if variant !== 'zen'}
+      {#if gauge}
+        <span class="gauge" aria-hidden="true">
+          <span class="gauge-safe" style="left:{gauge.safeLeft}%; width:{gauge.safeWidth}%"></span>
+          <span class="gauge-ptr" style="left:{gauge.pointer}%"></span>
+        </span>
+      {/if}
       <span class="unit range">Nominal: {indicator.nominalRange}{second ? ` · ${second.nominalRange}` : ''}</span>
       {#if drift}
-        <span class="chip">Tendencia: precaución en {drift} {drift === 1 ? 'día' : 'días'}</span>
+        <span class="chip">Drift: caution in {drift} {drift === 1 ? 'day' : 'days'}</span>
       {:else if zDrift}
-        <span class="chip">Inusual frente a tu línea base (Z {fmt(indicator.z, 1)})</span>
+        <span class="chip">Baseline deviation (Z {fmt(indicator.z, 1)})</span>
       {/if}
-      {#if indicator.value == null}<span class="muted range">Sin registro hoy</span>{/if}
+      {#if indicator.value == null}<span class="muted range">No reading recorded today</span>{/if}
     {/if}
   </button>
 </article>
@@ -92,6 +126,30 @@
   .ind.critical .st-value { color: var(--alert-red-text); }
   .arrow { font: 700 1.25rem var(--font-num); color: var(--text-muted); }
   .suspect { font-weight: 800; color: var(--alert-yellow); }
+  .gauge {
+    position: relative;
+    display: block;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--space-950);
+    border: 1px solid var(--border-strong);
+  }
+  .gauge-safe {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: color-mix(in srgb, var(--alert-green) 35%, transparent);
+  }
+  .gauge-ptr {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    width: 4px;
+    margin-left: -2px;
+    border-radius: 2px;
+    background: var(--st);
+  }
+  :root[data-survival] .gauge { display: none; }
   .range { display: block; }
   .chip {
     align-self: flex-start;

@@ -30,8 +30,13 @@
         onclick={() => bridge.selectCrew(c.id)}
       >
         <span class="sym" aria-hidden="true"></span>
-        <span class="num">{c.id}</span>
-        <span class="name">{c.name.split(' ').slice(-1)[0]}</span>
+        <span class="member-info">
+          <span class="member-top">
+            <strong class="num">{c.id}</strong>
+            <span class="name">{c.name}</span>
+          </span>
+          <span class="member-role label">{ROLE_LABEL[c.role]} · {STATUS_LABEL[st]}</span>
+        </span>
       </button>
     {/each}
   </div>
@@ -78,10 +83,13 @@
 
 <style>
   .crewbar { display: flex; flex-wrap: wrap; gap: var(--gap); align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--border); background: var(--space-950); }
-  .member { border-color: var(--st); }
+  .member { border-color: var(--st); height: auto; min-height: var(--touch); padding: 6px 12px; justify-content: flex-start; text-align: left; }
   .member .sym { color: var(--st-text); }
-  .member[aria-pressed='true'] { outline: 3px solid var(--accent); outline-offset: 2px; }
-  .name { font-weight: 500; }
+  .member[aria-pressed='true'] { outline: 3px solid var(--accent); outline-offset: 2px; background: color-mix(in srgb, var(--accent) 14%, var(--space-800)); }
+  .member-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .member-top { display: flex; align-items: baseline; gap: 6px; }
+  .name { font-weight: 600; font-size: 0.875rem; }
+  .member-role { display: block; color: var(--text-muted); }
   .timeline { flex: 1 1 320px; min-width: 260px; display: flex; flex-direction: column; gap: 2px; }
   .timeline-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .phase { color: var(--accent); }
