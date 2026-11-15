@@ -1,6 +1,6 @@
 # 🧭 Matriz de Trazabilidad de Requisitos (RTM - Requirements Traceability Matrix)
 ### ASTHA — Autonomous Deep-Space Health Guardian & CDSS
-**Estándares Mandatorios:** NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2) | ISO/IEC/IEEE 29148:2018 | NASA-STD-3001 Vol 1 & 2
+**Estándares Mandatorios:** NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2) | ISO/IEC/IEEE 29148:2018 | NASA-STD-8739.8 (SDD) | NASA-STD-3001 Vol 1 & 2
 
 ---
 
@@ -26,9 +26,10 @@ flowchart TD
         SRS_NF["Requisitos No Funcionales SRS (RNF-POW, RNF-USA, RNF-SEC, RNF-NET)"]
     end
 
-    subgraph DisenoAgil["3. Diseño Operacional y Ágil"]
+    subgraph DisenoAgil["3. Diseño Operacional y Arquitectura SDD"]
         CU["12 Casos de Uso Formales (CU-01 a CU-12)<br/>UML 2.5"]
         HU["20 Historias de Usuario (HU-01 a HU-20)<br/>BDD Gherkin"]
+        SDD["Colección Modular SDD (IEEE 1016 / NASA-STD-8739.8)<br/>docs/SDD/ (01 a 07: Clases, Secuencia, Componentes, Despliegue)"]
     end
 
     subgraph Implementacion["4. Implementación en Código (Edge Prototype)"]
