@@ -261,8 +261,9 @@ export class WorkerBridge {
   toggleSymptom(crewId: string, symptom: SymptomType, active: boolean) {
     this.send({ type: 'symptom', crewId, symptom, active }, true);
   }
-  checkStep(alert: Pick<Alert, 'id' | 'crewId' | 'countermeasureId'>, stepId: string, checked: boolean) {
-    this.send({ type: 'check', alertId: alert.id, crewId: alert.crewId, protocolId: alert.countermeasureId, stepId, checked });
+  /** protocolId: el protocolo cuyos pasos se marcan (puede ser la alternativa por recurso no operativo, CU-07). */
+  checkStep(alert: Pick<Alert, 'id' | 'crewId' | 'countermeasureId'>, stepId: string, checked: boolean, protocolId = alert.countermeasureId) {
+    this.send({ type: 'check', alertId: alert.id, crewId: alert.crewId, protocolId, stepId, checked });
   }
   acknowledge(alert: Pick<Alert, 'id' | 'crewId'>) { this.send({ type: 'ack', alertId: alert.id, crewId: alert.crewId }); }
   override(alert: Pick<Alert, 'id' | 'crewId'>, reason: string) { this.send({ type: 'override', alertId: alert.id, crewId: alert.crewId, reason }); }

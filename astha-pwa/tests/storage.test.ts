@@ -460,22 +460,22 @@ describe('Telemetry Sources (RF-ING-01..05, RF-SIM-01..05)', () => {
     expect(r.rejected).toEqual(['mood']);
   });
 
-  it('escenarios A-E y reset en 1 toque', () => {
+  it('escenarios A-F (letras del SRS §3.8) y reset en 1 toque', () => {
     const day = 120;
     const ops: Op[] = [];
     let t = 1;
-    for (const b of scenarioOps('A', 'C001', day)) ops.push(mk(b, t++));
-    for (const b of scenarioOps('C', 'C001', day)) ops.push(mk(b, t++));
-    for (const b of scenarioOps('D', 'C004', day)) ops.push(mk(b, t++));
+    for (const b of scenarioOps('B', 'C001', day)) ops.push(mk(b, t++)); // SANS
+    for (const b of scenarioOps('A', 'C001', day)) ops.push(mk(b, t++)); // SPE
+    for (const b of scenarioOps('E', 'C004', day)) ops.push(mk(b, t++)); // sueño + HRV
     ops.push(mk(symptomToggle('C002', day, 'headache', true), t++));
     let v = buildView(ds, ops, day);
-    expect(v.activeScenarios).toEqual(['A', 'C', 'D']);
+    expect(v.activeScenarios).toEqual(['B', 'A', 'E']);
     expect(v.measurements.C001.at(-1)!.sbp).toBe(144);
     expect(v.habitat.at(-1)!.radiation).toBe(185);
     expect(v.symptoms.C001.sort()).toEqual(['blurred_vision', 'headache', 'nausea']);
     expect(v.measurements.C004.slice(-2).map((m) => m.sleep)).toEqual([5.0, 5.0]); // sostenido 2 días
 
-    const b = scenarioOps('B', 'C001', day);
+    const b = scenarioOps('C', 'C001', day); // CO₂
     for (const o of b) ops.push(mk(o, t++));
     v = buildView(ds, ops, day);
     expect(['C001', 'C002', 'C003', 'C004'].every((c) => v.measurements[c].at(-1)!.spo2 === 92)).toBe(true);

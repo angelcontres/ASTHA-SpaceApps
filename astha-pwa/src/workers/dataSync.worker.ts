@@ -4,7 +4,7 @@
 // Las K_t desenvueltas (extractable: false) solo viven en `session.keys` y se borran al bloquear.
 // Cada cambio aplicado al CRDT dispara la re-evaluación por el MessageChannel directo al Clinical Worker.
 // Sin polling: todo responde a mensajes; el único temporizador es el del reloj simulado en reproducción.
-import { CATALOG } from '../engine/countermeasures';
+import { CATALOG, resolveProtocol } from '../engine/countermeasures';
 import type { Alert, Assessment } from '../engine/types';
 import { CrdtState, deltaFor, HybridClock, type Op, type OpBody } from '../storage/crdt';
 import {
@@ -13,6 +13,7 @@ import {
 } from '../storage/crypto';
 import { buildPayload, fileName, parseImport, serialize, signExport } from '../storage/exportBuilder';
 import { AsthaDb, type Envelope, type LedgerRecord } from '../storage/idb';
+import { completedProtocols, type CheckEvent } from '../engine/gamification';
 import { compactInput } from '../engine/inputWindow';
 import { IntegrityGuard, sealEnvelope } from '../storage/integrity';
 import { Ledger, type LedgerType } from '../storage/ledger';
@@ -156,6 +157,17 @@ function evaluateNow(): void {
   lastView = view;
   const allowed = session?.allowed ?? [];
   if (clinicalPort) {
+    // Contramedidas completadas por tripulante (RF-GAM-01), derivadas del G-Set: mismo resultado en todos los nodos.
+    // Las alertas de hábitat se acreditan a quien ejecutó el checklist.
+    const events = new Map<string, CheckEvent[]>();
+    for (const op of crdt.sorted()) {
+      const b = op.body;
+      if (b.t !== 'check') continue;
+      const who = b.crewId === 'HAB' ? b.by : b.crewId;
+      (events.get(who) ?? events.set(who, []).get(who)!).push(b);
+    }
+    const stepsOf = (id: string) => resolveProtocol(id)?.steps.map((s) => s.id) ?? null;
+    const completions = new Map([...events].map(([who, ev]) => [who, completedProtocols(ev, stepsOf)]));
     const req: DataToClinical = {
       type: 'evaluate',
       reqId: pendingReqId || reqSeq++,
@@ -168,6 +180,7 @@ function evaluateNow(): void {
         symptoms: allowed.includes(c.id) ? (view.symptoms[c.id] ?? []) : [],
         statusOnly: !allowed.includes(c.id),
         bonusXp: crdt.counter(`xp:${c.id}`),
+        protocolsCompleted: completions.get(c.id) ?? [],
       })),
     };
     pendingReqId = 0;

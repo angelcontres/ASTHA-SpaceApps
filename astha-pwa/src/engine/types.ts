@@ -109,6 +109,10 @@ export interface Protocol {
   steps: CountermeasureStep[];
   resources: string[];
   fsMessage?: string;
+  /** Protocolo que sigue a este cuando el procedimiento necesita más de 4 pasos (ADR-017). */
+  next?: string;
+  /** Recurso → protocolo alternativo si ese recurso no está operativo (CU-07 FA-01). */
+  alternatives?: Record<string, string>;
 }
 
 /** Contramedida (SRS §5.1): alerta, pasos y pasos completados. */
@@ -164,7 +168,11 @@ export interface EvaluationInput {
   bonusXp?: number;
   /** Resumen exacto de los días que la ventana de entrada no envía (inputWindow.ts). */
   carry?: InputCarry;
+  /** Contramedidas completadas por este tripulante, derivadas del G-Set (RF-GAM-01). */
+  protocolsCompleted?: ProtocolCompletion[];
 }
+
+export interface ProtocolCompletion { alertId: string; protocolId: string; day: number }
 
 export interface GamificationCarry {
   /** XP de los días recortados. */

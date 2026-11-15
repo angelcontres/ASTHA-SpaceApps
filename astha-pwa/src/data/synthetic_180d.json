@@ -148,8 +148,18 @@
     }
   },
   "scenarios": {
-    "_note": "Letras según la petición del equipo (A SANS, B CO₂, C SPE, D sueño/HRV). El SRS §3.8 usa otro orden (A SPE, B SANS, C CO₂, D hipercalciuria); la hipercalciuria (RF-SIM-04) se conserva como E.",
+    "_note": "Letras del SRS §3.8 (RF-SIM-01..04): A SPE, B SANS, C CO₂, D hipercalciuria. E (sueño + HRV, RF-EVA-05/R-COG-01) es un escenario extra. F (fallo compuesto, issue #6) inyecta A y C a la vez: no está en el SRS y no añade umbrales nuevos.",
     "A": {
+      "label": "Tormenta solar (SPE)",
+      "req": "RF-SIM-01",
+      "habitat": {
+        "radiation": 185
+      },
+      "symptoms": [
+        "nausea"
+      ]
+    },
+    "B": {
       "label": "SANS agudo",
       "req": "RF-SIM-02",
       "measurement": {
@@ -161,7 +171,7 @@
         "headache"
       ]
     },
-    "B": {
+    "C": {
       "label": "Microfuga de CO₂",
       "req": "RF-SIM-03",
       "habitat": {
@@ -173,26 +183,7 @@
       },
       "allCrew": true
     },
-    "C": {
-      "label": "Tormenta solar (SPE)",
-      "req": "RF-SIM-01",
-      "habitat": {
-        "radiation": 185
-      },
-      "symptoms": [
-        "nausea"
-      ]
-    },
     "D": {
-      "label": "Privación de sueño + HRV baja",
-      "req": "RF-EVA-05, R-COG-01",
-      "measurement": {
-        "sleep": 5.0,
-        "hrv": 18
-      },
-      "sustainedDays": 2
-    },
-    "E": {
       "label": "Hipercalciuria / cálculo renal",
       "req": "RF-SIM-04",
       "measurement": {
@@ -201,6 +192,31 @@
       "symptoms": [
         "back_pain"
       ]
+    },
+    "E": {
+      "label": "Privación de sueño + HRV baja",
+      "req": "RF-EVA-05, R-COG-01",
+      "measurement": {
+        "sleep": 5.0,
+        "hrv": 18
+      },
+      "sustainedDays": 2
+    },
+    "F": {
+      "label": "Fallo compuesto: tormenta solar + fuga de CO₂",
+      "req": "Issue #6 (RF-SIM-01 + RF-SIM-03)",
+      "habitat": {
+        "radiation": 185,
+        "ppco2": 3.6
+      },
+      "measurement": {
+        "spo2": 92,
+        "hr": 92
+      },
+      "symptoms": [
+        "nausea"
+      ],
+      "allCrew": true
     }
   }
 }

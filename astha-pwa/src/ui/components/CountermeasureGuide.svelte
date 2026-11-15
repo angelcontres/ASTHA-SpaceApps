@@ -2,7 +2,9 @@
   // Countermeasure Guide (COMP-05, C4 §3.2): 3 bloques fijos — Qué ocurre / Severidad e impacto / Acciones —
   // más "Qué enviar al Flight Surgeon" en alertas rojas (RF-GUI-05). Checklist ≤ 4 pasos (ADR-017) con recursos
   // de a bordo (RF-GUI-03). Cada casilla emite un evento NUEVO al G-Set; nunca edita uno anterior.
-  import { inventoryLabel } from '../../engine/countermeasures';
+  // CounterResolver: alternativa si un recurso no está operativo (CU-07 FA-01), prioridad Alta/Media/Baja
+  // (AC-CLIN-06) y protocolos encadenados (ADR-017).
+  import { inventoryLabel, resolveForAlert, unavailableFrom, UNAVAILABLE_PREFIX, type Priority } from '../../engine/countermeasures';
   import type { Protocol } from '../../engine/types';
   import type { ActiveAlert } from '../bridge/workerBridge.svelte';
   import { STATUS_LABEL, SYSTEM_LABEL } from '../bridge/uiState.svelte';
@@ -11,10 +13,14 @@
     protocol: Protocol;
     alert: ActiveAlert;
     variant?: 'inline' | 'emergency' | 'daily';
-    oncheck: (stepId: string, checked: boolean) => void;
+    /** protocolId: protocolo cuyos pasos se marcan (el resuelto, que puede ser la alternativa). */
+    oncheck: (stepId: string, checked: boolean, protocolId: string) => void;
   }
-  let { protocol, alert, variant = 'inline', oncheck }: Props = $props();
+  let { protocol: base, alert, variant = 'inline', oncheck }: Props = $props();
 
+  const PRIORITY_LABEL: Record<Priority, string> = { high: 'Prioridad alta', medium: 'Prioridad media', low: 'Prioridad baja' };
+  const resolution = $derived(resolveForAlert(alert, unavailableFrom(alert.completedSteps)));
+  const protocol = $derived(resolution?.protocol ?? base);
   const done = $derived(new Set(alert.completedSteps));
   const next = $derived(protocol.steps.find((s) => !done.has(s.id))?.id ?? null);
   const complete = $derived(protocol.steps.every((s) => done.has(s.id)));
@@ -27,6 +33,9 @@
     <div>
       <h2 id="g-{protocol.id}-{alert.id}" class:alarm-title={alert.status === 'critical'}>{protocol.title}</h2>
       <p class="label">{SYSTEM_LABEL[alert.organ]} · {STATUS_LABEL[alert.status]} · regla {alert.ruleId}</p>
+      {#if resolution?.substitutedFor}
+        <p class="alt" role="status">Alternativa: {inventoryLabel(resolution.substitutedFor)} no operativo.</p>
+      {/if}
     </div>
   </header>
 
@@ -37,7 +46,10 @@
 
   <div class="block">
     <h3>2 · Severidad e impacto</h3>
-    <p><strong class="sev">{protocol.severity}</strong> · impacto estimado: {protocol.timeToImpact}</p>
+    <p>
+      {#if resolution}<span class="badge prio {resolution.priority}">{PRIORITY_LABEL[resolution.priority]}</span>{/if}
+      <strong class="sev">{protocol.severity}</strong> · actuar en: {protocol.timeToImpact}
+    </p>
     <p class="why"><span class="label">Por qué</span> {alert.explanation}</p>
   </div>
 
@@ -50,7 +62,7 @@
             <input
               type="checkbox"
               checked={done.has(s.id)}
-              onchange={(e) => oncheck(s.id, e.currentTarget.checked)}
+              onchange={(e) => oncheck(s.id, e.currentTarget.checked, protocol.id)}
               aria-label="Paso {i + 1} de {protocol.steps.length}: {s.text}"
             />
             <span class="txt">
@@ -59,11 +71,19 @@
               {#if s.resource}<span class="unit res">Recurso: {inventoryLabel(s.resource)}</span>{/if}
             </span>
           </label>
+          {#if s.resource && protocol.alternatives?.[s.resource] && !done.has(s.id)}
+            <button type="button" class="btn unavail" onclick={() => oncheck(`${UNAVAILABLE_PREFIX}${s.resource}`, true, protocol.id)}>
+              {inventoryLabel(s.resource)} no disponible
+            </button>
+          {/if}
         </li>
       {/each}
     </ol>
     {#if outOfOrder && !complete}<p class="muted small">Pasos marcados fuera de orden: revisa el paso resaltado.</p>{/if}
     {#if complete}<p class="complete" role="status">✓ Protocolo completado y registrado en la bitácora</p>{/if}
+    {#if complete && resolution?.chain.length}
+      <p class="chain">Continúa con: <strong>{resolution.chain.map((p) => p.title).join(' → ')}</strong></p>
+    {/if}
   </div>
 
   {#if alert.status === 'critical' && protocol.fsMessage}
@@ -112,6 +132,11 @@
   .n { font-weight: 700; color: var(--accent); }
   .res { display: block; }
   .complete { color: var(--alert-green); font-weight: 700; }
+  .alt { color: var(--alert-yellow); font-weight: 700; margin-top: 4px; }
+  .badge.prio { display: inline-block; margin-right: 8px; padding: 2px 10px; border: 2px solid var(--st); border-radius: var(--radius-btn); font-weight: 700; color: var(--st-text); }
+  .badge.prio.medium, .badge.prio.low { border-style: dashed; }
+  .unavail { margin: 6px 0 0 40px; height: auto; min-height: var(--touch); }
+  .chain { margin-top: 6px; }
   .small { font-size: 0.875rem; }
   .fs summary { cursor: pointer; min-height: var(--touch); display: flex; align-items: center; }
   .fs summary h3 { margin: 0; color: var(--alert-red-text); }
