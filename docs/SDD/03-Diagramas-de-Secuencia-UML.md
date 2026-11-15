@@ -1,125 +1,125 @@
-# ⏱️ SDD-03: Diagramas de Secuencia UML
+# ⏱️ SDD-03: UML Sequence Diagrams
 ### ASTHA — Software Design Description | NASA Space Apps Challenge 2026
-**Normas de Referencia:** NASA-STD-8739.8 | IEEE Std 1016-2009 | UML 2.5 | **ADRs:** 004, 005, 006, 008, 009, 010, 011, 013, 014, 017
+**Reference Standards:** NASA-STD-8739.8 | IEEE Std 1016-2009 | UML 2.5 | **ADRs:** 004, 005, 006, 008, 009, 010, 011, 013, 014, 017
 
 ---
 
-## 1. Escenario A: Pipeline Clínico en Web Worker (< 50 ms) y Escalada de Alarmas (`ADR-005`, `ADR-011`, `ADR-013`)
+## 1. Scenario A: Web Worker Clinical Pipeline (< 50 ms) and Alarm Escalation (`ADR-005`, `ADR-011`, `ADR-013`)
 
-Modela el flujo reactivo dirigido por eventos (sin *polling*) desde el registro o inyección de crisis hasta la evaluación clínica y el protocolo temporal de escalada de alarmas críticas no reconocidas.
+Models the reactive, event-driven flow (zero polling) from daily logging or crisis injection through clinical evaluation and the timed escalation protocol for unacknowledged critical alarms.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Crew as Astronauta / Simulador
+    actor Crew as Astronaut / Simulator
     participant UI as Crew PWA (Svelte 5 Main Thread)
     participant Engine as Clinical Engine Worker (ADR-005)
     participant Audio as WebAudio & Visual Layer
     participant DataW as Data & Sync Worker
     participant Hub as Sync Hub (astha.local - ADR-008)
-    participant CMO as Consola CMO / Cabina (ADR-014)
+    participant CMO as CMO Console / Cabin (ADR-014)
 
-    Crew->>UI: Ingresa Registro Diario o Inyecta Crisis (RF-SIM-01..04)
+    Crew->>UI: Enters Daily Log or Injects Crisis (RF-SIM-01..04)
     UI->>Engine: postMessage(DailyMeasurement, HabitatTelemetry, Symptoms)
     
-    Note over Engine: Presupuesto RNF-PER-01: Ciclo completo < 50 ms
-    Engine->>Engine: 1. Validar rangos y marcar dudosos sin descartar (RF-ING-05)
-    Engine->>Engine: 2. Calcular Modified Z-Score MAD (ADR-011) y Regresión 7d (D-01..D-03)
-    Engine->>Engine: 3. Evaluar Reglas Correlación R-ENV..R-CARD (RF-EVA-04)
-    Engine->>Engine: 4. Resolver Contramedida <= 4 pasos (ADR-017)
+    Note over Engine: Budget RNF-PER-01: Full cycle < 50 ms
+    Engine->>Engine: 1. Validate bounds and flag suspects without discarding (RF-ING-05)
+    Engine->>Engine: 2. Compute Modified Z-Score MAD (ADR-011) and 7d Regression (D-01..D-03)
+    Engine->>Engine: 3. Evaluate Correlation Rules R-ENV..R-CARD (RF-EVA-04)
+    Engine->>Engine: 4. Resolve Countermeasure <= 4 steps (ADR-017)
 
     Engine-->>UI: postMessage(TriageResult, ClinicalAlert, Protocol)
-    UI->>DataW: MessageChannel: Persistir sobre cifrado AES-GCM + SHA-256 (ADR-006)
+    UI->>DataW: MessageChannel: Persist AES-GCM + SHA-256 encrypted envelope (ADR-006)
 
-    alt Alerta Severidad == CRITICAL (ADR-013 Escalada)
-        UI->>Audio: t=0s: Emitir tono 800-1200 Hz (10 seg) + Pulso #ef4444 / Texto #fca5a5 (ADR-018)
+    alt Alert Severity == CRITICAL (ADR-013 Escalation)
+        UI->>Audio: t=0s: Emit 800-1200 Hz tone (10 sec) + #ef4444 Pulse / #fca5a5 Text (ADR-018)
         
-        opt Si acknowledged == false tras 2 minutos
-            UI->>Audio: t=120s: Repetir tono 800-1200 Hz (10 seg)
-            UI->>DataW: Replicar alerta crítica vía delta CRDT
-            DataW->>Hub: WSS Push Delta Cifrado (ADR-008)
-            Hub-->>CMO: Notificar alerta en Consola del CMO
+        opt If acknowledged == false after 2 minutes
+            UI->>Audio: t=120s: Repeat 800-1200 Hz tone (10 sec)
+            UI->>DataW: Replicate critical alert via CRDT delta
+            DataW->>Hub: WSS Push Encrypted Delta (ADR-008)
+            Hub-->>CMO: Notify alert on CMO Console
         end
 
-        opt Si acknowledged == false tras 5 minutos
-            UI->>DataW: Publicar estado global (sin valores clínicos - ADR-014)
-            DataW->>Hub: WSS Push Estado Global Hábitat
-            Hub-->>CMO: Aviso en Pantallas Públicas de Cabina
+        opt If acknowledged == false after 5 minutes
+            UI->>DataW: Publish global status (no clinical values - ADR-014)
+            DataW->>Hub: WSS Push Habitat Global Status
+            Hub-->>CMO: Alert on Public Cabin Displays
         end
-    else Alerta == CAUTION o NOMINAL
-        UI->>UI: Actualizar tarjeta y semáforo sin tono sonoro (RNF-USA-04)
+    else Alert == CAUTION or NOMINAL
+        UI->>UI: Update card and status indicator without audio tone (RNF-USA-04)
     end
 ```
 
 ---
 
-## 2. Escenario B: Triaje Anatómico 3D Bajo Demanda (`ADR-004`), Checklist $\le 4$ Pasos (`ADR-017`) y Gamificación
+## 2. Scenario B: On-Demand 3D Anatomical Triage (`ADR-004`), $\le 4$-Step Checklist (`ADR-017`), and Gamification
 
-Modela la interacción ergonómica táctil ($\ge 48\text{ px}$), la regla de **cero fotogramas en reposo** del renderizador 3D Three.js para cumplir `RNF-POW-01` (CPU $\le 3\%$), y la ejecución verificable de contramedidas.
+Models ergonomic touch interaction ($\ge 48\text{ px}$), the **zero idle frames** rule of the Three.js 3D renderer to satisfy `RNF-POW-01` (CPU $\le 3\%$), and verifiable countermeasure execution.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Astro as Astronauta (Guantes >= 48px)
+    actor Astro as Astronaut (Gloves >= 48px)
     participant UI as Anatomy Viewer (Svelte 5)
     participant WebGL as Three.js On-Demand Renderer (ADR-004)
     participant DataW as Data & Sync Worker
     participant IDB as IndexedDB (AES-GCM 256)
 
-    Note over WebGL: En monitoreo pasivo: 0 FPS, sin requestAnimationFrame en bucle
-    Astro->>UI: Toca región anatómica (Ojos/Cabeza, Tórax, Riñones, Piernas)
-    UI->>WebGL: Solicitar Raycast + 1 Frame de Renderizado (onInteraction)
+    Note over WebGL: Passive monitoring: 0 FPS, no requestAnimationFrame loop
+    Astro->>UI: Taps anatomical region (Eyes/Head, Thorax, Kidneys, Legs)
+    UI->>WebGL: Request Raycast + 1 Render Frame (onInteraction)
     
-    alt WebGL Contexto Activo
-        WebGL-->>UI: Dibuja exactamente 1 frame resaltando órgano + vuelve a reposo
-    else Contexto Perdido o Modo Supervivencia (ADR-019)
-        UI->>UI: Fallback instantáneo a Mapa Anatómico SVG interactivo
+    alt WebGL Context Active
+        WebGL-->>UI: Draws exactly 1 frame highlighting organ + returns to idle
+    else Context Lost or Survival Mode (ADR-019)
+        UI->>UI: Instant fallback to interactive SVG Anatomical Map
     end
 
-    UI->>UI: Renderiza 3 Bloques (RF-GUI-01): Impacto, Severidad/Tiempo y Pasos (<= 4 ADR-017)
+    UI->>UI: Renders 3 Blocks (RF-GUI-01): Impact, Severity/Time, and Steps (<= 4 ADR-017)
     
-    loop Por cada paso verificado (Máximo 4 pasos - ADR-017)
-        Astro->>UI: Marca checkbox táctil de paso completado (RF-GUI-02)
+    loop For each verified step (Maximum 4 steps - ADR-017)
+        Astro->>UI: Checks tactile step completion checkbox (RF-GUI-02)
         UI->>DataW: postMessage(LogActionStep, IncrementXP)
-        DataW->>DataW: Actualizar PN-Counter XP (ADR-009) & Encadenar Bitácora SHA-256 (RNF-SEC-04)
-        DataW->>IDB: Guardar EncryptedEnvelope (iv, ct, sha256, firma Ed25519)
+        DataW->>DataW: Update XP PN-Counter (ADR-009) & Chain SHA-256 Ledger (RNF-SEC-04)
+        DataW->>IDB: Store EncryptedEnvelope (iv, ct, sha256, Ed25519 sig)
     end
     
-    DataW-->>UI: Confirmación de protocolo completado y racha diaria (RF-GAM-02)
+    DataW-->>UI: Confirmation of completed protocol and daily streak (RF-GAM-02)
 ```
 
 ---
 
-## 3. Escenario C: Sincronización LAN con Sync Hub (`ADR-008`) y Exportación JSON Firmada (`ADR-010`)
+## 3. Scenario C: LAN Synchronization with Sync Hub (`ADR-008`) and Signed JSON Export (`ADR-010`)
 
-Modela la tolerancia a particiones sin Internet (`RNF-NET-01`), la convergencia libre de conflictos mediante CRDT (`ADR-009`), y la generación del archivo firmado fuera de red para su entrega al sistema de comunicaciones DTN de la nave (`ADR-010`).
+Models partition tolerance without Internet (`RNF-NET-01`), conflict-free convergence via CRDT (`ADR-009`), and offline signed-file generation for handoff to the spacecraft DTN communications system (`ADR-010`).
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor CMO as Oficial Médico (CMO)
-    participant ClientA as Dispositivo A (Data & Sync Worker)
-    participant Hub as Sync Hub en Rust (astha.local - ADR-008)
-    participant ClientB as Consola CMO (Data & Sync Worker)
-    participant Transponder as Router DTN de la Nave (Externo - ADR-010)
+    actor CMO as Crew Medical Officer (CMO)
+    participant ClientA as Device A (Data & Sync Worker)
+    participant Hub as Rust Sync Hub (astha.local - ADR-008)
+    participant ClientB as CMO Console (Data & Sync Worker)
+    participant Transponder as Spacecraft DTN Router (External - ADR-010)
 
-    Note over ClientA,Hub: Red LAN aislada de la nave (mDNS < 3s - RNF-NET-03, WSS TLS 1.3)
+    Note over ClientA,Hub: Isolated spacecraft LAN (mDNS < 3s - RNF-NET-03, WSS TLS 1.3)
     
-    alt Sync Hub Disponible en LAN
-        ClientA->>Hub: Conecta WSS + Envía VersionVector local (ADR-009)
-        Hub-->>ClientA: Envía deltas cifrados faltantes (G-Set / LWW-Map / PN-Counter)
-        ClientA->>Hub: Envía nuevos EncryptedEnvelope cifrados (Zero-Knowledge en Hub)
-        Hub->>Hub: Verifica firma Ed25519 y anexa al Op-Log en disco
-        Hub-->>ClientB: Retransmite deltas cifrados por WSS
-        ClientB->>ClientB: Merge idempotente por HLC y descifra con clave del CMO (ADR-012)
-    else Sync Hub Caído o Módulo Aislado
-        ClientA->>ClientA: Sigue 100% autónomo; acumula sobres locales para convergencia futura
+    alt Sync Hub Available on LAN
+        ClientA->>Hub: Connects WSS + Sends local VersionVector (ADR-009)
+        Hub-->>ClientA: Sends missing encrypted deltas (G-Set / LWW-Map / PN-Counter)
+        ClientA->>Hub: Sends new encrypted EncryptedEnvelopes (Zero-Knowledge on Hub)
+        Hub->>Hub: Verifies Ed25519 signature and appends to on-disk Op-Log
+        Hub-->>ClientB: Relays encrypted deltas over WSS
+        ClientB->>ClientB: Idempotent HLC merge and decrypts with CMO key (ADR-012)
+    else Sync Hub Down or Isolated Module
+        ClientA->>ClientA: Remains 100% autonomous; accumulates local envelopes for future convergence
     end
 
-    Note over CMO,Transponder: Ventana de Enlace DSN a Houston (ADR-010)
-    CMO->>ClientB: Solicita Exportación Asíncrona para Flight Surgeon (RF-REG-02, RNF-NET-04)
-    ClientB->>ClientB: Consolida tendencias y eventos + Anonimiza si es uso no médico (ADR-012)
-    ClientB->>ClientB: Firma paquete JSON con clave privada Ed25519 del dispositivo
-    ClientB-->>CMO: Descarga archivo astha_export_signed.json
-    CMO->>Transponder: Entrega física/local del JSON al subsistema DTN externo de la nave
+    Note over CMO,Transponder: DSN Link Window to Houston (ADR-010)
+    CMO->>ClientB: Requests Asynchronous Export for Flight Surgeon (RF-REG-02, RNF-NET-04)
+    ClientB->>ClientB: Consolidates trends and events + Anonymizes if non-medical use (ADR-012)
+    ClientB->>ClientB: Signs JSON package with device Ed25519 private key
+    ClientB-->>CMO: Downloads astha_export_signed.json file
+    CMO->>Transponder: Physical/local handoff of JSON to external spacecraft DTN subsystem
 ```

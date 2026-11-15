@@ -1,12 +1,12 @@
-# 🧬 SDD-02: Diagrama de Clases UML
+# 🧬 SDD-02: UML Class Diagram
 ### ASTHA — Software Design Description | NASA Space Apps Challenge 2026
-**Normas de Referencia:** NASA-STD-8739.8 | IEEE Std 1016-2009 | UML 2.5 | **ADRs:** 006, 009, 010, 011, 012, 016, 017
+**Reference Standards:** NASA-STD-8739.8 | IEEE Std 1016-2009 | UML 2.5 | **ADRs:** 006, 009, 010, 011, 012, 016, 017
 
 ---
 
-## 1. Diagrama de Clases del Dominio Clínico, Seguridad y Sincronización
+## 1. Class Diagram for Clinical Domain, Security, and Synchronization
 
-Este modelo representa las entidades de datos definidas en el **SRS §5.1**, el motor de inferencia determinista en **Clinical Engine Worker** (`ADR-005`) y los contratos criptográficos de persistencia y replicación en **Data & Sync Worker** (`ADR-006`, `ADR-009`, `ADR-012`).
+This model represents the data entities defined in **SRS §5.1**, the deterministic inference engine in **Clinical Engine Worker** (`ADR-005`), and the cryptographic persistence and replication contracts in **Data & Sync Worker** (`ADR-006`, `ADR-009`, `ADR-012`).
 
 ```mermaid
 classDiagram
@@ -128,36 +128,36 @@ classDiagram
         +generateForTransponder() File
     }
 
-    CrewMember "1" *-- "0..180" DailyMeasurement : registra (ADR-016)
-    CrewMember "1" *-- "0..*" SubjectiveSymptom : reporta (RF-ING-04)
-    CrewMember "1" o-- "0..*" ClinicalAlert : posee
-    HabitatTelemetry "1" ..> "1" ClinicalEngine : correlaciona (RF-EVA-04)
-    DailyMeasurement "1" ..> "1" ClinicalEngine : evalua < 50ms
-    ClinicalEngine "1" --> "0..*" ClinicalAlert : genera (R-*, D-*)
-    ClinicalAlert "1" --> "1" CountermeasureProtocol : despacha (ADR-017)
-    ClinicalAlert ..> EncryptedEnvelope : cifra e inmutabiliza (RNF-SEC-04)
-    DailyMeasurement ..> EncryptedEnvelope : cifra AES-GCM 256 (ADR-006)
-    KeyManager "1" --> "1..*" EncryptedEnvelope : protege (ADR-012)
-    CRDTReplicator "1" o-- "0..*" EncryptedEnvelope : sincroniza (ADR-009)
-    CRDTReplicator "1" ..> "0..1" SignedDsnExport : exporta (ADR-010)
+    CrewMember "1" *-- "0..180" DailyMeasurement : logs (ADR-016)
+    CrewMember "1" *-- "0..*" SubjectiveSymptom : reports (RF-ING-04)
+    CrewMember "1" o-- "0..*" ClinicalAlert : owns
+    HabitatTelemetry "1" ..> "1" ClinicalEngine : correlates (RF-EVA-04)
+    DailyMeasurement "1" ..> "1" ClinicalEngine : evaluates < 50ms
+    ClinicalEngine "1" --> "0..*" ClinicalAlert : generates (R-*, D-*)
+    ClinicalAlert "1" --> "1" CountermeasureProtocol : dispatches (ADR-017)
+    ClinicalAlert ..> EncryptedEnvelope : encrypts & immutalizes (RNF-SEC-04)
+    DailyMeasurement ..> EncryptedEnvelope : encrypts AES-GCM 256 (ADR-006)
+    KeyManager "1" --> "1..*" EncryptedEnvelope : protects (ADR-012)
+    CRDTReplicator "1" o-- "0..*" EncryptedEnvelope : synchronizes (ADR-009)
+    CRDTReplicator "1" ..> "0..1" SignedDsnExport : exports (ADR-010)
 ```
 
 ---
 
-## 2. Responsabilidades de Clases y Trazabilidad SRS / ADR
+## 2. Class Responsibilities and SRS / ADR Traceability
 
-### 2.1 Entidades Clínicas y de Datos (`SRS §5.1` & `ADR-016`)
-* **`DailyMeasurement` (`RF-ING-01`, `RF-ING-05`, `ADR-016`)**: Encapsula las 9 variables clínicas diarias (`HR, HRV, PAS, PAD, SpO2, glucosa, temperatura, sueño, ánimo`) más calcio urinario opcional. Su método `validatePhysiologicalBounds()` marca valores anómalos con `isSuspect = true` **sin descartarlos**, cumpliendo `RF-ING-05`.
-* **`SubjectiveSymptom` (`RF-ING-04`, `SRS §5.1`)**: Catálogo cerrado de 6 síntomas seleccionables con un toque: `blurredVision`, `headache`, `nausea`, `lumbarPain`, `orthostaticDizziness` y `extremeFatigue`.
+### 2.1 Clinical and Data Entities (`SRS §5.1` & `ADR-016`)
+* **`DailyMeasurement` (`RF-ING-01`, `RF-ING-05`, `ADR-016`)**: Encapsulates the 9 daily clinical variables (`HR, HRV, PAS, PAD, SpO2, glucose, temperature, sleep, mood`) plus optional urinary calcium. Its `validatePhysiologicalBounds()` method flags anomalous values with `isSuspect = true` **without discarding them**, fulfilling `RF-ING-05`.
+* **`SubjectiveSymptom` (`RF-ING-04`, `SRS §5.1`)**: Closed catalog of 6 one-tap selectable symptoms: `blurredVision`, `headache`, `nausea`, `lumbarPain`, `orthostaticDizziness`, and `extremeFatigue`.
 
-### 2.2 Motor de Inferencia Determinista (`ClinicalEngine`, `ADR-005`, `ADR-011`, `ADR-017`)
-* **`ClinicalEngine`**: Opera en el `Clinical Engine Worker` sin dependencias de red. Implementa:
-  * **10 Reglas de Correlación (`RF-EVA-04`, `SRS §6.2`)**: `R-ENV-01`, `R-ENV-02`, `R-SANS-01`, `R-SANS-02`, `R-RAD-01`, `R-RAD-02`, `R-COG-01`, `R-REN-01`, `R-REN-02`, `R-CARD-01`.
-  * **3 Reglas de Deriva (`RF-DER-01..04`, `ADR-011`)**: `D-01` (regresión lineal 7 días), `D-02` (Z-score modificado con MAD sobre días 1–14) y `D-03` (sueño decreciente + PAD creciente).
-* **`CountermeasureProtocol` (`RF-GUI-01..04`, `ADR-017`)**: Estructura las alertas en los 3 bloques mandatorios (*Qué ocurre anatómicamente*, *Severidad y tiempo estimado*, *Acciones*) y valida estrictamente que `steps.length <= 4` (**`ADR-017`**). Las intervenciones largas (como protocolos combinados SPE o LBNP) se encadenan mediante `isChained = true`.
+### 2.2 Deterministic Inference Engine (`ClinicalEngine`, `ADR-005`, `ADR-011`, `ADR-017`)
+* **`ClinicalEngine`**: Operates inside the `Clinical Engine Worker` with zero network dependencies. Implements:
+  * **10 Correlation Rules (`RF-EVA-04`, `SRS §6.2`)**: `R-ENV-01`, `R-ENV-02`, `R-SANS-01`, `R-SANS-02`, `R-RAD-01`, `R-RAD-02`, `R-COG-01`, `R-REN-01`, `R-REN-02`, `R-CARD-01`.
+  * **3 Drift Rules (`RF-DER-01..04`, `ADR-011`)**: `D-01` (7-day linear regression), `D-02` (Modified Z-Score with MAD over days 1–14), and `D-03` (decreasing sleep + increasing DBP / PAD).
+* **`CountermeasureProtocol` (`RF-GUI-01..04`, `ADR-017`)**: Structures alerts into the 3 mandatory blocks (*What is happening anatomically*, *Severity and estimated time*, *Actions*) and strictly validates that `steps.length <= 4` (**`ADR-017`**). Longer interventions (such as combined SPE or LBNP protocols) are chained via `isChained = true`.
 
-### 2.3 Seguridad Criptográfica, Privacidad y CRDT (`ADR-006`, `ADR-009`, `ADR-010`, `ADR-012`)
-* **`KeyManager` (`ADR-012`, `RNF-SEC-02`)**: Implementa segregación criptográfica conforme al *Privacy Act de 1974* y *HIPAA*. Cada tripulante posee una clave de datos simétrica envuelta simultáneamente con su PIN personal y el PIN del CMO mediante `PBKDF2`. Ninguna pantalla de cabina ni el Sync Hub pueden descifrar sobres individuales.
-* **`EncryptedEnvelope` (`ADR-006`, `RNF-SEC-01`, `RNF-SEC-03`, `RNF-SEC-04`)**: Sobre almacenado en IndexedDB con cifrado nativo `AES-GCM-256`, checksum `SHA-256` para detectar inversiones de bits por radiación cósmica (*Single Event Upsets - SEU*) y firma `Ed25519` en bitácora encadenada *append-only*.
-* **`CRDTReplicator` (`ADR-009`, `RNF-NET-02`)**: Resuelve conflictos offline sin coordinación mediante `G-Set` (datos clínicos inmutables), `LWW-Map` ordenado por reloj híbrido `HLC` (preferencias de interfaz) y `PNCounter` (puntaje de gamificación XP).
-* **`SignedDsnExport` (`ADR-010`, `RNF-NET-04`, `RF-REG-02`)**: Empaqueta un reporte consolidado en JSON firmado con `Ed25519` (y opción de anonimización según `ADR-012`) para entrega manual al sistema de comunicaciones externo de la nave.
+### 2.3 Cryptographic Security, Privacy, and CRDT (`ADR-006`, `ADR-009`, `ADR-010`, `ADR-012`)
+* **`KeyManager` (`ADR-012`, `RNF-SEC-02`)**: Implements cryptographic segregation compliant with the *Privacy Act of 1974* and *HIPAA*. Each crew member has a symmetric data key wrapped simultaneously with their personal PIN and the CMO's PIN via `PBKDF2`. Neither cabin displays nor the Sync Hub can decrypt individual envelopes.
+* **`EncryptedEnvelope` (`ADR-006`, `RNF-SEC-01`, `RNF-SEC-03`, `RNF-SEC-04`)**: Envelope stored in IndexedDB with native `AES-GCM-256` encryption, `SHA-256` checksum to detect cosmic-radiation bit-flips (*Single Event Upsets - SEU*), and `Ed25519` signature in an *append-only* chained ledger.
+* **`CRDTReplicator` (`ADR-009`, `RNF-NET-02`)**: Resolves offline conflicts without coordination using a `G-Set` (immutable clinical data), `LWW-Map` ordered by Hybrid Logical Clock `HLC` (UI preferences), and `PNCounter` (gamification XP score).
+* **`SignedDsnExport` (`ADR-010`, `RNF-NET-04`, `RF-REG-02`)**: Packages a consolidated `Ed25519`-signed JSON report (with an anonymization option per `ADR-012`) for manual handoff to the spacecraft's external communications system.

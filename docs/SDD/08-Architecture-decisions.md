@@ -1,495 +1,495 @@
-# 🏛️ SDD-08: Decisiones de Arquitectura (ADR)
+# 🏛️ SDD-08: Architecture Decision Records (ADR)
 ### ASTHA — Software Design Description | NASA Space Apps Challenge 2026
 
 ---
 
-Registro de decisiones de arquitectura de ASTHA. Cada ADR tiene cuatro secciones: **Contexto**, **Decisión**, **Consecuencias** (viñetas) y **Alternativas** (separadas por punto y coma). Cada sección ocupa 50 palabras como máximo (80 en casos excepcionales). Los IDs de requisitos son los del SRS ([ADR-001](#adr-001)). El modelo C4 está en [../c4/](../c4/00-README.md).
+Architecture Decision Log for ASTHA. Each ADR contains four sections: **Context**, **Decision**, **Consequences** (bulleted), and **Alternatives** (semicolon-separated). Each section is capped at 50 words (80 in exceptional cases). Requirement IDs follow the SRS ([ADR-001](#adr-001)). The C4 model resides in [../c4/](../c4/00-README.md).
 
-Estados: **Propuesto** (borrador para revisar) · **Aceptado** · **Pendiente** (falta una respuesta del equipo) · **Reemplazado**.
+Statuses: **Proposed** (draft for review) · **Accepted** · **Pending** (awaiting team response) · **Superseded**.
 
-## Índice de decisiones
+## Decision Index
 
-| ADR | Título | Estado |
+| ADR | Title | Status |
 | --- | --- | --- |
-| [001](#adr-001) | Fuente de autoridad de requisitos | Aceptado |
-| [002](#adr-002) | Nodo autónomo offline-first sin WAN | Aceptado |
-| [003](#adr-003) | UI compilada: Svelte 5, uPlot y fuentes del sistema | Aceptado |
-| [004](#adr-004) | Avatar 3D con Three.js renderizado bajo demanda | Aceptado |
-| [005](#adr-005) | Cómputo clínico en Web Workers dirigido por eventos | Aceptado |
-| [006](#adr-006) | Persistencia IndexedDB cifrada con Web Crypto | Aceptado |
-| [007](#adr-007) | Contexto seguro con CA interna y mDNS | Aceptado |
-| [008](#adr-008) | Sincronización en estrella con un Sync Hub opcional | Aceptado |
-| [009](#adr-009) | CRDT con reloj híbrido y version vector | Aceptado |
-| [010](#adr-010) | Enlace con Tierra: JSON firmado fuera del sistema | Aceptado |
-| [011](#adr-011) | Deriva por Z-score modificado (MAD) | Aceptado |
-| [012](#adr-012) | Acceso a datos médicos según el Privacy Act de 1974 y HIPAA | Aceptado |
-| [013](#adr-013) | Escalada de alarmas críticas no reconocidas | Aceptado |
-| [014](#adr-014) | Pantallas de cabina: hábitat y semáforo global | Aceptado |
-| [015](#adr-015) | Arranque medido hasta la pantalla de bloqueo | Aceptado |
-| [016](#adr-016) | Telemetría fisiológica con un registro diario | Aceptado |
-| [017](#adr-017) | Protocolos de contramedida de 4 pasos como máximo | Aceptado |
-| [018](#adr-018) | Rojo de texto separado del rojo de alarma | Aceptado |
-| [019](#adr-019) | Modo supervivencia energética activado a mano | Aceptado |
-| [020](#adr-020) | Aprovisionamiento de dispositivos en Tierra antes del vuelo | Aceptado |
+| [001](#adr-001) | Source of authority for requirements | Accepted |
+| [002](#adr-002) | Offline-first autonomous node without WAN | Accepted |
+| [003](#adr-003) | Compiled UI: Svelte 5, uPlot, and system fonts | Accepted |
+| [004](#adr-004) | On-demand rendered 3D avatar with Three.js | Accepted |
+| [005](#adr-005) | Event-driven clinical computation in Web Workers | Accepted |
+| [006](#adr-006) | IndexedDB persistence encrypted with Web Crypto | Accepted |
+| [007](#adr-007) | Secure context with internal CA and mDNS | Accepted |
+| [008](#adr-008) | Star-topology synchronization with an optional Sync Hub | Accepted |
+| [009](#adr-009) | CRDT with hybrid logical clock and version vector | Accepted |
+| [010](#adr-010) | Ground link: signed JSON outside the system | Accepted |
+| [011](#adr-011) | Drift detection via Modified Z-Score (MAD) | Accepted |
+| [012](#adr-012) | Medical data access under the Privacy Act of 1974 and HIPAA | Accepted |
+| [013](#adr-013) | Escalation of unacknowledged critical alarms | Accepted |
+| [014](#adr-014) | Cabin displays: habitat telemetry and global status indicator | Accepted |
+| [015](#adr-015) | Startup measured to the lock screen | Accepted |
+| [016](#adr-016) | Physiological telemetry with a single daily record | Accepted |
+| [017](#adr-017) | Countermeasure protocols capped at 4 steps | Accepted |
+| [018](#adr-018) | Text red separated from alarm red | Accepted |
+| [019](#adr-019) | Manually activated power survival mode | Accepted |
+| [020](#adr-020) | Pre-flight ground provisioning of devices | Accepted |
 
-## Backlog de brechas
+## Gap Backlog
 
-Vacío. Si aparecen brechas nuevas, se añaden aquí con el siguiente número libre.
+Empty. Any newly identified gaps are appended here with the next available number.
 
 ---
 
 <a id="adr-001"></a>
 
-## ADR-001: Fuente de autoridad de requisitos
+## ADR-001: Source of authority for requirements
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** SRS §1-§8 · RTM · AC-TECH · CU (carpeta)
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** SRS §1-§8 · RTM · AC-TECH · CU (folder)
 
-### Contexto
-El repo tiene IDs que chocan: SRS, RTM, AC-TECH y CU de la carpeta definen RNF-POW, RNF-NET y CU con valores distintos (5 W frente a 350 mW, DTN frente a mDNS). Sin una regla, cada decisión puede apoyarse en un requisito contradictorio.
+### Context
+The repository contains conflicting IDs: SRS, RTM, AC-TECH, and folder-level CUs define RNF-POW, RNF-NET, and CUs with differing values (5 W vs. 350 mW, DTN vs. mDNS). Without a rule, decisions could rely on contradictory requirements.
 
-### Decisión
-El SRS prevalece y el documento de dominio fija los umbrales. RTM, AC-TECH, HU y CU se alinean al SRS. Una decisión explícita del equipo puede contradecir al SRS, pero solo si queda registrada en un ADR.
+### Decision
+The SRS prevails, and the domain document sets the thresholds. RTM, AC-TECH, HU, and CU are aligned to the SRS. An explicit team decision may override the SRS, but only if recorded in an ADR.
 
-### Consecuencias
-- Los ADR y el C4 citan IDs del SRS.
-- Hay que corregir RTM, AC-TECH y CU-10..12.
-- Las brechas se marcan GAP; no se inventan requisitos.
+### Consequences
+- ADRs and the C4 model cite SRS IDs.
+- RTM, AC-TECH, and CU-10..12 must be updated.
+- Gaps are marked GAP; no requirements are invented.
 
-### Alternativas
-Tomar la RTM como autoridad; reescribir el SRS a partir de los AC; mantener ambos catálogos con prefijos distintos.
+### Alternatives
+Treat the RTM as authoritative; rewrite the SRS from the ACs; maintain both catalogs with distinct prefixes.
 
 ---
 
 <a id="adr-002"></a>
 
-## ADR-002: Nodo autónomo offline-first sin WAN
+## ADR-002: Offline-first autonomous node without WAN
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** SRS §1, RF-EVA-07, RNF-NET-01, RNF-NET-02
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** SRS §1, RF-EVA-07, RNF-NET-01, RNF-NET-02
 
-### Contexto
-La nave no tiene Internet y la latencia con Tierra llega a 22 min por sentido. RF-EVA-07 y RNF-NET-01 prohíben paquetes externos. El triage no puede depender de otro dispositivo ni de la red.
+### Context
+The spacecraft has no Internet connectivity and one-way Earth latency reaches 22 min. RF-EVA-07 and RNF-NET-01 forbid external packets. Triage cannot depend on another device or on the network.
 
-### Decisión
-Cada dispositivo ejecuta la PWA completa: datos, reglas, catálogos y recursos van en el bundle y los sirve el Service Worker. La LAN solo sincroniza; nunca hace falta para clasificar ni para alertar.
+### Decision
+Every device runs the full PWA: data, rules, catalogs, and assets are bundled and served by the Service Worker. The LAN only synchronizes; it is never required for classification or alerting.
 
-### Consecuencias
-- Cero CDN y cero recursos remotos.
-- El triage funciona con la LAN caída.
-- Hay que quitar los CDN y la consulta remota a OSDR del prototipo.
-- La primera instalación necesita el Hub o aprovisionamiento.
+### Consequences
+- Zero CDNs and zero remote resources.
+- Triage works even when the LAN is down.
+- CDNs and remote OSDR queries must be removed from the prototype.
+- Initial installation requires the Hub or provisioning.
 
-### Alternativas
-Servidor central en la nave con clientes ligeros; app nativa por plataforma; Electron.
+### Alternatives
+Central spacecraft server with thin clients; native per-platform app; Electron.
 
 ---
 
 <a id="adr-003"></a>
 
-## ADR-003: UI compilada: Svelte 5, uPlot y fuentes del sistema
+## ADR-003: Compiled UI: Svelte 5, uPlot, and system fonts
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-POW-01..04, RNF-PER-02, RF-DSH-01..04
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-POW-01..04, RNF-PER-02, RF-DSH-01..04
 
-### Contexto
-RNF-POW-01..04 fija CPU ≤ 3 %, < 350 mW, RAM ≤ 150 MB y bundle ≤ 5 MB; RNF-PER-02 exige arranque < 1,5 s. El prototipo carga Tailwind, Chart.js y Lucide desde CDN.
+### Context
+RNF-POW-01..04 sets CPU ≤ 3%, < 350 mW, RAM ≤ 150 MB, and bundle ≤ 5 MB; RNF-PER-02 mandates startup < 1.5 s. The prototype loads Tailwind, Chart.js, and Lucide from CDNs.
 
-### Decisión
-Svelte 5 (compilado, sin VDOM) para la UI, uPlot en canvas 2D para las series, fuentes del sistema y CSS propio con los tokens del WIREFRAME.
+### Decision
+Svelte 5 (compiled, no VDOM) for the UI, uPlot on 2D canvas for time series, system fonts, and custom CSS using the WIREFRAME tokens.
 
-### Consecuencias
-- Runtime de pocas decenas de KB.
-- Solo se actualizan los nodos que cambian.
-- Hay que reescribir index.html.
-- Las bandas de umbral de uPlot se dibujan con hooks propios.
+### Consequences
+- Runtime of a few tens of KB.
+- Only changed DOM nodes are updated.
+- index.html must be rewritten.
+- uPlot threshold bands are drawn using custom hooks.
 
-### Alternativas
-React + Recharts; JavaScript sin framework + Chart.js; Preact + Chart.js.
+### Alternatives
+React + Recharts; vanilla JavaScript + Chart.js; Preact + Chart.js.
 
 ---
 
 <a id="adr-004"></a>
 
-## ADR-004: Avatar 3D con Three.js renderizado bajo demanda
+## ADR-004: On-demand rendered 3D avatar with Three.js
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RF-ANA-01..04, RNF-POW-01, RNF-POW-04 · SPEC §2 y §4.2
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RF-ANA-01..04, RNF-POW-01, RNF-POW-04 · SPEC §2 and §4.2
 
-### Contexto
-El equipo exige el avatar 3D (SPEC); el SRS solo pide un cuerpo interactivo frontal y posterior. El prototipo dibuja en bucle continuo con auto-rotación, lo que es incompatible con CPU ≤ 3 % y cero polling.
+### Context
+The team mandates a 3D avatar (SPEC); the SRS only requests an interactive front and back body. The prototype renders in a continuous loop with auto-rotation, which is incompatible with CPU ≤ 3% and zero polling.
 
-### Decisión
-Three.js empaquetado en local, solo en el Anatomy Viewer, un contexto WebGL y un frame por cambio. Pulsos de alerta en capa HTML y respaldo SVG.
+### Decision
+Locally bundled Three.js, only inside the Anatomy Viewer, single WebGL context, and one frame rendered per change. Alert pulses in an HTML layer, with SVG fallback.
 
-### Consecuencias
-- 0 frames/s en monitoreo pasivo.
-- +150-180 KB gzip al bundle.
-- RAM por medir.
-- Sin auto-rotación.
-- El resumen de tripulación usa SVG.
+### Consequences
+- 0 frames/s during passive monitoring.
+- +150-180 KB gzip added to bundle.
+- RAM footprint to be measured.
+- No auto-rotation.
+- Crew overview uses SVG.
 
-### Alternativas
-Avatar solo SVG; 3D en consola y SVG en tabletas; sprites o vídeo prerenderizado.
+### Alternatives
+SVG-only avatar; 3D on console and SVG on tablets; pre-rendered sprites or video.
 
 ---
 
 <a id="adr-005"></a>
 
-## ADR-005: Cómputo clínico en Web Workers dirigido por eventos
+## ADR-005: Event-driven clinical computation in Web Workers
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-PER-01, RNF-POW-01, RF-EVA-07
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-PER-01, RNF-POW-01, RF-EVA-07
 
-### Contexto
-RNF-PER-01 pide triage < 50 ms y RNF-POW-01 prohíbe el polling; el propio SRS sugiere Web Workers. El prototipo calcula en el hilo principal con timers.
+### Context
+RNF-PER-01 requires triage < 50 ms and RNF-POW-01 prohibits polling; the SRS itself suggests Web Workers. The prototype computes on the main thread using timers.
 
-### Decisión
-Dos Dedicated Workers: Clinical Engine (TypeScript puro, reglas como datos) y Data y Sync. Se comunican por postMessage; nada se ejecuta sin un evento.
+### Decision
+Two Dedicated Workers: Clinical Engine (pure TypeScript, rules as data) and Data & Sync. They communicate via postMessage; nothing executes without an event.
 
-### Consecuencias
-- El hilo principal solo pinta.
-- Engine determinista y testeable.
-- Coste de serializar mensajes ~1 ms.
-- fetch y WebSocket prohibidos en el engine (lint).
+### Consequences
+- Main thread only paints.
+- Deterministic, testable engine.
+- Message serialization overhead ~1 ms.
+- fetch and WebSocket forbidden in the engine (lint).
 
-### Alternativas
-Todo en el hilo principal; un solo worker; SharedWorker común a todas las pestañas.
+### Alternatives
+Everything on the main thread; a single worker; a SharedWorker across all tabs.
 
 ---
 
 <a id="adr-006"></a>
 
-## ADR-006: Persistencia IndexedDB cifrada con Web Crypto
+## ADR-006: IndexedDB persistence encrypted with Web Crypto
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-SEC-01, RNF-SEC-03, RNF-SEC-04, SRS §5.2 · AC-TECH-06
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-SEC-01, RNF-SEC-03, RNF-SEC-04, SRS §5.2 · AC-TECH-06
 
-### Contexto
-RNF-SEC-01 exige AES-GCM 256 con crypto.subtle, RNF-SEC-03 SHA-256 por registro y RNF-SEC-04 una bitácora append-only. AC-TECH-06 menciona SQLite/SQLCipher, que en el navegador exige WASM.
+### Context
+RNF-SEC-01 requires AES-GCM 256 with crypto.subtle, RNF-SEC-03 SHA-256 per record, and RNF-SEC-04 an append-only log. AC-TECH-06 mentions SQLite/SQLCipher, which requires WASM in the browser.
 
-### Decisión
-IndexedDB con sobres {id, hlc, autor, iv, ct, sha256, firma}; AES-GCM 256, SHA-256 y Ed25519 nativos; clave derivada del PIN con PBKDF2; bitácora encadenada por dispositivo.
+### Decision
+IndexedDB storing {id, hlc, autor, iv, ct, sha256, firma} envelopes; native AES-GCM 256, SHA-256, and Ed25519; key derived from PIN via PBKDF2; per-device chained audit log.
 
-### Consecuencias
-- Sin WASM ni librerías criptográficas.
-- Exige contexto seguro (HTTPS).
-- Ed25519 exige navegadores recientes.
-- PBKDF2 puede afectar al arranque (pendiente).
+### Consequences
+- Zero WASM and zero external crypto libraries.
+- Requires a secure context (HTTPS).
+- Ed25519 requires modern browsers.
+- PBKDF2 may impact startup time (pending).
 
-### Alternativas
-SQLCipher en WASM; localStorage cifrado; cifrado solo en el Hub.
+### Alternatives
+SQLCipher in WASM; encrypted localStorage; encryption only on the Hub.
 
 ---
 
 <a id="adr-007"></a>
 
-## ADR-007: Contexto seguro con CA interna y mDNS
+## ADR-007: Secure context with internal CA and mDNS
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-NET-03, RNF-SEC-01, RNF-PER-02
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-NET-03, RNF-SEC-01, RNF-PER-02
 
-### Contexto
-crypto.subtle y los Service Workers exigen HTTPS. RNF-NET-03 pide descubrimiento en menos de 3 s sin configurar IP a mano. En la nave no hay ninguna CA pública alcanzable.
+### Context
+crypto.subtle and Service Workers require HTTPS. RNF-NET-03 mandates discovery under 3 s without manual IP configuration. No public CA is reachable aboard the spacecraft.
 
-### Decisión
-El Hub sirve https://astha.local con un certificado de una CA interna de la nave, cuya raíz se instala en cada dispositivo, y anuncia astha.local por mDNS.
+### Decision
+The Hub serves https://astha.local with a certificate from a spacecraft internal CA, whose root is installed on each device, and advertises astha.local via mDNS.
 
-### Consecuencias
-- Mismo origen en todos los dispositivos.
-- Falta definir aprovisionamiento y rotación (GAP).
-- Depende de que el SO resuelva .local.
-- Sin Hub, la PWA ya instalada sigue operativa.
+### Consequences
+- Same origin across all devices.
+- Provisioning and rotation still to be defined (GAP).
+- Depends on OS resolution of .local.
+- Without the Hub, the already-installed PWA remains operational.
 
-### Alternativas
-Certificado autofirmado por dispositivo; http://localhost en cada dispositivo; IP fija con certificado.
+### Alternatives
+Per-device self-signed certificate; http://localhost on each device; static IP with certificate.
 
 ---
 
 <a id="adr-008"></a>
 
-## ADR-008: Sincronización en estrella con un Sync Hub opcional
+## ADR-008: Star-topology synchronization with an optional Sync Hub
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-NET-01..03 · CU-10, HU-15, AC-TECH-04
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-NET-01..03 · CU-10, HU-15, AC-TECH-04
 
-### Contexto
-CU-10, HU-15 y AC-TECH-04 piden una malla P2P sin punto único de fallo (Gossip UDP, BLE mesh), pero un navegador no tiene acceso a UDP ni a BLE mesh. RNF-NET-01 sí admite WebSockets locales.
+### Context
+CU-10, HU-15, and AC-TECH-04 request a P2P mesh without a single point of failure (UDP gossip, BLE mesh), but browsers lack access to UDP and BLE mesh. RNF-NET-01 does allow local WebSockets.
 
-### Decisión
-Un único Sync Hub en Rust, opcional, en estrella: los dispositivos le envían deltas CRDT por WSS (astha.local). Si el Hub cae, cada dispositivo sigue autónomo y converge al volver.
+### Decision
+A single optional Rust Sync Hub in a star topology: devices send it CRDT deltas over WSS (astha.local). If the Hub goes down, each device stays autonomous and converges upon return.
 
-### Consecuencias
-- El Hub es punto único de fallo solo para la convergencia, no para el triage.
-- Hay que corregir CU-10, HU-15 y AC-TECH-04.
-- Un solo host adicional: poco hardware y poco consumo.
+### Consequences
+- The Hub is a single point of failure only for convergence, not for triage.
+- CU-10, HU-15, and AC-TECH-04 must be updated.
+- One additional host: minimal hardware and low power draw.
 
-### Alternativas
-Dos Hubs replicados; malla WebRTC con servidor de señalización; app nativa con BLE mesh.
+### Alternatives
+Two replicated Hubs; WebRTC mesh with signaling server; native app with BLE mesh.
 
 ---
 
 <a id="adr-009"></a>
 
-## ADR-009: CRDT con reloj híbrido y version vector
+## ADR-009: CRDT with hybrid logical clock and version vector
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-NET-02 · CU-10 FA-01, AC-TECH-04
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-NET-02 · CU-10 FA-01, AC-TECH-04
 
-### Contexto
-RNF-NET-02 pide fusionar sin pérdida usando "LWW con marcas vectoriales"; CU-10 cita relojes de Lamport y el encargo, un reloj híbrido. LWW necesita orden total; los vectores solo dan un orden parcial.
+### Context
+RNF-NET-02 requires lossless merging using "LWW with vector clocks"; CU-10 cites Lamport clocks and the specification cites a hybrid clock. LWW requires total order; vectors only provide partial order.
 
-### Decisión
-CRDT propio: G-Set para todo dato clínico, LWW-Map para preferencias y PN-Counter para XP. El HLC (hora, contador, nodo) ordena los LWW; el version vector por nodo decide qué deltas intercambiar.
+### Decision
+Custom CRDT: G-Set for all clinical data, LWW-Map for preferences, and PN-Counter for XP. HLC (time, counter, node) orders LWW entries; per-node version vector determines which deltas to exchange.
 
-### Consecuencias
-- Ningún dato clínico se sobrescribe: solo se añade.
-- Merge idempotente y sin coordinación.
-- El HLC tolera relojes desfasados.
-- Hay que precisar RNF-NET-02 y CU-10.
+### Consequences
+- No clinical data is ever overwritten: append-only.
+- Idempotent, coordination-free merge.
+- HLC tolerates skewed clocks.
+- RNF-NET-02 and CU-10 must be refined.
 
-### Alternativas
-Solo vector clocks; solo Lamport; Automerge o Yjs (más peso en el bundle).
+### Alternatives
+Vector clocks only; Lamport clocks only; Automerge or Yjs (heavier bundle).
 
 ---
 
 <a id="adr-010"></a>
 
-## ADR-010: Enlace con Tierra: JSON firmado fuera del sistema
+## ADR-010: Ground link: signed JSON outside the system
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-NET-04, RF-GUI-05, RF-REG-02 · CU-11, HU-14, AC-TECH-05
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-NET-04, RF-GUI-05, RF-REG-02 · CU-11, HU-14, AC-TECH-05
 
-### Contexto
-RNF-NET-04 pide exportar un JSON firmado para la DSN. CU-11, HU-14 y AC-TECH-05 asignan a ASTHA el bundle DTN RFC 5050, una cola de 30 días y la recepción de respuestas.
+### Context
+RNF-NET-04 calls for exporting signed JSON for the DSN. CU-11, HU-14, and AC-TECH-05 assign ASTHA the RFC 5050 DTN bundle, a 30-day queue, and response reception.
 
-### Decisión
-ASTHA termina en el archivo: el CMO exporta un JSON firmado con Ed25519 y lo entrega al sistema de comunicaciones de la nave, que lo empaqueta y transmite por DTN/DSN.
+### Decision
+ASTHA stops at the file: the CMO exports an Ed25519-signed JSON and hands it to the spacecraft communications system, which packages and transmits it via DTN/DSN.
 
-### Consecuencias
-- ASTHA no tiene ninguna ruta de red externa (RNF-NET-01 se verifica fácilmente).
-- Sin cola DTN ni recepción de respuestas.
-- Hay que corregir CU-11, HU-14 y AC-TECH-05.
+### Consequences
+- ASTHA has zero external network routes (RNF-NET-01 is trivially verifiable).
+- No DTN queue or response ingestion.
+- CU-11, HU-14, and AC-TECH-05 must be updated.
 
-### Alternativas
-ASTHA genera los bundles DTN y la cola persistente; integración directa con el transpondedor; envío por el Sync Hub.
+### Alternatives
+ASTHA builds DTN bundles and persistent queue; direct transponder integration; transmission via Sync Hub.
 
 ---
 
 <a id="adr-011"></a>
 
-## ADR-011: Deriva por Z-score modificado (MAD)
+## ADR-011: Drift detection via Modified Z-Score (MAD)
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RF-DER-01..04, D-01..D-03, RNF-PER-01 · AC-CLIN-02
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RF-DER-01..04, D-01..D-03, RNF-PER-01 · AC-CLIN-02
 
-### Contexto
-RF-DER-03 usa un z clásico (media y desviación de los días 1-14), mientras que RNF-PER-01, el README y AC-CLIN-02 citan el Z modificado de Hoaglin e Iglewicz. Con pocos días, la media es sensible a valores atípicos.
+### Context
+RF-DER-03 uses a classical z-score (mean and standard deviation over days 1-14), whereas RNF-PER-01, the README, and AC-CLIN-02 cite Hoaglin and Iglewicz's Modified Z-Score. With few days, the mean is sensitive to outliers.
 
-### Decisión
-Se usa M = 0,6745·(x − mediana)/MAD sobre la línea base de los días 1-14, con alerta precoz si |M| ≥ 2,5. Se mantienen la regresión de 7 días (D-01) y el patrón combinado (D-03).
+### Decision
+Use M = 0.6745·(x − median)/MAD over the days 1-14 baseline, raising an early alert if |M| ≥ 2.5. The 7-day regression (D-01) and combined pattern (D-03) are retained.
 
-### Consecuencias
-- Línea base robusta a valores atípicos.
-- Hay que actualizar RF-DER-03 y D-02 en el SRS.
-- Si MAD = 0 (serie constante) no se emite alerta D-02.
-- Coste mínimo: la mediana se calcula una vez.
+### Consequences
+- Baseline resilient to outliers.
+- RF-DER-03 and D-02 must be updated in the SRS.
+- If MAD = 0 (constant series), no D-02 alert is emitted.
+- Minimal cost: the median is computed once.
 
-### Alternativas
-Z clásico del SRS; ambos z en paralelo; solo regresión sin z.
+### Alternatives
+Classical Z-score from the SRS; both z-scores in parallel; regression only without z-score.
 
 ---
 
 <a id="adr-012"></a>
 
-## ADR-012: Acceso a datos médicos según el Privacy Act de 1974 y HIPAA
+## ADR-012: Medical data access under the Privacy Act of 1974 and HIPAA
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-SEC-01, RNF-SEC-02, RNF-NET-04, RF-REG-02
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-SEC-01, RNF-SEC-02, RNF-NET-04, RF-REG-02
 
-### Contexto
-RNF-SEC-02 pide RBAC local sin definir el mecanismo. El Privacy Act de 1974 y HIPAA restringen el acceso al personal médico autorizado y al propio astronauta, exigen anonimizar cualquier uso externo y prevén repositorios seguros como el LSAH.
+### Context
+RNF-SEC-02 requires local RBAC without specifying the mechanism. The Privacy Act of 1974 and HIPAA restrict access to authorized medical personnel and the astronaut themselves, require anonymizing external non-medical uses, and mandate secure repositories such as LSAH.
 
-### Decisión
-Cada tripulante tiene su propia clave de datos, envuelta con su PIN y con el del CMO. Solo el dueño y el personal médico descifran. Las exportaciones para usos no médicos se anonimizan.
+### Decision
+Each crew member has their own data key, wrapped with both their PIN and the CMO's PIN. Only the owner and medical staff can decrypt. Exports for non-medical uses are anonymized.
 
-### Consecuencias
-- El aislamiento es criptográfico, no solo de interfaz.
-- El aprovisionamiento es más complejo (ADR-020).
-- El Hub y las pantallas de cabina no pueden leer datos clínicos.
-- Falta definir el formato de anonimización.
+### Consequences
+- Isolation is cryptographic, not merely UI-level.
+- Provisioning is more complex (ADR-020).
+- The Hub and cabin displays cannot read clinical data.
+- Anonymization format still needs definition.
 
-### Alternativas
-Clave común con permisos solo en la interfaz; cifrado solo en reposo, sin separación por tripulante; delegar el control al sistema operativo.
+### Alternatives
+Shared key with UI-only permissions; encryption at rest without per-crew separation; delegating control to the operating system.
 
 ---
 
 <a id="adr-013"></a>
 
-## ADR-013: Escalada de alarmas críticas no reconocidas
+## ADR-013: Escalation of unacknowledged critical alarms
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-USA-04, RF-GAM-03, RF-EVA-06
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-USA-04, RF-GAM-03, RF-EVA-06
 
-### Contexto
-RNF-USA-04 define tono de 800-1200 Hz para críticos y precaución sin sonido, pero no qué hacer si nadie reconoce la alerta. Un tono continuo provoca fatiga; uno único puede pasar desapercibido.
+### Context
+RNF-USA-04 defines an 800-1200 Hz tone for criticals and silent cautions, but not what happens if nobody acknowledges the alert. A continuous tone causes alarm fatigue; a single tone can be missed.
 
-### Decisión
-Un crítico suena 10 s. Si a los 2 min nadie lo ha reconocido, vuelve a sonar y se replica en la consola del CMO. A los 5 min se avisa también en las pantallas de cabina.
+### Decision
+A critical alarm sounds for 10 s. If unacknowledged after 2 min, it sounds again and replicates to the CMO console. After 5 min, it also alerts on cabin displays.
 
-### Consecuencias
-- Hay que añadir el requisito al SRS.
-- La réplica al CMO y a cabina depende del Hub (ADR-008).
-- Sin Hub, la escalada es solo local.
-- El reconocimiento queda en la bitácora.
+### Consequences
+- Requirement must be added to the SRS.
+- Replication to CMO and cabin depends on the Hub (ADR-008).
+- Without the Hub, escalation is local only.
+- Acknowledgment is recorded in the audit log.
 
-### Alternativas
-Sonar hasta reconocer; sonar una sola vez; escalar al Comandante.
+### Alternatives
+Sound continuously until acknowledged; sound once only; escalate to the Commander.
 
 ---
 
 <a id="adr-014"></a>
 
-## ADR-014: Pantallas de cabina: hábitat y semáforo global
+## ADR-014: Cabin displays: habitat telemetry and global status indicator
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RF-DSH-03, RF-DSH-04, RNF-SEC-02 · ADR-012
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RF-DSH-03, RF-DSH-04, RNF-SEC-02 · ADR-012
 
-### Contexto
-ADR-012 limita los datos clínicos al dueño y al personal médico. Las pantallas de cabina las ve toda la tripulación y no tienen claves de tripulante. Hay que decidir qué muestran sin vulnerar el Privacy Act.
+### Context
+ADR-012 restricts clinical data to the owner and medical staff. Cabin displays are visible to all crew and hold no crew keys. What they show must be decided without violating the Privacy Act.
 
-### Decisión
-Muestran la telemetría ECLSS/CANS y un semáforo Nominal/Precaución/Crítico por tripulante, sin valores, regla ni sistema de órganos. El estado global viaja en un registro aparte, cifrado con la clave de hábitat.
+### Decision
+They show ECLSS/CANS telemetry and a Nominal/Caution/Critical status light per crew member, without values, rules, or organ systems. Global status travels in a separate record encrypted with the habitat key.
 
-### Consecuencias
-- Conciencia situacional de toda la tripulación.
-- Se divulga un dato mínimo identificable, aceptado a propósito.
-- El Engine debe publicar un registro solo de estado.
-- Las pantallas nunca reconocen alertas.
+### Consequences
+- Crew-wide situational awareness.
+- Minimal identifiable data is disclosed, intentionally accepted.
+- The Engine must publish a status-only record.
+- Displays never acknowledge alerts.
 
-### Alternativas
-Solo hábitat; hábitat y estado anónimo; pantallas con los datos completos.
+### Alternatives
+Habitat only; habitat plus anonymous status; displays with full clinical data.
 
 ---
 
 <a id="adr-015"></a>
 
-## ADR-015: Arranque medido hasta la pantalla de bloqueo
+## ADR-015: Startup measured to the lock screen
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-PER-02, RNF-SEC-01, RNF-SEC-02 · ADR-012, ADR-014
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-PER-02, RNF-SEC-01, RNF-SEC-02 · ADR-012, ADR-014
 
-### Contexto
-RNF-PER-02 exige el panel en menos de 1,5 s, pero ADR-012 obliga a desbloquear con PIN y PBKDF2 puede tardar cientos de ms. Bajar las iteraciones debilita el cifrado.
+### Context
+RNF-PER-02 demands the dashboard in under 1.5 s, but ADR-012 requires PIN unlock and PBKDF2 can take hundreds of ms. Lowering iterations weakens encryption.
 
-### Decisión
-Los 1,5 s se miden hasta la pantalla de bloqueo, que ya muestra el hábitat y el semáforo global (ADR-014). El panel personal se abre tras el PIN, fuera de ese presupuesto.
+### Decision
+The 1.5 s budget is measured to the lock screen, which already displays habitat telemetry and the global status indicator (ADR-014). The personal dashboard opens after PIN entry, outside that budget.
 
-### Consecuencias
-- PBKDF2 conserva iteraciones altas.
-- La conciencia situacional está disponible antes del PIN.
-- Hay que precisar RNF-PER-02 en el SRS.
-- Falta un presupuesto para el desbloqueo (propuesta: < 1 s).
+### Consequences
+- PBKDF2 retains high iteration counts.
+- Situational awareness is available before PIN entry.
+- RNF-PER-02 must be clarified in the SRS.
+- Unlock latency budget still needed (proposed: < 1 s).
 
-### Alternativas
-Sesión persistente hasta reiniciar; PIN dentro de los 1,5 s con menos iteraciones; sin PIN, con la clave del dispositivo.
+### Alternatives
+Persistent session until reboot; PIN within 1.5 s with fewer iterations; no PIN, using the device key.
 
 ---
 
 <a id="adr-016"></a>
 
-## ADR-016: Telemetría fisiológica con un registro diario
+## ADR-016: Physiological telemetry with a single daily record
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RF-ING-01, RF-ING-03, RNF-POW-03, SRS §5.1 · RTM, CU-01
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RF-ING-01, RF-ING-03, RNF-POW-03, SRS §5.1 · RTM, CU-01
 
-### Contexto
-SRS §5.1 define una medición diaria por tripulante (180 días). La RTM y CU-01 hablan de ingesta continua a 1 Hz por BLE, lo que multiplica CPU, RAM y almacenamiento, y en el navegador exigiría Web Bluetooth.
+### Context
+SRS §5.1 defines one daily measurement per crew member (180 days). The RTM and CU-01 describe continuous 1 Hz ingestion over BLE, multiplying CPU, RAM, and storage, and requiring Web Bluetooth in the browser.
 
-### Decisión
-Un registro fisiológico diario por tripulante, de entrada manual o del dataset sintético. Los escenarios del simulador inyectan registros puntuales, no flujos continuos.
+### Decision
+One daily physiological record per crew member, entered manually or from the synthetic dataset. Simulator scenarios inject discrete records, not continuous streams.
 
-### Consecuencias
-- Unas 720 mediciones en 180 días: muy por debajo de 150 MB.
-- Sin Web Bluetooth ni puente de sensores.
-- Hay que corregir RF-ING-01 de la RTM y CU-01.
-- La telemetría de hábitat queda fuera de esta decisión.
+### Consequences
+- About 720 measurements over 180 days: well below 150 MB.
+- No Web Bluetooth or sensor bridge required.
+- RF-ING-01 in the RTM and CU-01 must be updated.
+- Habitat telemetry falls outside this decision.
 
-### Alternativas
-1 Hz continuo; diario con flujo de 1 Hz solo en la demo; ingesta por eventos del sensor.
+### Alternatives
+Continuous 1 Hz; daily logging with 1 Hz streaming in the demo only; event-driven sensor ingestion.
 
 ---
 
 <a id="adr-017"></a>
 
-## ADR-017: Protocolos de contramedida de 4 pasos como máximo
+## ADR-017: Countermeasure protocols capped at 4 steps
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-USA-05, RF-GUI-01..04 · AC-CLIN-06
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-USA-05, RF-GUI-01..04 · AC-CLIN-06
 
-### Contexto
-RNF-USA-05 permite hasta 7 pasos por procedimiento; AC-CLIN-06 limita a 4. Los tripulantes actúan bajo estrés, fatiga y con guantes, y cada paso extra aumenta la carga cognitiva.
+### Context
+RNF-USA-05 permits up to 7 steps per procedure; AC-CLIN-06 caps at 4. Crew members act under stress, fatigue, and in gloves, and each extra step increases cognitive load.
 
-### Decisión
-Cada protocolo tiene como máximo 4 pasos accionables, con los tres bloques de RF-GUI-01. Si una contramedida necesita más, se divide en protocolos encadenados.
+### Decision
+Every protocol has at most 4 actionable steps, alongside the three blocks of RF-GUI-01. If a countermeasure requires more, it is split into chained protocols.
 
-### Consecuencias
-- Prevalece AC-CLIN-06 sobre el SRS (excepción registrada, ADR-001).
-- Hay que actualizar RNF-USA-05.
-- El Countermeasure Resolver valida ≤ 4 pasos.
-- SPE y LBNP pueden necesitar encadenarse.
+### Consequences
+- AC-CLIN-06 overrides the SRS (recorded exception, ADR-001).
+- RNF-USA-05 must be updated.
+- The Countermeasure Resolver enforces ≤ 4 steps.
+- SPE and LBNP may require chaining.
 
-### Alternativas
-7 pasos (SRS); 4 en emergencia y 7 en rutina; sin límite fijo.
+### Alternatives
+7 steps (SRS); 4 in emergencies and 7 in routine care; no fixed limit.
 
 ---
 
 <a id="adr-018"></a>
 
-## ADR-018: Rojo de texto separado del rojo de alarma
+## ADR-018: Text red separated from alarm red
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-USA-03, RF-ANA-03 · WIREFRAME §4.1
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-USA-03, RF-ANA-03 · WIREFRAME §4.1
 
-### Contexto
-RNF-USA-03 exige un contraste ≥ 7:1 (WCAG AAA). El token alert-red (#ef4444) del WIREFRAME da 5,35:1 sobre el fondo y 4,96:1 sobre las tarjetas, así que no sirve para texto.
+### Context
+RNF-USA-03 requires contrast ≥ 7:1 (WCAG AAA). The WIREFRAME token alert-red (#ef4444) achieves 5.35:1 on the background and 4.96:1 on cards, making it unsuitable for text.
 
-### Decisión
-#ef4444 se reserva para rellenos, bordes y el pulso. Un nuevo token, alert-red-text (#fca5a5, 10,6:1), se usa para todo texto en estado crítico.
+### Decision
+#ef4444 is reserved for fills, borders, and the pulse. A new token, alert-red-text (#fca5a5, 10.6:1), is used for all critical-state text.
 
-### Consecuencias
-- El rojo de alarma no cambia.
-- Todo el texto crítico cumple AAA.
-- Hay que añadir el token al WIREFRAME §4.1.
-- En el modo espectral rojo siguen siendo obligatorios el símbolo y el patrón.
+### Consequences
+- Alarm red remains unchanged.
+- All critical text achieves AAA compliance.
+- The token must be added to WIREFRAME §4.1.
+- Under 630 nm red spectral mode, symbol and pattern remain mandatory.
 
-### Alternativas
-Aclarar alert-red a #f87171; mantener #ef4444 con excepción AA; texto blanco sobre fondo rojo.
+### Alternatives
+Lighten alert-red to #f87171; keep #ef4444 with an AA exception; white text on a red background.
 
 ---
 
 <a id="adr-019"></a>
 
-## ADR-019: Modo supervivencia energética activado a mano
+## ADR-019: Manually activated power survival mode
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-POW-01, RNF-POW-02 · CU-12, AC-TECH-02 §3
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-POW-01, RNF-POW-02 · CU-12, AC-TECH-02 §3
 
-### Contexto
-CU-12 y AC-TECH-02 piden reducir el consumo al recibir una señal de batería crítica del EPS. No está en el SRS y el navegador no puede recibir esa señal de la nave.
+### Context
+CU-12 and AC-TECH-02 require cutting power consumption upon receiving a critical battery signal from the EPS. This is absent from the SRS, and the browser cannot receive that spacecraft signal.
 
-### Decisión
-El Comandante activa un "modo supervivencia": sin avatar 3D ni gráficas, brillo reducido por CSS y sync solo por eventos críticos. El triage y las alarmas siguen intactos. Más adelante, el Hub podrá reenviar la señal del EPS.
+### Decision
+The Commander activates a "survival mode": no 3D avatar or charts, CSS-dimmed brightness, and sync restricted to critical events. Triage and alarms remain intact. Later, the Hub may relay the EPS signal.
 
-### Consecuencias
-- Sin dependencia del hardware de la nave.
-- Hay que añadir el requisito al SRS y ajustar CU-12.
-- La activación depende de una persona.
-- El reenvío por el Hub queda como trabajo futuro.
+### Consequences
+- Zero dependency on spacecraft hardware.
+- Requirement must be added to the SRS and CU-12 adjusted.
+- Activation relies on a human operator.
+- Hub-based relay remains future work.
 
-### Alternativas
-Fuera de alcance; Battery Status API del dispositivo; señal del EPS vía Hub desde el inicio.
+### Alternatives
+Out of scope; device Battery Status API; EPS signal via Hub from day one.
 
 ---
 
 <a id="adr-020"></a>
 
-## ADR-020: Aprovisionamiento de dispositivos en Tierra antes del vuelo
+## ADR-020: Pre-flight ground provisioning of devices
 
-**Estado:** Aceptado · **Fecha:** 2026-11-15 · **Requisitos:** RNF-SEC-01, RNF-SEC-02, RNF-NET-03 · ADR-007, ADR-012
+**Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-SEC-01, RNF-SEC-02, RNF-NET-03 · ADR-007, ADR-012
 
-### Contexto
-ADR-007 y ADR-012 exigen una CA interna, claves Ed25519 por dispositivo y claves por tripulante envueltas con PIN. Ninguna fuente define quién lo instala ni cuándo, y a bordo no hay soporte técnico.
+### Context
+ADR-007 and ADR-012 require an internal CA, per-device Ed25519 keys, and PIN-wrapped per-crew keys. No source defines who installs them or when, and no IT support exists onboard.
 
-### Decisión
-Ingeniería prepara cada dispositivo en Tierra: raíz de la CA, PWA instalada, clave del dispositivo inscrita en el Hub y claves por tripulante envueltas con los PIN. En vuelo, el CMO solo reemplaza tabletas con un procedimiento definido.
+### Decision
+Engineering prepares every device on the ground: CA root, PWA installed, device key enrolled in the Hub, and per-crew keys wrapped with PINs. In flight, the CMO only swaps tablets using a defined procedure.
 
-### Consecuencias
-- La tripulación no gestiona criptografía.
-- Hace falta un procedimiento de reemplazo a bordo.
-- El cambio de PIN en vuelo debe re-envolver claves.
-- Hay que añadir el requisito al SRS.
+### Consequences
+- The crew does not manage cryptography.
+- An onboard tablet-replacement procedure is required.
+- In-flight PIN changes must re-wrap keys.
+- Requirement must be added to the SRS.
 
-### Alternativas
-A bordo por el CMO; mixto (CA en Tierra, inscripción a bordo); sin claves por tripulante.
+### Alternatives
+Onboard by the CMO; hybrid (CA on ground, enrollment onboard); no per-crew keys.

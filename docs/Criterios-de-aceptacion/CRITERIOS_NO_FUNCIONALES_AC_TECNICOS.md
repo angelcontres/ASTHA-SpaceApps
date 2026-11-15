@@ -1,134 +1,134 @@
-# 🛡️ Criterios de Aceptación Técnicos y No Funcionales (AC-TECH)
+# 🛡️ Technical and Non-Functional Acceptance Criteria (AC-TECH)
 ### ASTHA — NASA Space Apps Challenge 2026
-**Estándar Mandatorio:** NASA Software Safety Standard (NASA-STD-8719.13C) | CCSDS DTN | NPR 7150.2
+**Mandatory Standard:** NASA Software Safety Standard (NASA-STD-8719.13C) | CCSDS DTN | NPR 7150.2
 
 ---
 
-## 📌 AC-TECH-01: Rendimiento, Tasa de Refresco y Latencia de Interfaz Edge
+## 📌 AC-TECH-01: Edge Interface Performance, Refresh Rate, and Latency
 
-| Identificador | `AC-TECH-01` |
+| Identifier | `AC-TECH-01` |
 | :--- | :--- |
-| **Requisitos SRS** | `RNF-POW-03`, `RNF-USA-02`, `RNF-USA-03` |
-| **Historias de Usuario** | `HU-01`, `HU-05`, `HU-08` |
-| **Casos de Uso** | `CU-01`, `CU-04` |
-| **Método de Verificación** | **Prueba Automatizada (T)** |
+| **SRS Requirements** | `RNF-POW-03`, `RNF-USA-02`, `RNF-USA-03` |
+| **User Stories** | `HU-01`, `HU-05`, `HU-08` |
+| **Use Cases** | `CU-01`, `CU-04` |
+| **Verification Method** | **Automated Test (T)** |
 
-### Declaración del Criterio:
-La interfaz de usuario y los algoritmos de detección local **deben** responder en tiempo real garantizando una interacción inmediata y sin retardos perceptibles para el operador en situaciones de emergencia.
+### Criterion Statement:
+The user interface and local detection algorithms **must** respond in real time, guaranteeing immediate interaction without perceptible lag for operators in emergency situations.
 
-### Criterios Específicos de Aceptación:
-1. **Latencia de Respuesta al Toque Táctil:**
-   * Al pulsar cualquier órgano en el mapa anatómico o cambiar de tripulante (`C001` - `C004`), el tiempo de respuesta entre el evento `pointerdown` y el repintado en pantalla debe ser estrictamente inferior a **$100\text{ ms}$** ($t_{\text{render}} < 100\text{ ms}$).
-2. **Fluidez de Renderizado en Modo Nominal:**
-   * La interfaz táctica debe mantener una tasa de refresco sostenida de **$60\text{ fotogramas por segundo (fps)}$** en hardware de aviónica de referencia (procesador ARM Cortex-A72 o x86 de bajo consumo).
-3. **Tiempo de Arranque en Frío (Cold Boot):**
-   * El tiempo transcurrido desde el lanzamiento del proceso ejecutable hasta la plena operatividad del panel con bioseñales en pantalla no debe exceder de **$3.0\text{ segundos}$**.
+### Specific Acceptance Criteria:
+1. **Touch Input Response Latency:**
+   * When tapping any organ on the anatomical map or switching crew members (`C001` - `C004`), the response time between the `pointerdown` event and screen repaint must be strictly less than **$100\text{ ms}$** ($t_{\text{render}} < 100\text{ ms}$).
+2. **Rendering Smoothness in Nominal Mode:**
+   * The tactical interface must sustain a refresh rate of **$60\text{ frames per second (fps)}$** on reference avionics hardware (ARM Cortex-A72 or low-power x86 processor).
+3. **Cold Boot Time:**
+   * Elapsed time from executable process launch to full dashboard operability with live on-screen biosignals must not exceed **$3.0\text{ seconds}$**.
 
 ---
 
-## 📌 AC-TECH-02: Presupuesto de Potencia Eléctrica y Gestión Térmica Pasiva
+## 📌 AC-TECH-02: Electrical Power Budget and Passive Thermal Management
 
-| Identificador | `AC-TECH-02` |
+| Identifier | `AC-TECH-02` |
 | :--- | :--- |
-| **Requisitos SRS** | `RNF-POW-01`, `RNF-POW-02`, `RNF-POW-04` |
-| **Historias de Usuario** | `HU-20` |
-| **Casos de Uso** | `CU-12` |
-| **Método de Verificación** | **Prueba en Banco de Potencia (T)** |
+| **SRS Requirements** | `RNF-POW-01`, `RNF-POW-02`, `RNF-POW-04` |
+| **User Stories** | `HU-20` |
+| **Use Cases** | `CU-12` |
+| **Verification Method** | **Power Bench Test (T)** |
 
-### Declaración del Criterio:
-El software **debe** operar dentro de los estrictos límites de potencia eléctrica asignados a la aviónica médica de cabina, evitando sobrecalentamiento en entornos de microgravedad sin convección natural de aire.
+### Criterion Statement:
+The software **must** operate within the strict electrical power envelope allocated to cabin medical avionics, preventing overheating in microgravity environments lacking natural air convection.
 
-### Criterios Específicos de Aceptación:
-1. **Consumo Eléctrico Máximo en Reposo:**
-   * El consumo de potencia del dispositivo cliente ejecutando ASTHA en modo de vigilancia nominal no debe superar los **$5.0\text{ Watts}$** medidos en el bus de alimentación DC.
-2. **Carga Sostenida de CPU:**
-   * El uso de CPU en estado estacionario (procesamiento de 4 flujos continuos a 1 Hz, evaluación de reglas y dibujo de curvas) no debe exceder del **$15.0\%$ de un solo núcleo de procesamiento**.
-3. **Modo de Contingencia en Batería de Emergencia:**
-   * Al recibir la señal de batería crítica, el sistema debe reducir automáticamente su tasa de repintado a **$0.2\text{ fps}$** (1 actualización cada 5 segundos), atenuar el brillo de pantalla al $20\%$ y mantener activos el $100\%$ de los algoritmos de detección vital.
+### Specific Acceptance Criteria:
+1. **Maximum Idle Power Consumption:**
+   * Power consumption of the client device running ASTHA in nominal surveillance mode must not exceed **$5.0\text{ Watts}$** measured on the DC power bus.
+2. **Sustained CPU Load:**
+   * Steady-state CPU usage (processing 4 continuous 1 Hz streams, rule evaluation, and curve rendering) must not exceed **$15.0\%$ of a single processing core**.
+3. **Emergency Battery Contingency Mode:**
+   * Upon receiving the critical battery signal, the system must automatically throttle repaint rate to **$0.2\text{ fps}$** (1 update every 5 seconds), dim display brightness to $20\%$, and keep $100\%$ of life-detection algorithms active.
 
 ---
 
-## 📌 AC-TECH-03: Resiliencia y Autonomía 100% Offline (Zero-Ping Deep Space)
+## 📌 AC-TECH-03: 100% Offline Resilience and Autonomy (Zero-Ping Deep Space)
 
-| Identificador | `AC-TECH-03` |
+| Identifier | `AC-TECH-03` |
 | :--- | :--- |
-| **Requisitos SRS** | `RF-OFF-01..04`, `RNF-NET-01` |
-| **Historias de Usuario** | `HU-13` |
-| **Casos de Uso** | `CU-01`, `CU-05`, `CU-07` |
-| **Método de Verificación** | **Prueba de Aislamiento de Red (T)** |
+| **SRS Requirements** | `RF-OFF-01..04`, `RNF-NET-01` |
+| **User Stories** | `HU-13` |
+| **Use Cases** | `CU-01`, `CU-05`, `CU-07` |
+| **Verification Method** | **Network Isolation Test (T)** |
 
-### Declaración del Criterio:
-El software **debe** ejecutar todas sus funciones diagnósticas, visuales, matemáticas y procedimentales de forma local sin requerir conexión a Internet, a servidores en la nube ni a telemetría en tiempo real con la Tierra.
+### Criterion Statement:
+The software **must** execute all diagnostic, visual, mathematical, and procedural functions locally without requiring Internet access, cloud servers, or real-time telemetry with Earth.
 
-### Criterios Específicos de Aceptación:
-1. **Prueba de Cortocircuito de Red:**
-   * Con todos los adaptadores de red externa deshabilitados físicamente (bloqueo total de puertos WAN), la aplicación debe iniciar, procesar bioseñales, disparar alertas y guiar checklists con **cero excepciones de red** (`0 Network Exceptions`).
-2. **Autosuficiencia de Recursos Estáticos:**
-   * El sistema no debe intentar descargar fuentes tipográficas, scripts JS, estilos CSS ni imágenes de servidores CDN externos en tiempo de ejecución. Todo el código y los activos deben residir en el almacenamiento flash local.
-3. **Tolerancia al Retraso de Radio de Marte:**
-   * Ningún temporizador ni hilo de ejecución del sistema debe bloquear la interfaz de usuario esperando una confirmación de recepción (ACK) desde la estación de control en la Tierra.
+### Specific Acceptance Criteria:
+1. **Network Short-Circuit Test:**
+   * With all external network adapters physically disabled (complete WAN port block), the application must launch, process biosignals, fire alerts, and guide checklists with **zero network exceptions** (`0 Network Exceptions`).
+2. **Static Asset Self-Sufficiency:**
+   * The system must not attempt to fetch fonts, JS scripts, CSS stylesheets, or images from external CDN servers at runtime. All code and assets must reside in local flash storage.
+3. **Mars Radio-Delay Tolerance:**
+   * No system timer or execution thread may block the user interface while awaiting an acknowledgment (ACK) from Earth ground control.
 
 ---
 
-## 📌 AC-TECH-04: Sincronización en Red Malla P2P y Reconciliación CRDT
+## 📌 AC-TECH-04: P2P Mesh Network Synchronization and CRDT Reconciliation
 
-| Identificador | `AC-TECH-04` |
+| Identifier | `AC-TECH-04` |
 | :--- | :--- |
-| **Requisitos SRS** | `RNF-NET-02`, `RNF-NET-04` |
-| **Historias de Usuario** | `HU-15` |
-| **Casos de Uso** | `CU-10` |
-| **Método de Verificación** | **Prueba de Red Distribuida (T)** |
+| **SRS Requirements** | `RNF-NET-02`, `RNF-NET-04` |
+| **User Stories** | `HU-15` |
+| **Use Cases** | `CU-10` |
+| **Verification Method** | **Distributed Network Test (T)** |
 
-### Declaración del Criterio:
-Las tabletas y pantallas de mamparo de la nave **deben** sincronizar su información clínica de manera descentralizada mediante una red de malla ad-hoc sin un servidor central que constituya un punto único de fallo (*No Single Point of Failure*).
+### Criterion Statement:
+Spacecraft tablets and bulkhead displays **must** synchronize clinical data in a decentralized manner over an ad-hoc mesh network without a central server that would constitute a single point of failure (*No Single Point of Failure*).
 
-### Criterios Específicos de Aceptación:
-1. **Tiempo Máximo de Reconciliación en Malla:**
-   * Todo cambio en el expediente de salud o marcado de checklist en un nodo de cabina debe propagarse a todos los nodos en alcance de radio en un tiempo inferior a **$3.0\text{ segundos}$** ($t_{\text{sync}} \le 3.0\text{ s}$).
-2. **Resolución de Conflictos Causalmente Consistente:**
-   * Se deben emplear Tipos de Datos Replicados Libres de Conflicto (**CRDTs**). Si dos tripulantes modifican simultáneamente datos diferentes de un mismo astronauta durante una desconexión de módulo, la recombinación posterior debe fusionar ambos cambios automáticamente sin intervención humana y sin pérdida de datos.
+### Specific Acceptance Criteria:
+1. **Maximum Mesh Reconciliation Time:**
+   * Every health-record update or checklist completion on a cabin node must propagate to all nodes within radio range in under **$3.0\text{ seconds}$** ($t_{\text{sync}} \le 3.0\text{ s}$).
+2. **Causally Consistent Conflict Resolution:**
+   * Conflict-Free Replicated Data Types (**CRDTs**) must be used. If two crew members simultaneously modify different fields of the same astronaut during a module disconnection, subsequent recombination must merge both changes automatically without human intervention or data loss.
 
 ---
 
-## 📌 AC-TECH-05: Protocolo DTN para Comunicaciones Asíncronas con Houston
+## 📌 AC-TECH-05: DTN Protocol for Asynchronous Communications with Houston
 
-| Identificador | `AC-TECH-05` |
+| Identifier | `AC-TECH-05` |
 | :--- | :--- |
-| **Requisitos SRS** | `RF-GUI-05`, `RNF-NET-03`, `RNF-SEC-01` |
-| **Historias de Usuario** | `HU-14` |
-| **Casos de Uso** | `CU-11` |
-| **Método de Verificación** | **Prueba de Protocolo de Transporte (T)** |
+| **SRS Requirements** | `RF-GUI-05`, `RNF-NET-03`, `RNF-SEC-01` |
+| **User Stories** | `HU-14` |
+| **Use Cases** | `CU-11` |
+| **Verification Method** | **Transport Protocol Test (T)** |
 
-### Declaración del Criterio:
-El subsistema de enlace con la Tierra **debe** formatear los informes médicos y telemetría histórica bajo el estándar de redes tolerantes a demoras (*Delay-Tolerant Networking - DTN / CCSDS Bundle Protocol*), adaptándose a ventanas de visibilidad intermitentes y al retardo de ida y vuelta de 44 minutos.
+### Criterion Statement:
+The Earth-link subsystem **must** format medical reports and historical telemetry under the Delay-Tolerant Networking standard (*Delay-Tolerant Networking - DTN / CCSDS Bundle Protocol*), adapting to intermittent visibility windows and the 44-minute round-trip light time.
 
-### Criterios Específicos de Aceptación:
-1. **Compatibilidad con Bundle Protocol (RFC 5050 / CCSDS 734.2-B-1):**
-   * Los informes médicos consolidados deben empaquetarse en bundles DTN autónomos con su propio bloque de metadatos, tiempo de expiración y firma criptográfica.
-2. **Eficiencia de Compresión:**
-   * El algoritmo de compresión local (Brotli o Zstandard) debe reducir el tamaño del payload de telemetría médica en más de un **$70.0\%$** respecto al JSON crudo original.
-3. **Retención en Cola Persistente:**
-   * Ante la pérdida de visibilidad de la Red de Espacio Profundo (DSN) o conjunción solar, los bundles deben permanecer almacenados en el disco no volátil de la nave durante un mínimo de **$30\text{ días}$** sin descartarse por timeout.
+### Specific Acceptance Criteria:
+1. **Bundle Protocol Compliance (RFC 5050 / CCSDS 734.2-B-1):**
+   * Consolidated medical reports must be packaged into autonomous DTN bundles with their own metadata block, expiration time, and cryptographic signature.
+2. **Compression Efficiency:**
+   * Local compression (Brotli or Zstandard) must reduce medical telemetry payload size by more than **$70.0\%$** compared to the original raw JSON.
+3. **Persistent Queue Retention:**
+   * During loss of Deep Space Network (DSN) visibility or solar conjunction, bundles must remain stored on non-volatile onboard disk for at least **$30\text{ days}$** without timing out.
 
 ---
 
-## 📌 AC-TECH-06: Ciberseguridad, Privacidad Médica y Blindaje contra Radiación (SEU)
+## 📌 AC-TECH-06: Cybersecurity, Medical Privacy, and Radiation Hardening (SEU)
 
-| Identificador | `AC-TECH-06` |
+| Identifier | `AC-TECH-06` |
 | :--- | :--- |
-| **Requisitos SRS** | `RNF-SEC-01`, `RNF-SEC-02`, `RNF-SEC-04` |
-| **Historias de Usuario** | `HU-16` |
-| **Casos de Uso** | `CU-10`, `CU-11` |
-| **Método de Verificación** | **Análisis Criptográfico (A) y Prueba de Inyección de Fallos (T)** |
+| **SRS Requirements** | `RNF-SEC-01`, `RNF-SEC-02`, `RNF-SEC-04` |
+| **User Stories** | `HU-16` |
+| **Use Cases** | `CU-10`, `CU-11` |
+| **Verification Method** | **Cryptographic Analysis (A) and Fault-Injection Test (T)** |
 
-### Declaración del Criterio:
-Los datos de salud de los astronautas **deben** estar protegidos contra accesos no autorizados y, fundamentalmente, contra la corrupción física de bits (*Single-Event Upsets - SEU*) provocada por iones pesados de rayos cósmicos galácticos (GCR).
+### Criterion Statement:
+Astronaut health data **must** be protected against unauthorized access and, fundamentally, against physical bit corruption (*Single-Event Upsets - SEU*) caused by heavy ions in galactic cosmic rays (GCR).
 
-### Criterios Específicos de Aceptación:
-1. **Cifrado en Reposo y en Tránsito Local:**
-   * La base de datos médica local SQLite debe estar cifrada en reposo mediante **AES-256** (SQLCipher o equivalente de grado aeroespacial). Todas las transmisiones locales BLE/Wi-Fi deben contar con túnel seguro cifrado.
-2. **Detección y Corrección de Bit-Flips (SEU):**
-   * Cada bloque de registro biomédico persistido debe incluir una suma de verificación **CRC32 / SHA-256**.
-   * Al leer un registro de la memoria flash, si la suma no coincide (detección de inversión de bit por partícula ionizante), el sistema debe descartar el bloque corrupto y restaurarlo automáticamente desde la réplica espejo del nodo vecino en la red de malla.
-3. **Cadena Inmutable de Auditoría Médica:**
-   * Todas las intervenciones médicas, administración de fármacos y dosis de radiación absorbidas deben registrarse en un log de eventos de sólo adición (*Append-Only Hash Chain*), garantizando que ningún registro pueda ser alterado retroactivamente.
+### Specific Acceptance Criteria:
+1. **Encryption at Rest and in Local Transit:**
+   * The local SQLite medical database must be encrypted at rest using **AES-256** (SQLCipher or aerospace-grade equivalent). All local BLE/Wi-Fi transmissions must use an encrypted secure tunnel.
+2. **Bit-Flip Detection and Correction (SEU):**
+   * Every persisted biomedical record block must include a **CRC32 / SHA-256** checksum.
+   * When reading a record from flash memory, if the checksum mismatches (ionizing-particle bit inversion detected), the system must discard the corrupted block and automatically restore it from the mirror replica on a neighboring mesh node.
+3. **Immutable Medical Audit Chain:**
+   * All medical interventions, drug administrations, and absorbed radiation doses must be recorded in an append-only event log (*Append-Only Hash Chain*), ensuring no record can be altered retroactively.

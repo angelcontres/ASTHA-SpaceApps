@@ -1,146 +1,146 @@
-# 📡 Paquete 1: Ingesta, Filtrado y Telemetría de Vuelo
-**Módulo:** Adquisición de Señales y Entorno Ambiental | **Estándar:** NASA-STD-3001 Vol 1 & 2 / CSA Bio-Monitor
+# 📡 Package 1: Ingestion, Filtering, and Flight Telemetry
+**Module:** Signal Acquisition and Ambient Environment | **Standard:** NASA-STD-3001 Vol 1 & 2 / CSA Bio-Monitor
 
 ---
 
-## 📋 Caso de Uso: CU-01
-### Nombre: Ingesta Continua y Filtrado de Telemetría Biomédica
+## 📋 Use Case: CU-01
+### Title: Continuous Ingestion and Filtering of Biomedical Telemetry
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-01` |
-| **Actor Primario** | Sensor Biomédico (SmartShirt Astroskin / Bio-Monitor) |
-| **Actores Secundarios** | Astronauta en Misión |
-| **Nivel** | Nivel de Sistema / Función de Soporte Continuo |
-| **Requisitos SRS** | `RF-ING-01`, `RF-DSH-01`, `RNF-POW-03` |
-| **Historias Trazadas** | `HU-01` |
+| **Identifier** | `CU-01` |
+| **Primary Actor** | Biomedical Sensor (SmartShirt Astroskin / Bio-Monitor) |
+| **Secondary Actors** | Mission Astronaut |
+| **Level** | System Level / Continuous Support Function |
+| **SRS Requirements** | `RF-ING-01`, `RF-DSH-01`, `RNF-POW-03` |
+| **Traced Stories** | `HU-01` |
 
-### 1. Descripción Breve:
-El sistema recibe paquetes de datos fisiológicos continuos a 1 Hz desde la indumentaria biomédica del astronauta mediante Bluetooth Low Energy (BLE), aplica filtros de eliminación de ruido y artefactos de movimiento causados por microgravedad, valida los valores contra los rangos físicos admisibles y actualiza la base de datos local y la interfaz táctica.
+### 1. Brief Description:
+The system receives continuous physiological data packets at 1 Hz from the astronaut's biomedical garment via Bluetooth Low Energy (BLE), applies noise-reduction and microgravity motion-artifact filters, validates values against physically admissible ranges, and updates the local database and tactical interface.
 
-### 2. Precondiciones:
-1. La prenda biomédica (SmartShirt) tiene los electrodos y bandas pletismográficas en contacto adecuado con el torso del astronauta.
-2. El nodo cliente de ASTHA tiene la interfaz BLE activa y emparejada con la dirección MAC del sensor asignado al tripulante.
-3. El motor de persistencia local (SQLite / almacenamiento flash) dispone de espacio libre ($> 50\text{ MB}$).
+### 2. Preconditions:
+1. The biomedical garment (SmartShirt) has its electrodes and plethysmographic bands in proper contact with the astronaut's torso.
+2. The ASTHA client node has its BLE interface active and paired with the MAC address of the sensor assigned to the crew member.
+3. The local persistence engine (SQLite / flash storage) has free space available ($> 50\text{ MB}$).
 
-### 3. Disparador (Trigger):
-Recepción periódica de un paquete de telemetría BLE (intervalo de 1000 ms).
+### 3. Trigger:
+Periodic receipt of a BLE telemetry packet (1000 ms interval).
 
-### 4. Flujo Principal de Eventos:
-1. El sensor biomédico emite un paquete que contiene: Frecuencia Cardíaca (bpm), Presión Arterial estimada (mmHg), SpO₂ (%), Intervalos R-R (ms) y Acelerometría triaxial (g).
-2. El subsistema de comunicaciones de ASTHA recibe el paquete binario y calcula la suma de verificación CRC32 para descartar corrupción por ruido electromagnético.
-3. El módulo de filtrado aplica un filtro pasa-banda digital y descarta artefactos de movimiento cuando la acelerometría indica actividad física vigorosa (ej. sesión en cinta ergométrica).
-4. El sistema calcula la métrica de variabilidad cardíaca en el dominio del tiempo ($\text{HRV rMSSD}$) sobre una ventana móvil de 5 minutos.
-5. El sistema compara los valores contra los umbrales fisiológicos de `NASA-STD-3001`.
-6. El sistema persiste el registro validado en la base de datos local con marca de tiempo UTC de vuelo (Mission Elapsed Time - MET).
-7. La interfaz táctica actualiza las tarjetas numéricas de signos vitales y añade el nuevo punto a la curva histórica de Chart.js.
+### 4. Main Flow of Events:
+1. The biomedical sensor emits a packet containing: Heart Rate (bpm), estimated Blood Pressure (mmHg), SpO₂ (%), R-R Intervals (ms), and triaxial Accelerometry (g).
+2. The ASTHA communications subsystem receives the binary packet and computes the CRC32 checksum to discard corruption caused by electromagnetic noise.
+3. The filtering module applies a digital bandpass filter and discards motion artifacts when accelerometry indicates vigorous physical activity (e.g., treadmill session).
+4. The system computes the time-domain heart rate variability metric ($\text{HRV rMSSD}$) over a 5-minute sliding window.
+5. The system compares the values against `NASA-STD-3001` physiological thresholds.
+6. The system persists the validated record in the local database with a UTC flight timestamp (Mission Elapsed Time - MET).
+7. The tactical interface updates the numeric vital-sign cards and appends the new point to the Chart.js historical curve.
 
-### 5. Flujos Alternativos:
-* **FA-01: Desconexión transitoria del sensor ($< 60\text{ segundos}$):**
-  1. Si no se recibe paquete en 2 segundos consecutivos, el sistema mantiene el último valor válido en pantalla con un icono de advertencia de retardo.
-  2. Al reanudarse la señal BLE, el sistema procesa los paquetes encolados en la memoria interna de la prenda y sincroniza la línea temporal.
-* **FA-02: Calibración automática de línea base en reposo:**
-  1. Si la acelerometría indica reposo absoluto y la hora MET corresponde al horario de descanso del tripulante, el sistema registra los valores como "Línea Base Nocturna" para calibrar el algoritmo de fatiga.
+### 5. Alternative Flows:
+* **FA-01: Transient sensor disconnection ($< 60\text{ seconds}$):**
+  1. If no packet is received for 2 consecutive seconds, the system retains the last valid value on screen with a delay warning icon.
+  2. Upon BLE signal resumption, the system processes the packets queued in the garment's internal memory and synchronizes the timeline.
+* **FA-02: Automatic resting baseline calibration:**
+  1. If accelerometry indicates absolute rest and the MET time corresponds to the crew member's rest period, the system logs the values as "Nocturnal Baseline" to calibrate the fatigue algorithm.
 
-### 6. Flujos de Excepción:
-* **FE-01: Pérdida prolongada de señal ($> 60\text{ segundos}$):**
-  1. El sistema conmuta la tarjeta de vitales a estado inactivo (Gris #64748b) con la leyenda "Sensor Desconectado".
-  2. No se dispara alarma médica audible de paro o asistolia, evitando alarmar innecesariamente al resto de la nave.
-  3. Se registra un evento operacional de desconexión en el log del sistema.
-* **FE-02: Paquete corrupto por radiación (SEU / Single-Event Upset):**
-  1. El CRC32 del paquete falla.
-  2. El sistema descarta el paquete defectuoso y solicita una retransmisión al buffer local del sensor.
-  3. Si la falla persiste por 5 paquetes, se emite una alerta técnica: "Fallo de paridad en receptor BLE".
+### 6. Exception Flows:
+* **FE-01: Prolonged signal loss ($> 60\text{ seconds}$):**
+  1. The system switches the vitals card to an inactive state (Gray #64748b) with the label "Sensor Disconnected".
+  2. No audible medical alarm for cardiac arrest or asystole is triggered, preventing unnecessary alarm across the spacecraft.
+  3. An operational disconnection event is recorded in the system log.
+* **FE-02: Radiation-corrupted packet (SEU / Single-Event Upset):**
+  1. The packet CRC32 check fails.
+  2. The system discards the defective packet and requests retransmission from the sensor's local buffer.
+  3. If the fault persists for 5 consecutive packets, a technical alert is issued: "Parity failure in BLE receiver".
 
-### 7. Postcondiciones:
-* **Éxito:** Las constantes vitales del astronauta están actualizadas en pantalla y persistidas en el registro inmutable local.
-* **Fallo:** La interfaz refleja de forma transparente la ausencia de datos sin presentar valores fantasma ni congelar la aplicación.
+### 7. Postconditions:
+* **Success:** The astronaut's vital signs are updated on screen and persisted in the local immutable log.
+* **Failure:** The interface transparently reflects the absence of data without displaying phantom values or freezing the application.
 
 ---
 
-## 📋 Caso de Uso: CU-02
-### Nombre: Correlación Ambiental-Fisiológica (Bolsas de $CO_2$ y Radiación CANS)
+## 📋 Use Case: CU-02
+### Title: Environmental-Physiological Correlation ($CO_2$ Pockets and CANS Radiation)
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-02` |
-| **Actor Primario** | Sensores de Cabina (ECLSS / Dosímetro CANS CSA) |
-| **Actores Secundarios** | Oficial Médico (CMO), Ingeniero de Sistemas de Hábitat |
-| **Nivel** | Nivel de Decisión Clínica y Seguridad de Vuelo |
-| **Requisitos SRS** | `RF-ING-02`, `RF-EVA-04`, `RF-DSH-04`, `RNF-SEC-01` |
-| **Historias Trazadas** | `HU-03` |
+| **Identifier** | `CU-02` |
+| **Primary Actor** | Cabin Sensors (ECLSS / CSA CANS Dosimeter) |
+| **Secondary Actors** | Crew Medical Officer (CMO), Habitat Systems Engineer |
+| **Level** | Clinical Decision and Flight Safety Level |
+| **SRS Requirements** | `RF-ING-02`, `RF-EVA-04`, `RF-DSH-04`, `RNF-SEC-01` |
+| **Traced Stories** | `HU-03` |
 
-### 1. Descripción Breve:
-El sistema supervisa la presión parcial de dióxido de carbono ($ppCO_2$) y la tasa de dosis de radiación en tiempo real. Cuando los niveles ambientales exceden los límites de NASA-STD-3001, el sistema correlaciona estos datos con las bioseñales de los astronautas presentes en ese módulo para diferenciar entre una enfermedad individual y un fallo atmosférico general de la nave.
+### 1. Brief Description:
+The system monitors carbon dioxide partial pressure ($ppCO_2$) and radiation dose rate in real time. When environmental levels exceed NASA-STD-3001 limits, the system correlates these data with the biosignals of astronauts present in that module to distinguish between an individual illness and a general spacecraft atmospheric fault.
 
-### 2. Precondiciones:
-1. Los sensores del sistema ECLSS y el dosímetro de neutrones CANS están operativos y transmitiendo telemetría al bus de datos de la nave.
-2. Se conoce la ubicación física del astronauta dentro de los módulos del hábitat (Nodo de vivienda, laboratorio, módulo central).
+### 2. Preconditions:
+1. The ECLSS sensors and the CANS neutron dosimeter are operational and transmitting telemetry to the spacecraft data bus.
+2. The astronaut's physical location within the habitat modules (Habitation Node, Laboratory, Core Module) is known.
 
-### 3. Disparador (Trigger):
-La concentración de $ppCO_2$ supera los $2.5\text{ mmHg}$ o la tasa de radiación supera los $100\ \mu\text{Sv/h}$.
+### 3. Trigger:
+$ppCO_2$ concentration exceeds $2.5\text{ mmHg}$ or the radiation dose rate exceeds $100\ \mu\text{Sv/h}$.
 
-### 4. Flujo Principal de Eventos:
-1. El sensor atmosférico detecta $ppCO_2 = 3.2\text{ mmHg}$ ($> 4200\text{ ppm}$) en el módulo de descanso.
-2. El motor de reglas de ASTHA consulta el estado biomédico de los astronautas ubicados en dicho módulo.
-3. El sistema detecta que el astronauta presenta taquipnea ($\text{FR} = 22\text{ rpm}$) y una leve elevación de la presión arterial sistólica.
-4. El sistema descarta una crisis hipertensiva idiopática y clasifica el cuadro como: **"Alerta ECLSS: Riesgo de Intoxicación por $CO_2$ / Hipercapnia"**.
-5. La barra superior del hábitat entra en estado de advertencia visual amarilla.
-6. El sistema genera una orden de contramedida ambiental prioritaria: "Conmutar CDRA a ciclo forzado y activar ventiladores de circulación para disipar bolsa de aire estancado".
-7. Se notifica simultáneamente al astronauta afectado y al Ingeniero de Hábitat en sus respectivas terminales.
+### 4. Main Flow of Events:
+1. The atmospheric sensor detects $ppCO_2 = 3.2\text{ mmHg}$ ($> 4200\text{ ppm}$) in the sleep quarters module.
+2. The ASTHA rule engine queries the biomedical status of astronauts located in that module.
+3. The system detects that the astronaut exhibits tachypnea ($\text{RR} = 22\text{ breaths/min}$) and a mild elevation in systolic blood pressure.
+4. The system rules out an idiopathic hypertensive crisis and classifies the event as: **"ECLSS Alert: $CO_2$ Toxicity / Hypercapnia Risk"**.
+5. The habitat top status bar enters a yellow visual warning state.
+6. The system generates a priority environmental countermeasure command: "Switch CDRA to forced cycle and activate circulation fans to dissipate stagnant air pocket".
+7. The affected astronaut and the Habitat Engineer are simultaneously notified on their respective terminals.
 
-### 5. Flujos Alternativos:
-* **FA-01: Disparo aislado sin alteración fisiológica en el astronauta:**
-  1. Si la telemetría ambiental se eleva pero el astronauta mantiene vitales estrictamente nominales ($\text{SpO}_2 \ge 98\%$, $\text{FR}$ nominal), el sistema clasifica la alerta como "Advertencia Ambiental Precoz" y no perturba el descanso del tripulante, alertando únicamente al Oficial de Guardia.
+### 5. Alternative Flows:
+* **FA-01: Isolated trigger with no physiological alteration in the astronaut:**
+  1. If ambient telemetry rises while the astronaut maintains strictly nominal vitals ($\text{SpO}_2 \ge 98\%$, nominal $\text{RR}$), the system classifies the alert as "Early Environmental Warning" and does not disturb the crew member's rest, alerting only the Duty Officer.
 
-### 6. Flujos de Excepción:
-* **FE-01: Fallo o bloqueo del sensor atmosférico:**
-  1. Si el sensor de cabina deja de enviar telemetría o emite valores constantes irreales ($0.00\text{ mmHg}$), el sistema marca el sensor como "No Confiable" y utiliza los datos de respiración de la SmartShirt para inferir la concentración de $CO_2$ mediante volumen corriente.
+### 6. Exception Flows:
+* **FE-01: Atmospheric sensor failure or lockup:**
+  1. If the cabin sensor stops transmitting telemetry or outputs constant unrealistic values ($0.00\text{ mmHg}$), the system flags the sensor as "Unreliable" and uses SmartShirt respiratory data to infer $CO_2$ concentration via tidal volume.
 
-### 7. Postcondiciones:
-* **Éxito:** Se emite una alerta explicable que previene la hipoxia o cefalea incapacitante del astronauta atacando la causa raíz ambiental.
+### 7. Postconditions:
+* **Success:** An explainable alert is issued that prevents hypoxia or incapacitating astronaut headache by addressing the environmental root cause.
 
 ---
 
-## 📋 Caso de Uso: CU-03
-### Nombre: Registro Fricción-Cero de Síntomas Subjetivos por el Astronauta
+## 📋 Use Case: CU-03
+### Title: Zero-Friction Logging of Subjective Symptoms by the Astronaut
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-03` |
-| **Actor Primario** | Astronauta en Misión |
-| **Actores Secundarios** | Oficial Médico (CMO) |
-| **Nivel** | Nivel de Usuario / Tarea Operacional |
-| **Requisitos SRS** | `RF-ING-03`, `RNF-USA-01`, `RNF-USA-02` |
-| **Historias Trazadas** | `HU-04` |
+| **Identifier** | `CU-03` |
+| **Primary Actor** | Mission Astronaut |
+| **Secondary Actors** | Crew Medical Officer (CMO) |
+| **Level** | User Level / Operational Task |
+| **SRS Requirements** | `RF-ING-03`, `RNF-USA-01`, `RNF-USA-02` |
+| **Traced Stories** | `HU-04` |
 
-### 1. Descripción Breve:
-Permite a cualquier tripulante registrar síntomas cualitativos (visión borrosa, cefalea, náuseas, dolor lumbar o fatiga) en menos de 10 segundos mediante selectores táctiles gigantes aptos para dedos enguantados o condiciones de fatiga extrema.
+### 1. Brief Description:
+Allows any crew member to log qualitative symptoms (blurred vision, headache, nausea, lower back pain, or fatigue) in under 10 seconds using oversized touch selectors suitable for gloved fingers or extreme fatigue conditions.
 
-### 2. Precondiciones:
-1. La aplicación ASTHA se encuentra abierta en la tableta del astronauta o en la pantalla de mamparo.
-2. El astronauta ha seleccionado su identificador de tripulante (`C001` - `C004`).
+### 2. Preconditions:
+1. The ASTHA application is open on the astronaut's tablet or bulkhead display.
+2. The astronaut has selected their crew identifier (`C001` - `C004`).
 
-### 3. Disparador (Trigger):
-El astronauta experimenta una molestia física y pulsa el botón flotante "Reportar Síntoma".
+### 3. Trigger:
+The astronaut experiences physical discomfort and taps the floating "Report Symptom" button.
 
-### 4. Flujo Principal de Eventos:
-1. El sistema despliega una cuadrícula de 6 iconos táctiles grandes ($64 \times 64\text{ px}$): Cefalea, Mareo (SAS), Ojos/Visión, Lumbar/Espalda, Digestivo y Fatiga.
-2. El astronauta toca el icono "Ojos/Visión" (1er toque).
-3. El sistema muestra un selector de severidad visual en 3 niveles: Leve (Verde/Amarillo), Moderado (Naranja), Severo (Rojo).
-4. El astronauta toca "Moderado" (2do toque).
-5. El sistema presenta un botón de confirmación con cuenta regresiva automática de 3 segundos o pulsación directa "Guardar" (3er toque).
-6. El sistema guarda el evento en el expediente local enlazado con la marca de tiempo MET actual.
-7. El motor CDSS recalcula el estado del sistema neuro-ocular incorporando este reporte cualitativo.
-8. La interfaz emite una sutil vibración háptica y cierra el diálogo, volviendo a la pantalla principal sin requerir escribir en el teclado.
+### 4. Main Flow of Events:
+1. The system displays a grid of 6 large touch icons ($64 \times 64\text{ px}$): Headache, Dizziness (SAS), Eyes/Vision, Lumbar/Back, Digestive, and Fatigue.
+2. The astronaut taps the "Eyes/Vision" icon (1st tap).
+3. The system displays a 3-level visual severity selector: Mild (Green/Yellow), Moderate (Orange), Severe (Red).
+4. The astronaut taps "Moderate" (2nd tap).
+5. The system presents a confirmation button with an automatic 3-second countdown or direct "Save" press (3rd tap).
+6. The system saves the event in the local record linked to the current MET timestamp.
+7. The CDSS engine recalculates the neuro-ocular system status incorporating this qualitative report.
+8. The interface emits a subtle haptic vibration and closes the dialog, returning to the main screen without requiring keyboard input.
 
-### 5. Flujos Alternativos:
-* **FA-01: Cancelación del reporte:**
-  1. Si el astronauta toca fuera del cuadro o presiona "Cancelar", el sistema descarta el borrador y no modifica el historial médico.
+### 5. Alternative Flows:
+* **FA-01: Report cancellation:**
+  1. If the astronaut taps outside the dialog or presses "Cancel", the system discards the draft and leaves the medical history unmodified.
 
-### 6. Flujos de Excepción:
-* **FE-01: Reporte de síntoma crítico con telemetría discordante:**
-  1. Si el astronauta reporta "Dolor torácico severo" pero el electrocardiograma es normal, el sistema prioriza la seguridad de la vida: eleva el triage a Precaución y sugiere al CMO realizar un examen clínico presencial.
+### 6. Exception Flows:
+* **FE-01: Critical symptom report with discordant telemetry:**
+  1. If the astronaut reports "Severe chest pain" while the electrocardiogram is normal, the system prioritizes life safety: it elevates triage to Caution and suggests that the CMO perform an in-person clinical examination.
 
-### 7. Postcondiciones:
-* **Éxito:** El síntoma queda registrado en menos de 10 segundos y el motor de decisión clínica ajusta el triage del tripulante.
+### 7. Postconditions:
+* **Success:** The symptom is logged in under 10 seconds and the clinical decision engine updates the crew member's triage status.

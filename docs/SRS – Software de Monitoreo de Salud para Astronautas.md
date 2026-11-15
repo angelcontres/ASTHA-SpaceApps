@@ -1,284 +1,284 @@
-# SRS – Software de Monitoreo de Salud para Astronautas
+# SRS – Astronaut Health Monitoring Software
 
 Nov 14, 2026 · @angel
 
-## 1. Introducción
+## 1. Introduction
 
-Este documento especifica los requisitos de **ASTHA**, un sistema autónomo de monitoreo biomédico y soporte a decisiones clínicas para tripulaciones en misiones más allá de la órbita baja, donde la latencia con la Tierra (3 a 22 minutos por sentido) impide la consulta en tiempo real. Sigue la estructura de ISO/IEC/IEEE 29148.
+This document specifies the requirements for **ASTHA**, an autonomous biomedical monitoring and clinical decision support system for crews on missions beyond low Earth orbit, where communication latency with Earth (3 to 22 minutes one-way) precludes real-time consultation. It follows the structure of ISO/IEC/IEEE 29148.
 
-**Propósito.** Dar a un tripulante no especialista una herramienta que detecte deriva fisiológica, clasifique su gravedad y le indique contramedidas ejecutables con los recursos a bordo, sin ninguna conexión externa.
+**Purpose.** To provide a non-specialist crew member with a tool that detects physiological drift, classifies its severity, and prescribes countermeasures executable with onboard resources, with no external connectivity.
 
-**Alcance.** Aplicación web offline (PWA de un solo nodo) con ingesta de datos, motor de evaluación, detección de tendencias, modelo anatómico interactivo, guía de contramedidas, gamificación y simulador de crisis. Queda fuera: diagnóstico médico definitivo, integración con hardware real de vuelo y sustitución del juicio del Flight Surgeon.
+**Scope.** Offline web application (single-node PWA) featuring data ingestion, evaluation engine, trend detection, interactive anatomical model, countermeasure guide, gamification, and crisis simulator. Out of scope: definitive medical diagnosis, integration with flight-certified hardware, and replacement of the Flight Surgeon's clinical judgment.
 
-**Definiciones.**
+**Definitions.**
 
-| Término | Significado |
+| Term | Meaning |
 | --- | --- |
-| CMO | Oficial Médico de Tripulación (tripulante con entrenamiento médico básico) |
+| CMO | Crew Medical Officer (crew member with basic medical training) |
 | SANS | Spaceflight Associated Neuro-ocular Syndrome |
-| SPE | Evento de Partículas Solares |
-| ARED / LBNP | Dispositivo de ejercicio resistivo avanzado / pantalones de presión negativa |
-| HRV (rMSSD) | Variabilidad de la frecuencia cardíaca |
-| Deriva | Cambio gradual de una serie temporal que aún no cruza un umbral |
-| Edge / Offline | Todo el procesamiento y conocimiento residen en el nodo local |
+| SPE | Solar Particle Event |
+| ARED / LBNP | Advanced Resistive Exercise Device / Lower Body Negative Pressure |
+| HRV (rMSSD) | Heart Rate Variability |
+| Drift | Gradual change in a time series that has not yet crossed a threshold |
+| Edge / Offline | All processing and medical knowledge reside on the local node |
 
-**Referencias.** NASA-STD-3001 (Vol. 1 y 2), NASA HRP (Hazards y Risks), CSA (Astroskin, CANS), ISO/IEC/IEEE 29148, y los documentos DOMINIO\_Y\_PROBLEMATICA\_ESPACIAL y HEALTH\_MONITORING\_SOFTWARE\_SPEC aportados.
+**References.** NASA-STD-3001 (Vol. 1 and 2), NASA HRP (Hazards and Risks), CSA (Astroskin, CANS), ISO/IEC/IEEE 29148, and the provided DOMINIO\_Y\_PROBLEMATICA\_ESPACIAL and HEALTH\_MONITORING\_SOFTWARE\_SPEC documents.
 
-## 2. Descripción general
+## 2. General Description
 
-ASTHA es un nodo local que correlaciona telemetría fisiológica (estilo Astroskin) con telemetría ambiental y de radiación (estilo ECLSS y CANS) para producir un estado de salud tripartito (Nominal, Precaución, Crítico) por tripulante y por sistema de órganos.
+ASTHA is a local node that correlates physiological telemetry (Astroskin-style) with environmental and radiation telemetry (ECLSS- and CANS-style) to produce a three-state health status (Nominal, Caution, Critical) per crew member and per organ system.
 
-### 2.1 Actores
+### 2.1 Actors
 
-| Actor | Uso del sistema | Necesidad crítica |
+| Actor | System Usage | Critical Need |
 | --- | --- | --- |
-| Astronauta | Registra datos, ve su estado, ejecuta contramedidas diarias | Interpretación inmediata sin jerga ni falsas alarmas |
-| CMO | Atiende alertas, sigue protocolos paso a paso | Soporte a decisiones clínicas secuencial y verificable |
-| Flight Surgeon (Tierra) | Recibe resúmenes asíncronos | Tendencias y eventos consolidados para validar tratamientos |
-| Jurado / evaluador | Activa el simulador de crisis | Demostración clara de la autonomía |
+| Astronaut | Logs data, views health status, executes daily countermeasures | Immediate interpretation without jargon or false alarms |
+| CMO | Responds to alerts, follows step-by-step protocols | Sequential and verifiable clinical decision support |
+| Flight Surgeon (Earth) | Receives asynchronous summaries | Consolidated trends and events to validate treatments |
+| Judge / Evaluator | Triggers the crisis simulator | Clear demonstration of system autonomy |
 
-### 2.2 Restricciones de dominio (no negociables)
+### 2.2 Domain Constraints (Non-Negotiable)
 
-1. **Cero dependencia externa:** sin nube, sin APIs remotas; datos, reglas y conocimiento médico residen en el nodo.
-2. **Usuario no especialista:** cada alerta explica qué ocurre, severidad y tiempo estimado, y acciones exactas y verificables.
-3. **Recursos médicos limitados:** solo se sugieren intervenciones con ARED, cicloergómetro o cinta, LBNP, botiquín de exploración y refugio de tormentas.
-4. **Baja carga cognitiva:** código de colores inequívoco, pocos toques, uso con guantes.
+1. **Zero external dependency:** no cloud, no remote APIs; data, rules, and medical knowledge reside on the node.
+2. **Non-specialist user:** every alert explains what is occurring, severity with estimated time to impact, and exact, verifiable actions.
+3. **Limited medical resources:** interventions are restricted to ARED, cycle ergometer or treadmill, LBNP, exploration medical kit, and storm shelter.
+4. **Low cognitive load:** unambiguous color coding, minimal taps, glove-operable controls.
 
-### 2.3 Supuestos y dependencias
+### 2.3 Assumptions and Dependencies
 
-- Los umbrales provienen de NASA-STD-3001 tal como los fija el documento de dominio; los valores de contramedida son orientativos y deben validarse con personal médico antes de uso real.
-- La telemetría es **simulada** (dataset sintético de 180 días); la integración con sensores reales queda como interfaz documentada.
-- El sistema apoya la decisión; no reemplaza al CMO ni al Flight Surgeon.
+- Thresholds originate from NASA-STD-3001 as established in the domain document; countermeasure values are advisory and must be validated with medical personnel prior to operational flight use.
+- Telemetry is **simulated** (180-day synthetic dataset); integration with flight sensors remains a documented interface.
+- The system supports decision-making; it does not replace the CMO or the Flight Surgeon.
 
-## 3. Requisitos funcionales
+## 3. Functional Requirements
 
-Prioridad según MoSCoW: **M** (debe), **S** (debería), **C** (podría). Cada requisito es verificable (ver sección 8).
+Priority per MoSCoW: **M** (Must), **S** (Should), **C** (Could). Every requirement is verifiable (see Section 8).
 
-### 3.1 Ingesta de datos (ING)
+### 3.1 Data Ingestion (ING)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-ING-01 | El sistema debe permitir registrar frecuencia cardiaca, HRV, presión sistólica y diastólica, SpO2, glucosa, temperatura, horas de sueño y ánimo (1-10) con controles grandes aptos para guantes. | M | AC-01 |
-| RF-ING-02 | Debe aceptar telemetría ambiental: ppCO2, presión de cabina, % O2 y tasa de dosis de radiación (µSv/h). | M | AC-05 |
-| RF-ING-03 | Debe simular telemetría continua tipo bio-monitor (Astroskin) y reproducir un dataset sintético de 180 días por tripulante. | M | AC-02 |
-| RF-ING-04 | Debe permitir reportar síntomas subjetivos (visión borrosa, cefalea, náuseas, dolor lumbar, mareo al ponerse de pie) con un toque por síntoma. | M | AC-03 |
-| RF-ING-05 | Debe validar rangos fisiológicamente posibles y marcar los datos dudosos sin descartarlos. | S | AC-01 |
-| RF-ING-06 | Debe importar y exportar el historial en JSON. | S | AC-01 |
-| RF-ING-07 | Podría ofrecer prueba de reflejo pupilar o escaneo cutáneo por cámara. | C | AC-03 |
+| RF-ING-01 | The system must allow logging heart rate, HRV, systolic and diastolic blood pressure, SpO2, glucose, temperature, sleep hours, and mood (1-10) with large, glove-friendly controls. | M | AC-01 |
+| RF-ING-02 | It must accept environmental telemetry: ppCO2, cabin pressure, % O2, and radiation dose rate (µSv/h). | M | AC-05 |
+| RF-ING-03 | It must simulate continuous bio-monitor telemetry (Astroskin-type) and replay a 180-day synthetic dataset per crew member. | M | AC-02 |
+| RF-ING-04 | It must allow reporting subjective symptoms (blurred vision, headache, nausea, lower back pain, orthostatic dizziness upon standing) with a single tap per symptom. | M | AC-03 |
+| RF-ING-05 | It must validate physiologically plausible ranges and flag suspect data without discarding it. | S | AC-01 |
+| RF-ING-06 | It must import and export history in JSON format. | S | AC-01 |
+| RF-ING-07 | It could offer a pupillary reflex test or skin scan via camera. | C | AC-03 |
 
-### 3.2 Evaluación y triage (EVA)
+### 3.2 Evaluation and Triage (EVA)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-EVA-01 | Debe clasificar cada indicador como Nominal, Precaución o Crítico con los umbrales de la sección 6. | M | AC-01 |
-| RF-EVA-02 | El estado global de un tripulante debe ser el peor estado entre sus indicadores y reglas activas. | M | AC-01 |
-| RF-EVA-03 | Debe asignar cada hallazgo a un sistema de órganos: neuro-ocular, cardiovascular, musculoesquelético, renal, cognitivo, radiación, respiratorio/ambiental. | M | AC-03 |
-| RF-EVA-04 | Debe aplicar reglas de correlación ambiental-fisiológica (sección 6.2). | M | AC-05 |
-| RF-EVA-05 | Debe manejar condiciones sostenidas (HRV < 20 ms sostenido; sueño < 5,5 h durante 2 días o más). | M | AC-01 |
-| RF-EVA-06 | Cada alerta debe indicar la regla disparada, los valores que la causaron y el umbral (explicabilidad). | M | AC-03 |
-| RF-EVA-07 | La evaluación debe funcionar sin ningún paquete de red enviado o recibido. | M | AC-01 |
+| RF-EVA-01 | It must classify each indicator as Nominal, Caution, or Critical using the thresholds in Section 6. | M | AC-01 |
+| RF-EVA-02 | A crew member's global status must be the worst status across their indicators and active rules. | M | AC-01 |
+| RF-EVA-03 | It must assign each finding to an organ system: neuro-ocular, cardiovascular, musculoskeletal, renal, cognitive, radiation, respiratory/environmental. | M | AC-03 |
+| RF-EVA-04 | It must apply environmental-physiological correlation rules (Section 6.2). | M | AC-05 |
+| RF-EVA-05 | It must handle sustained conditions (HRV < 20 ms sustained; sleep < 5.5 h for 2 days or more). | M | AC-01 |
+| RF-EVA-06 | Every alert must indicate the triggered rule, the values that caused it, and the threshold (explainability). | M | AC-03 |
+| RF-EVA-07 | Evaluation must operate with zero network packets sent or received. | M | AC-01 |
 
-### 3.3 Detección de deriva (DER)
+### 3.3 Drift Detection (DER)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-DER-01 | Debe calcular la tendencia de cada indicador por regresión lineal sobre una ventana móvil de 7 días. | M | AC-02 |
-| RF-DER-02 | Debe emitir alerta precoz si la proyección cruza el umbral de precaución en 7 días o menos y el valor actual aún es nominal. | M | AC-02 |
-| RF-DER-03 | Debe comparar con la línea base personal (media y desviación de los primeros 14 días) y marcar valores con z mayor o igual a 2,5. | S | AC-02 |
-| RF-DER-04 | Debe detectar patrones combinados (sueño decreciente junto con presión diastólica creciente). | M | AC-02 |
+| RF-DER-01 | It must compute the trend of each indicator via linear regression over a 7-day rolling window. | M | AC-02 |
+| RF-DER-02 | It must issue an early warning if the projection crosses the caution threshold within 7 days or less while the current value is still nominal. | M | AC-02 |
+| RF-DER-03 | It must compare against the personal baseline (mean and deviation of the first 14 days) and flag values with z greater than or equal to 2.5. | S | AC-02 |
+| RF-DER-04 | It must detect combined patterns (decreasing sleep alongside increasing diastolic blood pressure). | M | AC-02 |
 
-### 3.4 Guía de contramedidas (GUI)
+### 3.4 Countermeasure Guidance (GUI)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-GUI-01 | Cada alerta debe mostrar tres bloques: qué ocurre anatómicamente, severidad con tiempo estimado de impacto, y acciones. | M | AC-04 |
-| RF-GUI-02 | Las acciones deben ser pasos secuenciales y verificables (casilla por paso). | M | AC-04 |
-| RF-GUI-03 | Solo debe sugerir recursos disponibles a bordo (ARED, LBNP, botiquín, refugio, filtros LiOH/CDRA). | M | AC-04 |
-| RF-GUI-04 | Debe usar lenguaje no médico y definir cualquier término técnico inevitable. | M | AC-04 |
-| RF-GUI-05 | En alertas rojas debe indicar qué enviar al Flight Surgeon como mensaje asíncrono, sin depender de su respuesta. | S | AC-01 |
+| RF-GUI-01 | Every alert must display three blocks: what is occurring anatomically, severity with estimated time to impact, and actions. | M | AC-04 |
+| RF-GUI-02 | Actions must be sequential, verifiable steps (checkbox per step). | M | AC-04 |
+| RF-GUI-03 | It must suggest only resources available onboard (ARED, LBNP, medical kit, storm shelter, LiOH/CDRA scrubbers). | M | AC-04 |
+| RF-GUI-04 | It must use non-medical language and define any unavoidable technical term. | M | AC-04 |
+| RF-GUI-05 | On red alerts, it must indicate what to send to the Flight Surgeon as an asynchronous message, without depending on a reply. | S | AC-01 |
 
-### 3.5 Modelo anatómico (ANA)
+### 3.5 Anatomical Model (ANA)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-ANA-01 | Debe mostrar un cuerpo humano interactivo con vista frontal y posterior. | M | AC-03 |
-| RF-ANA-02 | Debe tener regiones clicables: ojos/cabeza, toráx/corazón, zona lumbar/riñones, piernas/fémur, sistema general/sangre. | M | AC-03 |
-| RF-ANA-03 | Cada región debe colorearse en verde, amarillo o rojo según su estado y añadir un símbolo o patrón (no solo color). | M | AC-03 |
-| RF-ANA-04 | Al seleccionar una región debe mostrar sus indicadores, tendencia y contramedidas activas. | M | AC-03 |
+| RF-ANA-01 | It must display an interactive human body with front and back views. | M | AC-03 |
+| RF-ANA-02 | It must provide clickable regions: eyes/head, thorax/heart, lumbar region/kidneys, legs/femur, general system/blood. | M | AC-03 |
+| RF-ANA-03 | Each region must be colored green, yellow, or red according to its status and include a symbol or pattern (not color alone). | M | AC-03 |
+| RF-ANA-04 | Selecting a region must display its indicators, trend, and active countermeasures. | M | AC-03 |
 
-### 3.6 Panel y visualización (DSH)
+### 3.6 Dashboard and Visualization (DSH)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-DSH-01 | Debe mostrar tarjetas por indicador con valor, unidad, semáforo y flecha de tendencia. | M | AC-01 |
-| RF-DSH-02 | Debe graficar series históricas con las bandas de umbral. | M | AC-02 |
-| RF-DSH-03 | Debe permitir cambiar entre tripulantes y ver un resumen de toda la tripulación. | S | AC-01 |
-| RF-DSH-04 | Debe mostrar la telemetría ambiental del hábitat (CO2, presión, O2, radiación) con su semáforo. | M | AC-05 |
+| RF-DSH-01 | It must display per-indicator cards with value, unit, status indicator, and trend arrow. | M | AC-01 |
+| RF-DSH-02 | It must plot historical time series with threshold bands. | M | AC-02 |
+| RF-DSH-03 | It must allow switching between crew members and viewing a crew-wide summary. | S | AC-01 |
+| RF-DSH-04 | It must display habitat environmental telemetry (CO2, pressure, O2, radiation) with its status indicator. | M | AC-05 |
 
-### 3.7 Gamificación (GAM)
+### 3.7 Gamification (GAM)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-GAM-01 | Debe otorgar XP y medallas por 150 min diarios de ejercicio, informe matutino a tiempo e hidratación óptima. | S | AC-04 |
-| RF-GAM-02 | Debe llevar rachas diarias y nivel del tripulante. | S | AC-04 |
-| RF-GAM-03 | La gamificación nunca debe ocultar ni retrasar una alerta clínica. | M | AC-01 |
+| RF-GAM-01 | It must award XP and badges for 150 daily minutes of exercise, on-time morning check-in, and optimal hydration. | S | AC-04 |
+| RF-GAM-02 | It must track daily streaks and crew member level. | S | AC-04 |
+| RF-GAM-03 | Gamification must never hide or delay a clinical alert. | M | AC-01 |
 
-### 3.8 Simulador de crisis (SIM)
+### 3.8 Crisis Simulator (SIM)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-SIM-01 | Debe inyectar el escenario A: tormenta solar (SPE) con guía hacia el refugio. | M | AC-05 |
-| RF-SIM-02 | Debe inyectar el escenario B: SANS agudo con prueba visual y LBNP. | M | AC-05 |
-| RF-SIM-03 | Debe inyectar el escenario C: microfuga de CO2 con verificación de filtros. | M | AC-05 |
-| RF-SIM-04 | Debe inyectar el escenario D: hipercalciuria con riesgo de cálculo renal. | S | AC-05 |
-| RF-SIM-05 | Debe poder restablecer el estado nominal en un toque y avanzar el tiempo simulado. | M | AC-05 |
+| RF-SIM-01 | It must inject Scenario A: solar particle event (SPE) with guidance to the storm shelter. | M | AC-05 |
+| RF-SIM-02 | It must inject Scenario B: acute SANS with visual acuity test and LBNP. | M | AC-05 |
+| RF-SIM-03 | It must inject Scenario C: CO2 micro-leak with scrubber verification. | M | AC-05 |
+| RF-SIM-04 | It must inject Scenario D: hypercalciuria with kidney stone risk. | S | AC-05 |
+| RF-SIM-05 | It must allow resetting to nominal status in one tap and advancing simulated time. | M | AC-05 |
 
-### 3.9 Registro y configuración (REG)
+### 3.9 Logging and Configuration (REG)
 
-| ID | Requisito | Prior. | AC |
+| ID | Requirement | Prior. | AC |
 | --- | --- | --- | --- |
-| RF-REG-01 | Debe llevar una bitácora local de alertas, acciones completadas y reconocimientos. | M | AC-03 |
-| RF-REG-02 | Debe generar un resumen asíncrono exportable para el Flight Surgeon. | S | AC-01 |
-| RF-REG-03 | Debe permitir modo de alto contraste y texto grande. | S | AC-03 |
+| RF-REG-01 | It must maintain a local log of alerts, completed actions, and acknowledgments. | M | AC-03 |
+| RF-REG-02 | It must generate an exportable asynchronous summary for the Flight Surgeon. | S | AC-01 |
+| RF-REG-03 | It must support high-contrast mode and large text. | S | AC-03 |
 
-## 4. Requisitos no funcionales (RNF)
+## 4. Non-Functional Requirements (RNF)
 
-Esta sección define las restricciones de calidad, rendimiento, eficiencia energética, ergonomía espacial, seguridad criptográfica y comunicación multi-nodo que gobiernan a ASTHA bajo el estándar ISO/IEC/IEEE 29148 y NASA-STD-3001.
+This section defines the quality, performance, power efficiency, space ergonomics, cryptographic security, and multi-node communication constraints governing ASTHA under ISO/IEC/IEEE 29148 and NASA-STD-3001.
 
-### 4.1 Eficiencia energética, rendimiento y huella de recursos (Ultra-Low Power & Resource Footprint)
+### 4.1 Power Efficiency, Performance, and Resource Footprint (Ultra-Low Power & Resource Footprint)
 
-En hábitats espaciales y vehículos en tránsito planetario, la potencia eléctrica es un recurso escaso y crítico suministrado por paneles solares o celdas de combustible. El software debe operar bajo un régimen de ultra-bajo consumo energético:
+In space habitats and planetary transit vehicles, electrical power is a scarce, mission-critical resource supplied by solar arrays or fuel cells. The software must operate under an ultra-low-power regime:
 
-| ID | Requisito de Rendimiento y Energía | Especificación Técnica Medible | Medida de Verificación |
+| ID | Performance & Power Requirement | Measurable Technical Specification | Verification Method |
 | --- | --- | --- | --- |
-| **RNF-POW-01** | **Perfil de ultra-bajo consumo en CPU** | La aplicación no debe ejecutar bucles activos de sondeo (*polling*) en primer ni segundo plano. Debe utilizar observadores de eventos reactivos (`requestIdleCallback`, Web Workers para cómputos de regresión de tendencias). El uso sostenido de CPU en estado de monitoreo pasivo no debe exceder el **3.0%**. | Perfilado de CPU con Chrome DevTools Performance Profiler en modo throttling x4. |
-| **RNF-POW-02** | **Extensión de autonomía de batería** | En tabletas y consolas portátiles de tripulación, el consumo energético de la aplicación debe permitir una operación continua mínima de **16 horas** con una sola carga de batería ($< 350\text{ mW}$ atribuibles al proceso del software). | Medición de drenaje de batería en dispositivo táctil de prueba durante 8 horas continuas. |
-| **RNF-POW-03** | **Huella de memoria RAM ultraligera** | El consumo de memoria de trabajo (RAM) no debe superar los **150 MB**, incluso tras cargar y procesar los 180 días de telemetría de toda la tripulación, previniendo reinicios forzados por el gestor de memoria del sistema operativo (*OOM killer*). | Inspección de memoria Heap mediante Memory Snapshot en el navegador. |
-| **RNF-POW-04** | **Peso de paquete ultracompacto (Bundle Size)** | El tamaño total de la aplicación empaquetada (código, lógica clínica, estilos y activos visuales) no debe exceder los **5.0 MB** transferibles y cacheados mediante Service Workers (PWA). | Medición del peso total de los archivos generados en compilación de producción (`npm run build`). |
-| **RNF-PER-01** | **Latencia de evaluación clínica instantánea** | El ciclo completo de ingesta, cálculo de Z-score modificado, correlación cruzada ambiental y actualización visual del modelo anatómico debe completarse en menos de **50 ms**. | Registro con `performance.now()` en la ejecución de la función de triage clínico. |
-| **RNF-PER-02** | **Arranque en frío (Cold Start)** | El tiempo de arranque de la aplicación desde el almacenamiento local hasta el despliegue del panel principal debe ser inferior a **1.5 segundos** en hardware de gama media. | Métrica First Contentful Paint (FCP) y Time to Interactive (TTI) con Lighthouse en modo offline. |
+| **RNF-POW-01** | **Ultra-low CPU power profile** | The application must not execute active polling loops in either foreground or background. It must use reactive event observers (`requestIdleCallback`, Web Workers for trend regression computations). Sustained CPU usage during passive monitoring must not exceed **3.0%**. | CPU profiling with Chrome DevTools Performance Profiler at 4x throttling. |
+| **RNF-POW-02** | **Extended battery autonomy** | On crew tablets and handheld consoles, application power draw must support a minimum of **16 hours** of continuous operation on a single battery charge ($< 350\text{ mW}$ attributable to the software process). | Battery drain measurement on a touch test device over 8 continuous hours. |
+| **RNF-POW-03** | **Ultra-lightweight RAM footprint** | Working memory (RAM) consumption must not exceed **150 MB**, even after loading and processing 180 days of telemetry for the entire crew, preventing forced restarts by the operating system memory manager (*OOM killer*). | Heap memory inspection via browser Memory Snapshot. |
+| **RNF-POW-04** | **Ultra-compact bundle size** | Total packaged application size (code, clinical logic, styles, and visual assets) must not exceed **5.0 MB** transferable and cached via Service Workers (PWA). | Measurement of total output file size in production build (`npm run build`). |
+| **RNF-PER-01** | **Instantaneous clinical evaluation latency** | The complete cycle of ingestion, modified Z-score calculation, environmental cross-correlation, and visual update of the anatomical model must complete in under **50 ms**. | Timing with `performance.now()` during execution of the clinical triage function. |
+| **RNF-PER-02** | **Cold start** | Application startup time from local storage to rendering of the main dashboard must be under **1.5 seconds** on mid-range hardware. | First Contentful Paint (FCP) and Time to Interactive (TTI) metrics via Lighthouse in offline mode. |
 
-### 4.2 Usabilidad espacial, accesibilidad y factores humanos (Astronaut-Grade UX & Ergonomics)
+### 4.2 Space Usability, Accessibility, and Human Factors (Astronaut-Grade UX & Ergonomics)
 
-El diseño de interacción debe adaptarse a tripulantes sometidos a fatiga extrema, microgravedad, estrés agudo y uso con indumentaria de vuelo:
+Interaction design must accommodate crew members experiencing extreme fatigue, microgravity, acute stress, and flight gear constraints:
 
-| ID | Requisito de Usabilidad y Ergonomía | Especificación Técnica Medible | Medida de Verificación |
+| ID | Usability & Ergonomics Requirement | Measurable Technical Specification | Verification Method |
 | --- | --- | --- | --- |
-| **RNF-USA-01** | **Operabilidad táctil con guantes de vuelo** | Todos los elementos interactivos primarios (botones, casillas de verificación, selectores de síntomas) deben poseer un área de pulsación mínima de **$48 \times 48\text{ px}$** con una separación mínima de **$12\text{ px}$**, evitando pulsaciones erróneas por temblor muscular o guantes presurizados IVA/EVA. | Inspección de layout en CSS y prueba de pulsación con guante térmico. |
-| **RNF-USA-02** | **Regla de oro de los 3 toques** | Cualquier acción crítica de emergencia (reportar un síntoma incapacitante, consultar un procedimiento de contramedida o activar el protocolo de refugio solar) debe alcanzarse en un máximo de **3 toques de pantalla** desde cualquier vista. | Auditoría de árbol de navegación y conteo de interacciones por caso de uso. |
-| **RNF-USA-03** | **Ergonomía visual y preservación circadiana** | Cumplimiento del nivel **WCAG 2.1 AAA** en relaciones de contraste ($\ge 7:1$). Debe implementar dos modos cromáticos: (1) Modo Táctico Oscuro (para trabajo diurno en cabina), y (2) Modo Espectral Rojo ($\approx 630\text{ nm}$ monocrómico) para guardias nocturnas, evitando la supresión de melatonina y preservando la visión nocturna de la tripulación. | Validación de contraste mediante analizador de accesibilidad y selector de modo nocturno. |
-| **RNF-USA-04** | **Mitigación de fatiga por alarmas (Alarm Fatigue)** | Los estados de alerta deben diferenciarse por canales sensoriales redundantes: (1) Nivel Precaución (Amarillo): visual estático sin sonido intrusivo; (2) Nivel Crítico (Rojo): visual intermitente de alta prioridad con tono acústico en banda $800 - 1200\text{ Hz}$ según norma **ISO 9703-2** (Alarmas médicas aeroespaciales). | Inspección de espectro de audio y patrones de renderizado CSS. |
-| **RNF-USA-05** | **Diseño adaptado para no médicos** | Toda pantalla de contramedida debe estructurarse estrictamente en: (1) Qué ocurre anatómicamente, (2) Severidad y tiempo estimado de impacto, y (3) Lista de tareas secuenciales con casillas de verificación ejecutables, con un máximo de **7 pasos por procedimiento**. | Revisión de legibilidad contra escala Flesch-Kincaid en español/inglés. |
+| **RNF-USA-01** | **Touch operability with flight gloves** | All primary interactive elements (buttons, checkboxes, symptom selectors) must have a minimum hit area of **$48 \times 48\text{ px}$** with a minimum spacing of **$12\text{ px}$**, preventing mis-taps from muscle tremor or pressurized IVA/EVA gloves. | CSS layout inspection and touch testing wearing a thermal glove. |
+| **RNF-USA-02** | **Three-tap golden rule** | Any critical emergency action (reporting an incapacitating symptom, consulting a countermeasure procedure, or activating the solar shelter protocol) must be reachable in a maximum of **3 screen taps** from any view. | Navigation tree audit and interaction count per use case. |
+| **RNF-USA-03** | **Visual ergonomics and circadian preservation** | Compliance with **WCAG 2.1 AAA** contrast ratios ($\ge 7:1$). Must implement two color modes: (1) Dark Tactical Mode (for daytime cabin operations), and (2) Red Spectral Mode ($\approx 630\text{ nm}$ monochrome) for night watches, preventing melatonin suppression and preserving crew night vision. | Contrast validation via accessibility analyzer and night mode selector test. |
+| **RNF-USA-04** | **Alarm fatigue mitigation** | Alert states must be differentiated across redundant sensory channels: (1) Caution Level (Yellow): static visual indicator with no intrusive sound; (2) Critical Level (Red): high-priority flashing visual indicator with an acoustic tone in the $800 - 1200\text{ Hz}$ band per **ISO 9703-2** (Aerospace medical alarms). | Audio spectrum inspection and CSS rendering pattern check. |
+| **RNF-USA-05** | **Design tailored for non-physicians** | Every countermeasure screen must be strictly structured into: (1) What is happening anatomically, (2) Severity and estimated time to impact, and (3) Sequential task checklist with executable checkboxes, with a maximum of **7 steps per procedure**. | Readability audit against the Flesch-Kincaid scale in Spanish/English. |
 
-### 4.3 Seguridad biomédica, integridad criptográfica y resiliencia a radiación (Space-Grade Security & Integrity)
+### 4.3 Biomedical Security, Cryptographic Integrity, and Radiation Resilience (Space-Grade Security & Integrity)
 
-| ID | Requisito de Seguridad y Resiliencia | Especificación Técnica Medible | Medida de Verificación |
+| ID | Security & Resilience Requirement | Measurable Technical Specification | Verification Method |
 | --- | --- | --- | --- |
-| **RNF-SEC-01** | **Cifrado en reposo local (Zero-Knowledge)** | Todos los expedientes médicos, bitácoras y registros biomédicos persistidos localmente en el dispositivo deben estar cifrados mediante el estándar **AES-GCM de 256 bits** a través de la API nativa `window.crypto.subtle`, garantizando cumplimiento con HIPAA y la NASA Privacy Act. | Intento de lectura en crudo de la base de datos IndexedDB/localStorage sin llave criptográfica derivada. |
-| **RNF-SEC-02** | **Control de acceso local basado en roles (Local RBAC)** | El sistema debe implementar segregación estricta de privilegios locales: (1) Rol *Astronauta*: acceso a su propia telemetría y ejecución de contramedidas personales; (2) Rol *Crew Medical Officer (CMO)*: visión agregada de la tripulación, anulación de falsos positivos y desbloqueo de protocolos farmacológicos del botiquín. | Pruebas de autorización y escalamiento de privilegios por usuario. |
-| **RNF-SEC-03** | **Resiliencia ante inversión de bits por radiación (SEU / Bit-Flip Protection)** | Debido a que los rayos cósmicos galácticos (GCR) inducen *Single Event Upsets* (SEUs) que voltean bits en memoria y almacenamiento en espacio profundo, cada registro de telemetría debe almacenarse con una suma de verificación criptográfica (**SHA-256**). Si se detecta un hash inválido al leer un registro, el sistema lo aísla y restaura el último estado consistente sin colapsar la aplicación. | Inyección de fallas por corrupción de bytes en el almacenamiento local y verificación de auto-recuperación. |
-| **RNF-SEC-04** | **Inmutabilidad de la bitácora clínica (Append-Only Audit Trail)** | La bitácora de eventos médicos, alarmas disparadas y medicamentos suministrados debe operar bajo un esquema criptográfico encadenado de solo inserción (*Append-Only Ledger*). No existirá ninguna operación de eliminación o edición de eventos pasados. | Pruebas de intentos de mutación sobre registros históricos de la bitácora. |
+| **RNF-SEC-01** | **Local encryption at rest (Zero-Knowledge)** | All medical records, logs, and biomedical entries persisted locally on the device must be encrypted using **256-bit AES-GCM** via the native `window.crypto.subtle` API, ensuring compliance with HIPAA and the NASA Privacy Act. | Attempted raw read of the IndexedDB/localStorage database without the derived cryptographic key. |
+| **RNF-SEC-02** | **Local role-based access control (Local RBAC)** | The system must enforce strict local privilege segregation: (1) *Astronaut* role: access to personal telemetry and execution of personal countermeasures; (2) *Crew Medical Officer (CMO)* role: crew-wide aggregated view, false-positive override, and unlocking of medical kit pharmacological protocols. | Authorization and privilege escalation testing per user role. |
+| **RNF-SEC-03** | **Radiation bit-flip resilience (SEU / Bit-Flip Protection)** | Because galactic cosmic rays (GCR) induce *Single Event Upsets* (SEUs) that flip bits in memory and storage in deep space, every telemetry record must be stored with a cryptographic checksum (**SHA-256**). If an invalid hash is detected when reading a record, the system isolates it and restores the last consistent state without crashing the application. | Fault injection via byte corruption in local storage and verification of self-recovery. |
+| **RNF-SEC-04** | **Clinical log immutability (Append-Only Audit Trail)** | The log of medical events, triggered alarms, and administered medications must operate under an insert-only cryptographically chained scheme (*Append-Only Ledger*). No operation to delete or edit past events shall exist. | Mutation attempt tests on historical log records. |
 
-### 4.4 Interoperabilidad y sincronización en malla local (Offline LAN & Peer-to-Peer Mesh Sync)
+### 4.4 Interoperability and Local Mesh Synchronization (Offline LAN & Peer-to-Peer Mesh Sync)
 
-En el vehículo o hábitat espacial, existen múltiples dispositivos (tabletas individuales de los astronautas, consola médica del CMO en el módulo central y pantallas de telemetría de cabina):
+Inside a spacecraft or space habitat, multiple devices coexist (individual astronaut tablets, the CMO medical console in the core module, and cabin telemetry displays):
 
-| ID | Requisito de Red y Comunicación Multi-Dispositivo | Especificación Técnica Medible | Medida de Verificación |
+| ID | Multi-Device Network & Communication Requirement | Measurable Technical Specification | Verification Method |
 | --- | --- | --- | --- |
-| **RNF-NET-01** | **Sincronización multi-dispositivo sin Internet** | Los nodos de la nave deben ser capaces de comunicarse y sincronizar su estado a través de la red de área local cerrada de la nave (Wi-Fi de a bordo o red Ethernet local aislada) mediante WebSockets locales o canales de datos P2P, con **cero paquetes dirigidos a pasarelas de Internet externas**. | Análisis de captura de paquetes (Wireshark) en la interfaz de red local comprobando ausencia de tráfico WAN. |
-| **RNF-NET-02** | **Tolerancia a particiones y convergencia (CRDTs)** | Si un tripulante registra datos o completa contramedidas en un módulo aislado o esclusa sin cobertura Wi-Fi local (*modo desconectado temporal*), al restablecer la conexión local con los otros nodos, el sistema debe fusionar automáticamente los registros utilizando Tipos de Datos Replicados Libres de Conflicto (**CRDTs / Last-Write-Wins con marcas de tiempo vectoriales**), garantizando **cero pérdida de datos y cero sobrescrituras destructivas**. | Desconexión intencional de un nodo, registro de datos concurrentes y prueba de fusión automática al reconectar. |
-| **RNF-NET-03** | **Descubrimiento autónomo de nodos (Zero-Configuration)** | Los dispositivos clientes deben descubrir automáticamente el nodo de sincronización de la nave en la LAN mediante protocolos de descubrimiento local (mDNS / Bonjour o broadcast local de baliza en puerto configurado), sin requerir que los astronautas configuren direcciones IP manuales. | Conexión de un nuevo dispositivo a la red local y verificación de enlace automático en $< 3\text{ segundos}$. |
-| **RNF-NET-04** | **Formato interoperable de exportación médica** | El sistema debe permitir la exportación consolidada de la bitácora y tendencias en un archivo estandarizado JSON firmado criptográficamente, listo para ser transmitido por el enlace de radio de espacio profundo (*Deep Space Network - DSN*) hacia el Flight Surgeon en Tierra durante las ventanas de comunicación disponibles. | Validación del esquema JSON exportado contra la especificación formal del modelo de datos de la Sección 5.1. |
+| **RNF-NET-01** | **Multi-device synchronization without Internet** | Spacecraft nodes must be able to communicate and synchronize state across the closed onboard local area network (onboard Wi-Fi or isolated local Ethernet) using local WebSockets or P2P data channels, with **zero packets routed to external Internet gateways**. | Packet capture analysis (Wireshark) on the local network interface verifying absence of WAN traffic. |
+| **RNF-NET-02** | **Partition tolerance and convergence (CRDTs)** | If a crew member logs data or completes countermeasures in an isolated module or airlock without local Wi-Fi coverage (*temporary disconnected mode*), upon re-establishing local connectivity with other nodes, the system must automatically merge records using Conflict-Free Replicated Data Types (**CRDTs / Last-Write-Wins with vector timestamps**), guaranteeing **zero data loss and zero destructive overwrites**. | Intentional node disconnection, concurrent data logging, and automatic merge test upon reconnection. |
+| **RNF-NET-03** | **Autonomous node discovery (Zero-Configuration)** | Client devices must automatically discover the spacecraft sync node on the LAN using local discovery protocols (mDNS / Bonjour or local beacon broadcast on a configured port), without requiring astronauts to enter IP addresses manually. | Connecting a new device to the local network and verifying automatic pairing in $< 3\text{ seconds}$. |
+| **RNF-NET-04** | **Interoperable medical export format** | The system must support consolidated export of the log and trends into a standardized, cryptographically signed JSON file ready for transmission over the *Deep Space Network (DSN)* radio link to the Flight Surgeon on Earth during available communication windows. | Validation of the exported JSON schema against the formal data model specification in Section 5.1. |
 
-## 5. Requisitos de datos e interfaces
+## 5. Data and Interface Requirements
 
-### 5.1 Modelo de datos
+### 5.1 Data Model
 
-| Entidad | Campos principales | Notas |
+| Entity | Main Fields | Notes |
 | --- | --- | --- |
-| Tripulante | id, nombre, rol, nivel, XP, racha | 4 tripulantes sintéticos |
-| Medición diaria | día de misión, HR, HRV, PAS, PAD, SpO2, glucosa, temperatura, horas de sueño, ánimo | 1 registro por día, 180 días |
-| Telemetría de hábitat | día, ppCO2, presión, % O2, radiación µSv/h | Compartida por la tripulación |
-| Síntoma | tripulante, día, tipo | Catálogo cerrado de 6 síntomas |
-| Alerta | regla, sistema de órganos, estado, urgencia, valores, hora, reconocida | Generada por el motor |
-| Bitácora | hora, tipo de evento, detalle | Solo agregar, nunca editar |
-| Contramedida | alerta, pasos, pasos completados | Catálogo definido como datos |
+| Crew Member | id, name, role, level, XP, streak | 4 synthetic crew members |
+| Daily Measurement | mission day, HR, HRV, SBP, DBP, SpO2, glucose, temperature, sleep hours, mood | 1 record per day, 180 days |
+| Habitat Telemetry | day, ppCO2, pressure, % O2, radiation µSv/h | Shared across the crew |
+| Symptom | crew member, day, type | Closed catalog of 6 symptoms |
+| Alert | rule, organ system, status, urgency, values, timestamp, acknowledged | Generated by the engine |
+| Log | timestamp, event type, detail | Append-only, never edited |
+| Countermeasure | alert, steps, completed steps | Catalog defined as data |
 
 ### 5.2 Interfaces
 
-| Interfaz | Descripción |
+| Interface | Description |
 | --- | --- |
-| Usuario | Interfaz táctil oscura de alto contraste, con panel, cuerpo, guía, hábitat, hábitos y simulador |
-| Almacenamiento | localStorage / IndexedDB del navegador; sin servidor |
-| Sensores (futura) | Contrato JSON de una medición con los mismos campos del modelo; adaptador reemplazable |
-| Exportación | Archivo JSON de historial y resumen para el Flight Surgeon |
+| User | High-contrast dark touch interface with dashboard, body map, guide, habitat, habits, and simulator |
+| Storage | Browser localStorage / IndexedDB; serverless |
+| Sensors (future) | JSON contract for a measurement with the same model fields; replaceable adapter |
+| Export | JSON history and summary file for the Flight Surgeon |
 
-## 6. Reglas de negocio
+## 6. Business Rules
 
-Los dos documentos de entrada difieren levemente en algunos rangos (por ejemplo, frecuencia cardiaca nominal 55-85 frente a 55-95). Se adopta como autoridad el **documento de dominio** (NASA-STD-3001). Los umbrales marcados con \* no figuran en él y son supuestos razonables, editables como datos (RNF-09).
+The two source input documents differ slightly in some ranges (for example, nominal heart rate 55-85 versus 55-95). The **domain document** (NASA-STD-3001) is adopted as the authority. Thresholds marked with \* do not appear in it and are reasonable assumptions, editable as data (RNF-09).
 
-### 6.1 Umbrales por indicador
+### 6.1 Thresholds by Indicator
 
-| Indicador | Nominal | Precaución | Crítico |
+| Indicator | Nominal | Caution | Critical |
 | --- | --- | --- | --- |
-| Frecuencia cardiaca en reposo (bpm) | 55 a 85 | 86 a 105, o 45 a 54\* | menor que 45 o mayor que 110 |
-| HRV rMSSD (ms) | 35 a 70 | 20 a 34 | menor que 20, sostenido 2 días o más |
-| Presión sistólica (mmHg) | 105 a 125 | 126 a 139 | 140 o más |
-| Presión diastólica (mmHg)\* | 65 a 84 | 85 a 89 | 90 o más |
-| SpO2 (%) | 96 a 100 | 93 a 95 | menor que 93 |
-| ppCO2 de cabina (mmHg) | menor que 2,0 | 2,0 a 3,0 | mayor que 3,0 |
-| Radiación (µSv/h) | 15 a 35 | 36 a 80 | mayor que 100 |
-| Sueño diario (h) | 7,0 a 8,5 | 5,5 a 6,9 | menor que 5,5 durante 2 días o más |
-| Glucemia en ayunas (mg/dL) | 75 a 105 | 106 a 125, o 65 a 74\* | menor que 65 o mayor que 140 |
-| Temperatura (°C)\* | 36,2 a 37,3 | 37,4 a 37,9 | 38,0 o más |
-| Ánimo (1-10)\* | 7 a 10 | 4 a 6 | 1 a 3 |
-| Calcio urinario (mg/día)\* | menor que 250 | 250 a 300 | mayor que 300 |
+| Resting heart rate (bpm) | 55 to 85 | 86 to 105, or 45 to 54\* | less than 45 or greater than 110 |
+| HRV rMSSD (ms) | 35 to 70 | 20 to 34 | less than 20, sustained 2 days or more |
+| Systolic blood pressure (mmHg) | 105 to 125 | 126 to 139 | 140 or higher |
+| Diastolic blood pressure (mmHg)\* | 65 to 84 | 85 to 89 | 90 or higher |
+| SpO2 (%) | 96 to 100 | 93 to 95 | less than 93 |
+| Cabin ppCO2 (mmHg) | less than 2.0 | 2.0 to 3.0 | greater than 3.0 |
+| Radiation (µSv/h) | 15 to 35 | 36 to 80 | greater than 100 |
+| Daily sleep (h) | 7.0 to 8.5 | 5.5 to 6.9 | less than 5.5 for 2 days or more |
+| Fasting blood glucose (mg/dL) | 75 to 105 | 106 to 125, or 65 to 74\* | less than 65 or greater than 140 |
+| Temperature (°C)\* | 36.2 to 37.3 | 37.4 to 37.9 | 38.0 or higher |
+| Mood (1-10)\* | 7 to 10 | 4 to 6 | 1 to 3 |
+| Urinary calcium (mg/day)\* | less than 250 | 250 to 300 | greater than 300 |
 
-Un valor que cae entre dos bandas se clasifica en la más grave. Por ejemplo, la radiación de 81 a 100 µSv/h, que el documento de dominio no asigna, se trata como precaución.
+A value falling between two bands is classified into the more severe band. For example, radiation from 81 to 100 µSv/h, which the domain document does not assign, is treated as caution.
 
-### 6.2 Reglas de correlación
+### 6.2 Correlation Rules
 
-| ID | Condición | Sistema | Resultado |
+| ID | Condition | System | Outcome |
 | --- | --- | --- | --- |
-| R-ENV-01 | ppCO2 mayor que 3,0 y SpO2 menor que 94 | Respiratorio/ambiental | Crítico: fuga o ventilación deficiente |
-| R-ENV-02 | ppCO2 mayor que 3,0 y cefalea reportada | Neuro-ocular | Crítico: hipertensión craneal por CO2 |
-| R-SANS-01 | Sistólica mayor que 135 y visión borrosa | Neuro-ocular | Crítico: alerta precoz SANS |
-| R-SANS-02 | Sistólica mayor que 135 y sueño menor que 6 | Neuro-ocular | Precaución alta: deriva hipertensiva cefálica |
-| R-RAD-01 | Radiación mayor que 100 | Radiación | Crítico: sospecha de SPE, ir al refugio |
-| R-RAD-02 | Radiación mayor que 100 y náuseas | Radiación | Crítico con urgencia de emergencia: protocolo de refugio solar |
-| R-COG-01 | Sueño menor que 5,5 y HRV menor que 25 | Cognitivo | Precaución: fatiga y desincronización circadiana |
-| R-REN-01 | Calcio urinario mayor que 300 y dolor lumbar | Renal | Crítico: sospecha de cálculo renal |
-| R-REN-02 | Calcio urinario entre 250 y 300 | Renal | Precaución: hipercalciuria por pérdida ósea |
-| R-CARD-01 | Mareo al ponerse de pie y frecuencia cardiaca mayor que 100 | Cardiovascular | Precaución alta: intolerancia ortostática |
+| R-ENV-01 | ppCO2 greater than 3.0 and SpO2 less than 94 | Respiratory/environmental | Critical: leak or inadequate ventilation |
+| R-ENV-02 | ppCO2 greater than 3.0 and headache reported | Neuro-ocular | Critical: CO2-induced intracranial hypertension |
+| R-SANS-01 | Systolic greater than 135 and blurred vision | Neuro-ocular | Critical: early SANS alert |
+| R-SANS-02 | Systolic greater than 135 and sleep less than 6 | Neuro-ocular | High caution: cephalic hypertensive drift |
+| R-RAD-01 | Radiation greater than 100 | Radiation | Critical: suspected SPE, proceed to shelter |
+| R-RAD-02 | Radiation greater than 100 and nausea | Radiation | Critical with emergency urgency: solar storm shelter protocol |
+| R-COG-01 | Sleep less than 5.5 and HRV less than 25 | Cognitive | Caution: fatigue and circadian desynchronization |
+| R-REN-01 | Urinary calcium greater than 300 and lower back pain | Renal | Critical: suspected kidney stone |
+| R-REN-02 | Urinary calcium between 250 and 300 | Renal | Caution: bone-loss hypercalciuria |
+| R-CARD-01 | Dizziness upon standing and heart rate greater than 100 | Cardiovascular | High caution: orthostatic intolerance |
 
-### 6.3 Reglas de deriva
+### 6.3 Drift Rules
 
-- **D-01:** pendiente de la ventana de 7 días proyectada 7 días hacia adelante cruza el umbral de precaución mientras el valor actual es nominal.
-- **D-02:** valor con z de 2,5 o más respecto a la línea base personal de los primeros 14 días.
-- **D-03:** sueño con pendiente negativa y presión diastólica con pendiente positiva en la misma ventana.
+- **D-01:** 7-day window slope projected 7 days forward crosses the caution threshold while the current value is nominal.
+- **D-02:** value with z of 2.5 or greater relative to the personal baseline of the first 14 days.
+- **D-03:** sleep with a negative slope and diastolic pressure with a positive slope within the same window.
 
-## 7. Escenarios y casos de uso
+## 7. Scenarios and Use Cases
 
-| ID | Caso de uso | Actor | Flujo principal | Resultado esperado |
+| ID | Use Case | Actor | Main Flow | Expected Result |
 | --- | --- | --- | --- | --- |
-| CU-01 | Registro matutino | Astronauta | Abre el panel, ingresa signos, sueño y ánimo, confirma | Semáforo actualizado y XP otorgado |
-| CU-02 | Revisar estado anatómico | Astronauta | Toca una región del cuerpo | Ve indicadores, tendencia y acciones de esa región |
-| CU-03 | Atender alerta roja | CMO | Abre la alerta, lee qué ocurre, marca cada paso | Protocolo completado y registrado en bitácora |
-| CU-04 | Alerta precoz de deriva | Astronauta | Recibe aviso amarillo por tendencia | Corrige hábitos antes de un síntoma incapacitante |
-| CU-05 | Tormenta solar (SPE) | Tripulación | Radiación supera 100 µSv/h | Guía hacia el refugio y seguimiento de síntomas |
-| CU-06 | SANS agudo | CMO | Reporta visión borrosa con presión elevada | Prueba visual y sesión LBNP guiadas |
-| CU-07 | Microfuga de CO2 | Tripulación | ppCO2 sube y SpO2 baja | Revisión de filtros LiOH/CDRA y ventilación |
-| CU-08 | Informe a Tierra | CMO | Exporta el resumen asíncrono | Archivo con tendencias y eventos para el Flight Surgeon |
-| CU-09 | Demostración ante jurado | Jurado | Activa un escenario del simulador | La interfaz cambia de estado y guía la respuesta |
+| CU-01 | Morning check-in | Astronaut | Opens dashboard, enters vitals, sleep, and mood, confirms | Status indicator updated and XP awarded |
+| CU-02 | Review anatomical status | Astronaut | Taps a body region | Views indicators, trend, and actions for that region |
+| CU-03 | Handle red alert | CMO | Opens alert, reads what is happening, checks off each step | Protocol completed and recorded in log |
+| CU-04 | Early drift alert | Astronaut | Receives yellow warning due to trend | Corrects habits before an incapacitating symptom |
+| CU-05 | Solar storm (SPE) | Crew | Radiation exceeds 100 µSv/h | Guidance to storm shelter and symptom tracking |
+| CU-06 | Acute SANS | CMO | Reports blurred vision with elevated pressure | Guided vision test and LBNP session |
+| CU-07 | CO2 micro-leak | Crew | ppCO2 rises and SpO2 drops | LiOH/CDRA scrubber and ventilation inspection |
+| CU-08 | Report to Earth | CMO | Exports asynchronous summary | File with trends and events for the Flight Surgeon |
+| CU-09 | Jury demonstration | Judge | Activates a simulator scenario | Interface changes state and guides the response |
 
-## 8. Trazabilidad y verificación
+## 8. Traceability and Verification
 
-| Criterio de aceptación | Requisitos que lo cubren | Verificación |
+| Acceptance Criterion | Covered Requirements | Verification |
 | --- | --- | --- |
-| AC-01 Autonomía diagnóstica local | RF-ING-01, RF-EVA-01, RF-EVA-02, RF-EVA-05, RF-EVA-07, RF-DSH-01, RNF-POW-01, RNF-POW-04, RNF-PER-01, RNF-SEC-01 | Sin red externa, cada tripulante recibe estado Nominal, Precaución o Crítico en menos de 50 ms; pruebas de frontera en cada umbral; datos cifrados localmente. |
-| AC-02 Detección de deriva precoz | RF-ING-03, RF-DER-01 a RF-DER-04, RF-DSH-02, RNF-PER-01 | En el dataset de 180 días, la alerta precoz por Z-score modificado o regresión se emite antes de que el indicador cruce el umbral crítico. |
-| AC-03 Trazabilidad anatómica y usabilidad | RF-EVA-03, RF-EVA-06, RF-ANA-01 a RF-ANA-04, RF-ING-04, RF-REG-01, RNF-USA-01 a RNF-USA-05 | Cada alerta mapea a su sistema de órganos y región táctil ($\ge 48\text{ px}$); modo espectral nocturno validado; bitácora inmutable con SHA-256. |
-| AC-04 Guía de contramedidas | RF-GUI-01 a RF-GUI-04, RF-GAM-01, RF-GAM-02, RNF-USA-02, RNF-USA-05 | Cada desviación ofrece contramedidas en 3 toques o menos con recursos a bordo; máximo 7 pasos secuenciales verificables. |
-| AC-05 Resiliencia ante eventos extremos y sync | RF-ING-02, RF-EVA-04, RF-DSH-04, RF-SIM-01 a RF-SIM-05, RNF-SEC-03, RNF-NET-01 a RNF-NET-03 | Los escenarios A a D activan el protocolo en $< 50\text{ ms}$; auto-recuperación ante bit-flips; sincronización P2P multi-dispositivo sin Internet en LAN de la nave. |
+| AC-01 Local diagnostic autonomy | RF-ING-01, RF-EVA-01, RF-EVA-02, RF-EVA-05, RF-EVA-07, RF-DSH-01, RNF-POW-01, RNF-POW-04, RNF-PER-01, RNF-SEC-01 | With no external network, each crew member receives Nominal, Caution, or Critical status in under 50 ms; boundary tests at every threshold; locally encrypted data. |
+| AC-02 Early drift detection | RF-ING-03, RF-DER-01 to RF-DER-04, RF-DSH-02, RNF-PER-01 | Across the 180-day dataset, the early warning via modified Z-score or regression is issued before the indicator crosses the critical threshold. |
+| AC-03 Anatomical traceability & usability | RF-EVA-03, RF-EVA-06, RF-ANA-01 to RF-ANA-04, RF-ING-04, RF-REG-01, RNF-USA-01 to RNF-USA-05 | Each alert maps to its organ system and touch target ($\ge 48\text{ px}$); night spectral mode validated; immutable log with SHA-256. |
+| AC-04 Countermeasure guidance | RF-GUI-01 to RF-GUI-04, RF-GAM-01, RF-GAM-02, RNF-USA-02, RNF-USA-05 | Every deviation provides countermeasures in 3 taps or fewer using onboard resources; maximum 7 sequential verifiable steps. |
+| AC-05 Extreme-event resilience & sync | RF-ING-02, RF-EVA-04, RF-DSH-04, RF-SIM-01 to RF-SIM-05, RNF-SEC-03, RNF-NET-01 to RNF-NET-03 | Scenarios A through D trigger the protocol in $< 50\text{ ms}$; self-recovery from bit-flips; multi-device P2P sync without Internet on the spacecraft LAN. |
 
-**Plan de pruebas.** (1) Pruebas unitarias de cada umbral en el valor exacto, uno por debajo y uno por encima. (2) Pruebas de las reglas R-ENV, R-SANS, R-RAD, R-COG, R-REN y R-CARD. (3) Reproducción del dataset de 180 días verificando D-01 a D-03. (4) Ejecución de los cuatro escenarios del simulador. (5) Prueba sin red y recarga con persistencia.
+**Test Plan.** (1) Unit tests for each threshold at the exact value, one below, and one above. (2) Tests for rules R-ENV, R-SANS, R-RAD, R-COG, R-REN, and R-CARD. (3) Replay of the 180-day dataset verifying D-01 through D-03. (4) Execution of all four simulator scenarios. (5) Offline test and reload with persistence.

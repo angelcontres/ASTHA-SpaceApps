@@ -1,126 +1,126 @@
-# 🚨 ÉPICA 3: Protocolos de Contramedidas y Manejo de Crisis Espaciales
-**Módulo:** Soporte a la Decisión y Procedimientos Médicos | **Estándar:** NASA Flight Procedures / NASA-STD-3001
+# 🚨 EPIC 3: Countermeasure Protocols and Space Crisis Management
+**Module:** Decision Support and Medical Procedures | **Standard:** NASA Flight Procedures / NASA-STD-3001
 
 ---
 
-## 📌 HU-09: Ejecución de Protocolos Médicos Asistidos Paso a Paso (Checklists No Médicos)
+## 📌 HU-09: Assisted Step-by-Step Medical Protocol Execution (Non-Physician Checklists)
 
 * **ID:** `HU-09`
-* **Épica:** Épica 3 - Protocolos de Contramedidas y Manejo de Crisis
-* **Prioridad MoSCoW:** **Must Have** (Supervivencia de Tripulación)
-* **Puntos de Historia (Story Points):** 5 SP
-* **Requisitos SRS Trazados:** `RF-GUI-01..04`, `RNF-USA-01`, `RNF-USA-04`
-* **Fuentes Oficiales:** NASA Flight Procedures Handbook / Astronaut Cognitive Safety
+* **Epic:** Epic 3 - Countermeasure Protocols and Crisis Management
+* **MoSCoW Priority:** **Must Have** (Crew Survival)
+* **Story Points:** 5 SP
+* **Traced SRS Requirements:** `RF-GUI-01..04`, `RNF-USA-01`, `RNF-USA-04`
+* **Official Sources:** NASA Flight Procedures Handbook / Astronaut Cognitive Safety
 
-### 📖 Narrativa de Usuario:
-> **Como** Astronauta sin estudios médicos,  
-> **Quiero** que cuando ocurra una alerta clínica el sistema me guíe a través de una lista de verificación secuencial e interactiva con casillas de confirmación (checklist estilo aviación),  
-> **Para** aplicar el tratamiento correcto sin titubear, sin cometer errores de dosificación y sin entrar en pánico en microgravedad.
+### 📖 User Story:
+> **As an** Astronaut without medical training,  
+> **I want** the system to guide me through a sequential, interactive checklist with confirmation boxes (aviation-style checklist) whenever a clinical alert occurs,  
+> **So that** I can administer the correct treatment without hesitation, dosing errors, or panic in microgravity.
 
-### 🧪 Criterios de Aceptación (Gherkin BDD):
+### 🧪 Acceptance Criteria (Gherkin BDD):
 
-#### Escenario 1: Estructura clara en 3 bloques de una contramedida
-* **Dado que** se dispara cualquier alerta médica de prioridad Media o Alta,
-* **Cuando** el astronauta visualiza la tarjeta de protocolo de contramedida,
-* **Entonces** debe observar obligatoriamente tres secciones:
-  1. **Qué ocurre:** Explicación fisiológica directa en español claro y sin jerga médica críptica.
-  2. **Severidad y Urgencia:** Nivel de prioridad y tiempo estimado de acción.
-  3. **Acciones:** Pasos numerados secuenciales con casillas de verificación interactivas (`checkbox`).
+#### Scenario 1: Clear 3-block countermeasure structure
+* **Given** any Medium- or High-priority medical alert is triggered,
+* **When** the astronaut views the countermeasure protocol card,
+* **Then** they must see three mandatory sections:
+  1. **What is happening:** Direct physiological explanation in plain language without cryptic medical jargon.
+  2. **Severity and Urgency:** Priority level and estimated time-to-action.
+  3. **Actions:** Sequential numbered steps with interactive confirmation checkboxes (`checkbox`).
 
-#### Escenario 2: Restricción exclusiva a recursos disponibles en nave
-* **Dado que** la nave espacial viaja a Marte con un inventario médico estrictamente delimitado (sin quirófano ni tomógrafo),
-* **Cuando** el motor de contramedidas genera la lista de acciones,
-* **Entonces** únicamente debe recomendar dispositivos y fármacos comprobados a bordo (Pantalones LBNP, Máquina ARED, Botiquín de Emergencia, Rejilla de Amsler, Filtros LiOH).
+#### Scenario 2: Strict restriction to onboard resources
+* **Given** the spacecraft is en route to Mars with a strictly bounded medical inventory (no operating room or CT scanner),
+* **When** the countermeasure engine generates the action list,
+* **Then** it must recommend only verified onboard devices and pharmaceuticals (LBNP Trousers, ARED Machine, Emergency Medical Kit, Amsler Grid, LiOH Canisters).
 
 ---
 
-## 📌 HU-10: Protocolo Automático de Evacuación ante Tormentas Solares (SPE)
+## 📌 HU-10: Automated Solar Particle Event (SPE) Evacuation Protocol
 
 * **ID:** `HU-10`
-* **Épica:** Épica 3 - Protocolos de Contramedidas y Manejo de Crisis
-* **Prioridad MoSCoW:** **Must Have** (Riesgo de Vida Inmediato)
-* **Puntos de Historia (Story Points):** 8 SP
-* **Requisitos SRS Trazados:** `RF-EVA-04`, `RF-GUI-03`, `RNF-USA-04`
-* **Fuentes Oficiales:** NASA Space Permissible Exposure Limits (SPELs) / CSA CANS Project
+* **Epic:** Epic 3 - Countermeasure Protocols and Crisis Management
+* **MoSCoW Priority:** **Must Have** (Immediate Life Safety Risk)
+* **Story Points:** 8 SP
+* **Traced SRS Requirements:** `RF-EVA-04`, `RF-GUI-03`, `RNF-USA-04`
+* **Official Sources:** NASA Space Permissible Exposure Limits (SPELs) / CSA CANS Project
 
-### 📖 Narrativa de Usuario:
-> **Como** Tripulación de Vuelo en Espacio Profundo,  
-> **Quiero** que cuando el dosímetro CANS detecte un evento de partículas solares (SPE) con radiación superior a $100\ \mu\text{Sv/h}$, el sistema active de inmediato el protocolo de emergencia máxima,  
-> **Para** protegerme dentro del módulo central blindado antes de absorber una dosis letal o desarrollar síndrome agudo por radiación (ARS).
+### 📖 User Story:
+> **As a** Deep-Space Flight Crew,  
+> **I want** the system to immediately activate the maximum-priority emergency protocol whenever the CANS dosimeter detects a Solar Particle Event (SPE) with radiation exceeding $100\ \mu\text{Sv/h}$,  
+> **So that** we can take shelter inside the shielded central module before absorbing a lethal dose or developing Acute Radiation Syndrome (ARS).
 
-### 🧪 Criterios de Aceptación (Gherkin BDD):
+### 🧪 Acceptance Criteria (Gherkin BDD):
 
-#### Escenario 1: Activación de Código Rojo SPE
-* **Dado que** el dosímetro de neutrones y partículas CANS detecta una tasa de dosis de $\text{Radiación} = 184.2\ \mu\text{Sv/h}$,
-* **Cuando** el algoritmo evalúa la telemetría ambiental,
-* **Entonces** la interfaz debe encender la alarma sonora táctica y cambiar el encabezado a **"CÓDIGO ROJO - EMERGENCIA SPE"**,
-* **Y** reemplazar la lista de tareas activas por el checklist crítico de 3 pasos:
-  * Paso 1: Evacuar de inmediato al módulo central blindado (*Storm Shelter*).
-  * Paso 2: Administrar cóctel radioprotector antioxidante oral del Botiquín Bravo.
-  * Paso 3: Fijar dosímetros personales pasivos en el mamparo interior blindado.
+#### Scenario 1: Code Red SPE activation
+* **Given** the CANS neutron and particle dosimeter detects a dose rate of $\text{Radiation} = 184.2\ \mu\text{Sv/h}$,
+* **When** the algorithm evaluates the environmental telemetry,
+* **Then** the interface must sound the tactical audio alarm and switch the header to **"CODE RED - SPE EMERGENCY"**,
+* **And** replace the active task list with the critical 3-step checklist:
+  * Step 1: Evacuate immediately to the shielded central module (*Storm Shelter*).
+  * Step 2: Administer oral antioxidant radioprotectant cocktail from Medical Kit Bravo.
+  * Step 3: Mount passive personal dosimeters on the shielded interior bulkhead.
 
-#### Escenario 2: Cancelación y verificación post-tormenta
-* **Dado que** la tormenta solar ha declinado y la tasa de dosis vuelve a niveles de fondo nominales ($< 35\ \mu\text{Sv/h}$),
-* **Cuando** el Oficial de Vuelo confirma la estabilidad ambiental durante más de 60 minutos,
-* **Entonces** el sistema debe calcular la dosis acumulada total absorbida por cada tripulante durante el evento y registrarla en el log médico inmutable.
+#### Scenario 2: Stand-down and post-storm verification
+* **Given** the solar storm has subsided and the dose rate returns to nominal background levels ($< 35\ \mu\text{Sv/h}$),
+* **When** the Flight Officer confirms environmental stability for more than 60 minutes,
+* **Then** the system must compute the total cumulative dose absorbed by each crewmember during the event and record it in the immutable medical log.
 
 ---
 
-## 📌 HU-11: Manejo de Hipertensión Cefálica y Edema Ocular con Pantalones LBNP
+## 📌 HU-11: Management of Cephalad Hypertension and Ocular Edema with LBNP Trousers
 
 * **ID:** `HU-11`
-* **Épica:** Épica 3 - Protocolos de Contramedidas y Manejo de Crisis
-* **Prioridad MoSCoW:** **Must Have** (Contramedida SANS)
-* **Puntos de Historia (Story Points):** 5 SP
-* **Requisitos SRS Trazados:** `RF-GUI-01`, `RF-GUI-02`, `RF-ANA-02`
-* **Fuentes Oficiales:** NASA Lower Body Negative Pressure (LBNP) Operational Protocol
+* **Epic:** Epic 3 - Countermeasure Protocols and Crisis Management
+* **MoSCoW Priority:** **Must Have** (SANS Countermeasure)
+* **Story Points:** 5 SP
+* **Traced SRS Requirements:** `RF-GUI-01`, `RF-GUI-02`, `RF-ANA-02`
+* **Official Sources:** NASA Lower Body Negative Pressure (LBNP) Operational Protocol
 
-### 📖 Narrativa de Usuario:
-> **Como** Oficial Médico de la Tripulación (CMO),  
-> **Quiero** que el sistema asista la colocación, presurización y duración del dispositivo de presión negativa en extremidades inferiores (LBNP) ante episodios de SANS o sobrepresión intracraneal,  
-> **Para** redistribuir los fluidos corporales hacia las piernas y descomprimir las venas cerebrales y la papila óptica.
+### 📖 User Story:
+> **As a** Crew Medical Officer (CMO),  
+> **I want** the system to guide the donning, pressurization, and duration of the Lower Body Negative Pressure (LBNP) device during episodes of SANS or intracranial overpressure,  
+> **So that** bodily fluids are redistributed toward the lower extremities, decompressing the cerebral veins and the optic disc.
 
-### 🧪 Criterios de Aceptación (Gherkin BDD):
+### 🧪 Acceptance Criteria (Gherkin BDD):
 
-#### Escenario 1: Protocolo estándar LBNP guiado
-* **Dado que** un tripulante presenta $\text{PAS} \ge 140\text{ mmHg}$ y reporte de visión borrosa,
-* **Cuando** se activa el checklist de SANS en pantalla,
-* **Entonces** el sistema debe indicar con precisión:
-  * "Colocar y presurizar dispositivo LBNP a $-35\text{ mmHg}$ por $60\text{ minutos}$",
-  * "Realizar examen visual en pantalla táctil con Rejilla de Amsler al minuto 0 y al minuto 60",
-  * "Restringir la ingesta dietética de sodio a $< 2.0\text{ g/día}$ para reducir la retención cefálica de líquido".
+#### Scenario 1: Guided standard LBNP protocol
+* **Given** a crewmember presents $\text{SBP} \ge 140\text{ mmHg}$ and reports blurred vision,
+* **When** the SANS checklist activates on screen,
+* **Then** the system must specify precisely:
+  * "Don and pressurize LBNP device to $-35\text{ mmHg}$ for $60\text{ minutes}$",
+  * "Perform touchscreen visual test with Amsler Grid at minute 0 and minute 60",
+  * "Restrict dietary sodium intake to $< 2.0\text{ g/day}$ to reduce cephalad fluid retention".
 
-#### Escenario 2: Monitoreo hemodinámico de seguridad durante LBNP
-* **Dado que** la presión negativa en piernas puede inducir hipotensión o síncope si la presión arterial cae demasiado rápido,
-* **Cuando** el sensor de presión arterial continua registra una caída de presión sistólica por debajo de $90\text{ mmHg}$ durante la sesión de LBNP,
-* **Entonces** el sistema debe emitir una alarma de aborto inmediato: "Despresurizar LBNP lentamente y colocar al astronauta en posición horizontal neutra".
+#### Scenario 2: Hemodynamic safety monitoring during LBNP
+* **Given** lower-body negative pressure can induce hypotension or syncope if arterial blood pressure drops too rapidly,
+* **When** the continuous blood pressure sensor records a drop in systolic pressure below $90\text{ mmHg}$ during the LBNP session,
+* **Then** the system must trigger an immediate abort alarm: "Depressurize LBNP slowly and place astronaut in a neutral horizontal position".
 
 ---
 
-## 📌 HU-12: Adherencia a Ejercicio ARED y Prevención de Cálculos Renales (Litiasis)
+## 📌 HU-12: ARED Exercise Adherence and Renal Stone (Lithiasis) Prevention
 
 * **ID:** `HU-12`
-* **Épica:** Épica 3 - Protocolos de Contramedidas y Manejo de Crisis
-* **Prioridad MoSCoW:** **Should Have** (Mantenimiento de Salud Crónico)
-* **Puntos de Historia (Story Points):** 5 SP
-* **Requisitos SRS Trazados:** `RF-EVA-03`, `RF-GUI-03`, `RF-GAM-01`
-* **Fuentes Oficiales:** NASA HRP Bone Loss Risk / Renal Stone Prevention Guidelines
+* **Epic:** Epic 3 - Countermeasure Protocols and Crisis Management
+* **MoSCoW Priority:** **Should Have** (Chronic Health Maintenance)
+* **Story Points:** 5 SP
+* **Traced SRS Requirements:** `RF-EVA-03`, `RF-GUI-03`, `RF-GAM-01`
+* **Official Sources:** NASA HRP Bone Loss Risk / Renal Stone Prevention Guidelines
 
-### 📖 Narrativa de Usuario:
-> **Como** Astronauta en misión de larga duración,  
-> **Quiero** registrar y visualizar mi cumplimiento diario de ejercicio resistivo (ARED) y mi balance hídrico,  
-> **Para** evitar la pérdida acelerada de masa ósea ($1.0\% - 1.5\%$ mensual) y prevenir la formación de cálculos renales de oxalato de calcio en el espacio.
+### 📖 User Story:
+> **As an** Astronaut on a long-duration mission,  
+> **I want** to log and track my daily resistive exercise compliance (ARED) and fluid balance,  
+> **So that** I can prevent accelerated bone mineral loss ($1.0\% - 1.5\%$ per month) and prevent calcium oxalate kidney stone formation in space.
 
-### 🧪 Criterios de Aceptación (Gherkin BDD):
+### 🧪 Acceptance Criteria (Gherkin BDD):
 
-#### Escenario 1: Monitoreo de sesión diaria de ARED
-* **Dado que** el estándar médico de NASA exige un mínimo de 150 minutos diarios de ejercicio físico y de carga axial,
-* **Cuando** el tripulante finaliza su rutina en la máquina ARED y confirma el registro,
-* **Entonces** la tarjeta musculoesquelética del mapa anatómico debe actualizarse a estado **Nominal (Verde)**,
-* **Y** sumar puntos a su barra de adherencia de vuelo para incentivar el cumplimiento de la rutina.
+#### Scenario 1: Daily ARED session tracking
+* **Given** NASA medical standards require a minimum of 150 minutes per day of physical and axial-loading exercise,
+* **When** the crewmember completes their routine on the ARED machine and confirms the log entry,
+* **Then** the musculoskeletal card on the anatomical map must update to **Nominal (Green)** status,
+* **And** add points to their flight adherence bar to encourage routine compliance.
 
-#### Escenario 2: Alerta preventiva de litiasis renal por baja hidratación
-* **Dado que** la microgravedad incrementa la excreción urinaria de calcio por reabsorción ósea,
-* **Cuando** el registro de ingesta hídrica del astronauta es menor a $2.5\text{ L/día}$ durante más de 36 horas,
-* **Entonces** la región lumbar del mapa anatómico debe tornarse **Amarilla (Precaución)**,
-* **Y** el sistema debe recomendar: "Ingerir 500 mL de agua con sales de citrato de potasio para alcalinizar la orina y prevenir precipitación de cristales de calcio".
+#### Scenario 2: Preventive renal lithiasis alert for low hydration
+* **Given** microgravity increases urinary calcium excretion due to bone resorption,
+* **When** the astronaut's logged fluid intake is less than $2.5\text{ L/day}$ for more than 36 hours,
+* **Then** the lumbar region on the anatomical map must turn **Yellow (Caution)**,
+* **And** the system must recommend: "Ingest 500 mL of water with potassium citrate salts to alkalinize urine and prevent calcium crystal precipitation".

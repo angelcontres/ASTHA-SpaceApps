@@ -1,145 +1,145 @@
-# 🚨 Paquete 3: Contramedidas y Emergencias de Vuelo
-**Módulo:** Gestión de Crisis y Guía Procedimental | **Estándar:** NASA Flight Procedures / NASA SPELs
+# 🚨 Package 3: Countermeasures and In-Flight Emergencies
+**Module:** Crisis Management and Procedural Guidance | **Standard:** NASA Flight Procedures / NASA SPELs
 
 ---
 
-## 📋 Caso de Uso: CU-07
-### Nombre: Ejecución de Checklists Médicos Asistidos Paso a Paso
+## 📋 Use Case: CU-07
+### Title: Step-by-Step Assisted Execution of Medical Checklists
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-07` |
-| **Actor Primario** | Astronauta en Misión (No Médico) |
-| **Actores Secundarios** | Oficial Médico (CMO) |
-| **Nivel** | Nivel de Usuario / Tarea de Intervención |
-| **Requisitos SRS** | `RF-GUI-01..04`, `RNF-USA-01`, `RNF-USA-04` |
-| **Historias Trazadas** | `HU-09`, `HU-12` |
+| **Identifier** | `CU-07` |
+| **Primary Actor** | Mission Astronaut (Non-Medical) |
+| **Secondary Actors** | Crew Medical Officer (CMO) |
+| **Level** | User Level / Intervention Task |
+| **SRS Requirements** | `RF-GUI-01..04`, `RNF-USA-01`, `RNF-USA-04` |
+| **Traced Stories** | `HU-09`, `HU-12` |
 
-### 1. Descripción Breve:
-Cuando se dispara cualquier evento médico o ambiental, ASTHA transforma la complejidad clínica en un checklist secuencial interactivo de un máximo de 4 pasos accionables. El tripulante marca cada casilla conforme completa la tarea, registrando el avance en tiempo real en la memoria de la nave.
+### 1. Brief Description:
+Whenever any medical or environmental event triggers, ASTHA transforms clinical complexity into an interactive sequential checklist of at most 4 actionable steps. The crew member checks off each item as the task is completed, recording progress in real time in spacecraft memory.
 
-### 2. Precondiciones:
-1. Una regla de decisión clínica ha pasado a estado Precaución o Crítico, o el usuario ha seleccionado manualmente un protocolo de contramedida.
-2. La pantalla muestra el contenedor de checklist en el panel lateral derecho.
+### 2. Preconditions:
+1. A clinical decision rule has transitioned to Caution or Critical state, or the user has manually selected a countermeasure protocol.
+2. The screen displays the checklist container in the right side panel.
 
-### 3. Disparador (Trigger):
-Aparición de una alerta médica en pantalla o selección de una guía por el usuario.
+### 3. Trigger:
+Appearance of an on-screen medical alert or user selection of a guide.
 
-### 4. Flujo Principal de Eventos:
-1. El sistema despliega el título del protocolo con el nivel de severidad en un badge distintivo (ej. "ALERTA SANS - ALTA PRIORIDAD").
-2. El sistema muestra la justificación en 2 líneas de texto plano ("Qué ocurre").
-3. El sistema lista los pasos operativos con casillas interactivas desmarcadas:
-   * `[ ] Paso 1: Colocar y presurizar pantalones LBNP a -35 mmHg por 60 min.`
-   * `[ ] Paso 2: Realizar examen de agudeza visual en pantalla táctil (Rejilla de Amsler).`
-   * `[ ] Paso 3: Restringir ingesta de sodio a menos de 2.0 g/día en ración nutricional.`
-4. El astronauta completa físicamente el primer paso en el módulo médico y toca la casilla del Paso 1.
-5. El sistema cambia el texto del paso a tachado suave con color verde (#10b981) y almacena la marca de tiempo MET del cumplimiento.
-6. El astronauta completa y marca el Paso 2 y el Paso 3.
-7. Al marcarse la totalidad de los pasos del checklist, el sistema emite una confirmación: "Protocolo Completado Exitosamente".
-8. El sistema agenda una reevaluación hemodinámica automática a los 30 minutos para confirmar la efectividad del tratamiento.
+### 4. Main Flow of Events:
+1. The system displays the protocol title with the severity level in a distinct badge (e.g., "SANS ALERT - HIGH PRIORITY").
+2. The system displays a 2-line plain-language rationale ("What is happening").
+3. The system lists operational steps with unchecked interactive checkboxes:
+   * `[ ] Step 1: Don and pressurize LBNP suit to -35 mmHg for 60 min.`
+   * `[ ] Step 2: Perform visual acuity exam on touchscreen (Amsler Grid).`
+   * `[ ] Step 3: Restrict sodium intake to less than 2.0 g/day in nutritional ration.`
+4. The astronaut physically completes the first step in the medical module and taps the Step 1 checkbox.
+5. The system formats the step text with a soft strikethrough in green (#10b981) and stores the MET completion timestamp.
+6. The astronaut completes and checks off Step 2 and Step 3.
+7. Once all checklist steps are checked, the system issues a confirmation: "Protocol Successfully Completed".
+8. The system schedules an automatic hemodynamic reassessment after 30 minutes to confirm treatment effectiveness.
 
-### 5. Flujos Alternativos:
-* **FA-01: Incapacidad de completar un paso por falta de insumos:**
-  1. Si un recurso físico no está operativo (ej. falla en la bomba de vacío del LBNP), el astronauta mantiene presionado el paso y selecciona "Recurso No Disponible".
-  2. El motor CDSS recalcula de inmediato un procedimiento alternativo de respaldo (ej. "Elevar tronco a 30° respecto al eje cefálico y aplicar bandas de compresión venosa elásticas").
+### 5. Alternative Flows:
+* **FA-01: Inability to complete a step due to missing supplies:**
+  1. If a physical resource is non-operational (e.g., LBNP vacuum pump failure), the astronaut long-presses the step and selects "Resource Unavailable".
+  2. The CDSS engine immediately recalculates a backup alternative procedure (e.g., "Elevate torso 30° relative to cephalic axis and apply elastic venous compression bands").
 
-### 6. Flujos de Excepción:
-* **FE-01: Omisión accidental o cierre de la aplicación durante el checklist:**
-  1. Si la tableta se apaga o se cierra la aplicación mientras se ejecuta un checklist activo, el estado de las casillas ya completadas permanece guardado en la base de datos flash SQLite. Al reiniciar, la aplicación restaura la pantalla exactamente en el paso pendiente.
+### 6. Exception Flows:
+* **FE-01: Accidental omission or application closure during checklist:**
+  1. If the tablet powers off or the app closes while an active checklist is running, the state of completed checkboxes remains saved in the SQLite flash database. Upon restart, the app restores the screen directly to the pending step.
 
-### 7. Postcondiciones:
-* **Éxito:** La contramedida médica se ejecuta de forma rigurosa y verificable, minimizando los errores por distracción o estrés.
+### 7. Postconditions:
+* **Success:** The medical countermeasure is executed rigorously and verifiably, minimizing errors caused by distraction or stress.
 
 ---
 
-## 📋 Caso de Uso: CU-08
-### Nombre: Activación y Gestión de Emergencia de Tormenta Solar (SPE)
+## 📋 Use Case: CU-08
+### Title: Solar Particle Event (SPE) Emergency Activation and Management
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-08` |
-| **Actor Primario** | Dosímetro CANS de la CSA (Hardware) / Comandante de Misión |
-| **Actores Secundarios** | Toda la Tripulación de Vuelo |
-| **Nivel** | Nivel de Supervivencia de Misión (Código Rojo) |
-| **Requisitos SRS** | `RF-EVA-04`, `RF-GUI-03`, `RNF-USA-04` |
-| **Historias Trazadas** | `HU-10` |
+| **Identifier** | `CU-08` |
+| **Primary Actor** | CSA CANS Dosimeter (Hardware) / Mission Commander |
+| **Secondary Actors** | Entire Flight Crew |
+| **Level** | Mission Survival Level (Code Red) |
+| **SRS Requirements** | `RF-EVA-04`, `RF-GUI-03`, `RNF-USA-04` |
+| **Traced Stories** | `HU-10` |
 
-### 1. Descripción Breve:
-Ante la detección de un flujo masivo de protones y neutrones secundarios que supera los límites permisibles de la NASA ($> 100\ \mu\text{Sv/h}$), el sistema activa la alarma de cabina de Máxima Prioridad, coordina la evacuación hacia el módulo central blindado (*Storm Shelter*), gestiona el consumo de fármacos radioprotectores y computa la dosis biológica acumulada.
+### 1. Brief Description:
+Upon detecting a massive flux of protons and secondary neutrons exceeding NASA permissible limits ($> 100\ \mu\text{Sv/h}$), the system activates the highest-priority cabin alarm, coordinates evacuation to the central shielded module (*Storm Shelter*), manages radioprotective drug intake, and computes cumulative biological dose.
 
-### 2. Precondiciones:
-1. El espectrómetro de neutrones CANS está en operación en el exterior e interior del casco de la nave.
-2. La nave se encuentra en espacio interplanetario fuera de la magnetosfera terrestre.
+### 2. Preconditions:
+1. The CANS neutron spectrometer is operating on the exterior and interior of the spacecraft hull.
+2. The spacecraft is in interplanetary space outside Earth's magnetosphere.
 
-### 3. Disparador (Trigger):
-La tasa de dosis de radiación ionizante detectada por el CANS supera los $100\ \mu\text{Sv/h}$ ($\text{Tasa} > 100\ \mu\text{Sv/h}$).
+### 3. Trigger:
+The ionizing radiation dose rate detected by CANS exceeds $100\ \mu\text{Sv/h}$ ($\text{Rate} > 100\ \mu\text{Sv/h}$).
 
-### 4. Flujo Principal de Eventos:
-1. El dosímetro CANS detecta un flujo repentino de partículas solares alcanzando $184.2\ \mu\text{Sv/h}$.
-2. El sistema ASTHA evalúa la tasa de incremento ($dD/dt$) y clasifica el evento como **"Emergencia SPE: Tormenta Solar de Partículas de Alta Energía"**.
-3. El sistema activa una alarma acústica táctica distintiva de tono alto intermitente.
-4. Todas las pantallas de la nave se transforman en modo de evacuación de alto contraste: fondo oscuro con bordes rojos pulsantes.
-5. El sistema despliega el procedimiento inmediato de 3 acciones prioritarias:
-   * **Acción 1:** "Evacuar tripulación al módulo central blindado (Storm Shelter) en menos de 5 minutos".
-   * **Acción 2:** "Administrar cóctel radioprotector antioxidante oral (Botiquín Bravo)".
-   * **Acción 3:** "Fijar dosímetros pasivos CANS personales en el mamparo interior".
-6. Los astronautas ingresan al refugio blindado y el Comandante confirma el repliegue en la pantalla principal.
-7. El sistema inicia la integración temporal de la dosis absorbida en tiempo real ($\int \dot{D} \, dt$) por cada tripulante.
+### 4. Main Flow of Events:
+1. The CANS dosimeter detects a sudden solar particle flux reaching $184.2\ \mu\text{Sv/h}$.
+2. The ASTHA system evaluates the rate of increase ($dD/dt$) and classifies the event as **"SPE Emergency: High-Energy Solar Particle Storm"**.
+3. The system activates a distinctive intermittent high-tone tactical acoustic alarm.
+4. All spacecraft displays switch to high-contrast evacuation mode: dark background with pulsing red borders.
+5. The system displays the immediate 3-action priority procedure:
+   * **Action 1:** "Evacuate crew to central shielded module (Storm Shelter) in under 5 minutes".
+   * **Action 2:** "Administer oral antioxidant radioprotector cocktail (Medical Kit Bravo)".
+   * **Action 3:** "Mount personal passive CANS dosimeters on the interior bulkhead".
+6. The astronauts enter the shielded shelter and the Commander confirms shelter-in-place on the main display.
+7. The system begins real-time temporal integration of absorbed dose ($\int \dot{D} \, dt$) for each crew member.
 
-### 5. Flujos Alternativos:
-* **FA-01: Tormenta solar de baja intensidad ($35 - 100\ \mu\text{Sv/h}$):**
-  1. Si la tasa se eleva pero no cruza los $100\ \mu\text{Sv/h}$, el sistema emite una "Alerta Amarilla de Monitoreo", recomendando cancelar actividades en módulos exteriores (ej. cúpula de observación) sin ordenar el confinamiento en el refugio.
+### 5. Alternative Flows:
+* **FA-01: Low-intensity solar storm ($35 - 100\ \mu\text{Sv/h}$):**
+  1. If the dose rate rises without crossing $100\ \mu\text{Sv/h}$, the system issues a "Yellow Monitoring Alert", recommending cancellation of activities in exterior modules (e.g., observation cupola) without ordering shelter confinement.
 
-### 6. Flujos de Excepción:
-* **FE-01: Astronauta aislado en módulo durante la tormenta:**
-  1. Si un sensor de mamparo indica presencia de un tripulante fuera del refugio tras 5 minutos de alarma, el sistema emite un aviso sonoro focalizado en ese compartimento: "Alerta de Radiación: Traslado inmediato a mamparo central".
+### 6. Exception Flows:
+* **FE-01: Astronaut isolated in a module during the storm:**
+  1. If a bulkhead sensor indicates a crew member remains outside the shelter 5 minutes after alarm onset, the system emits a localized audio warning in that compartment: "Radiation Alert: Immediate transfer to central bulkhead".
 
-### 7. Postcondiciones:
-* **Éxito:** La tripulación se protege en el área con mayor densidad de blindaje (tanques de agua y raciones) y se reduce la dosis biológica total recibida en más del $70\%$.
+### 7. Postconditions:
+* **Success:** The crew takes shelter in the area with the highest shielding mass density (water tanks and rations) and total received biological dose is reduced by more than $70\%$.
 
 ---
 
-## 📋 Caso de Uso: CU-09
-### Nombre: Presurización Guiada de Pantalones LBNP ante Hipertensión Cefálica
+## 📋 Use Case: CU-09
+### Title: Guided Pressurization of LBNP Suit for Cephalic Hypertension
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-09` |
-| **Actor Primario** | Oficial Médico (CMO) |
-| **Actores Secundarios** | Astronauta en Tratamiento (Paciente) |
-| **Nivel** | Nivel Clínico / Procedimiento Terapéutico |
-| **Requisitos SRS** | `RF-GUI-01`, `RF-GUI-02`, `RF-ANA-02` |
-| **Historias Trazadas** | `HU-11` |
+| **Identifier** | `CU-09` |
+| **Primary Actor** | Crew Medical Officer (CMO) |
+| **Secondary Actors** | Astronaut Under Treatment (Patient) |
+| **Level** | Clinical Level / Therapeutic Procedure |
+| **SRS Requirements** | `RF-GUI-01`, `RF-GUI-02`, `RF-ANA-02` |
+| **Traced Stories** | `HU-11` |
 
-### 1. Descripción Breve:
-Guía al Oficial Médico y al astronauta en la colocación, sellado neumático, encendido de la bomba de succión y ajuste gradual de la presión negativa en piernas (LBNP a $-35\text{ mmHg}$), supervisando simultáneamente el electrocardiograma y la presión arterial para evitar colapso hemodinámico o síncope.
+### 1. Brief Description:
+Guides the Crew Medical Officer and astronaut through donning, pneumatic sealing, suction pump startup, and gradual adjustment of lower-body negative pressure (LBNP at $-35\text{ mmHg}$), while simultaneously monitoring electrocardiogram and blood pressure to prevent hemodynamic collapse or syncope.
 
-### 2. Precondiciones:
-1. El dispositivo LBNP está desplegado en el módulo médico y conectado a la línea de vacío de la nave.
-2. El paciente tiene colocado el manguito de presión continua y los electrodos cardíacos.
+### 2. Preconditions:
+1. The LBNP device is deployed in the medical module and connected to the spacecraft vacuum line.
+2. The patient is fitted with the continuous blood pressure cuff and cardiac electrodes.
 
-### 3. Disparador (Trigger):
-Activación del protocolo SANS o indicación terapéutica por parte del Oficial Médico.
+### 3. Trigger:
+Activation of the SANS protocol or therapeutic order by the Crew Medical Officer.
 
-### 4. Flujo Principal de Eventos:
-1. El CMO abre el asistente interactivo "Protocolo LBNP" en ASTHA.
-2. El sistema guía la colocación del sello de neopreno en la cintura del paciente con verificación visual de ajuste hermético.
-3. El sistema inicia un temporizador de cuenta regresiva de 60 minutos calibrado a $-35\text{ mmHg}$.
-4. El CMO activa la bomba de succión manual/automática hasta que el manómetro digital marca $-35\text{ mmHg}$.
-5. Durante los 60 minutos de sesión, ASTHA muestrea la presión arterial y la frecuencia cardíaca cada 30 segundos.
-6. A los 30 minutos, el sistema emite una señal suave solicitando al paciente confirmar: "¿Siente mareo, visión de túnel o náuseas?". El paciente pulsa "No, Nominal".
-7. Al cumplirse los 60 minutos, el sistema indica: "Finalizando sesión: Despresurizar gradualmente durante 2 minutos hasta $0\text{ mmHg}$".
-8. El sistema solicita realizar el examen visual post-contramedida con la Rejilla de Amsler en pantalla.
-9. El paciente mira la cuadrícula central y pulsa "Líneas rectas / Sin distorsión".
-10. El sistema registra la sesión como exitosa y archiva la curva hemodinámica en el expediente clínico del tripulante.
+### 4. Main Flow of Events:
+1. The CMO opens the interactive "LBNP Protocol" wizard in ASTHA.
+2. The system guides placement of the neoprene waist seal on the patient with visual verification of airtight fit.
+3. The system starts a 60-minute countdown timer calibrated to $-35\text{ mmHg}$.
+4. The CMO engages the manual/automatic suction pump until the digital manometer reads $-35\text{ mmHg}$.
+5. Throughout the 60-minute session, ASTHA samples blood pressure and heart rate every 30 seconds.
+6. At the 30-minute mark, the system issues a gentle prompt asking the patient to confirm: "Do you feel dizziness, tunnel vision, or nausea?". The patient taps "No, Nominal".
+7. Upon reaching 60 minutes, the system instructs: "Ending session: Depressurize gradually over 2 minutes to $0\text{ mmHg}$".
+8. The system prompts for the post-countermeasure visual exam using the on-screen Amsler Grid.
+9. The patient views the central grid and taps "Straight lines / No distortion".
+10. The system logs the session as successful and archives the hemodynamic curve in the crew member's clinical record.
 
-### 5. Flujos Alternativos:
-* **FA-01: Caída de presión arterial durante la sesión (Riesgo de Síncope):**
-  1. Si la Presión Sistólica cae a $< 90\text{ mmHg}$ o la Frecuencia Cardíaca sube bruscamente $> 115\text{ bpm}$ (respuesta simpática refleja), el sistema interrumpe el temporizador y activa una alarma sonora: **"Alerta Hemodinámica: Detener succión LBNP y despresurizar inmediatamente"**.
+### 5. Alternative Flows:
+* **FA-01: Blood pressure drop during session (Syncope Risk):**
+  1. If Systolic Pressure drops to $< 90\text{ mmHg}$ or Heart Rate spikes abruptly $> 115\text{ bpm}$ (reflex sympathetic response), the system halts the timer and triggers an audible alarm: **"Hemodynamic Alert: Stop LBNP suction and depressurize immediately"**.
 
-### 6. Flujos de Excepción:
-* **FE-01: Fuga en el sello neumático del LBNP:**
-  1. Si la bomba no logra sostener la presión negativa por debajo de $-20\text{ mmHg}$, el sistema notifica: "Fuga de presión detectada; verificar cremallera de cierre en cintura".
+### 6. Exception Flows:
+* **FE-01: Leak in the LBNP pneumatic seal:**
+  1. If the pump fails to maintain negative pressure below $-20\text{ mmHg}$, the system notifies: "Pressure leak detected; inspect waist closure zipper".
 
-### 7. Postcondiciones:
-* **Éxito:** Se logra la descongestión venosa intracraneal de forma segura sin provocar hipotensión ortostática en el paciente.
+### 7. Postconditions:
+* **Success:** Intracranial venous decongestion is safely achieved without inducing orthostatic hypotension in the patient.

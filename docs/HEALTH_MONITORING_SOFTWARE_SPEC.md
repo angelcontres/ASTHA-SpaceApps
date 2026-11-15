@@ -1,87 +1,87 @@
-# GUÍA MAESTRA DE DESARROLLO: HEALTH MONITORING SOFTWARE FOR ASTRONAUTS
-### NASA Space Apps Challenge | Documento Integral de Especificación y Construcción
+# MASTER DEVELOPMENT GUIDE: HEALTH MONITORING SOFTWARE FOR ASTRONAUTS
+### NASA Space Apps Challenge | Comprehensive Specification and Construction Document
 
 ---
 
-## 1. RESUMEN EJECUTIVO Y FICHA TÉCNICA DEL DESAFÍO
+## 1. EXECUTIVE SUMMARY AND CHALLENGE FACT SHEET
 
-* **Título Oficial del Reto:** *Create Health Monitoring Software for Astronauts on Space Missions*
-* **Categoría y Nivel:** Intermedio (`Intermediate`) | Color oficial: `#FF580A`
-* **URL Oficial:** [Space Apps Challenge: Health Monitoring Software](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/?tab=resources)
-* **Video Oficial de la NASA:** [YouTube Challenge Overview](https://www.youtube.com/watch?v=RERG3gEmdC8)
-* **Repositorio Comunitario:** [NASA SpaceApps GitHub](https://github.com/nasa/spaceapps)
+* **Official Challenge Title:** *Create Health Monitoring Software for Astronauts on Space Missions*
+* **Category and Level:** Intermediate (`Intermediate`) | Official Color: `#FF580A`
+* **Official URL:** [Space Apps Challenge: Health Monitoring Software](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/?tab=resources)
+* **Official NASA Video:** [YouTube Challenge Overview](https://www.youtube.com/watch?v=RERG3gEmdC8)
+* **Community Repository:** [NASA SpaceApps GitHub](https://github.com/nasa/spaceapps)
 
-### Declaración del Problema
-Las misiones espaciales de larga duración (como el programa Artemis a la Luna y los futuros viajes tripulados a Marte) someten a los astronautas a entornos hostiles extremos. La distancia a la Tierra impone un retraso de comunicación de hasta **22 minutos por sentido (44 minutos ida y vuelta)**, lo que impide que los médicos de vuelo en Houston o Montreal asesoren emergencias en tiempo real. **Los astronautas deben diagnosticar, vigilar y tratar sus propias condiciones médicas con total autonomía.**
+### Problem Statement
+Long-duration space missions (such as the Artemis program to the Moon and future crewed voyages to Mars) expose astronauts to extreme hostile environments. Distance from Earth imposes a communication delay of up to **22 minutes one-way (44 minutes round-trip)**, preventing flight surgeons in Houston or Montreal from advising on emergencies in real time. **Astronauts must diagnose, monitor, and treat their own medical conditions with complete autonomy.**
 
-El objetivo es construir una **herramienta de software visual, interactiva y autónoma (Edge/Offline)** que recopile indicadores de salud, visualice el estado anatómico mediante un modelo humano interactivo, detecte anomalías tempranas, guíe tratamientos paso a paso y gamifique los hábitos saludables.
+The objective is to build a **visual, interactive, and autonomous software tool (Edge/Offline)** that collects health indicators, visualizes anatomical status through an interactive human model, detects early anomalies, guides step-by-step treatments, and gamifies healthy habits.
 
 ---
 
-## 2. MAPEO ESTRATÉGICO CON LOS BLOQUES DE EVALUACIÓN
+## 2. STRATEGIC MAPPING TO EVALUATION TRACKS
 
-| Bloque de Mentores / Jueces | Aplicación en el Proyecto | Factor Clave para Destacar |
+| Mentors / Judges Track | Project Application | Key Differentiating Factor |
 | :--- | :--- | :--- |
-| **Bloque 1: Pipelines de Datos, Machine Learning y Análisis Avanzado** | Algoritmo de detección de anomalías en signos vitales (HRV, SpO2, presión, radiación acumulada). Inferencia local en cliente (Edge AI). | Detección precoz de tendencias patológicas antes de síntomas agudos. |
-| **Bloque 2: Aplicaciones Funcionales, Herramientas Operativas y GIS** | Sistema de Soporte a Decisiones Clínicas (CDSS) 100% offline (PWA / WebApp autónoma). Mapeo de hábitats (estación, base lunar, rover). | Funciona en modo "Mars-Zero-Ping" sin requerir conexión a internet. |
-| **Bloque 3: Videojuegos, Gamificación y Simulación Estratégica** | Avatar 3D interactivo con Three.js, sistema de rachas/recompensas por rutinas de ejercicio ARED y **Simulador de Crisis Espaciales**. | Botón de inyección de emergencias (tormenta solar, fuga de CO2, episodio SANS). |
-| **Bloque 4: Narrativa Digital, Accesibilidad Sensorial, Pitch** | UI táctica espacial de alto contraste (Glassmorphism oscuro), diseño accesible para no médicos, guías visuales y storytelling de misión a Marte. | Pitch enfocado en salvar la vida de la tripulación con métricas validadas por NASA. |
+| **Track 1: Data Pipelines, Machine Learning & Advanced Analytics** | Anomaly detection algorithm on vital signs (HRV, SpO2, blood pressure, cumulative radiation). Local client-side inference (Edge AI). | Early detection of pathological trends prior to acute symptoms. |
+| **Track 2: Functional Applications, Operational Tools & GIS** | 100% offline Clinical Decision Support System (CDSS) (autonomous PWA / WebApp). Habitat mapping (station, lunar base, rover). | Operates in "Mars-Zero-Ping" mode without requiring an Internet connection. |
+| **Track 3: Games, Gamification & Strategic Simulation** | Interactive 3D avatar with Three.js, streak/reward system for ARED exercise routines, and **Space Crisis Simulator**. | Emergency injection button (solar storm, CO2 leak, SANS episode). |
+| **Track 4: Digital Storytelling, Sensory Accessibility & Pitch** | High-contrast space tactical UI (dark Glassmorphism), accessible design for non-physicians, visual guides, and Mars mission storytelling. | Pitch focused on saving crew lives using NASA-validated metrics. |
 
 ---
 
-## 3. FUNDAMENTO BIOMÉDICO Y ESPACIAL OFICIAL (NASA HRP Y CSA)
+## 3. OFFICIAL SPACE BIOMEDICAL FOUNDATION (NASA HRP & CSA)
 
-### A. Los 5 Peligros del Espacio Humano (Modelo NASA R.I.D.G.E.)
-Fuente oficial: [NASA HRP Hazards](https://www.nasa.gov/hrp/hazards/)
+### A. The 5 Hazards of Human Spaceflight (NASA R.I.D.G.E. Model)
+Official source: [NASA HRP Hazards](https://www.nasa.gov/hrp/hazards/)
 
-1. **R - Radiation (Radiación Espacial):**
-   * Fuentes: Radiación Cósmica Galáctica (GCR) y Eventos de Partículas Solares (SPE).
-   * Factor Crítico CSA: Los neutrones secundarios aportan el **30% de la dosis biológica en la estación espacial**. Instrumento oficial: **CANS** (*Canadian Active Neutron Spectrometer*).
-   * Consecuencias: Daño al ADN, cataratas tempranas, cáncer y síndrome agudo de radiación.
-2. **I - Isolation & Confinement (Aislamiento y Confinamiento):**
-   * Consecuencias: Ruptura de ritmos circadianos (16 amaneceres/puestas de sol al día en órbita baja), fatiga crónica, estrés, deterioro cognitivo y fricción interpersonal.
-3. **D - Distance from Earth (Distancia de la Tierra):**
-   * Retraso de radio ineludible. Sin posibilidad de evacuación médica urgente. Todo diagnóstico debe ser ejecutado *in-situ*.
-4. **G - Gravity Fields (Gravedad Alterada: 0G, 1/6G en la Luna, 3/8G en Marte):**
-   * Redistribución de líquidos hacia el tórax y la cabeza (*puffy face / bird legs syndrome*).
-   * Pérdida de masa ósea acelerada: **1.0% a 1.5% de densidad mineral ósea al mes** en huesos de carga (fémur, pelvis, vértebras), generando hipercalcemia y formación de **cálculos renales**.
-   * Atrofia del músculo cardíaco y muscular esquelético (fibras tipo I de contracción lenta).
-   * Intolerancia ortostática grave al volver a sentir gravedad.
-5. **E - Hostile / Closed Environments (Entornos Hostiles y Cerrados):**
-   * Acumulación de $CO_2$ en microgravedad (las bolsas de aire estancado causan letargo y cefaleas).
-   * Microbioma alterado: Incremento de la virulencia bacteriana en microgravedad y reactivación de virus latentes (Epstein-Barr, Herpes Zóster).
+1. **R - Radiation (Space Radiation):**
+   * Sources: Galactic Cosmic Radiation (GCR) and Solar Particle Events (SPE).
+   * Critical CSA Factor: Secondary neutrons contribute **30% of the biological dose aboard the space station**. Official instrument: **CANS** (*Canadian Active Neutron Spectrometer*).
+   * Consequences: DNA damage, early cataracts, cancer, and acute radiation syndrome.
+2. **I - Isolation & Confinement:**
+   * Consequences: Circadian rhythm disruption (16 sunrises/sunsets per day in LEO), chronic fatigue, stress, cognitive decline, and interpersonal friction.
+3. **D - Distance from Earth:**
+   * Unavoidable radio delay. No emergency medical evacuation capability. All diagnosis must be executed *in-situ*.
+4. **G - Gravity Fields (Altered Gravity: 0G, 1/6G on the Moon, 3/8G on Mars):**
+   * Fluid redistribution toward the thorax and head (*puffy face / bird legs syndrome*).
+   * Accelerated bone mass loss: **1.0% to 1.5% bone mineral density per month** in weight-bearing bones (femur, pelvis, vertebrae), causing hypercalcemia and **kidney stone** formation.
+   * Cardiac muscle and skeletal muscle atrophy (slow-twitch type I fibers).
+   * Severe orthostatic intolerance upon re-exposure to gravity.
+5. **E - Hostile / Closed Environments:**
+   * $CO_2$ accumulation in microgravity (stagnant air pockets cause lethargy and headaches).
+   * Altered microbiome: Increased bacterial virulence in microgravity and reactivation of latent viruses (Epstein-Barr, Herpes Zoster).
 
-### B. Los Riesgos Clínicos Prioritarios de la NASA (HRP Matrix)
-Fuente oficial: [NASA HRP Risks](https://www.nasa.gov/hrp/risks/)
+### B. NASA Priority Clinical Risks (HRP Matrix)
+Official source: [NASA HRP Risks](https://www.nasa.gov/hrp/risks/)
 
-* **SANS (Spaceflight Associated Neuro-ocular Syndrome):** Desplazamiento de fluidos craneales que aplana el globo ocular, pliega la coroides y genera edema en la papila óptica con pérdida visual permanente.
-* **Trombosis Venosa de la Vena Yugular Interna:** Estasis venosa y flujo retrógrado documentado en la ISS por falta de gravedad hidrostática.
-* **Arritmias Cardíacas y Disautonomía:** Disminución del tono vagal y alteración de la Variabilidad de la Frecuencia Cardíaca (HRV).
-* **Desnutrición y Degradación de Micronutrientes:** Degradación de vitaminas en paquetes de comida espacial almacenados por años.
+* **SANS (Spaceflight Associated Neuro-ocular Syndrome):** Cranial fluid shift that flattens the ocular globe, folds the choroid, and produces optic disc edema with permanent visual loss.
+* **Internal Jugular Vein Venous Thrombosis:** Venous stasis and retrograde flow documented on the ISS due to lack of hydrostatic gravity.
+* **Cardiac Arrhythmias and Dysautonomia:** Decreased vagal tone and altered Heart Rate Variability (HRV).
+* **Malnutrition and Micronutrient Degradation:** Vitamin degradation in space food packages stored for years.
 
 ---
 
-## 4. ESPECIFICACIÓN FUNCIONAL DEL SOFTWARE
+## 4. SOFTWARE FUNCTIONAL SPECIFICATION
 
 ```mermaid
 flowchart TD
-    subgraph UI_Layer["Capa de Presentación e Interacción"]
-        A[Modelo 3D Anatómico Interactivo Three.js]
-        B[Dashboard de Métricas y Semáforo de Riesgo]
-        C[Módulo de Gamificación y Hábitos Diarios]
-        D[Guía Asistida de Contramedidas y Procedimientos]
+    subgraph UI_Layer["Presentation & Interaction Layer"]
+        A["Interactive 3D Anatomical Model (Three.js)"]
+        B["Metrics Dashboard & Risk Traffic Light"]
+        C["Gamification & Daily Habits Module"]
+        D["Assisted Countermeasures & Procedures Guide"]
     end
 
-    subgraph Logic_Layer["Capa Lógica (Edge / Offline Engine)"]
-        E[Motor de Detección de Anomalías Heurístico / ML]
-        F[Evaluador de Riesgo Basado en NASA Flight Rules]
-        G[Simulador de Emergencias Espaciales SPE / SANS / CO2]
+    subgraph Logic_Layer["Logic Layer (Edge / Offline Engine)"]
+        E["Heuristic / ML Anomaly Detection Engine"]
+        F["NASA Flight Rules Risk Evaluator"]
+        G["Space Emergency Simulator (SPE / SANS / CO2)"]
     end
 
-    subgraph Data_Layer["Capa de Datos"]
-        H[(Almacenamiento Local IndexedDB / LocalStorage)]
-        I[Ingesta Multi-Input: Wearables, Manual, Cámara]
-        J[Dataset Sintético de Misión Marciana 180 días]
+    subgraph Data_Layer["Data Layer"]
+        H[("Local Storage IndexedDB / LocalStorage")]
+        I["Multi-Input Ingestion: Wearables, Manual, Camera"]
+        J["180-Day Synthetic Mars Mission Dataset"]
     end
 
     I --> H
@@ -91,64 +91,64 @@ flowchart TD
     F --> B
     F --> A
     F --> D
-    G -. Inyecta Crisis .-> H
+    G -. Injects Crisis .-> H
     C --> H
 ```
 
-### 1. Entradas de Datos (Multi-Input)
-* **Ingesta Manual Rápida:** Formulario táctil optimizado para condiciones de guantes o pantalla táctil (Presión arterial, SpO2, Frecuencia cardíaca, Glucosa en $mg/dL$, Temperatura en $^{\circ}C$, Horas de sueño, Escala subjetiva de ánimo 1-10).
-* **Ingesta de Sensores / Wearables (Bio-Monitor):** Simulación de telemetría continua estilo prenda inteligente *Astroskin*.
-* **Ingesta Visual / Cámara:** Prueba de reflejo pupilar o escaneo de erupciones dérmicas mediante cámara web.
+### 1. Data Inputs (Multi-Input)
+* **Rapid Manual Ingestion:** Touch form optimized for gloved or touchscreen operation (Blood pressure, SpO2, Heart rate, Glucose in $mg/dL$, Temperature in $^{\circ}C$, Sleep hours, Subjective mood scale 1-10).
+* **Sensor / Wearable Ingestion (Bio-Monitor):** Continuous telemetry simulation modeled on the *Astroskin* smart garment.
+* **Visual / Camera Ingestion:** Pupillary reflex test or skin rash scan via webcam.
 
-### 2. Modelo Anatómico 3D Humano
-* Representación interactiva con vista frontal/posterior.
-* Regiones clickables:
-  * **Ojos / Cabeza:** Presión intracraneal, SANS, estado cognitivo y agudeza visual.
-  * **Tórax / Corazón:** Frecuencia cardíaca, HRV, presión arterial, arritmias.
-  * **Zona Lumbar / Riñones:** Riesgo de litiasis renal (cálculos) por excreción de calcio óseo.
-  * **Músculos y Huesos (Piernas/Fémur):** Pérdida de masa muscular y densidad ósea.
-  * **Sistema General / Sangre:** Dosimetría de radiación acumulada, glucosa, hidratación.
-* Código de color en el modelo:
-  * 🟢 **Verde:** Fisiología nominal.
-  * 🟡 **Amarillo:** Deriva fisiológica que requiere contramedida leve.
-  * 🔴 **Rojo:** Anomalía crítica con protocolo de intervención mandatorio.
+### 2. 3D Human Anatomical Model
+* Interactive representation with front/back views.
+* Clickable regions:
+  * **Eyes / Head:** Intracranial pressure, SANS, cognitive status, and visual acuity.
+  * **Thorax / Heart:** Heart rate, HRV, blood pressure, arrhythmias.
+  * **Lumbar Region / Kidneys:** Renal lithiasis (kidney stone) risk from bone calcium excretion.
+  * **Muscles and Bones (Legs/Femur):** Muscle mass and bone density loss.
+  * **General System / Blood:** Cumulative radiation dosimetry, glucose, hydration.
+* Color coding on the model:
+  * 🟢 **Green:** Nominal physiology.
+  * 🟡 **Yellow:** Physiological drift requiring mild countermeasure.
+  * 🔴 **Red:** Critical anomaly with mandatory intervention protocol.
 
-### 3. Motor de Contramedidas y Guía Paso a Paso (Para no médicos)
-* Si el software detecta una anomalía, no dice simplemente *"Alerta: Hipercalcemia"*, sino que proporciona:
-  1. **Qué significa:** *"Tus huesos están liberando calcio a la sangre por falta de carga gravitacional, aumentando el riesgo de piedras en los riñones"*.
-  2. **Acción inmediata guiada:** *"Aumenta tu ingesta de agua a 3.2 L/día y programa 45 min extra en el dispositivo de ejercicio de resistencia ARED"*.
-  3. **Cómo verificar:** Instrucciones visuales paso a paso para medir electrolitos en orina o hacer ecografía renal guiada por pantalla.
+### 3. Countermeasures Engine and Step-by-Step Guide (For Non-Physicians)
+* When the software detects an anomaly, it does not simply display *"Alert: Hypercalcemia"*, but provides:
+  1. **What it means:** *"Your bones are releasing calcium into the bloodstream due to lack of gravitational loading, increasing the risk of kidney stones."*
+  2. **Immediate guided action:** *"Increase water intake to 3.2 L/day and schedule 45 extra minutes on the ARED resistive exercise device."*
+  3. **How to verify:** On-screen step-by-step visual instructions to measure urine electrolytes or perform a guided renal ultrasound.
 
-### 4. Sistema de Gamificación
-* Barra de experiencia y medallas por:
-  * Completar los 150 minutos diarios de ejercicio obligatorio (ARED / cinta T2).
-  * Registrar a tiempo el informe matutino de sueño y estado anímico.
-  * Mantener niveles óptimos de hidratación.
-* Impacto psicológico: Combate la apatía y el aburrimiento del confinamiento prolongado.
+### 4. Gamification System
+* Experience bar and badges for:
+  * Completing the mandatory 150 daily minutes of exercise (ARED / T2 treadmill).
+  * Logging the morning sleep and mood report on time.
+  * Maintaining optimal hydration levels.
+* Psychological impact: Combats apathy and boredom during prolonged confinement.
 
-### 5. Simulador de Crisis de Misión (Demo Killer para el Pitch)
-Permite al jurado activar escenarios predefinidos para ver el software actuar:
-* **Escenario A: Tormenta Solar (Solar Particle Event - SPE):** El sensor de radiación dispara la alerta de neutrones. El sistema guía al astronauta a la zona blindada (*Storm Shelter*) y prescribe antioxidantes.
-* **Escenario B: Síndrome SANS Agudo:** El astronauta reporta visión borrosa matutina. El sistema activa el protocolo de prueba visual, revisión con oftalmoscopio digital y prescripción de pantalones de presión negativa (LBNP).
-* **Escenario C: Microfuga de $CO_2$ en Cabina:** Se detecta elevación de frecuencia respiratoria y cefalea en la tripulación. El sistema ordena verificación de filtros LiOH/CDRA.
+### 5. Mission Crisis Simulator (Pitch Demo Killer)
+Allows judges to trigger predefined scenarios to observe the software in action:
+* **Scenario A: Solar Storm (Solar Particle Event - SPE):** The radiation sensor triggers the neutron alert. The system guides the astronaut to the shielded zone (*Storm Shelter*) and prescribes antioxidants.
+* **Scenario B: Acute SANS Syndrome:** The astronaut reports morning blurred vision. The system activates the visual test protocol, digital ophthalmoscope inspection, and Lower Body Negative Pressure (LBNP) suit prescription.
+* **Scenario C: Cabin $CO_2$ Micro-Leak:** Elevated respiratory rate and crew headaches are detected. The system orders LiOH/CDRA scrubber verification.
 
 ---
 
-## 5. UMBRALES BIOMÉDICOS Y ALGORITMOS DE EVALUACIÓN
+## 5. BIOMEDICAL THRESHOLDS AND EVALUATION ALGORITHMS
 
 ```typescript
-// Definición de rangos fisiológicos adaptados a vuelos espaciales
+// Physiological ranges adapted for spaceflight
 export interface VitalSigns {
   heartRate: number;         // bpm (Nominal: 55 - 95 bpm)
-  hrv: number;               // ms (Variabilidad rMSSD: > 35 ms nominal, < 20 ms estrés agudo)
+  hrv: number;               // ms (rMSSD variability: > 35 ms nominal, < 20 ms acute stress)
   systolicBP: number;        // mmHg (Nominal: 100 - 130 mmHg)
   diastolicBP: number;       // mmHg (Nominal: 65 - 85 mmHg)
-  spO2: number;              // % (Nominal: 96% - 100%, < 93% hipoxia en cabina)
-  bloodGlucose: number;      // mg/dL (Nominal ayuno: 70 - 105 mg/dL)
+  spO2: number;              // % (Nominal: 96% - 100%, < 93% cabin hypoxia)
+  bloodGlucose: number;      // mg/dL (Fasting nominal: 70 - 105 mg/dL)
   bodyTemperature: number;   // °C (Nominal: 36.2 - 37.3 °C)
-  sleepHours: number;        // Horas (Nominal: 7 - 9 hrs, < 5 hrs riesgo cognitivo)
-  radiationDoseRate: number; // uSv/h (Nominal LEO: 15-30 uSv/h, SPE Alerta: > 100 uSv/h)
-  moodScore: number;         // 1 - 10 (1-3 depresión/aislamiento, 4-6 regular, 7-10 óptimo)
+  sleepHours: number;        // Hours (Nominal: 7 - 9 hrs, < 5 hrs cognitive risk)
+  radiationDoseRate: number; // uSv/h (Nominal LEO: 15-30 uSv/h, SPE Alert: > 100 uSv/h)
+  moodScore: number;         // 1 - 10 (1-3 depression/isolation, 4-6 fair, 7-10 optimal)
 }
 
 export type HealthStatus = 'NOMINAL' | 'WARNING' | 'CRITICAL';
@@ -162,52 +162,52 @@ export interface DiagnosticAssessment {
 }
 ```
 
-### Algoritmo de Triage Clínico Autónomo (Pseudo-lógica de Evaluación)
+### Autonomous Clinical Triage Algorithm (Evaluation Pseudo-Logic)
 
 ```javascript
 function evaluateAstronautHealth(vitals) {
   const alerts = [];
 
-  // 1. Evaluación de Radiación (Inspirado en CANS - CSA)
+  // 1. Radiation Evaluation (Inspired by CANS - CSA)
   if (vitals.radiationDoseRate > 100) {
     alerts.push({
       organSystem: 'RADIATION',
       status: 'CRITICAL',
-      finding: 'Dosis elevada de radiación detectada (posible Evento de Partículas Solares SPE).',
-      countermeasure: 'Evacuar de inmediato al módulo central blindado (Storm Shelter). Administrar contramedida antioxidante/radioprotectora.',
+      finding: 'Elevated radiation dose rate detected (possible Solar Particle Event SPE).',
+      countermeasure: 'Evacuate immediately to the shielded core module (Storm Shelter). Administer antioxidant/radioprotective countermeasure.',
       urgencyLevel: 'EMERGENCY'
     });
   }
 
-  // 2. Evaluación de Fatiga y Ritmo Circadiano
+  // 2. Fatigue and Circadian Rhythm Evaluation
   if (vitals.sleepHours < 5.5 && vitals.hrv < 25) {
     alerts.push({
       organSystem: 'PSYCHOLOGICAL',
       status: 'WARNING',
-      finding: 'Desincronización circadiana severa y estrés autonómico (HRV deprimido).',
-      countermeasure: 'Ajustar iluminación LED de cabina a espectro azul-enriquecido al despertar y rojo al descansar. Programar siesta de 45 min y sesión de Mindfulness.',
+      finding: 'Severe circadian desynchronization and autonomic stress (depressed HRV).',
+      countermeasure: 'Adjust cabin LED lighting to blue-enriched spectrum upon waking and red during rest. Schedule a 45-min nap and Mindfulness session.',
       urgencyLevel: 'MEDIUM'
     });
   }
 
-  // 3. Sospecha de SANS (Neuro-ocular)
+  // 3. Suspected SANS (Neuro-ocular)
   if (vitals.systolicBP > 135 && vitals.sleepHours < 6) {
     alerts.push({
       organSystem: 'NEURO_OCULAR',
       status: 'WARNING',
-      finding: 'Deriva hipertensiva cefálica detectada. Riesgo de congestión venosa papilar y SANS.',
-      countermeasure: 'Realizar examen de agudeza visual de Snellen en pantalla y sesión de 60 min en dispositivo de presión negativa de cuerpo inferior (LBNP).',
+      finding: 'Cephalic hypertensive drift detected. Risk of optic disc venous congestion and SANS.',
+      countermeasure: 'Perform on-screen Snellen visual acuity exam and a 60-min session in the Lower Body Negative Pressure (LBNP) device.',
       urgencyLevel: 'HIGH'
     });
   }
 
-  // 4. Oxigenación e Hipercapnia
+  // 4. Oxygenation and Hypercapnia
   if (vitals.spO2 < 94) {
     alerts.push({
       organSystem: 'CARDIOVASCULAR',
       status: 'CRITICAL',
-      finding: 'Saturación periférica por debajo de márgenes de vuelo (SpO2 < 94%). Sospecha de hipoxia o bolsón de CO2.',
-      countermeasure: 'Colocar máscara de O2 suplementaria, verificar recirculación de ventilador de cabina y revisar nivel de dióxido de carbono ambiental.',
+      finding: 'Peripheral saturation below flight margins (SpO2 < 94%). Suspected hypoxia or CO2 pocket.',
+      countermeasure: 'Don supplemental O2 mask, verify cabin fan recirculation, and check ambient carbon dioxide level.',
       urgencyLevel: 'EMERGENCY'
     });
   }
@@ -218,41 +218,41 @@ function evaluateAstronautHealth(vitals) {
 
 ---
 
-## 6. ESTRUCTURA Y CÓDIGO BOILERPLATE RECOMENDADO
+## 6. RECOMMENDED BOILERPLATE CODE AND STRUCTURE
 
-### Estructura de Proyecto Sugerida (React + Vite + Tailwind + Three.js)
+### Suggested Project Structure (React + Vite + Tailwind + Three.js)
 
 ```text
 health-monitoring-app/
 ├── public/
 │   ├── models/
-│   │   └── human_body.glb       # Modelo 3D anatómico (Low-poly estilizado)
+│   │   └── human_body.glb       # 3D anatomical model (Stylized low-poly)
 │   └── data/
-│       └── mars_telemetry.json  # Telemetría de 180 días simulados
+│       └── mars_telemetry.json  # 180-day simulated telemetry
 ├── src/
 │   ├── components/
 │   │   ├── 3d/
-│   │   │   └── BodyViewer.jsx   # Visor Three.js con puntos de calor interactivos
+│   │   │   └── BodyViewer.jsx   # Three.js viewer with interactive hotspots
 │   │   ├── dashboard/
-│   │   │   ├── MetricCard.jsx   # Tarjeta de signos vitales con semáforo
-│   │   │   ├── TrendsChart.jsx  # Gráficas históricas con Recharts
-│   │   │   └── VitalsInput.jsx  # Formulario rápido manual o por cámara
+│   │   │   ├── MetricCard.jsx   # Vital signs card with status traffic light
+│   │   │   ├── TrendsChart.jsx  # Historical charts with Recharts
+│   │   │   └── VitalsInput.jsx  # Quick manual or camera input form
 │   │   ├── gamification/
-│   │   │   └── HabitTracker.jsx # Sistema de puntos y rachas diarias
+│   │   │   └── HabitTracker.jsx # Points and daily streaks system
 │   │   ├── procedures/
-│   │   │   └── ActionGuide.jsx  # Guía paso a paso de contramedidas
+│   │   │   └── ActionGuide.jsx  # Step-by-step countermeasures guide
 │   │   └── simulation/
-│   │       └── CrisisEngine.jsx # Inyector de eventos (Tormenta solar, SANS, Fuga)
+│   │       └── CrisisEngine.jsx # Event injector (Solar storm, SANS, Leak)
 │   ├── engine/
-│   │   ├── medicalRules.js      # Reglas clínicas de vuelo NASA HRP
-│   │   └── anomalyDetector.js   # Algoritmo de detección y predicción
+│   │   ├── medicalRules.js      # NASA HRP clinical flight rules
+│   │   └── anomalyDetector.js   # Detection and prediction algorithm
 │   ├── App.jsx
 │   └── index.css
 ├── package.json
 └── README.md
 ```
 
-### Dataset Sintético de Muestra para Cargar Inmediatamente (`mars_telemetry.json`)
+### Sample Synthetic Dataset for Immediate Loading (`mars_telemetry.json`)
 
 ```json
 [
@@ -260,7 +260,7 @@ health-monitoring-app/
     "missionDay": 45,
     "timestamp": "2026-11-14T08:00:00Z",
     "astronautId": "ASTRO-01",
-    "name": "Dra. Elena Vance",
+    "name": "Dr. Elena Vance",
     "vitals": {
       "heartRate": 68,
       "hrv": 48,
@@ -279,7 +279,7 @@ health-monitoring-app/
     "missionDay": 46,
     "timestamp": "2026-11-15T08:00:00Z",
     "astronautId": "ASTRO-01",
-    "name": "Dra. Elena Vance",
+    "name": "Dr. Elena Vance",
     "vitals": {
       "heartRate": 92,
       "hrv": 19,
@@ -300,28 +300,28 @@ health-monitoring-app/
 
 ---
 
-## 7. ESTRATEGIA DE PRESENTACIÓN Y PITCH PARA GANAR
+## 7. PRESENTATION AND WINNING PITCH STRATEGY
 
-### Estructura del Pitch (3 minutos de alto impacto)
-1. **0:00 - 0:30 | El Gancho (The Problem):**
-   * *"En el viaje a Marte, Houston está a 22 minutos de distancia. Si un astronauta desarrolla un cuadro agudo de SANS, arritmia o una tormenta solar golpea la nave, no hay llamada al 911 ni telemedicina en vivo. La tripulación está sola."*
-2. **0:30 - 1:15 | La Solución:**
-   * Presentar el software: *"Creamos un Sistema Autónomo de Decisión Clínica y Monitoreo Biomédico 100% Offline. Combina el modelo de riesgos NASA HRP y la detección de radiación neutrónica de la CSA con un modelo 3D anatómico interactivo."*
-3. **1:15 - 2:15 | La Demostración en Vivo (Acción):**
-   * Mostrar el avatar 3D.
-   * Hacer click en el corazón y en los ojos.
-   * Activar el botón *"Simular Tormenta Solar"*: la UI cambia de color, alerta de radiación CANS en tiempo real y guía al astronauta con instrucciones claras sin tecnicismos.
-   * Mostrar el módulo de gamificación para evitar la pérdida ósea del 1.5% mensual.
-4. **2:15 - 2:45 | Validación Científica y Tecnológica:**
-   * Mención de los 5 peligros (R.I.D.G.E.), compatibilidad con prendas *Astroskin* e inferencia Edge (cero dependencia de servidores externos).
-5. **2:45 - 3:00 | Cierre:**
-   * *"Este software no solo protegerá a los pioneros de Marte; sus algoritmos de bajo recurso y diagnóstico autónomo permitirán llevar salud de alta precisión a comunidades remotas en la Tierra."*
+### Pitch Structure (High-Impact 3 Minutes)
+1. **0:00 - 0:30 | The Hook (The Problem):**
+   * *"On the journey to Mars, Houston is 22 minutes away. If an astronaut develops acute SANS, an arrhythmia, or a solar storm strikes the spacecraft, there is no 911 call and no live telemedicine. The crew is on their own."*
+2. **0:30 - 1:15 | The Solution:**
+   * Present the software: *"We built a 100% Offline Autonomous Clinical Decision and Biomedical Monitoring System. It combines the NASA HRP risk model and CSA neutron radiation detection with an interactive 3D anatomical model."*
+3. **1:15 - 2:15 | Live Demo (Action):**
+   * Display the 3D avatar.
+   * Click on the heart and eyes.
+   * Press the *"Simulate Solar Storm"* button: the UI shifts color, raises a real-time CANS radiation alert, and guides the astronaut with clear, jargon-free instructions.
+   * Show the gamification module designed to prevent the 1.5% monthly bone loss.
+4. **2:15 - 2:45 | Scientific and Technological Validation:**
+   * Highlight the 5 hazards (R.I.D.G.E.), compatibility with *Astroskin* garments, and Edge inference (zero dependency on external servers).
+5. **2:45 - 3:00 | Closing:**
+   * *"This software will not only protect Mars pioneers; its low-resource algorithms and autonomous diagnostics will enable high-precision healthcare in remote communities on Earth."*
 
 ---
 
-## 8. CHECKLIST FINAL DE ENTREGA DE HACKATHON
+## 8. FINAL HACKATHON DELIVERY CHECKLIST
 
-- [ ] **Repositorio GitHub Público:** Con código limpio, archivo `README.md` con capturas de pantalla y documentación de instalación.
-- [ ] **Despliegue Web Funcional (Demo en Vivo):** Alojado en Vercel, Netlify o GitHub Pages con funcionamiento garantizado.
-- [ ] **Video Demo de 30 a 60 Segundos:** Grabación fluida de la pantalla mostrando la interacción con el cuerpo 3D, el simulador de crisis y la interfaz.
-- [ ] **Citas a Fuentes Oficiales:** Enlaces a NASA HRP y Canadian Space Agency integrados en la pestaña "About / References" del software.
+- [ ] **Public GitHub Repository:** Clean codebase, `README.md` with screenshots, and installation documentation.
+- [ ] **Functional Web Deployment (Live Demo):** Hosted on Vercel, Netlify, or GitHub Pages with verified operation.
+- [ ] **30-to-60-Second Demo Video:** Smooth screen recording showing interaction with the 3D body, the crisis simulator, and the interface.
+- [ ] **Citations to Official Sources:** Links to NASA HRP and the Canadian Space Agency integrated in the software's "About / References" tab.

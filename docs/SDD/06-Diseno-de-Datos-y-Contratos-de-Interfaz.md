@@ -1,12 +1,12 @@
-# 📦 SDD-06: Diseño de Datos y Contratos de Interfaz
+# 📦 SDD-06: Data Design and Interface Contracts
 ### ASTHA — Software Design Description | NASA Space Apps Challenge 2026
-**Normas de Referencia:** NASA-STD-8739.8 | IEEE Std 1016-2009 | JSON Schema Draft-07 | **ADRs:** 006, 009, 010, 012, 016, 018
+**Reference Standards:** NASA-STD-8739.8 | IEEE Std 1016-2009 | JSON Schema Draft-07 | **ADRs:** 006, 009, 010, 012, 016, 018
 
 ---
 
-## 1. Modelo de Registro Fisiológico Diario y Hábitat (`SRS §5.1`, `ADR-016`)
+## 1. Daily Physiological and Habitat Record Model (`SRS §5.1`, `ADR-016`)
 
-Conforme a **[ADR-016](08-Architecture-decisions.md#adr-016)** y `RF-ING-01`, cada tripulante registra una medición diaria consolidada (9 variables fisiológicas obligatorias + calcio urinario opcional) junto con la telemetría ambiental compartida del hábitat (`RF-ING-02`).
+In accordance with **[ADR-016](08-Architecture-decisions.md#adr-016)** and `RF-ING-01`, each crew member logs one consolidated daily measurement (9 mandatory physiological variables + optional urinary calcium) together with shared habitat environmental telemetry (`RF-ING-02`).
 
 ```json
 {
@@ -31,7 +31,7 @@ Conforme a **[ADR-016](08-Architecture-decisions.md#adr-016)** y `RF-ING-01`, ca
         "sleepHours": { "type": "number", "minimum": 0, "maximum": 24 },
         "mood": { "type": "integer", "minimum": 1, "maximum": 10 },
         "urinaryCalciumMgDay": { "type": "number", "minimum": 0, "maximum": 1000 },
-        "isSuspect": { "type": "boolean", "description": "RF-ING-05: Marcado sin descartar si excede rango plausible" }
+        "isSuspect": { "type": "boolean", "description": "RF-ING-05: Flagged without discarding if outside plausible range" }
       }
     },
     "habitat": {
@@ -46,7 +46,7 @@ Conforme a **[ADR-016](08-Architecture-decisions.md#adr-016)** y `RF-ING-01`, ca
     },
     "symptoms": {
       "type": "array",
-      "description": "Catálogo cerrado de 6 síntomas táctiles (RF-ING-04)",
+      "description": "Closed catalog of 6 tactile symptoms (RF-ING-04)",
       "items": {
         "type": "string",
         "enum": ["blurredVision", "headache", "nausea", "lumbarPain", "orthostaticDizziness", "extremeFatigue"]
@@ -58,9 +58,9 @@ Conforme a **[ADR-016](08-Architecture-decisions.md#adr-016)** y `RF-ING-01`, ca
 
 ---
 
-## 2. Sobre Criptográfico de Persistencia en IndexedDB (`ADR-006`, `RNF-SEC-01/03/04`)
+## 2. IndexedDB Cryptographic Persistence Envelope (`ADR-006`, `RNF-SEC-01/03/04`)
 
-De acuerdo con **[ADR-006](08-Architecture-decisions.md#adr-006)** y **SRS §5.2**, todo registro clínico se cifra localmente en **IndexedDB** utilizando la API nativa `window.crypto.subtle` sin librerías criptográficas externas ni WASM:
+In accordance with **[ADR-006](08-Architecture-decisions.md#adr-006)** and **SRS §5.2**, every clinical record is encrypted locally in **IndexedDB** using the native `window.crypto.subtle` API with no external cryptographic libraries or WASM:
 
 ```json
 {
@@ -71,32 +71,32 @@ De acuerdo con **[ADR-006](08-Architecture-decisions.md#adr-006)** y **SRS §5.2
   "properties": {
     "id": { "type": "string", "format": "uuid" },
     "hlc": { "type": "string", "example": "1794800000000:0001:tablet-c001", "description": "Hybrid Logical Clock (ADR-009)" },
-    "autor": { "type": "string", "description": "ID del dispositivo o tripulante emisor" },
-    "iv": { "type": "string", "description": "Vector de inicialización AES-GCM 96-bit en Base64" },
-    "ct": { "type": "string", "description": "Ciphertext AES-GCM-256 cifrado con clave del tripulante (ADR-012)" },
-    "sha256": { "type": "string", "description": "Suma SHA-256 del sobre para detección de bit-flips SEU (RNF-SEC-03)" },
-    "firma": { "type": "string", "description": "Firma digital Ed25519 del dispositivo + hash previo para bitácora append-only (RNF-SEC-04)" }
+    "autor": { "type": "string", "description": "Originating device or crew member ID" },
+    "iv": { "type": "string", "description": "Base64-encoded 96-bit AES-GCM initialization vector" },
+    "ct": { "type": "string", "description": "AES-GCM-256 ciphertext encrypted with the crew member's key (ADR-012)" },
+    "sha256": { "type": "string", "description": "Envelope SHA-256 checksum for SEU bit-flip detection (RNF-SEC-03)" },
+    "firma": { "type": "string", "description": "Device Ed25519 digital signature + previous hash for append-only ledger (RNF-SEC-04)" }
   }
 }
 ```
 
 ---
 
-## 3. Estructuras CRDT y Reloj Lógico Híbrido (`ADR-009`, `RNF-NET-02`)
+## 3. CRDT Structures and Hybrid Logical Clock (`ADR-009`, `RNF-NET-02`)
 
-La sincronización sin coordinación en LAN cerrada utiliza tres estructuras CRDT específicas:
+Coordination-free synchronization over the closed LAN uses three specific CRDT structures:
 
-| Estructura CRDT | Uso en ASTHA | Regla de Resolución de Conflictos |
+| CRDT Structure | Usage in ASTHA | Conflict Resolution Rule |
 | :--- | :--- | :--- |
-| **`G-Set` (Grow-Only Set)** | Registros diarios, síntomas, alertas y pasos de bitácora | Unión pura de conjuntos por `id`. Ningún dato médico se sobrescribe ni borra (`RNF-SEC-04`). |
-| **`LWW-Map` (Last-Write-Wins)** | Preferencias de usuario, modo alto contraste, estado de reconocimiento | Orden total determinista mediante `HybridLogicalClock (HLC)`: `(tiempo_fisico, contador, id_nodo)`. |
-| **`PN-Counter`** | Puntos de experiencia (XP) y racha diaria de gamificación (`RF-GAM-01..02`) | Suma convergente de incrementos locales por nodo sin colisión aritmética. |
+| **`G-Set` (Grow-Only Set)** | Daily records, symptoms, alerts, and ledger steps | Pure set union by `id`. No medical data is ever overwritten or deleted (`RNF-SEC-04`). |
+| **`LWW-Map` (Last-Write-Wins)** | User preferences, high-contrast mode, acknowledgment state | Deterministic total order via `HybridLogicalClock (HLC)`: `(physical_time, counter, node_id)`. |
+| **`PN-Counter`** | Experience points (XP) and gamification daily streak (`RF-GAM-01..02`) | Convergent summation of per-node local increments without arithmetic collision. |
 
 ---
 
-## 4. Contrato de Exportación Firmada para Tierra (`ADR-010`, `RNF-NET-04`)
+## 4. Signed Ground Export Contract (`ADR-010`, `RNF-NET-04`)
 
-Con base en **[ADR-010](08-Architecture-decisions.md#adr-010)** y `RF-REG-02`, el archivo exportado por el CMO para entrega al router DTN externo de la nave sigue este contrato:
+Based on **[ADR-010](08-Architecture-decisions.md#adr-010)** and `RF-REG-02`, the file exported by the CMO for handoff to the spacecraft's external DTN router follows this contract:
 
 ```json
 {
@@ -119,15 +119,15 @@ Con base en **[ADR-010](08-Architecture-decisions.md#adr-010)** y `RF-REG-02`, e
 
 ---
 
-## 5. Contrato de Tokens de Diseño y Ergonomía (`ADR-018`, `RNF-USA-01`, `RNF-USA-03`)
+## 5. Design and Ergonomics Token Contract (`ADR-018`, `RNF-USA-01`, `RNF-USA-03`)
 
-Cumpliendo estrictamente con **`ADR-018`** (contraste $\ge 7:1$ WCAG AAA) y **`RNF-USA-01`** (uso con guantes presurizados):
+Strictly complying with **`ADR-018`** (WCAG AAA contrast $\ge 7:1$) and **`RNF-USA-01`** (operation with pressurized gloves):
 
-| Token / Propiedad | Valor Especificado | Propósito y Cumplimiento Normativo |
+| Token / Property | Specified Value | Purpose and Standards Compliance |
 | :--- | :--- | :--- |
-| **`--bg-space`** | `#030712` | Fondo primario nocturno/OLED (bajo consumo `RNF-POW-02`). |
-| **`--bg-card`** | `#0c1222` | Superficie de tarjetas clínicas. |
-| **`--alert-red`** | `#ef4444` | **Uso exclusivo** para rellenos de estado, bordes y pulsos de alarma (**No usar en texto**). |
-| **`--alert-red-text`** | `#fca5a5` | **Uso obligatorio para texto crítico** (`ADR-018`). Contraste $10.61:1$ sobre `#030712` y $9.83:1$ sobre `#0c1222` (WCAG AAA). |
-| **`--touch-target-min`** | `48px × 48px` | Tamaño mínimo interactivo de botones y checkboxes para guantes (`RNF-USA-01`). |
-| **`--touch-gap-min`** | `12px` | Separación mínima entre controles adyacentes (`RNF-USA-01`). |
+| **`--bg-space`** | `#030712` | Primary night/OLED background (low power `RNF-POW-02`). |
+| **`--bg-card`** | `#0c1222` | Clinical card surface. |
+| **`--alert-red`** | `#ef4444` | **Exclusive use** for status fills, borders, and alarm pulses (**Do not use for text**). |
+| **`--alert-red-text`** | `#fca5a5` | **Mandatory for critical text** (`ADR-018`). Contrast ratio $10.61:1$ on `#030712` and $9.83:1$ on `#0c1222` (WCAG AAA). |
+| **`--touch-target-min`** | `48px × 48px` | Minimum interactive size for buttons and checkboxes for gloved operation (`RNF-USA-01`). |
+| **`--touch-gap-min`** | `12px` | Minimum spacing between adjacent controls (`RNF-USA-01`). |
