@@ -2355,32 +2355,32 @@
 
     function createWarningHalos() {
       // 1. Head Warning Halos (Concentric pulsing red rings for SANS Headache)
-      const headHaloGeo = new THREE.TorusGeometry(0.82, 0.03, 8, 32);
+      const headHaloGeo = new THREE.TorusGeometry(0.62, 0.025, 8, 32);
       const matHeadHalo = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.85, wireframe: true });
       headHaloMesh = new THREE.Mesh(headHaloGeo, matHeadHalo);
       headHaloMesh.rotation.x = Math.PI / 2;
-      headHaloMesh.position.y = 2.78;
+      headHaloMesh.position.y = 2.68;
       astronautGroup.add(headHaloMesh);
 
       // 2. Chest Warning Halos (Pulsing rings for Tachycardia / Chest pain)
-      const chestHaloGeo = new THREE.TorusGeometry(1.05, 0.035, 8, 32);
+      const chestHaloGeo = new THREE.TorusGeometry(0.78, 0.03, 8, 32);
       const matChestHalo = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.85, wireframe: true });
       chestHaloMesh = new THREE.Mesh(chestHaloGeo, matChestHalo);
       chestHaloMesh.rotation.x = Math.PI / 2;
-      chestHaloMesh.position.y = 1.45;
+      chestHaloMesh.position.y = 1.38;
       astronautGroup.add(chestHaloMesh);
 
       // 3. Lumbar Warning Halos (Pulsing rings around kidneys and lower back)
-      const lumbarHaloGeo = new THREE.TorusGeometry(0.85, 0.03, 8, 32);
+      const lumbarHaloGeo = new THREE.TorusGeometry(0.65, 0.025, 8, 32);
       const matLumbarHalo = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.85, wireframe: true });
       lumbarHaloMesh = new THREE.Mesh(lumbarHaloGeo, matLumbarHalo);
       lumbarHaloMesh.rotation.x = Math.PI / 2;
-      lumbarHaloMesh.position.set(0, 0.52, -0.35);
+      lumbarHaloMesh.position.set(0, 0.50, -0.24);
       astronautGroup.add(lumbarHaloMesh);
 
       // 4. Point Light Distress Beacon (Casts intense alarm light on the affected body part)
       painDistressLight = new THREE.PointLight(0xef4444, 2.5, 6);
-      painDistressLight.position.set(0, 2.8, 0.6);
+      painDistressLight.position.set(0, 2.68, 0.45);
       scene3d.add(painDistressLight);
     }
 
@@ -2434,7 +2434,7 @@
         if (lumbarHaloMesh) lumbarHaloMesh.visible = false;
         if (painDistressLight) {
           painDistressLight.color.setHex(0xf59e0b);
-          painDistressLight.position.set(0.15, 1.48, 0.6);
+          painDistressLight.position.set(0.11, 1.40, 0.45);
           painDistressLight.intensity = 2.5;
         }
 
@@ -2455,7 +2455,7 @@
         if (lumbarHaloMesh) lumbarHaloMesh.visible = true;
         if (painDistressLight) {
           painDistressLight.color.setHex(0xf59e0b);
-          painDistressLight.position.set(0, 0.52, -0.8);
+          painDistressLight.position.set(0, 0.50, -0.55);
           painDistressLight.intensity = 2.5;
         }
 
@@ -2539,26 +2539,36 @@
 
       // --- MATERIALS REPOSITORY ---
       const matSuitWhite = new THREE.MeshStandardMaterial({
-        color: 0xe0ecfa,
-        roughness: 0.35,
-        metalness: 0.25
+        color: 0xf1f5fa,
+        roughness: 0.30,
+        metalness: 0.16,
+        transparent: true,
+        opacity: 0.88
       });
       const matSuitTrim = new THREE.MeshStandardMaterial({
-        color: 0x79a7df,
-        roughness: 0.3,
-        metalness: 0.5
+        color: 0x1d4ed8,
+        roughness: 0.25,
+        metalness: 0.45
+      });
+      const matSuitGoldTrim = new THREE.MeshStandardMaterial({
+        color: 0xfacc15,
+        roughness: 0.2,
+        metalness: 0.8
       });
       const matSuitDark = new THREE.MeshStandardMaterial({
-        color: 0x081733,
-        roughness: 0.7,
-        metalness: 0.2
+        color: 0x0a1b38,
+        roughness: 0.55,
+        metalness: 0.25
       });
-      const matVisorGold = new THREE.MeshStandardMaterial({
+      const matVisorGold = new THREE.MeshPhysicalMaterial({
         color: 0xf59e0b,
-        roughness: 0.05,
         metalness: 0.95,
+        roughness: 0.10,
+        reflectivity: 0.98,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.08,
         transparent: true,
-        opacity: 0.82
+        opacity: 0.88
       });
       const matVisorCyan = new THREE.MeshStandardMaterial({
         color: 0x38bdf8,
@@ -2568,324 +2578,359 @@
         opacity: 0.65
       });
       const matPlssPack = new THREE.MeshStandardMaterial({
-        color: 0xd0e0f5,
-        roughness: 0.4,
-        metalness: 0.35
+        color: 0xdce6f2,
+        roughness: 0.35,
+        metalness: 0.3
       });
       const matTank = new THREE.MeshStandardMaterial({
-        color: 0x9fc5f8,
-        roughness: 0.2,
-        metalness: 0.75
+        color: 0x38bdf8,
+        roughness: 0.15,
+        metalness: 0.8
+      });
+
+      // Internal Humanoid Silhouette Material (visible in Hybrid mode)
+      const matHumanSilhouette = new THREE.MeshStandardMaterial({
+        color: 0x93bce8,
+        roughness: 0.5,
+        metalness: 0.1,
+        transparent: true,
+        opacity: 0.45
       });
 
       // Holographic / X-Ray Organ Materials
       const matOrganHeart = new THREE.MeshBasicMaterial({ color: 0x10b981 });
-      const matOrganLungs = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.5 });
+      const matOrganLungs = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.55 });
       const matOrganKidneys = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
       const matOrganEyes = new THREE.MeshBasicMaterial({ color: 0xef4444 });
       const matSpine = new THREE.MeshBasicMaterial({ color: 0x9fc5f8 });
       const matLaser = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65, side: THREE.DoubleSide });
 
-      // (Thermal background sphere removed for clean biometric focus)
-
       // 1. CYBERNETIC TURNTABLE PLATFORM
       // =====================================================================
-      const platformGeo = new THREE.CylinderGeometry(2.7, 2.9, 0.12, 36);
+      const platformGeo = new THREE.CylinderGeometry(2.3, 2.5, 0.10, 36);
       const platformMesh = new THREE.Mesh(platformGeo, matSuitDark);
       platformMesh.position.y = -3.4;
       astronautGroup.add(platformMesh);
 
-      const ringOuter = new THREE.Mesh(new THREE.RingGeometry(2.5, 2.56, 48), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+      const ringOuter = new THREE.Mesh(new THREE.RingGeometry(2.2, 2.25, 48), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
       ringOuter.rotation.x = -Math.PI / 2;
-      ringOuter.position.y = -3.33;
+      ringOuter.position.y = -3.34;
       astronautGroup.add(ringOuter);
 
-      const ringInner = new THREE.Mesh(new THREE.RingGeometry(1.6, 1.63, 32), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+      const ringInner = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.43, 36), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
       ringInner.rotation.x = -Math.PI / 2;
-      ringInner.position.y = -3.33;
+      ringInner.position.y = -3.34;
       astronautGroup.add(ringInner);
 
       // Radar Sweep Needle
-      const sweepGeo = new THREE.PlaneGeometry(0.04, 2.4);
+      const sweepGeo = new THREE.PlaneGeometry(0.035, 2.1);
       const sweepMesh = new THREE.Mesh(sweepGeo, new THREE.MeshBasicMaterial({ color: 0x79a7df, transparent: true, opacity: 0.7 }));
       sweepMesh.rotation.x = -Math.PI / 2;
-      sweepMesh.position.y = -3.32;
+      sweepMesh.position.y = -3.33;
       astronautGroup.add(sweepMesh);
 
       // Vertical Laser Scan Ring
-      laserScanRing = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.02, 8, 36), matLaser);
+      laserScanRing = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.018, 8, 36), matLaser);
       laserScanRing.rotation.x = Math.PI / 2;
       scene3d.add(laserScanRing);
 
       // =====================================================================
-      // 2. SUIT: BOOTS, LEGS & HIP
+      // 2. SUIT: ATHLETIC LEGS, BOOTS & PELVIS (HUMANOID PROPORTIONS)
       // =====================================================================
-      [-0.58, 0.58].forEach(x => {
-        // Chunky EVA Moon Boots
-        const bootBase = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.22, 0.78), matSuitDark);
-        bootBase.position.set(x, -3.28, 0.14);
+      [-0.38, 0.38].forEach(x => {
+        // Ergonomic Low-Profile Lunar Boots
+        const bootBase = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.16, 0.58), matSuitDark);
+        bootBase.position.set(x, -3.30, 0.10);
         suitMeshGroup.add(bootBase);
 
-        const bootUpper = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.25, 0.52), matSuitWhite);
-        bootUpper.position.set(x, -3.05, 0.05);
+        const bootUpper = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.19, 0.22, 12), matSuitWhite);
+        bootUpper.position.set(x, -3.12, 0.04);
         suitMeshGroup.add(bootUpper);
 
-        // Ankle seal ring
-        const ankleRing = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.04, 8, 16), matSuitTrim);
+        // Ankle Seal Collar Ring
+        const ankleRing = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.03, 8, 16), matSuitTrim);
         ankleRing.rotation.x = Math.PI / 2;
-        ankleRing.position.set(x, -2.9, 0);
+        ankleRing.position.set(x, -2.98, 0);
         suitMeshGroup.add(ankleRing);
 
-        // Shin / Tibia suit armor
-        const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.25, 1.25, 12), matSuitWhite);
-        shin.position.set(x, -2.25, 0);
+        // Lower Leg (Shin & Athletic Calf Gastrocnemius Contour)
+        const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.19, 1.25, 14), matSuitWhite);
+        shin.position.set(x, -2.30, 0);
         suitMeshGroup.add(shin);
 
-        // Knee accordion flex-joint
-        const kneeCap = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 12), matSuitTrim);
-        kneeCap.position.set(x, -1.58, 0.06);
+        // Anatomical Kneecap (Patella flex joint)
+        const kneeCap = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 12), matSuitTrim);
+        kneeCap.position.set(x, -1.62, 0.08);
         suitMeshGroup.add(kneeCap);
 
-        // Thigh / Femur suit armor
-        const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.23, 1.25, 12), matSuitWhite);
-        thigh.position.set(x, -0.9, 0);
+        const kneeRing = new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.025, 8, 16), matSuitGoldTrim);
+        kneeRing.rotation.x = Math.PI / 2;
+        kneeRing.position.set(x, -1.62, 0);
+        suitMeshGroup.add(kneeRing);
+
+        // Upper Leg (Quadriceps & Hamstrings Athletic Taper)
+        const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.17, 1.25, 14), matSuitWhite);
+        thigh.position.set(x, -0.95, 0);
         suitMeshGroup.add(thigh);
 
-        // Astroskin compression band around thigh
-        const thighBand = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.03, 8, 16), matSuitDark);
+        // Astroskin Biosensing Compression Band
+        const thighBand = new THREE.Mesh(new THREE.TorusGeometry(0.21, 0.025, 8, 16), matSuitDark);
         thighBand.rotation.x = Math.PI / 2;
-        thighBand.position.set(x, -0.85, 0);
+        thighBand.position.set(x, -0.92, 0);
         suitMeshGroup.add(thighBand);
       });
 
-      // Pelvis & Utility Belt
-      const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.74, 0.6, 0.55, 14), matSuitWhite);
-      pelvis.position.y = -0.25;
+      // Pelvis & Utility Belt (Slender athletic hip girdle)
+      const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.44, 0.44, 16), matSuitWhite);
+      pelvis.position.y = -0.18;
       suitMeshGroup.add(pelvis);
 
-      const belt = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.06, 8, 24), matSuitDark);
+      const belt = new THREE.Mesh(new THREE.TorusGeometry(0.50, 0.045, 8, 24), matSuitDark);
       belt.rotation.x = Math.PI / 2;
-      belt.position.y = -0.05;
+      belt.position.y = 0.02;
       suitMeshGroup.add(belt);
 
-      // Telemetry Hub Box on right hip
-      const hipHub = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.25, 0.15), matSuitTrim);
-      hipHub.position.set(0.76, -0.05, 0);
+      // Compact Telemetry Hub on Hip
+      const hipHub = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.18, 0.10), matSuitTrim);
+      hipHub.position.set(0.52, 0.02, 0);
       suitMeshGroup.add(hipHub);
 
       // =====================================================================
-      // 3. SUIT: TORSO, CHEST HARNESS & PLSS BACKPACK
+      // 3. SUIT: ATHLETIC V-TAPER TORSO & STREAMLINED PLSS PACK
       // =====================================================================
-      // Torso Abdomen (Flexible waist)
-      const abdomen = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.74, 0.7, 14), matSuitDark);
+      // Slender Athletic Waist / Abdomen
+      const abdomen = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.52, 0.65, 16), matSuitDark);
       abdomen.position.y = 0.38;
       suitMeshGroup.add(abdomen);
 
-      // Chest / Rib Carapace
-      const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.92, 0.74, 1.15, 16), matSuitWhite);
-      chestArmor.position.y = 1.32;
+      // Broad Athletic Chest (V-Taper Carapace)
+      const chestArmor = new THREE.Mesh(new THREE.CylinderGeometry(0.66, 0.48, 1.05, 18), matSuitWhite);
+      chestArmor.position.y = 1.25;
       suitMeshGroup.add(chestArmor);
 
-      // Astroskin Chest Pletysmography Bands
-      const chestBandTop = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.03, 8, 24), matSuitDark);
+      // Sculpted Pectoral Armor Plates (Left & Right)
+      [-0.18, 0.18].forEach(px => {
+        const pecPlate = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.32, 0.08), matSuitWhite);
+        pecPlate.position.set(px, 1.40, 0.46);
+        pecPlate.rotation.y = (px > 0 ? -0.15 : 0.15);
+        suitMeshGroup.add(pecPlate);
+      });
+
+      // Astroskin Chest Pletysmography Sensor Bands
+      const chestBandTop = new THREE.Mesh(new THREE.TorusGeometry(0.64, 0.025, 8, 24), matSuitDark);
       chestBandTop.rotation.x = Math.PI / 2;
-      chestBandTop.position.y = 1.6;
+      chestBandTop.position.y = 1.52;
       suitMeshGroup.add(chestBandTop);
 
-      const chestBandBot = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.03, 8, 24), matSuitDark);
+      const chestBandBot = new THREE.Mesh(new THREE.TorusGeometry(0.54, 0.025, 8, 24), matSuitDark);
       chestBandBot.rotation.x = Math.PI / 2;
-      chestBandBot.position.y = 1.1;
+      chestBandBot.position.y = 1.02;
       suitMeshGroup.add(chestBandBot);
 
       // Central Medical Status Beacon on Sternum
-      chestBeacon = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.06, 12), new THREE.MeshBasicMaterial({ color: 0x10b981 }));
+      chestBeacon = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.05, 12), new THREE.MeshBasicMaterial({ color: 0x10b981 }));
       chestBeacon.rotation.x = Math.PI / 2;
-      chestBeacon.position.set(0, 1.45, 0.92);
+      chestBeacon.position.set(0, 1.42, 0.54);
       suitMeshGroup.add(chestBeacon);
 
-      // --- NASA PLSS LIFE SUPPORT BACKPACK (POSTERIOR ESPALDA) ---
-      const plssMain = new THREE.Mesh(new THREE.BoxGeometry(1.25, 1.55, 0.52), matPlssPack);
-      plssMain.position.set(0, 1.35, -0.72);
+      // --- STREAMLINED NASA PLSS BACKPACK (AERODYNAMIC CONTOURED PACK) ---
+      const plssMain = new THREE.Mesh(new THREE.BoxGeometry(0.82, 1.25, 0.32), matPlssPack);
+      plssMain.position.set(0, 1.28, -0.44);
       suitMeshGroup.add(plssMain);
 
-      // PLSS Oxygen / Nitrogen Tanks (Two Cylinders on the back)
-      [-0.32, 0.32].forEach(tx => {
-        const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 1.15, 12), matTank);
-        tank.position.set(tx, 1.4, -1.02);
+      // PLSS Oxygen / Nitrogen Composite Tanks (Compact & Sleek)
+      [-0.22, 0.22].forEach(tx => {
+        const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.10, 0.95, 12), matTank);
+        tank.position.set(tx, 1.30, -0.62);
         suitMeshGroup.add(tank);
 
-        const tankCapTop = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), matTank);
-        tankCapTop.position.set(tx, 1.98, -1.02);
+        const tankCapTop = new THREE.Mesh(new THREE.SphereGeometry(0.10, 8, 8), matTank);
+        tankCapTop.position.set(tx, 1.78, -0.62);
         suitMeshGroup.add(tankCapTop);
 
-        const tankCapBot = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), matTank);
-        tankCapBot.position.set(tx, 0.82, -1.02);
+        const tankCapBot = new THREE.Mesh(new THREE.SphereGeometry(0.10, 8, 8), matTank);
+        tankCapBot.position.set(tx, 0.82, -0.62);
         suitMeshGroup.add(tankCapBot);
       });
 
-      // PLSS Top Telemetry Antenna
-      const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.5, 6), matSuitTrim);
-      antenna.position.set(0.4, 2.35, -0.85);
+      // Sleek Top Antenna
+      const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.42, 6), matSuitTrim);
+      antenna.position.set(0.28, 2.05, -0.52);
       suitMeshGroup.add(antenna);
 
       // Umbilical Coolant Hose from PLSS into Hip
       const hoseCurve = new THREE.CubicBezierCurve3(
-        new THREE.Vector3(-0.55, 0.8, -0.75),
-        new THREE.Vector3(-0.95, 0.4, -0.7),
-        new THREE.Vector3(-0.9, 0.0, -0.3),
-        new THREE.Vector3(-0.7, -0.1, 0.1)
+        new THREE.Vector3(-0.38, 0.85, -0.45),
+        new THREE.Vector3(-0.65, 0.50, -0.40),
+        new THREE.Vector3(-0.62, 0.15, -0.20),
+        new THREE.Vector3(-0.48, 0.02, 0.05)
       );
-      const hoseGeo = new THREE.TubeGeometry(hoseCurve, 20, 0.05, 8, false);
+      const hoseGeo = new THREE.TubeGeometry(hoseCurve, 18, 0.035, 8, false);
       const hoseMesh = new THREE.Mesh(hoseGeo, matSuitDark);
       suitMeshGroup.add(hoseMesh);
 
       // =====================================================================
-      // 4. SUIT: SHOULDERS, ARMS & GLOVES WITH WRIST COMPUTER
+      // 4. SUIT: SHOULDERS, ATHLETIC ARMS & ERGONOMIC GLOVES
       // =====================================================================
-      [-1.12, 1.12].forEach(x => {
-        // Shoulder Pauldron / Bell
-        const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 14), matSuitWhite);
-        shoulder.position.set(x, 1.82, 0);
+      [-0.82, 0.82].forEach(x => {
+        // Natural Athletic Shoulder (Deltoid Bell)
+        const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.22, 14, 14), matSuitWhite);
+        shoulder.position.set(x, 1.74, 0);
         suitMeshGroup.add(shoulder);
 
-        // NASA Blue Deltoid Ring
-        const deltoidRing = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.04, 8, 16), matSuitTrim);
+        // NASA Blue Deltoid Insignia Ring
+        const deltoidRing = new THREE.Mesh(new THREE.TorusGeometry(0.20, 0.03, 8, 16), matSuitTrim);
         deltoidRing.rotation.y = Math.PI / 2;
-        deltoidRing.position.set(x * 1.08, 1.82, 0);
+        deltoidRing.position.set(x * 1.06, 1.74, 0);
         suitMeshGroup.add(deltoidRing);
 
-        // Bicep suit segment
-        const bicep = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.85, 10), matSuitWhite);
-        bicep.position.set(x * 1.08, 1.25, 0);
+        // Bicep (Tapered upper arm with natural 5° ergonomic outward angle)
+        const bicep = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.12, 0.75, 12), matSuitWhite);
+        bicep.position.set(x * 1.06, 1.25, 0.02);
+        bicep.rotation.z = (x > 0 ? -0.08 : 0.08);
         suitMeshGroup.add(bicep);
 
-        // Elbow flex accordion
-        const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.19, 10, 10), matSuitDark);
-        elbow.position.set(x * 1.12, 0.72, 0);
+        // Elbow Joint
+        const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), matSuitDark);
+        elbow.position.set(x * 1.10, 0.78, 0.02);
         suitMeshGroup.add(elbow);
 
-        // Forearm segment
-        const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.15, 0.8, 10), matSuitWhite);
-        forearm.position.set(x * 1.15, 0.22, 0);
+        // Forearm (Graceful anatomical taper to wrist)
+        const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.09, 0.70, 12), matSuitWhite);
+        forearm.position.set(x * 1.12, 0.35, 0.03);
+        forearm.rotation.z = (x > 0 ? -0.06 : 0.06);
         suitMeshGroup.add(forearm);
 
-        // Left Wrist Cuff Display Computer
+        // Wrist Display Screen on Left Arm
         if (x < 0) {
-          const cuffScreen = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.24, 0.06), matSuitDark);
-          cuffScreen.position.set(-1.3, 0.22, 0.14);
+          const cuffScreen = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.18, 0.05), matSuitDark);
+          cuffScreen.position.set(-1.05, 0.35, 0.12);
           suitMeshGroup.add(cuffScreen);
 
-          const cuffGlow = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.18), new THREE.MeshBasicMaterial({ color: 0x10b981 }));
-          cuffGlow.position.set(-1.3, 0.22, 0.18);
+          const cuffGlow = new THREE.Mesh(new THREE.PlaneGeometry(0.10, 0.14), new THREE.MeshBasicMaterial({ color: 0x10b981 }));
+          cuffGlow.position.set(-1.05, 0.35, 0.15);
           suitMeshGroup.add(cuffGlow);
         }
 
-        // Pressurized Gloves
-        const palm = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.22, 0.16), matSuitDark);
-        palm.position.set(x * 1.16, -0.28, 0);
+        // Sleek Pressurized Glove with Opposable Thumb
+        const palm = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.16, 0.12), matSuitDark);
+        palm.position.set(x * 1.14, -0.08, 0.03);
         suitMeshGroup.add(palm);
 
-        // Fingers / Thumb
-        const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.12, 6), matSuitDark);
-        thumb.position.set(x * 1.08, -0.22, 0.1);
+        const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.10, 6), matSuitDark);
+        thumb.position.set(x * 1.08, -0.04, 0.09);
+        thumb.rotation.x = Math.PI / 4;
         suitMeshGroup.add(thumb);
       });
 
       // =====================================================================
-      // 5. HELMET, VISOR & OPTIC HEAD MODULE
+      // 5. HELMET, VISOR & ANATOMICAL FACE SILHOUETTE
       // =====================================================================
-      // Neck Collar Lock Ring
-      const neckCollar = new THREE.Mesh(new THREE.TorusGeometry(0.44, 0.07, 8, 24), matSuitTrim);
+      // Anatomical Cervical Neck Column
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.32, 14), matSuitDark);
+      neck.position.y = 2.05;
+      suitMeshGroup.add(neck);
+
+      // Neck Collar Seal Ring
+      const neckCollar = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.045, 8, 24), matSuitTrim);
       neckCollar.rotation.x = Math.PI / 2;
-      neckCollar.position.y = 2.12;
+      neckCollar.position.y = 2.14;
       suitMeshGroup.add(neckCollar);
 
-      // Outer Helmet Dome
-      const helmetDome = new THREE.Mesh(new THREE.SphereGeometry(0.65, 20, 20), matSuitWhite);
-      helmetDome.position.y = 2.72;
+      // Aerodynamic Streamlined Helmet Dome (Teardrop contour)
+      const helmetDome = new THREE.Mesh(new THREE.SphereGeometry(0.48, 24, 24), matSuitWhite);
+      helmetDome.position.set(0, 2.65, 0.02);
+      helmetDome.scale.set(0.94, 1.06, 0.98);
       suitMeshGroup.add(helmetDome);
 
       // Helmet Task Lights on Temples
-      [-0.6, 0.6].forEach(hx => {
-        const lightPod = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.18, 8), matSuitTrim);
+      [-0.44, 0.44].forEach(hx => {
+        const lightPod = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.12, 8), matSuitTrim);
         lightPod.rotation.z = Math.PI / 2;
-        lightPod.position.set(hx, 2.8, 0.1);
+        lightPod.position.set(hx, 2.72, 0.08);
         suitMeshGroup.add(lightPod);
 
-        const lightLens = new THREE.Mesh(new THREE.CircleGeometry(0.05, 8), new THREE.MeshBasicMaterial({ color: 0xd8e8fc }));
-        lightLens.position.set(hx * 1.15, 2.8, 0.1);
+        const lightLens = new THREE.Mesh(new THREE.CircleGeometry(0.035, 8), new THREE.MeshBasicMaterial({ color: 0xd8e8fc }));
+        lightLens.position.set(hx * 1.14, 2.72, 0.08);
         lightLens.rotation.y = (hx > 0 ? Math.PI / 2 : -Math.PI / 2);
         suitMeshGroup.add(lightLens);
       });
 
-      // Bubble Gold/Cyan Reflective Visor
-      const visorGeo = new THREE.SphereGeometry(0.61, 24, 24, -Math.PI / 2, Math.PI, 0, Math.PI / 1.35);
+      // Bubble Gold Reflective Visor
+      const visorGeo = new THREE.SphereGeometry(0.45, 24, 24, -Math.PI / 2, Math.PI, 0, Math.PI / 1.35);
       const visorMesh = new THREE.Mesh(visorGeo, matVisorGold);
-      visorMesh.position.set(0, 2.72, 0.06);
+      visorMesh.position.set(0, 2.65, 0.05);
+      visorMesh.scale.set(0.95, 1.05, 0.98);
       suitMeshGroup.add(visorMesh);
+
+      // Stylized Human Head & Jawline Profile (Visible through visor in Hybrid Mode)
+      const headProfile = new THREE.Mesh(new THREE.SphereGeometry(0.24, 14, 14), matHumanSilhouette);
+      headProfile.position.set(0, 2.64, 0.03);
+      headProfile.scale.set(0.85, 1.08, 0.95);
+      organMeshGroup.add(headProfile);
 
       // =====================================================================
       // 6. INTERNAL ANATOMICAL ORGANS (HOLOGRAPHIC / X-RAY LAYER)
       // =====================================================================
-      // Brain & Optic Nerves behind visor
-      const brain = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), new THREE.MeshBasicMaterial({ color: 0x9fc5f8, wireframe: true }));
-      brain.position.set(0, 2.8, 0.05);
+      // Brain Wireframe with Optic Chiasm
+      const brain = new THREE.Mesh(new THREE.SphereGeometry(0.19, 12, 12), new THREE.MeshBasicMaterial({ color: 0x9fc5f8, wireframe: true }));
+      brain.position.set(0, 2.70, 0.03);
       organMeshGroup.add(brain);
 
       // Ocular Nodes (Eyes for SANS Risk Detection)
-      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), matOrganEyes);
-      eyeL.position.set(-0.16, 2.74, 0.45);
+      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 10), matOrganEyes);
+      eyeL.position.set(-0.11, 2.66, 0.26);
       organMeshGroup.add(eyeL);
 
-      const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), matOrganEyes);
-      eyeR.position.set(0.16, 2.74, 0.45);
+      const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 10), matOrganEyes);
+      eyeR.position.set(0.11, 2.66, 0.26);
       organMeshGroup.add(eyeR);
       meshEyesNode = [eyeL, eyeR];
 
-      // Heart with Aorta in Left Hemithorax
-      meshHeartNode = new THREE.Mesh(new THREE.OctahedronGeometry(0.22, 0), matOrganHeart);
-      meshHeartNode.position.set(0.15, 1.48, 0.25);
+      // Heart with Aorta in Left Hemithorax (Pulsating)
+      meshHeartNode = new THREE.Mesh(new THREE.OctahedronGeometry(0.16, 0), matOrganHeart);
+      meshHeartNode.position.set(0.11, 1.40, 0.18);
       organMeshGroup.add(meshHeartNode);
 
-      const aorta = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.03, 6, 12, Math.PI), new THREE.MeshBasicMaterial({ color: 0xf43f5e }));
-      aorta.position.set(0.15, 1.65, 0.25);
+      const aorta = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.025, 6, 12, Math.PI), new THREE.MeshBasicMaterial({ color: 0xf43f5e }));
+      aorta.position.set(0.11, 1.54, 0.18);
       organMeshGroup.add(aorta);
 
       // Translucent Breathing Lungs (Left & Right)
-      meshLungsLeft = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.65, 0.35), matOrganLungs);
-      meshLungsLeft.position.set(0.38, 1.4, 0.15);
+      meshLungsLeft = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.52, 0.24), matOrganLungs);
+      meshLungsLeft.position.set(0.26, 1.34, 0.12);
       organMeshGroup.add(meshLungsLeft);
 
-      meshLungsRight = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.65, 0.35), matOrganLungs);
-      meshLungsRight.position.set(-0.38, 1.4, 0.15);
+      meshLungsRight = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.52, 0.24), matOrganLungs);
+      meshLungsRight.position.set(-0.26, 1.34, 0.12);
       organMeshGroup.add(meshLungsRight);
 
       // Posterior Lumbar Vertebrae & Spine Column (z < 0)
       for (let i = 0; i < 8; i++) {
-        const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.08, 8), matSpine);
+        const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.06, 8), matSpine);
         disc.rotation.x = Math.PI / 2;
-        disc.position.set(0, 0.1 + i * 0.22, -0.38);
+        disc.position.set(0, 0.1 + i * 0.20, -0.26);
         organMeshGroup.add(disc);
       }
 
       // Kidneys (Two Glowing Bean-Shaped Spheres on Posterior Back)
-      const kidneyL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 10), matOrganKidneys);
-      kidneyL.position.set(-0.34, 0.52, -0.32);
+      const kidneyL = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), matOrganKidneys);
+      kidneyL.position.set(-0.24, 0.50, -0.22);
       organMeshGroup.add(kidneyL);
 
-      const kidneyR = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 10), matOrganKidneys);
-      kidneyR.position.set(0.34, 0.52, -0.32);
+      const kidneyR = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), matOrganKidneys);
+      kidneyR.position.set(0.24, 0.50, -0.22);
       organMeshGroup.add(kidneyR);
       meshKidneys = [kidneyL, kidneyR];
 
       // Internal Femur & Tibia Bones
-      [-0.58, 0.58].forEach(bx => {
-        const femurBone = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.1, 6), matSpine);
-        femurBone.position.set(bx, -0.9, 0);
+      [-0.38, 0.38].forEach(bx => {
+        const femurBone = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.10, 6), matSpine);
+        femurBone.position.set(bx, -0.95, 0);
         organMeshGroup.add(femurBone);
 
-        const tibiaBone = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 1.1, 6), matSpine);
-        tibiaBone.position.set(bx, -2.25, 0);
+        const tibiaBone = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.10, 6), matSpine);
+        tibiaBone.position.set(bx, -2.30, 0);
         organMeshGroup.add(tibiaBone);
       });
 
@@ -3004,9 +3049,9 @@
       const container3d = document.getElementById('container-3d');
       if (calloutPin && container3d && camera3d) {
         const targetWorldPos = new THREE.Vector3();
-        if (currentPainSymptom === 'sans') targetWorldPos.set(0, 2.9, 0.45);
-        else if (currentPainSymptom === 'heart') targetWorldPos.set(0.15, 1.5, 0.3);
-        else if (currentPainSymptom === 'kidneys') targetWorldPos.set(0, 0.55, -0.4);
+        if (currentPainSymptom === 'sans') targetWorldPos.set(0, 2.85, 0.15);
+        else if (currentPainSymptom === 'heart') targetWorldPos.set(0.11, 1.40, 0.45);
+        else if (currentPainSymptom === 'kidneys') targetWorldPos.set(0, 0.50, -0.45);
         else targetWorldPos.set(0, 3.4, 0);
 
         // Apply astronaut group's rotation
