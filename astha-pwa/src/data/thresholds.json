@@ -3,8 +3,8 @@
   "_gapRule": "Un valor entre dos bandas se clasifica en la más grave (SRS §6.1). Excepción explícita del SRS: radiación 81-100 µSv/h es Precaución, por eso su banda de precaución llega a 100.",
   "indicators": {
     "hr": {
-      "label": "Frecuencia cardiaca",
-      "short": "FC",
+      "label": "Heart Rate",
+      "short": "RH",
       "unit": "bpm",
       "scope": "crew",
       "decimals": 0,
@@ -43,7 +43,7 @@
       ]
     },
     "hrv": {
-      "label": "Variabilidad cardiaca (rMSSD)",
+      "label": "Heart Rate Variability (rMSSD)",
       "short": "HRV",
       "unit": "ms",
       "scope": "crew",
@@ -73,8 +73,8 @@
       ]
     },
     "sbp": {
-      "label": "Presión sistólica",
-      "short": "PAS",
+      "label": "Systolic Blood Pressure",
+      "short": "SBP",
       "unit": "mmHg",
       "scope": "crew",
       "decimals": 0,
@@ -101,8 +101,8 @@
       ]
     },
     "dbp": {
-      "label": "Presión diastólica",
-      "short": "PAD",
+      "label": "Diastolic Blood Pressure",
+      "short": "DBP",
       "unit": "mmHg",
       "scope": "crew",
       "decimals": 0,
@@ -129,7 +129,7 @@
       ]
     },
     "spo2": {
-      "label": "Saturación de oxígeno",
+      "label": "Oxygen Saturation",
       "short": "SpO₂",
       "unit": "%",
       "scope": "crew",
@@ -158,7 +158,7 @@
       ]
     },
     "glucose": {
-      "label": "Glucemia en ayunas",
+      "label": "Fasting Glucose",
       "short": "Glu",
       "unit": "mg/dL",
       "scope": "crew",
@@ -198,7 +198,7 @@
       ]
     },
     "temp": {
-      "label": "Temperatura corporal",
+      "label": "Body Temperature",
       "short": "Temp",
       "unit": "°C",
       "scope": "crew",
@@ -226,8 +226,8 @@
       ]
     },
     "sleep": {
-      "label": "Sueño diario",
-      "short": "Sueño",
+      "label": "Daily Sleep",
+      "short": "Sleep",
       "unit": "h",
       "scope": "crew",
       "decimals": 1,
@@ -256,8 +256,8 @@
       ]
     },
     "mood": {
-      "label": "Ánimo",
-      "short": "Ánimo",
+      "label": "Mood",
+      "short": "Mood",
       "unit": "/10",
       "scope": "crew",
       "decimals": 0,
@@ -285,9 +285,9 @@
       ]
     },
     "urineCa": {
-      "label": "Calcio urinario",
-      "short": "Ca orina",
-      "unit": "mg/día",
+      "label": "Urinary Calcium",
+      "short": "Urine Ca",
+      "unit": "mg/day",
       "scope": "crew",
       "decimals": 0,
       "plausible": [
@@ -314,7 +314,7 @@
       ]
     },
     "ppco2": {
-      "label": "ppCO₂ de cabina",
+      "label": "Cabin ppCO₂",
       "short": "ppCO₂",
       "unit": "mmHg",
       "scope": "habitat",
@@ -343,8 +343,8 @@
       ]
     },
     "pressure": {
-      "label": "Presión de cabina",
-      "short": "P cab",
+      "label": "Cabin Pressure",
+      "short": "Cab P",
       "unit": "kPa",
       "scope": "habitat",
       "decimals": 1,
@@ -386,7 +386,7 @@
       ]
     },
     "o2": {
-      "label": "Oxígeno en cabina",
+      "label": "Cabin Oxygen",
       "short": "O₂",
       "unit": "%",
       "scope": "habitat",
@@ -422,7 +422,7 @@
       ]
     },
     "radiation": {
-      "label": "Tasa de dosis (CANS)",
+      "label": "Dose Rate (CANS)",
       "short": "Rad",
       "unit": "µSv/h",
       "scope": "habitat",
@@ -451,8 +451,8 @@
       ]
     },
     "cabinTemp": {
-      "label": "Temperatura de cabina",
-      "short": "T cab",
+      "label": "Cabin Temperature",
+      "short": "Cab T",
       "unit": "°C",
       "scope": "habitat",
       "decimals": 1,
@@ -490,8 +490,8 @@
       ]
     },
     "humidity": {
-      "label": "Humedad relativa",
-      "short": "HR",
+      "label": "Relative Humidity",
+      "short": "RH",
       "unit": "%",
       "scope": "habitat",
       "decimals": 0,

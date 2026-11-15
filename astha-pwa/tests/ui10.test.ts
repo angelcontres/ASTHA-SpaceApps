@@ -94,4 +94,43 @@ describe('UI-10 · View B Code Red SPE & Complementary Modals', () => {
     expect(sim).toContain('SCENARIO_IDS');
     expect(sim).toContain('bridge.exportData');
   });
+
+  it('keeps all clinical UI data and engine output generators strictly in English', () => {
+    const SPANISH = /[áéíóúñÁÉÍÓÚÑ¿¡]/;
+    const organs = JSON.parse(read('src/data/organs.json')) as Record<string, Record<string, { label?: string }>>;
+    for (const grp of [organs.regions, organs.systems, organs.symptoms]) {
+      for (const item of Object.values(grp)) expect(item.label ?? '').not.toMatch(SPANISH);
+    }
+
+    const thresholds = JSON.parse(read('src/data/thresholds.json')) as { indicators: Record<string, { label: string; short: string; unit: string }> };
+    for (const ind of Object.values(thresholds.indicators)) {
+      expect(`${ind.label} ${ind.short} ${ind.unit}`).not.toMatch(SPANISH);
+    }
+
+    const rules = JSON.parse(read('src/data/rules.json')) as { correlation: Array<{ summary: string }> };
+    for (const r of rules.correlation) expect(r.summary).not.toMatch(SPANISH);
+
+    const synthetic = JSON.parse(read('src/data/synthetic_180d.json')) as {
+      crew: Array<{ name: string }>;
+      scenarios: Record<string, { label?: string }>;
+    };
+    for (const c of synthetic.crew) expect(c.name).not.toMatch(SPANISH);
+    for (const s of Object.values(synthetic.scenarios)) {
+      if (s?.label) expect(s.label).not.toMatch(SPANISH);
+    }
+
+    for (const item of Object.values(CATALOG.inventory)) expect(item).not.toMatch(SPANISH);
+    for (const def of Object.values(CATALOG.glossary)) expect(def).not.toMatch(SPANISH);
+    for (const p of Object.values(CATALOG.protocols)) {
+      const text = [p.title, p.what, p.severity, p.timeToImpact, p.fsMessage ?? '', ...p.steps.map((s) => s.text)].join(' ');
+      expect(text).not.toMatch(SPANISH);
+    }
+
+    for (const rel of ['src/engine/pipeline.ts', 'src/engine/correlation.ts', 'src/engine/gamification.ts']) {
+      const nonComment = read(rel)
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/\/\/.*$/gm, '');
+      expect(nonComment).not.toMatch(SPANISH);
+    }
+  });
 });
