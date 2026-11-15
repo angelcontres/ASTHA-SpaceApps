@@ -6,25 +6,26 @@
 
 | **Metadato** | **Especificación Oficial de Ingeniería** |
 | :--- | :--- |
-| **Identificador del Documento** | `NASA-ASTHA-SDD-2026-REV-2.0` |
+| **Identificador del Documento** | `NASA-ASTHA-SDD-2026-REV-3.0` *(Histórico Consolidado — Ver `docs/SDD/` para Baseline Canónico)* |
 | **Estándar de Ingeniería** | **NASA-STD-8739.8** (Software Engineering Requirements) / **IEEE Std 1016-2009** |
 | **Estándares Médicos de Referencia** | **NASA-STD-3001** (Vol 1: Crew Health; Vol 2: Habitat Ergonomics & ECLSS) |
 | **Clasificación de Seguridad de Software** | **Class B – Non-Core Avionics / Mission Critical Crew Safety Supporting Software** |
-| **Arquitectura de Referencia** | *Hexagonal Edge Architecture (Ports & Adapters) + Store-and-Forward DTN* |
-| **Misión Operativa de Referencia** | Tránsito Interplanetario a Marte (*Deep Space Transport DST-1*) / 400M km / Latencia 22 min |
-| **Estado de Verificación** | **Fase 2: Diseño Detallado Aprobado (Baseline)** |
+| **Arquitectura de Referencia** | *Hexagonal Event-Driven Web Workers (Svelte 5 + uPlot + Three.js Bajo Demanda) + IndexedDB WebCrypto + Sync Hub LAN* |
+| **Misión Operativa de Referencia** | Tránsito Interplanetario a Marte (*Deep Space Transport DST-1*) / LAN Aislada Zero-WAN |
+| **Estado de Verificación** | **Fase 2: Diseño Detallado Aprobado (Baseline v3.0.0 — Cero Desfase SRS/ADR)** |
 
 ---
 
-> 💡 **Colección Modular Disponible:**  
-> Este documento técnico contiene la especificación consolidada. Para una exploración modular por áreas especializadas con diagramas UML dedicados, consulte el directorio [**docs/SDD/**](SDD/README.md) y sus 7 módulos:
-> * [**SDD-01:** Arquitectura Global del Sistema](SDD/01-Arquitectura-Global-del-Sistema.md)
-> * [**SDD-02:** Diagrama de Clases UML](SDD/02-Diagrama-de-Clases-UML.md)
-> * [**SDD-03:** Diagramas de Secuencia UML (3 Escenarios)](SDD/03-Diagramas-de-Secuencia-UML.md)
-> * [**SDD-04:** Diagrama de Componentes UML](SDD/04-Diagrama-de-Componentes-UML.md)
-> * [**SDD-05:** Diagrama de Despliegue UML (Topología DST-1)](SDD/05-Diagrama-de-Despliegue-UML.md)
-> * [**SDD-06:** Diseño de Datos y Contratos de Interfaz (JSON Schema)](SDD/06-Diseno-de-Datos-y-Contratos-de-Interfaz.md)
-> * [**SDD-07:** Matriz de Trazabilidad Requisitos a Diseño (RTM)](SDD/07-Matriz-de-Trazabilidad-SRS-a-SDD.md)
+> ⚠️ **AVISO DE AUTORIDAD DOCUMENTAL (`ADR-001`):**  
+> La **especificación canónica vigente (v3.0.0 — Cero Desfase con SRS y ADRs 001–020)** reside en el directorio modular [**docs/SDD/**](SDD/README.md). Este archivo monolítico se conserva únicamente como referencia histórica preliminar; ante cualquier discrepancia prevalece la colección modular:
+> * [**SDD-01:** Arquitectura Global (Workers, Presupuestos <5W/3% CPU, Z-Score MAD)](SDD/01-Arquitectura-Global-del-Sistema.md)
+> * [**SDD-02:** Diagrama de Clases UML (Entidades SRS §5.1, WebCrypto AES-GCM, CRDT)](SDD/02-Diagrama-de-Clases-UML.md)
+> * [**SDD-03:** Diagramas de Secuencia UML (Escalada ADR-013, 3D Bajo Demanda, JSON Firmado)](SDD/03-Diagramas-de-Secuencia-UML.md)
+> * [**SDD-04:** Diagrama de Componentes UML (Svelte 5, uPlot, 2 Workers, Sync Hub)](SDD/04-Diagrama-de-Componentes-UML.md)
+> * [**SDD-05:** Diagrama de Despliegue UML (LAN Aislada C4-L4, CA Interna, Cabina ADR-014)](SDD/05-Diagrama-de-Despliegue-UML.md)
+> * [**SDD-06:** Diseño de Datos y Contratos de Interfaz (Schemas SRS, CRDT, Tokens AAA)](SDD/06-Diseno-de-Datos-y-Contratos-de-Interfaz.md)
+> * [**SDD-07:** Matriz de Trazabilidad Completa SRS a SDD (42 RF + 19 RNF + 10 R-* + 3 D-*)](SDD/07-Matriz-de-Trazabilidad-SRS-a-SDD.md)
+> * [**SDD-08:** Registro de Decisiones de Arquitectura (ADR-001 a ADR-020)](SDD/08-Architecture-decisions.md)
 
 ---
 
