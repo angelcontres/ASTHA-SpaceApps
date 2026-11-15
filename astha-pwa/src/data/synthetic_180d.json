@@ -6,7 +6,7 @@
   "crew": [
     {
       "id": "C001",
-      "name": "Cmdte. Lía Ortega",
+      "name": "Cmdte. Rachel Calloway",
       "role": "commander",
       "pin": "1001",
       "baseline": {
@@ -33,7 +33,7 @@
     },
     {
       "id": "C002",
-      "name": "Dra. Nayra Quispe",
+      "name": "Dra. Lauren Pierce",
       "role": "cmo",
       "pin": "1002",
       "baseline": {
@@ -54,7 +54,7 @@
     },
     {
       "id": "C003",
-      "name": "Ing. Tomás Varga",
+      "name": "Ing. Marcus Dalton",
       "role": "engineer",
       "pin": "1003",
       "baseline": {
@@ -86,7 +86,7 @@
     },
     {
       "id": "C004",
-      "name": "Esp. Aiko Mendel",
+      "name": "Esp. Hannah Sutton",
       "role": "specialist",
       "pin": "1004",
       "baseline": {

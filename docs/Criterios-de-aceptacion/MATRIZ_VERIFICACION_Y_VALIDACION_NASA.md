@@ -50,9 +50,9 @@ This matrix consolidates bidirectional traceability among **SRS Requirements**, 
 
 | Requirement ID | RNF Requirement | AC Criterion | Method | Verification Procedure Executed | Observed Result | Status |
 | :--- | :--- | :---: | :---: | :--- | :--- | :---: |
-| **RNF-POW-01** | Sustained idle electrical power draw $< 5\text{ W}$ | `AC-TECH-02` | **T** | Power consumption measurement on reference hardware power bench. | Average steady-state consumption of $3.4\text{ W}$. | **PASS** |
-| **RNF-POW-02** | Sustained CPU load $< 15\%$ of a single core | `AC-TECH-02` | **T** | CPU profiling with 4 continuous streams and active Chart.js rendering. | Sustained CPU load of $7.8\%$ (target: $< 15\%$). | **PASS** |
-| **RNF-POW-03** | Switching to electrical contingency mode at 0.2 fps | `AC-TECH-02` | **D, T** | Injection of `BATTERY_CRITICAL` event from spacecraft EPS bus. | Rate reduced to 0.2 fps and OLED brightness dimmed to 20%. | **PASS** |
+| **RNF-POW-01** | No polling; sustained CPU $\le 3.0\%$ in passive monitoring | `AC-TECH-02` | **T** | CPU profiling of the PWA in passive monitoring (DevTools Performance). | Pending measurement on reference hardware. | **PENDING** |
+| **RNF-POW-02** | Software power draw $< 350\text{ mW}$; $\ge 16$ h per charge | `AC-TECH-02` | **T** | Battery drain over 8 continuous hours on a touch test device. | Pending measurement on reference hardware. | **PENDING** |
+| **ADR-019** | Automatic contingency mode at 0.2 fps on critical battery | `AC-TECH-02` | **D, T** | Battery Status API event or simulated EPS signal from the Simulator tab. | Routine telemetry repaint every 5 s, 30 % dimming, critical alerts immediate (`tests/power.test.ts`). | **PASS (unit)** |
 | **RNF-USA-01** | Zero cryptic medical jargon and interactive checklists | `AC-CLIN-06` | **I** | User experience audit under fatigue/stress conditions. | 100% of checklists executable by non-medical personnel. | **PASS** |
 | **RNF-USA-02** | Touch response time $< 100\text{ ms}$ when tapping organs | `AC-TECH-01` | **T** | Interval measurement between touch event and screen repaint using Chrome Tracing. | Average latency of $38\text{ ms}$ (target: $< 100\text{ ms}$). | **PASS** |
 | **RNF-USA-03** | Dual channel (color + icon/shape/pulse) per WCAG 2.1 | `AC-CLIN-07` | **I** | Luminance contrast verification ($> 7:1$) and zero color-only reliance. | WCAG 2.1 Level AAA compliance. | **PASS** |

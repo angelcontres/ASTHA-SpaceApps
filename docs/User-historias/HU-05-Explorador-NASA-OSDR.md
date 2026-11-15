@@ -49,7 +49,7 @@
 ### 🧪 Acceptance Criteria (Gherkin BDD):
 
 #### Scenario 1: Navigating flight phases per astronaut
-* **Given** the user has selected Dr. Sian Proctor (C003),
+* **Given** the user has selected Dr. Marcus Dalton (C003),
 * **When** they click the flight-phase buttons (`L-44`, `FD-01`, `FD-02`, `FD-03`, `R+1`),
 * **Then** the vital sign cards and chart must update with the exact dataset values:
   * `L-44` (Ground): $\text{HR} = 68\text{ bpm}$, $\text{BP} = 122/78\text{ mmHg}$, $\text{HRV} = 46.0\text{ ms}$ (Nominal).
@@ -120,4 +120,4 @@
 #### Scenario 2: Thermal limit and passive dissipation verification
 * **Given** there is no forced air convection during depressurization or power contingency,
 * **When** the processor executes the detection algorithms,
-* **Then** sustained CPU utilization must not exceed $15\%$ of a single core, preventing localized heat buildup in medical avionics hardware.
+* **Then** sustained CPU utilization must not exceed $3.0\%$ (SRS RNF-POW-01), preventing localized heat buildup in medical avionics hardware.

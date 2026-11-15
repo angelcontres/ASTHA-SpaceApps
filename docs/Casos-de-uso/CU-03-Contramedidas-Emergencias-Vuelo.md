@@ -45,7 +45,7 @@ Appearance of an on-screen medical alert or user selection of a guide.
 
 ### 6. Exception Flows:
 * **FE-01: Accidental omission or application closure during checklist:**
-  1. If the tablet powers off or the app closes while an active checklist is running, the state of completed checkboxes remains saved in the SQLite flash database. Upon restart, the app restores the screen directly to the pending step.
+  1. If the tablet powers off or the app closes while an active checklist is running, the state of completed checkboxes remains saved in the encrypted IndexedDB store (ADR-006). Upon restart, the app restores the screen directly to the pending step.
 
 ### 7. Postconditions:
 * **Success:** The medical countermeasure is executed rigorously and verifiably, minimizing errors caused by distraction or stress.

@@ -18,7 +18,7 @@
 
 > ⚠️ **DOCUMENT AUTHORITY NOTICE (`ADR-001`):**  
 > The **current canonical specification (v3.0.0 — Zero Drift with SRS and ADRs 001–020)** resides in the modular directory [**docs/SDD/**](SDD/README.md). This monolithic file is preserved solely as a preliminary historical reference; in the event of any discrepancy, the modular collection prevails:
-> * [**SDD-01:** Global System Architecture (Workers, <5W/3% CPU Budgets, Z-Score MAD)](SDD/01-Arquitectura-Global-del-Sistema.md)
+> * [**SDD-01:** Global System Architecture (Workers, < 350 mW/3% CPU Budgets, Z-Score MAD)](SDD/01-Arquitectura-Global-del-Sistema.md)
 > * [**SDD-02:** UML Class Diagram (SRS §5.1 Entities, WebCrypto AES-GCM, CRDT)](SDD/02-Diagrama-de-Clases-UML.md)
 > * [**SDD-03:** UML Sequence Diagrams (ADR-013 Escalation, On-Demand 3D, Signed JSON)](SDD/03-Diagramas-de-Secuencia-UML.md)
 > * [**SDD-04:** UML Component Diagram (Svelte 5, uPlot, 2 Workers, Sync Hub)](SDD/04-Diagrama-de-Componentes-UML.md)
@@ -385,7 +385,7 @@ flowchart TB
 
     subgraph Deep_Space_Transport ["Deep Space Transport Spacecraft (DST-1 Mars Transit Node)"]
         subgraph Edge_Medical_Server ["Redundant Onboard Medical Server (Dual-Fault Tolerant)"]
-            ASTHA_Core["ASTHA Core Telemetry & CDSS Engine<br>• NodeJS / Edge Runtime<br>• SQLite / IndexedDB Local Storage<br>• Offline NASA OSDR Enriched Database"]
+            ASTHA_Core["ASTHA Core Telemetry & CDSS Engine<br>• NodeJS / Edge Runtime<br>• Encrypted IndexedDB Local Storage<br>• Offline NASA OSDR Enriched Database"]
             DTN_Daemon["DTN Bundle Protocol v7 Agent<br>• RFC 9171 Store-and-Forward Buffer"]
         end
 

@@ -77,7 +77,7 @@ Due to the strict offline deep-space operating constraint prohibiting network fo
 | **Minimum inter-control spacing (*Gap*)** | `12px` (`0.75rem`) | `RNF-USA-01` (prevents double-taps in microgravity) |
 | **Operational console border radius** | `8px` (`0.5rem`) cards · `6px` (`0.375rem`) buttons | Visual consistency without distorting 12-column grids |
 | **Cabin Night Mode (630 nm)** | CSS filter `night-red-630` with blue/green channel attenuation | Crew circadian rhythm protection |
-| **Survival Mode (`< 5W`, `ADR-019`)** | Pure `#000000` background, monochrome `#e2e8f0` / `#fca5a5` text, **0 animations**, Three.js and uPlot disabled (tabular read-only) | [`ADR-019`](../SDD/08-Architecture-decisions.md#adr-019) |
+| **Survival Mode (`< 350 mW`, `ADR-019`)** | Pure `#000000` background, monochrome `#e2e8f0` / `#fca5a5` text, **0 animations**, Three.js and uPlot disabled (tabular read-only) | [`ADR-019`](../SDD/08-Architecture-decisions.md#adr-019) |
 
 ---
 

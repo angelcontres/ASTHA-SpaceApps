@@ -1,5 +1,5 @@
 {
-  "_source": "RF-GUI-01..05, RNF-USA-05 con ADR-017 (máximo 4 pasos). Valores orientativos: deben validarse con personal médico antes de uso real (SRS §2.3).",
+  "_source": "RF-GUI-01..05, RNF-USA-05 con ADR-017 (máximo 4 pasos). Valores orientativos: deben validarse con personal médico antes de uso real (SRS §2.3). Pasos de CM-SANS-01, CM-RAD-01 y CM-ENV-01/02 alineados con AC-CLIN-03/04/05, CU-02, CU-08, CU-09 y HU-01.",
   "maxSteps": 4,
   "inventory": {
     "ared": "ARED (ejercicio resistivo)",
@@ -7,11 +7,13 @@
     "treadmill": "Cinta de correr",
     "lbnp": "LBNP (pantalón de presión negativa)",
     "kit_alpha": "Botiquín Alfa (diagnóstico: tensiómetro, pulsioxímetro, rejilla de Amsler, tiras)",
-    "kit_bravo": "Botiquín Bravo (fármacos: antiemético, analgésico)",
+    "kit_bravo": "Botiquín Bravo (fármacos: antiemético, analgésico, cóctel radioprotector oral)",
     "shelter": "Refugio de tormentas",
     "lioh": "Cartuchos LiOH",
     "cdra": "CDRA (removedor de CO₂)",
-    "water": "Dispensador de agua potable"
+    "water": "Dispensador de agua potable",
+    "dosimeters": "Dosímetros pasivos personales CANS",
+    "fans": "Ventiladores de circulación forzada"
   },
   "protocols": {
     "CM-ENV-01": {
@@ -27,8 +29,8 @@
         },
         {
           "id": "s2",
-          "text": "Comprueba que el CDRA está encendido y sin alarmas en su panel.",
-          "resource": "cdra"
+          "text": "Activa los ventiladores de circulación forzada y pasa el CDRA a ciclo forzado.",
+          "resource": "fans"
         },
         {
           "id": "s3",
@@ -45,24 +47,24 @@
     },
     "CM-ENV-02": {
       "title": "Dolor de cabeza por CO₂",
-      "what": "El CO₂ alto dilata los vasos de la cabeza y sube la presión dentro del cráneo. Por eso duele la cabeza.",
+      "what": "Hay una bolsa de CO₂ en la cabina: sin gravedad el aire no se mezcla solo. El CO₂ alto dilata los vasos de la cabeza y por eso duele. La causa es el ambiente, no una enfermedad.",
       "severity": "Crítica",
       "timeToImpact": "1 a 3 horas",
       "steps": [
         {
           "id": "s1",
+          "text": "Verifica los ventiladores de circulación forzada y cambia el lecho del CDRA.",
+          "resource": "fans"
+        },
+        {
+          "id": "s2",
           "text": "Ve al módulo con mejor ventilación y quédate en reposo.",
           "resource": null
         },
         {
-          "id": "s2",
-          "text": "Verifica el CDRA e instala un cartucho LiOH si ppCO₂ sigue por encima de 3,0.",
-          "resource": "lioh"
-        },
-        {
           "id": "s3",
-          "text": "Haz la prueba de la rejilla de Amsler con cada ojo por separado.",
-          "resource": "kit_alpha"
+          "text": "Instala un cartucho LiOH si ppCO₂ sigue por encima de 3,0.",
+          "resource": "lioh"
         },
         {
           "id": "s4",
@@ -80,26 +82,21 @@
       "steps": [
         {
           "id": "s1",
-          "text": "Haz la prueba de la rejilla de Amsler con cada ojo y anota líneas torcidas.",
-          "resource": "kit_alpha"
+          "text": "Ponte el traje LBNP y presurízalo a −35 mmHg durante 60 min.",
+          "resource": "lbnp"
         },
         {
           "id": "s2",
-          "text": "Mide la presión arterial sentado tras 5 min de reposo.",
+          "text": "Haz la prueba de la rejilla de Amsler en esta pantalla al minuto 0 y al minuto 60.",
           "resource": "kit_alpha"
         },
         {
           "id": "s3",
-          "text": "Haz una sesión de LBNP a −35 mmHg durante 60 min.",
-          "resource": "lbnp"
-        },
-        {
-          "id": "s4",
-          "text": "Repite Amsler y presión al terminar y regístralos aquí.",
-          "resource": "kit_alpha"
+          "text": "Limita el sodio de tu ración a menos de 2,0 g al día.",
+          "resource": null
         }
       ],
-      "fsMessage": "R-SANS-01: PAS antes/después de LBNP, resultado Amsler por ojo y fecha de inicio de la visión borrosa."
+      "fsMessage": "R-SANS-01: PAS antes/después de LBNP, Amsler al minuto 0 y 60 por ojo, ingesta de sodio y fecha de inicio de la visión borrosa."
     },
     "CM-SANS-02": {
       "title": "Presión alta con poco sueño",
@@ -132,18 +129,18 @@
       "steps": [
         {
           "id": "s1",
-          "text": "Deja la tarea actual y ve al refugio de tormentas ahora.",
+          "text": "Evacúa al refugio de tormentas del módulo central en menos de 5 min.",
           "resource": "shelter"
         },
         {
           "id": "s2",
-          "text": "Cierra la escotilla del refugio y confirma que todos están dentro.",
-          "resource": "shelter"
+          "text": "Toma el cóctel radioprotector oral del Botiquín Bravo.",
+          "resource": "kit_bravo"
         },
         {
           "id": "s3",
-          "text": "Lee la tasa de dosis en esta pantalla cada 15 min.",
-          "resource": null
+          "text": "Coloca los dosímetros pasivos personales en el mamparo interior.",
+          "resource": "dosimeters"
         },
         {
           "id": "s4",

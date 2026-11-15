@@ -16,6 +16,8 @@
 
   const SEV = { none: -1, nominal: 0, caution: 1, critical: 2 } as const;
   const status = $derived(second && SEV[second.status] > SEV[indicator.status] ? second.status : indicator.status);
+  // AC-CLIN-03 / CU-09: con PAS ≥ 140 la tarjeta de presión dice "SANS CRÍTICO", no solo "Crítico".
+  const statusText = $derived(indicator.id === 'sbp' && indicator.status === 'critical' ? 'SANS CRÍTICO' : STATUS_LABEL[status]);
   const slope = $derived(indicator.slope);
   const arrow = $derived(slope == null ? '' : slope > 0.05 ? '↑' : slope < -0.05 ? '↓' : '→');
   const trendWord = $derived(arrow === '↑' ? 'ascendente' : arrow === '↓' ? 'descendente' : arrow ? 'estable' : '');
@@ -29,7 +31,7 @@
       : fmt(indicator.value, indicator.decimals),
   );
   const aria = $derived(
-    `${second ? 'Presión arterial' : indicator.label}, ${valueText} ${indicator.unit}, ${STATUS_LABEL[status]}` +
+    `${second ? 'Presión arterial' : indicator.label}, ${valueText} ${indicator.unit}, ${statusText}` +
       (trendWord ? `, tendencia ${trendWord}` : '') +
       `, nominal ${indicator.nominalRange}` +
       (drift ? `, precaución en ${drift} días` : '') +
@@ -41,7 +43,7 @@
   <button type="button" class="hit" onclick={onopen} aria-label={aria} aria-pressed={active}>
     <span class="head">
       <span class="label">{second ? 'Presión arterial' : indicator.label}</span>
-      <span class="badge"><span class="sym" aria-hidden="true"></span> {STATUS_LABEL[status]}</span>
+      <span class="badge"><span class="sym" aria-hidden="true"></span> {statusText}</span>
     </span>
     <span class="main">
       <span class="value st-value">{valueText}</span>

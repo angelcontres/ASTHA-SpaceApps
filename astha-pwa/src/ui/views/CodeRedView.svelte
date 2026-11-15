@@ -3,6 +3,7 @@
   // alert-red-text, borde pulsante de 3 px, protocolo de ≤ 4 pasos, estado de resguardo por tripulante y
   // etapa de escalada. "Silenciar" reconoce la alerta (detiene el tono y queda en la bitácora).
   import { resolveProtocol } from '../../engine/countermeasures';
+  import { accumulatedDose, SPE_EVENT_LIMIT_MSV } from '../../engine/dose';
   import CountermeasureGuide from '../components/CountermeasureGuide.svelte';
   import { stopTone } from '../components/AlarmManager.svelte';
   import { bridge, type ActiveAlert } from '../bridge/workerBridge.svelte';
@@ -14,6 +15,8 @@
   const protocol = $derived(resolveProtocol(alert.countermeasureId));
   const value = $derived(Object.entries(alert.values).find(([, v]) => typeof v === 'number'));
   const allowed = $derived(new Set(bridge.data.session?.allowedCrew ?? []));
+  const isRad = $derived(alert.organ === 'radiation');
+  const dose = $derived(isRad ? accumulatedDose(bridge.series.habitat) : null);
   const sheltered = $derived(new Set(alert.completedSteps.filter((s) => s.startsWith('shelter:')).map((s) => s.slice(8))));
 
   function close() {
@@ -43,6 +46,7 @@
   <p id="cr-desc" class="exposure">
     {#if value}<strong class="num">{value[0]} {fmt(value[1] as number, 1)}</strong> · {/if}
     {alert.explanation} · {fd(alert.day)}
+    {#if dose}<br /><strong class="num">Dosis del evento SPE: {fmt(dose.speEventMsv, 1)} mSv</strong> de {SPE_EVENT_LIMIT_MSV} mSv permitidos · misión {fmt(dose.missionMsv, 1)} mSv{/if}
   </p>
 
   <div class="cols">

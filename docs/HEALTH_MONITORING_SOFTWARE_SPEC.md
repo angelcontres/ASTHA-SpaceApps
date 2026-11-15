@@ -137,18 +137,18 @@ Allows judges to trigger predefined scenarios to observe the software in action:
 ## 5. BIOMEDICAL THRESHOLDS AND EVALUATION ALGORITHMS
 
 ```typescript
-// Physiological ranges adapted for spaceflight
+// Physiological ranges: SRS §6.1 is the single source of truth (values reproduced here, must not diverge)
 export interface VitalSigns {
-  heartRate: number;         // bpm (Nominal: 55 - 95 bpm)
-  hrv: number;               // ms (rMSSD variability: > 35 ms nominal, < 20 ms acute stress)
-  systolicBP: number;        // mmHg (Nominal: 100 - 130 mmHg)
-  diastolicBP: number;       // mmHg (Nominal: 65 - 85 mmHg)
-  spO2: number;              // % (Nominal: 96% - 100%, < 93% cabin hypoxia)
-  bloodGlucose: number;      // mg/dL (Fasting nominal: 70 - 105 mg/dL)
-  bodyTemperature: number;   // °C (Nominal: 36.2 - 37.3 °C)
-  sleepHours: number;        // Hours (Nominal: 7 - 9 hrs, < 5 hrs cognitive risk)
-  radiationDoseRate: number; // uSv/h (Nominal LEO: 15-30 uSv/h, SPE Alert: > 100 uSv/h)
-  moodScore: number;         // 1 - 10 (1-3 depression/isolation, 4-6 fair, 7-10 optimal)
+  heartRate: number;         // bpm (Nominal: 55 - 85; Caution: 86 - 105 or 45 - 54; Critical: < 45 or > 110)
+  hrv: number;               // ms rMSSD (Nominal: 35 - 70; Caution: 20 - 34; Critical: < 20 for >= 2 days)
+  systolicBP: number;        // mmHg (Nominal: 105 - 125; Caution: 126 - 139; Critical: >= 140)
+  diastolicBP: number;       // mmHg (Nominal: 65 - 84; Caution: 85 - 89; Critical: >= 90)
+  spO2: number;              // % (Nominal: 96 - 100; Caution: 93 - 95; Critical: < 93)
+  bloodGlucose: number;      // mg/dL fasting (Nominal: 75 - 105; Caution: 106 - 125 or 65 - 74; Critical: < 65 or > 140)
+  bodyTemperature: number;   // °C (Nominal: 36.2 - 37.3; Caution: 37.4 - 37.9; Critical: >= 38.0)
+  sleepHours: number;        // h (Nominal: 7.0 - 8.5; Caution: 5.5 - 6.9; Critical: < 5.5 for >= 2 days)
+  radiationDoseRate: number; // µSv/h (Nominal: 15 - 35; Caution: 36 - 80, gap 81 - 100 also Caution; Critical: > 100)
+  moodScore: number;         // 1 - 10 (Nominal: 7 - 10; Caution: 4 - 6; Critical: 1 - 3)
 }
 
 export type HealthStatus = 'NOMINAL' | 'WARNING' | 'CRITICAL';

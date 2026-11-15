@@ -21,8 +21,10 @@ The user interface and local detection algorithms **must** respond in real time,
    * When tapping any organ on the anatomical map or switching crew members (`C001` - `C004`), the response time between the `pointerdown` event and screen repaint must be strictly less than **$100\text{ ms}$** ($t_{\text{render}} < 100\text{ ms}$).
 2. **Rendering Smoothness in Nominal Mode:**
    * The tactical interface must sustain a refresh rate of **$60\text{ frames per second (fps)}$** on reference avionics hardware (ARM Cortex-A72 or low-power x86 processor).
-3. **Cold Boot Time:**
-   * Elapsed time from executable process launch to full dashboard operability with live on-screen biosignals must not exceed **$3.0\text{ seconds}$**.
+3. **Cold Boot Time (SRS RNF-PER-02):**
+   * Startup time from local storage to rendering of the main dashboard must be under **$1.5\text{ seconds}$** on mid-range hardware.
+4. **Clinical Evaluation Latency (SRS RNF-PER-01):**
+   * The full cycle of ingestion, modified Z-score, environmental cross-correlation, and anatomical-model update must complete in under **$50\text{ ms}$**.
 
 ---
 
@@ -39,12 +41,12 @@ The user interface and local detection algorithms **must** respond in real time,
 The software **must** operate within the strict electrical power envelope allocated to cabin medical avionics, preventing overheating in microgravity environments lacking natural air convection.
 
 ### Specific Acceptance Criteria:
-1. **Maximum Idle Power Consumption:**
-   * Power consumption of the client device running ASTHA in nominal surveillance mode must not exceed **$5.0\text{ Watts}$** measured on the DC power bus.
-2. **Sustained CPU Load:**
-   * Steady-state CPU usage (processing 4 continuous 1 Hz streams, rule evaluation, and curve rendering) must not exceed **$15.0\%$ of a single processing core**.
+1. **Power Attributable to the Software (SRS RNF-POW-02):**
+   * The software process must draw **$< 350\text{ mW}$**, supporting at least **16 hours** of continuous operation on a single tablet battery charge.
+2. **Sustained CPU Load (SRS RNF-POW-01):**
+   * No active polling loops in foreground or background; sustained CPU usage during passive monitoring must not exceed **$3.0\%$**.
 3. **Emergency Battery Contingency Mode:**
-   * Upon receiving the critical battery signal, the system must automatically throttle repaint rate to **$0.2\text{ fps}$** (1 update every 5 seconds), dim display brightness to $20\%$, and keep $100\%$ of life-detection algorithms active.
+   * Upon receiving the critical battery signal (≤ 15 % and not charging, [ADR-019](../SDD/08-Architecture-decisions.md#adr-019)), the system must automatically throttle routine telemetry repaint to **$0.2\text{ fps}$** (1 update every 5 seconds), dim the display by 30 % while keeping WCAG AAA contrast (RNF-USA-03), show new critical alerts immediately, and keep $100\%$ of life-detection algorithms active.
 
 ---
 
@@ -126,9 +128,9 @@ Astronaut health data **must** be protected against unauthorized access and, fun
 
 ### Specific Acceptance Criteria:
 1. **Encryption at Rest and in Local Transit:**
-   * The local SQLite medical database must be encrypted at rest using **AES-256** (SQLCipher or aerospace-grade equivalent). All local BLE/Wi-Fi transmissions must use an encrypted secure tunnel.
+   * The local medical store (**IndexedDB**, per SRS §5.2 and [ADR-006](../SDD/08-Architecture-decisions.md#adr-006)) must be encrypted at rest using **AES-GCM-256** via `crypto.subtle`; no clinical record may be stored in plaintext. All local BLE/Wi-Fi transmissions must use an encrypted secure tunnel.
 2. **Bit-Flip Detection and Correction (SEU):**
-   * Every persisted biomedical record block must include a **CRC32 / SHA-256** checksum.
-   * When reading a record from flash memory, if the checksum mismatches (ionizing-particle bit inversion detected), the system must discard the corrupted block and automatically restore it from the mirror replica on a neighboring mesh node.
+   * Every persisted biomedical record block must include a **SHA-256** checksum.
+   * When reading a record from flash memory, if the checksum mismatches (ionizing-particle bit inversion detected), the system must discard the corrupted block and automatically restore it from the local mirror replica (`envelopes_replica`) or, failing that, from a neighboring mesh node.
 3. **Immutable Medical Audit Chain:**
    * All medical interventions, drug administrations, and absorbed radiation doses must be recorded in an append-only event log (*Append-Only Hash Chain*), ensuring no record can be altered retroactively.

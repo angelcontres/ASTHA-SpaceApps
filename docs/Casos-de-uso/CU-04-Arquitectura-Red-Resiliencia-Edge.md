@@ -96,7 +96,7 @@ End of daily cycle (23:59 MET), firing of a critical clinical alert, or opening 
 ---
 
 ## 📋 Use Case: CU-12
-### Title: Switching to Electrical Contingency Profile (< 5W)
+### Title: Switching to Electrical Contingency Profile (< 350 mW)
 
 | Attribute | Detail |
 | :--- | :--- |
@@ -125,7 +125,7 @@ Receipt of power-bus telemetry event: $\text{PowerState} == \text{BATTERY\_CRITI
 5. Periodic Gossip synchronization over the mesh network is suspended, transmitting only on red-severity clinical events.
 6. The processor execution thread is set to a reduced frequency (CPU Governor in `powersave` mode), keeping sustained SoC draw below $2.5\text{ W}$.
 7. The system verifies that cardiac arrest, ventricular tachycardia, and anoxia detection algorithms remain $100\%$ active in memory.
-8. A discreet badge appears in the upper corner: "Power Survival Mode Active (< 5W)".
+8. A discreet badge appears in the upper corner: "Power Survival Mode Active (< 350 mW)".
 
 ### 5. Alternative Flows:
 * **FA-01: Solar power bus restoration:**

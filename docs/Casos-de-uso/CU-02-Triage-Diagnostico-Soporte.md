@@ -73,10 +73,10 @@ The CDSS engine continuously analyzes blood pressure, subjective visual symptoms
 2. Validated continuous blood pressure readings are available.
 
 ### 3. Trigger:
-Systolic Blood Pressure reaches or exceeds $140\text{ mmHg}$ ($\text{SBP} \ge 140\text{ mmHg}$) or $\text{SBP} \ge 130\text{ mmHg}$ combined with a report of blurred vision.
+Systolic Blood Pressure reaches or exceeds $140\text{ mmHg}$ ($\text{SBP} \ge 140\text{ mmHg}$, SRS §6.1) or $\text{SBP} > 135\text{ mmHg}$ combined with a report of blurred vision (R-SANS-01, SRS §6.2).
 
 ### 4. Main Flow of Events:
-1. The plethysmographic sensor reports a reading of $\text{BP} = 144/92\text{ mmHg}$ for crew member `C003` (Dr. Sian Proctor).
+1. The plethysmographic sensor reports a reading of $\text{BP} = 144/92\text{ mmHg}$ for crew member `C003` (Dr. Marcus Dalton).
 2. The ASTHA rule engine verifies that the crew member is on Flight Day 2 (FD-02), a critical phase of cephalad blood and cerebrospinal fluid redistribution.
 3. The system classifies the event with **Critical (Red)** severity level.
 4. The on-screen Blood Pressure card enters an intermittent red pulse animation displaying "SANS CRITICAL".
@@ -85,7 +85,7 @@ Systolic Blood Pressure reaches or exceeds $140\text{ mmHg}$ ($\text{SBP} \ge 14
    * **Step 1:** Pressurize LBNP suit to $-35\text{ mmHg}$ for 60 min.
    * **Step 2:** Conduct visual test with the touchscreen Amsler Grid.
    * **Step 3:** Enforce strict dietary sodium restriction below $2.0\text{ g/day}$.
-7. A high-priority alert is generated on the Crew Medical Officer's tablet (`C002` - Hayley Arceneaux).
+7. A high-priority alert is generated on the Crew Medical Officer's tablet (`C002` - Lauren Pierce).
 
 ### 5. Alternative Flows:
 * **FA-01: Transient hypertension due to intense physical exercise:**
