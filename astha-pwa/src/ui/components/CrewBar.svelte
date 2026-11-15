@@ -2,8 +2,9 @@
   // Crew Selector & Mission Timeline (COMP-01, RF-DSH-03, WIREFRAME §6.1).
   // Displays dual-coded global status for each crew member (C001..C004), enforces cryptographic session
   // boundaries (ADR-012), and provides interactive mission timeline scrubbing across L-44..R+1.
-  import { fd, missionPhase, ROLE_LABEL, STATUS_LABEL } from '../bridge/uiState.svelte';
+  import { fd, missionPhase, ROLE_LABEL, STATUS_LABEL, ui } from '../bridge/uiState.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
+  import HudIcon from './HudIcon.svelte';
 
   const allowed = $derived(new Set(bridge.data.session?.allowedCrew ?? []));
   const currentDay = $derived(Math.max(1, Math.min(bridge.data.maxDay || 180, bridge.data.day || 1)));
@@ -44,7 +45,12 @@
   <div class="timeline" aria-label="Mission day {currentDay} of {bridge.data.maxDay}">
     <div class="timeline-head">
       <span class="label">Mission Timeline · L-44 to R+1</span>
-      <span class="label phase">{fd(currentDay)} · {missionPhase(currentDay)}</span>
+      <div class="head-right">
+        <span class="label phase">{fd(currentDay)} · {missionPhase(currentDay)}</span>
+        <button type="button" class="btn passport-btn" onclick={() => (ui.bioPassportOpen = true)}>
+          <HudIcon name="download" size={14} /> Bio-Passport
+        </button>
+      </div>
     </div>
     <div class="scrubber">
       <div class="track" aria-hidden="true">
@@ -126,7 +132,9 @@
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
   }
-  .timeline-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .timeline-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .head-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .passport-btn { padding: 4px 10px; font-size: 0.8125rem; }
   .phase { color: var(--accent); }
   .scrubber { position: relative; height: var(--touch); display: flex; align-items: center; }
   .track { position: relative; width: 100%; height: 8px; background: var(--space-800); border: 1px solid var(--border-strong); border-radius: 4px; overflow: hidden; pointer-events: none; }

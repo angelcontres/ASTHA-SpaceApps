@@ -2,7 +2,7 @@
   "_source": "RF-EVA-03 (7 sistemas) y RF-ANA-02 (5 regiones). GAP del C4 (Organ Mapper): el SRS no asigna región a cognitivo, radiación ni respiratorio/ambiental; se adopta cognitivo → cabeza, radiación y respiratorio → general. Glucosa y temperatura no tienen sistema en el SRS: se asignan a cardiovascular con región general (supuesto).",
   "regions": {
     "head": {
-      "label": "Ojos y cabeza",
+      "label": "Eyes & Head",
       "order": 1,
       "anchor": [
         0,
@@ -11,7 +11,7 @@
       ]
     },
     "chest": {
-      "label": "Tórax y corazón",
+      "label": "Chest & Heart",
       "order": 2,
       "anchor": [
         0,
@@ -20,7 +20,7 @@
       ]
     },
     "lumbar": {
-      "label": "Zona lumbar y riñones",
+      "label": "Lumbar & Kidneys",
       "order": 3,
       "anchor": [
         0,
@@ -29,7 +29,7 @@
       ]
     },
     "legs": {
-      "label": "Piernas y fémur",
+      "label": "Legs & Femur",
       "order": 4,
       "anchor": [
         0.1,
@@ -38,7 +38,7 @@
       ]
     },
     "general": {
-      "label": "Sistema general y sangre",
+      "label": "General System & Blood",
       "order": 5,
       "anchor": [
         -0.32,
@@ -57,7 +57,7 @@
       "region": "chest"
     },
     "musculoskeletal": {
-      "label": "Musculoesquelético",
+      "label": "Musculoskeletal",
       "region": "legs"
     },
     "renal": {
@@ -65,15 +65,15 @@
       "region": "lumbar"
     },
     "cognitive": {
-      "label": "Cognitivo",
+      "label": "Cognitive",
       "region": "head"
     },
     "radiation": {
-      "label": "Radiación",
+      "label": "Radiation",
       "region": "general"
     },
     "respiratory_env": {
-      "label": "Respiratorio / ambiental",
+      "label": "Respiratory / Environmental",
       "region": "general"
     }
   },
@@ -131,23 +131,23 @@
   },
   "symptoms": {
     "blurred_vision": {
-      "label": "Visión borrosa",
+      "label": "Blurred vision",
       "system": "neuro_ocular"
     },
     "headache": {
-      "label": "Dolor de cabeza",
+      "label": "Headache",
       "system": "neuro_ocular"
     },
     "nausea": {
-      "label": "Náuseas",
+      "label": "Nausea",
       "system": "radiation"
     },
     "back_pain": {
-      "label": "Dolor lumbar",
+      "label": "Lumbar pain",
       "system": "renal"
     },
     "orthostatic_dizziness": {
-      "label": "Mareo al ponerse de pie",
+      "label": "Orthostatic dizziness",
       "system": "cardiovascular"
     }
   }

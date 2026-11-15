@@ -16,10 +16,10 @@ import {
 } from './types';
 
 const HABITAT_SET = new Set<string>(HABITAT_INDICATORS);
-const STATUS_ES: Record<Status, string> = { nominal: 'Nominal', caution: 'Precaución', critical: 'Crítico' };
+const STATUS_LABEL: Record<Status, string> = { nominal: 'Nominal', caution: 'Caution', critical: 'Critical' };
 
 function fmt(v: number, decimals: number): string {
-  return v.toFixed(decimals).replace('.', ',');
+  return v.toFixed(decimals);
 }
 
 function emptyRegions(): Record<RegionId, RegionState> {
@@ -71,9 +71,9 @@ export function evaluate(input: EvaluationInput): Assessment {
       const habitatLevel = HABITAT_SET.has(id);
       const ruleId = sustainedConfirmed ? `SUS-${id}` : `TH-${id}`;
       const valueTxt = `${fmt(v.value, def.decimals)} ${def.unit}`;
-      let explanation = `${def.label}: ${valueTxt}, en ${STATUS_ES[status]} (umbral ${bandText(band, def.unit)}).`;
-      if (sustainedDays > 0) explanation += ` Sostenido ${sustainedDays} día(s).`;
-      if (v.isSuspect) explanation += ' Dato dudoso: fuera del rango fisiológico posible.';
+      let explanation = `${def.label}: ${valueTxt}, ${STATUS_LABEL[status]} (threshold ${bandText(band, def.unit)}).`;
+      if (sustainedDays > 0) explanation += ` Sustained ${sustainedDays} day(s).`;
+      if (v.isSuspect) explanation += ' Suspect value: outside physiological plausible range.';
       alerts.push({
         id: habitatLevel ? `HAB:${ruleId}` : `${crewId}:${ruleId}`,
         crewId: habitatLevel ? 'HAB' : crewId,
@@ -120,7 +120,7 @@ export function evaluate(input: EvaluationInput): Assessment {
       crewId: habitatOnly ? 'HAB' : crewId,
       ruleId: r.id, organ: r.organ, region: regionOfSystem(r.organ), status: r.status, urgency: r.urgency,
       kind: 'correlation', values: hit.values, threshold: hit.threshold,
-      explanation: `${r.summary}. Valores: ${valuesTxt}. Condición: ${hit.threshold}.`,
+      explanation: `${r.summary}. Values: ${valuesTxt}. Condition: ${hit.threshold}.`,
       countermeasureId: r.countermeasureId, isSuspect: false, day,
     });
   }
@@ -133,9 +133,9 @@ export function evaluate(input: EvaluationInput): Assessment {
       alerts.push({
         id: `${crewId}:D-01:${ind.id}`, crewId, ruleId: 'D-01', organ: system, region, status: 'caution',
         urgency: 'routine', kind: 'drift',
-        values: { [ind.id]: ind.value!, pendiente: Number((ind.slope ?? 0).toFixed(3)) },
-        threshold: `sale de ${ind.nominalRange}`,
-        explanation: `${ind.label}: tendencia de 7 días ${(ind.slope ?? 0) > 0 ? 'ascendente' : 'descendente'}; llegará a precaución en ${ind.daysToCaution} día(s).`,
+        values: { [ind.id]: ind.value!, slope: Number((ind.slope ?? 0).toFixed(3)) },
+        threshold: `exiting ${ind.nominalRange}`,
+        explanation: `${ind.label}: 7-day ${(ind.slope ?? 0) > 0 ? 'upward' : 'downward'} trend; will reach caution in ${ind.daysToCaution} day(s).`,
         countermeasureId: DRIFT.countermeasures['D-01'], isSuspect: ind.isSuspect, day,
       });
     } else if (ind.z !== null && Math.abs(ind.z) >= DRIFT.zThreshold) {
@@ -143,8 +143,8 @@ export function evaluate(input: EvaluationInput): Assessment {
         id: `${crewId}:D-02:${ind.id}`, crewId, ruleId: 'D-02', organ: system, region, status: 'caution',
         urgency: 'routine', kind: 'drift',
         values: { [ind.id]: ind.value!, zMod: Number(ind.z.toFixed(2)) },
-        threshold: `|M| ≥ ${String(DRIFT.zThreshold).replace('.', ',')}`,
-        explanation: `${ind.label}: ${fmt(ind.value!, ind.decimals)} ${ind.unit} se aleja de tu línea base de los días 1-14 (Z modificado ${fmt(ind.z, 1)}).`,
+        threshold: `|M| ≥ ${String(DRIFT.zThreshold)}`,
+        explanation: `${ind.label}: ${fmt(ind.value!, ind.decimals)} ${ind.unit} diverges from your days 1-14 baseline (modified Z ${fmt(ind.z, 1)}).`,
         countermeasureId: DRIFT.countermeasures['D-02'], isSuspect: ind.isSuspect, day,
       });
     }
@@ -153,9 +153,9 @@ export function evaluate(input: EvaluationInput): Assessment {
     alerts.push({
       id: `${crewId}:D-03`, crewId, ruleId: 'D-03', organ: 'cardiovascular', region: regionOfSystem('cardiovascular'),
       status: 'caution', urgency: 'routine', kind: 'drift',
-      values: { sueño: Number(trends.sleep!.slope.toFixed(3)), pad: Number(trends.dbp!.slope.toFixed(3)) },
-      threshold: 'pendiente sueño < 0 y PAD > 0 (7 días)',
-      explanation: `Patrón combinado: el sueño baja ${fmt(Math.abs(trends.sleep!.slope * 7), 1)} h/semana y la diastólica sube ${fmt(trends.dbp!.slope * 7, 1)} mmHg/semana.`,
+      values: { sleep: Number(trends.sleep!.slope.toFixed(3)), dbp: Number(trends.dbp!.slope.toFixed(3)) },
+      threshold: 'sleep slope < 0 and DBP > 0 (7 days)',
+      explanation: `Combined pattern: sleep dropping ${fmt(Math.abs(trends.sleep!.slope * 7), 1)} h/week and diastolic BP rising ${fmt(trends.dbp!.slope * 7, 1)} mmHg/week.`,
       countermeasureId: DRIFT.countermeasures['D-03'], isSuspect: false, day,
     });
   }

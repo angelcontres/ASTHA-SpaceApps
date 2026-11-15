@@ -26,11 +26,11 @@ export interface CorrelationHit {
 }
 
 const SYMPTOM_LABEL: Record<SymptomType, string> = {
-  blurred_vision: 'visión borrosa',
-  headache: 'dolor de cabeza',
-  nausea: 'náuseas',
-  back_pain: 'dolor lumbar',
-  orthostatic_dizziness: 'mareo al ponerse de pie',
+  blurred_vision: 'blurred vision',
+  headache: 'headache',
+  nausea: 'nausea',
+  back_pain: 'lumbar pain',
+  orthostatic_dizziness: 'orthostatic dizziness',
 };
 
 function test(v: number, op: string, ref: number): boolean {
@@ -56,16 +56,16 @@ export function evaluateCorrelations(
     for (const c of rule.all) {
       if ('symptom' in c) {
         if (!symptoms.includes(c.symptom)) { ok = false; break; }
-        vals[c.symptom] = 'reportado';
+        vals[c.symptom] = 'reported';
         parts.push(SYMPTOM_LABEL[c.symptom]);
       } else {
         const v = values[c.var];
         if (v == null || !test(v, c.op, c.value)) { ok = false; break; }
         vals[c.var] = v;
-        parts.push(`${c.var} ${c.op} ${String(c.value).replace('.', ',')}`);
+        parts.push(`${c.var} ${c.op} ${String(c.value)}`);
       }
     }
-    if (ok) hits.push({ rule, values: vals, threshold: parts.join(' y ') });
+    if (ok) hits.push({ rule, values: vals, threshold: parts.join(' and ') });
   }
   // Una regla más específica sustituye a la general (R-RAD-02 ⊃ R-RAD-01, R-REN-01 ⊃ R-REN-02).
   const superseded = new Set(hits.flatMap((h) => h.rule.supersedes ?? []));

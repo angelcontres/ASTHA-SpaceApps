@@ -16,6 +16,9 @@ class UiState {
   view = $state<'front' | 'back'>('front');
   settingsOpen = $state(false);
   emergencyOpen = $state(false);
+  bioPassportOpen = $state(false);
+  /** Reactive escalation stage per alert ID (1: 0-8s local, 2: 2 min CMO, 3: 5 min cabin). */
+  alertStage = $state<Record<string, 1 | 2 | 3>>({});
   /** Local 630 nm night-mode toggle on the Lock Screen before authentication (ADR-014 read-only CRDT). */
   lockRedMode = $state(false);
   /** View B (full-screen Code Red) currently open for this alert ID. */
@@ -100,12 +103,30 @@ export const REGION_HOTSPOT_SHORT: Record<RegionId, string> = {
   general: 'Systemic',
 };
 
+const SYSTEM_DISPLAY: Record<string, string> = {
+  neuro_ocular: 'Neuro-ocular',
+  cardiovascular: 'Cardiovascular',
+  musculoskeletal: 'Musculoskeletal',
+  renal: 'Renal',
+  cognitive: 'Cognitive',
+  radiation: 'Radiation',
+  respiratory_env: 'Respiratory / Environment',
+};
+
+const SYMPTOM_DISPLAY: Record<string, string> = {
+  blurred_vision: 'Blurred Vision',
+  headache: 'Headache',
+  nausea: 'Nausea',
+  back_pain: 'Lumbar Back Pain',
+  orthostatic_dizziness: 'Orthostatic Dizziness',
+};
+
 export const SYSTEM_LABEL = Object.fromEntries(
-  Object.entries(organs.systems).map(([k, v]) => [k, v.label]),
+  Object.entries(organs.systems).map(([k, v]) => [k, SYSTEM_DISPLAY[k] ?? v.label]),
 ) as Record<string, string>;
 
 export const SYMPTOM_LABEL = Object.fromEntries(
-  Object.entries(organs.symptoms).map(([k, v]) => [k, v.label]),
+  Object.entries(organs.symptoms).map(([k, v]) => [k, SYMPTOM_DISPLAY[k] ?? v.label]),
 ) as Record<SymptomType, string>;
 
 export const regionOfIndicator = (id: IndicatorId): RegionId => mapIndicator(id).region;

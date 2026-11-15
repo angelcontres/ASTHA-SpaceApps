@@ -75,10 +75,10 @@ export function scoreGamification(
     level: Math.floor(xp / GAM.xpPerLevel) + 1,
     streak,
     medals: [
-      { id: 'exercise', label: `${GAM.exerciseMin} min de ejercicio`, earnedToday: (today?.exerciseMin ?? 0) >= GAM.exerciseMin },
-      { id: 'report', label: 'Informe matutino a tiempo', earnedToday: !!today?.manual },
-      { id: 'hydration', label: 'Hidratación óptima', earnedToday: (today?.waterL ?? 0) >= GAM.waterL },
-      { id: 'protocol', label: 'Contramedida completada', earnedToday: !!today && completions.some((c) => c.day === today.day) },
+      { id: 'exercise', label: `${GAM.exerciseMin} min exercise`, earnedToday: (today?.exerciseMin ?? 0) >= GAM.exerciseMin },
+      { id: 'report', label: 'On-time morning report', earnedToday: !!today?.manual },
+      { id: 'hydration', label: 'Optimal hydration', earnedToday: (today?.waterL ?? 0) >= GAM.waterL },
+      { id: 'protocol', label: 'Countermeasure completed', earnedToday: !!today && completions.some((c) => c.day === today.day) },
     ],
   };
 }

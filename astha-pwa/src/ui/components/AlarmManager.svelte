@@ -87,15 +87,20 @@
   /** Reglas que abren la Vista B (Código Rojo) directamente. */
   const CODE_RED = new Set(['R-RAD-01', 'R-RAD-02', 'R-ENV-01']);
 
+  interface Props { locked?: boolean }
+  let { locked = false }: Props = $props();
+
   let audioOn = $state(false);
-  const stage = $state<Record<string, 1 | 2 | 3>>({});
   // Temporizadores de escalada: estado interno que no se pinta, por eso no es reactivo.
   const timers = new Map<string, ReturnType<typeof setTimeout>[]>();
 
-  const visible = $derived(bridge.activeAlerts.filter((a) => !a.overridden && a.status !== 'nominal'));
-  const criticals = $derived(visible.filter((a) => a.status === 'critical'));
+  const visible = $derived(
+    bridge.activeAlerts.filter((a) => !a.overridden && a.status !== 'nominal' && (!locked || a.status === 'critical')),
+  );
+  const criticals = $derived(bridge.activeAlerts.filter((a) => !a.overridden && a.status === 'critical'));
   const unacked = $derived(criticals.filter((a) => !a.acknowledged));
   const top = $derived<ActiveAlert | null>(visible[0] ?? null);
+  const isRedacted = $derived(Boolean(locked && top && top.crewId !== 'HAB'));
 
   onMount(() => {
     const unlock = () => { unlockAudio(); audioOn = audioReady(); };
@@ -115,23 +120,23 @@
       if (!ids.has(id)) {
         ts.forEach(clearTimeout);
         timers.delete(id);
-        delete stage[id];
+        delete ui.alertStage[id];
       }
     }
     if (!ids.size) stopTone();
     for (const a of unacked) {
       if (timers.has(a.id)) continue;
-      stage[a.id] = 1;
-      playCritical(); // 0-10 s, consola local
+      ui.alertStage[a.id] = 1;
+      playCritical(); // 0-8 s, consola local
       if (CODE_RED.has(a.ruleId) || a.urgency === 'emergency') {
         if (!ui.codeRedDismissed.includes(a.id)) ui.codeRedId = a.id;
       }
       timers.set(a.id, [
-        setTimeout(() => { stage[a.id] = 2; playCritical(); }, ESCALATE_CMO_MS),
+        setTimeout(() => { ui.alertStage[a.id] = 2; playCritical(); }, ESCALATE_CMO_MS),
         setTimeout(() => {
-          stage[a.id] = 3;
+          ui.alertStage[a.id] = 3;
           playCritical();
-          ui.codeRedId = a.id; // difusión a cabina: Vista B
+          ui.codeRedId = a.id; // difusión a cabina (incluso sobre Lock Screen): Vista B
         }, ESCALATE_CABIN_MS),
       ]);
     }
@@ -142,7 +147,7 @@
     bridge.acknowledge(a);
   }
 
-  const stageText = { 1: 'Tono local', 2: 'Escalado al CMO (2 min)', 3: 'Difundido a cabina (5 min)' } as const;
+  const stageText = { 1: 'Local chime', 2: 'CMO escalation (2 min)', 3: 'Cabin broadcast (5 min)' } as const;
 </script>
 
 {#if top}
@@ -150,23 +155,27 @@
     <div class="alarm st critical" class:pulse={!top.acknowledged} role="alert" aria-live="assertive">
       <span class="sym big" aria-hidden="true"></span>
       <div class="msg">
-        <strong class="alarm-title">Alerta crítica · {SYSTEM_LABEL[top.organ]}</strong>
-        <span>{top.explanation}</span>
+        <strong class="alarm-title">
+          {isRedacted ? 'Cabin Critical Alert (session locked)' : `Critical Alert · ${SYSTEM_LABEL[top.organ]}`}
+        </strong>
+        <span>{isRedacted ? 'Unlock via PIN or NFC to inspect the clinical protocol.' : top.explanation}</span>
         <span class="label">
-          Regla {top.ruleId}{top.crewId !== 'HAB' ? ` · ${top.crewId}` : ' · hábitat'}
-          {#if stage[top.id]} · {stageText[stage[top.id]]}{/if}
-          {#if top.acknowledged} · reconocida{/if}
-          {#if visible.length > 1} · {visible.length} alertas{/if}
+          Rule {top.ruleId}{isRedacted ? ' · crew' : top.crewId !== 'HAB' ? ` · ${top.crewId}` : ' · habitat'}
+          {#if ui.alertStage[top.id]} · {stageText[ui.alertStage[top.id]]}{/if}
+          {#if top.acknowledged} · acknowledged{/if}
+          {#if visible.length > 1} · {visible.length} alerts{/if}
         </span>
       </div>
       <div class="row">
-        <button type="button" class="btn primary" onclick={() => ui.openProtocol(top.id, top.region)}>Abrir protocolo</button>
-        {#if !top.acknowledged && bridge.activeRole}
-          <button type="button" class="btn danger" onclick={() => ack(top)}>Reconocer y silenciar</button>
+        {#if !locked}
+          <button type="button" class="btn primary" onclick={() => ui.openProtocol(top.id, top.region)}>Open Protocol</button>
+        {/if}
+        {#if !locked && !top.acknowledged && bridge.activeRole}
+          <button type="button" class="btn danger" onclick={() => ack(top)}>Acknowledge &amp; Silence</button>
         {/if}
         {#if !audioOn}
           <button type="button" class="btn" onclick={() => { unlockAudio(); audioOn = audioReady(); playCritical(1); }}>
-            <HudIcon name="volume-off" size={16} /> Activar sonido
+            <HudIcon name="volume-off" size={16} /> Enable Audio
           </button>
         {/if}
       </div>
@@ -175,11 +184,11 @@
     <div class="alarm st caution" role="status" aria-live="polite">
       <span class="sym big" aria-hidden="true"></span>
       <div class="msg">
-        <strong>Precaución · {SYSTEM_LABEL[top.organ]} · {STATUS_LABEL[top.status]}</strong>
+        <strong>Caution · {SYSTEM_LABEL[top.organ]} · {STATUS_LABEL[top.status]}</strong>
         <span>{top.explanation}</span>
-        {#if visible.length > 1}<span class="label">{visible.length} alertas</span>{/if}
+        {#if visible.length > 1}<span class="label">{visible.length} alerts</span>{/if}
       </div>
-      <button type="button" class="btn" onclick={() => ui.openProtocol(top.id, top.region)}>Ver contramedida</button>
+      <button type="button" class="btn" onclick={() => ui.openProtocol(top.id, top.region)}>View Countermeasure</button>
     </div>
   {/if}
 {/if}

@@ -23,9 +23,9 @@
 
 <div class="sim">
   <section class="panel stack" aria-labelledby="sc-h">
-    <h2 id="sc-h">Escenarios de crisis</h2>
+    <h2 id="sc-h">Crisis Scenarios</h2>
     <label class="row target">
-      <span class="label">Tripulante objetivo</span>
+      <span class="label">Target crew member</span>
       <select class="btn" bind:value={target}>
         {#each allowed as c (c.id)}<option value={c.id}>{c.id} · {c.name}</option>{/each}
       </select>
@@ -35,69 +35,69 @@
         {@const s = scen(id)}
         <button type="button" class="btn scenario" class:active={bridge.data.activeScenarios.includes(id)} onclick={() => bridge.injectScenario(id, target)}>
           <strong>{id} · {s.label}</strong>
-          <span class="unit">{s.req}{s.allCrew ? ' · toda la tripulación' : ''}</span>
+          <span class="unit">{s.req}{s.allCrew ? ' · all crew' : ''}</span>
         </button>
       {/each}
     </div>
-    <button type="button" class="btn primary reset" onclick={() => bridge.reset()}><HudIcon name="check" size={16} /> Restablecer estado nominal</button>
+    <button type="button" class="btn primary reset" onclick={() => bridge.reset()}><HudIcon name="check" size={16} /> Reset Nominal State</button>
   </section>
 
   <section class="panel stack" aria-labelledby="clk-h">
-    <h2 id="clk-h">Tiempo simulado · <span class="num">{fd(bridge.data.day)}</span></h2>
+    <h2 id="clk-h">Simulated Mission Clock · <span class="num">{fd(bridge.data.day)}</span></h2>
     <div class="row">
-      <button type="button" class="btn" onclick={() => bridge.advance(-1)} aria-label="Retroceder un día">−1 día</button>
-      <button type="button" class="btn" onclick={() => bridge.advance(1)}>+1 día</button>
-      <button type="button" class="btn" onclick={() => bridge.advance(7)}>+7 días</button>
+      <button type="button" class="btn" onclick={() => bridge.advance(-1)} aria-label="Step back 1 day">−1 day</button>
+      <button type="button" class="btn" onclick={() => bridge.advance(1)}>+1 day</button>
+      <button type="button" class="btn" onclick={() => bridge.advance(7)}>+7 days</button>
       {#if bridge.data.playing}
-        <button type="button" class="btn primary" onclick={() => bridge.pause()}><HudIcon name="pause" size={14} /> Pausar</button>
+        <button type="button" class="btn primary" onclick={() => bridge.pause()}><HudIcon name="pause" size={14} /> Pause</button>
       {:else}
-        <button type="button" class="btn" onclick={() => bridge.play(3000)}><HudIcon name="play" size={14} /> Reproducir (1 día / 3 s)</button>
+        <button type="button" class="btn" onclick={() => bridge.play(3000)}><HudIcon name="play" size={14} /> Play (1 day / 3 s)</button>
       {/if}
     </div>
     <label class="stack">
-      <span class="label">Saltar al día</span>
+      <span class="label">Jump to flight day</span>
       <input type="range" min="1" max={bridge.data.maxDay} value={bridge.data.day} onchange={(e) => bridge.setDay(+e.currentTarget.value)} />
     </label>
     <dl class="metrics num">
-      <div><dt class="label">Motor (4 tripulantes)</dt><dd>{fmt(bridge.engineMs, 2)} ms</dd></div>
-      <div><dt class="label">Peor triage individual</dt><dd>{fmt(maxLatency, 2)} ms</dd></div>
-      <div><dt class="label">Ciclo acción → UI</dt><dd>{fmt(bridge.cycleMs, 1)} ms</dd></div>
-      <div><dt class="label">Presupuesto del motor</dt><dd>&lt; 50 ms</dd></div>
+      <div><dt class="label">Engine (4 crew)</dt><dd>{fmt(bridge.engineMs, 2)} ms</dd></div>
+      <div><dt class="label">Worst individual triage</dt><dd>{fmt(maxLatency, 2)} ms</dd></div>
+      <div><dt class="label">Action → UI cycle</dt><dd>{fmt(bridge.cycleMs, 1)} ms</dd></div>
+      <div><dt class="label">Engine budget</dt><dd>&lt; 50 ms</dd></div>
     </dl>
   </section>
 
   <section class="panel stack" aria-labelledby="int-h">
-    <h2 id="int-h">Integridad y enlace con Tierra</h2>
+    <h2 id="int-h">Data Integrity &amp; Earth Downlink</h2>
     <dl class="metrics num">
-      <div><dt class="label">Restaurados desde réplica</dt><dd>{bridge.data.recoveredCount}</dd></div>
-      <div><dt class="label">Registros en cuarentena</dt><dd>{bridge.quarantinedCount}</dd></div>
+      <div><dt class="label">Recovered from replica</dt><dd>{bridge.data.recoveredCount}</dd></div>
+      <div><dt class="label">Quarantined records</dt><dd>{bridge.quarantinedCount}</dd></div>
       <div><dt class="label">Sync Hub</dt><dd>{bridge.syncStatus}</dd></div>
-      <div><dt class="label">Batería</dt><dd>{power.supported && power.level !== null ? `${Math.round(power.level * 100)} %${power.charging ? ' · cargando' : ''}` : 'API no disponible'}{power.low ? ' · modo crítico' : ''}</dd></div>
-      <div><dt class="label">Nodo</dt><dd>{bridge.data.nodeId}</dd></div>
+      <div><dt class="label">Battery</dt><dd>{power.supported && power.level !== null ? `${Math.round(power.level * 100)}%${power.charging ? ' · charging' : ''}` : 'API unavailable'}{power.low ? ' · critical mode' : ''}</dd></div>
+      <div><dt class="label">Node</dt><dd>{bridge.data.nodeId}</dd></div>
     </dl>
     <div class="row">
-      <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip()}>Inyectar SEU (bit-flip)</button>
-      <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip(true)}>SEU en sobre y réplica</button>
+      <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip()}>Inject SEU (bit-flip)</button>
+      <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip(true)}>SEU in envelope &amp; replica</button>
       <button type="button" class="btn" aria-pressed={power.simulated} onclick={() => power.simulate(!power.simulated)}>
-        {power.simulated ? 'Restaurar batería' : 'Simular batería crítica (EPS)'}
+        {power.simulated ? 'Restore Battery' : 'Simulate Critical Battery (EPS)'}
       </button>
-      <button type="button" class="btn" onclick={() => bridge.verifyLedger()}>Verificar cadena de bitácora</button>
+      <button type="button" class="btn" onclick={() => bridge.verifyLedger()}>Verify Ledger Chain</button>
     </div>
     {#if bridge.ledgerChain}
       <p class="st {bridge.ledgerChain.ok ? 'nominal' : 'critical'}" role="status">
         <span class="sym" aria-hidden="true"></span>
-        {bridge.ledgerChain.ok ? `Cadena íntegra: ${bridge.ledgerChain.checked} entradas verificadas` : `Cadena rota en ${bridge.ledgerChain.brokenAt}: ${bridge.ledgerChain.reason}`}
+        {bridge.ledgerChain.ok ? `Chain intact: ${bridge.ledgerChain.checked} entries verified` : `Chain broken at ${bridge.ledgerChain.brokenAt}: ${bridge.ledgerChain.reason}`}
       </p>
     {/if}
     <div class="row">
-      <button type="button" class="btn" onclick={() => bridge.exportData('summary')}>Resumen para Flight Surgeon</button>
-      <button type="button" class="btn" onclick={() => bridge.exportData('history')}>Historial completo</button>
+      <button type="button" class="btn" onclick={() => bridge.exportData('summary')}>Flight Surgeon Summary</button>
+      <button type="button" class="btn" onclick={() => bridge.exportData('history')}>Full Mission History</button>
       {#if bridge.lastExport}
         <button type="button" class="btn primary" onclick={() => bridge.downloadExport()}><HudIcon name="download" size={16} /> {bridge.lastExport.fileName}</button>
       {/if}
     </div>
     <label class="btn file">
-      Importar historial firmado (.json)
+      Import signed history (.json)
       <input type="file" accept="application/json,.json" class="sr-only" onchange={importFile} />
     </label>
     <button type="button" class="btn" disabled={bridge.activeRole !== 'cmo'} onclick={() => bridge.loadReferenceDataset()}>
@@ -107,7 +107,7 @@
   </section>
 
   <section class="panel log" aria-labelledby="log-h">
-    <h2 id="log-h">Bitácora append-only <span class="unit">({bridge.ledgerEntries.length} últimas)</span></h2>
+    <h2 id="log-h">Append-Only Audit Ledger <span class="unit">({bridge.ledgerEntries.length} latest)</span></h2>
     <ol class="entries">
       {#each ledger as e (e.key)}
         <li>
@@ -117,12 +117,12 @@
             {#if e.detail}
               {e.detail}
             {:else}
-              <HudIcon name="lock" size={13} /> cifrado (sin acceso)
+              <HudIcon name="lock" size={13} /> encrypted (no access)
             {/if}
           </span>
         </li>
       {:else}
-        <li class="muted">Sin entradas todavía.</li>
+        <li class="muted">No entries yet.</li>
       {/each}
     </ol>
   </section>
