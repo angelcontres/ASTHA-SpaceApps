@@ -335,8 +335,8 @@ describe('(3) Inmutabilidad de la bitácora encadenada (RNF-SEC-04, RF-REG-01)',
 describe('(4) Convergencia CRDT idempotente con relojes desfasados (RNF-NET-02, ADR-009)', () => {
   // Nodo A con reloj correcto; nodo B atrasado 1 hora; nodo C adelantado 10 min.
   let tA = 1_731_686_400_000;
-  let tB = tA - 3_600_000;
-  let tC = tA + 600_000;
+  const tB = tA - 3_600_000;
+  const tC = tA + 600_000;
   const A = new HybridClock('nodeA', () => tA);
   const B = new HybridClock('nodeB', () => tB);
   const C = new HybridClock('nodeC', () => tC);
@@ -480,7 +480,7 @@ describe('Telemetry Sources (RF-ING-01..05, RF-SIM-01..05)', () => {
     v = buildView(ds, ops, day);
     expect(['C001', 'C002', 'C003', 'C004'].every((c) => v.measurements[c].at(-1)!.spo2 === 92)).toBe(true);
 
-    ops.push(mk(resetOp(day), t++));
+    ops.push(mk(resetOp(day), t));
     v = buildView(ds, ops, day);
     expect(v.activeScenarios).toEqual([]);
     expect(v.habitat.at(-1)!.radiation).toBe(ds.habitat[day - 1].radiation);
