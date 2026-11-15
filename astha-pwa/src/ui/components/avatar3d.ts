@@ -3,7 +3,7 @@
 // la transición Frontal/Posterior es una animación finita (≤ 400 ms) que se detiene sola.
 import {
   CapsuleGeometry, Color, CylinderGeometry, DirectionalLight, Group, HemisphereLight, Mesh, MeshLambertMaterial,
-  PerspectiveCamera, Scene, SphereGeometry, Vector3, WebGLRenderer, type BufferGeometry,
+  PerspectiveCamera, Raycaster, Scene, SphereGeometry, Vector2, Vector3, WebGLRenderer, type BufferGeometry,
 } from 'three';
 import organs from '../../data/organs.json';
 import { REGION_IDS, type RegionId, type RegionState } from '../../engine/types';
@@ -16,6 +16,8 @@ export interface AvatarOptions { maxPixelRatio?: number; onContextLost?: () => v
 export interface Avatar {
   /** Dibuja UN frame y devuelve la posición en pantalla de cada hotspot. */
   render(regions: Record<RegionId, RegionState>, selected: RegionId | null): Anchors;
+  /** Región del cuerpo bajo un punto de pantalla (coordenadas de cliente), o null si no toca el cuerpo. */
+  pick(clientX: number, clientY: number): RegionId | null;
   /** Giro libre por arrastre (radianes). */
   setYaw(yaw: number): void;
   get yaw(): number;
@@ -61,6 +63,7 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: AvatarOptions = {}
     m.position.set(...pos);
     m.scale.set(...scale);
     m.rotation.z = rotZ;
+    m.userData.region = id;
     body.add(m);
   };
 
@@ -126,8 +129,22 @@ export function createAvatar(canvas: HTMLCanvasElement, opts: AvatarOptions = {}
     return anchors;
   }
 
+  const ray = new Raycaster();
+  const ndc = new Vector2();
+  function pick(clientX: number, clientY: number): RegionId | null {
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    body.rotation.y = yaw;
+    body.updateMatrixWorld();
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects(body.children, false)[0];
+    return (hit?.object.userData.region as RegionId | undefined) ?? null;
+  }
+
   return {
     render,
+    pick,
     resize,
     setYaw(y: number) { yaw = y; },
     get yaw() { return yaw; },
