@@ -20,11 +20,4 @@ jobs:
           cache: "npm"
           cache-dependency-path: astha-pwa/package-lock.json
       - run: npm ci
-      - run: npm run check
-      - run: npx vitest run
-      - run: npm run build
-      - name: Verify dist/ bundle size <= 5 MB (RNF-POW-04)
-        run: |
-          BYTES=$(du -sb dist | cut -f1)
-          echo "astha-pwa/dist size: ${BYTES} bytes (limit: 5242880 bytes)"
-          test "$BYTES" -le 5242880
+      - run: npm run verify
