@@ -47,7 +47,7 @@ describe('Validator (RF-ING-05)', () => {
   it('marca dudoso sin descartar', () => {
     const r = validateValue('hr', 400);
     expect(r.value).toBe(400);
-    expect(r.dubious).toBe(true);
+    expect(r.isSuspect).toBe(true);
   });
   it('rechaza tipos inválidos', () => expect(validateValue('hr', 'x').value).toBeNull());
 });

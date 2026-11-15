@@ -84,7 +84,7 @@ export interface Alert {
   threshold: string;
   explanation: string;
   countermeasureId: string;
-  dubious: boolean;
+  isSuspect: boolean;
   day: number;
 }
 
@@ -126,10 +126,10 @@ export interface IndicatorState {
   slope: number | null;
   daysToCaution: number | null;
   z: number | null;
-  dubious: boolean;
+  isSuspect: boolean;
 }
 
-export interface RegionState { status: StatusOrNone; alertCount: number; dubious: boolean }
+export interface RegionState { status: StatusOrNone; alertCount: number; isSuspect: boolean }
 
 export interface Gamification {
   xp: number;
@@ -162,6 +162,22 @@ export interface EvaluationInput {
   statusOnly: boolean;
   /** XP adicional del PN-Counter (informes manuales, RF-GAM-01). */
   bonusXp?: number;
+  /** Resumen exacto de los días que la ventana de entrada no envía (inputWindow.ts). */
+  carry?: InputCarry;
+}
+
+export interface GamificationCarry {
+  /** XP de los días recortados. */
+  xp: number;
+  /** Racha de ejercicio que termina en `streakEndDay` (último día recortado). */
+  streak: number;
+  streakEndDay: number;
+}
+
+export interface InputCarry {
+  gamification: GamificationCarry;
+  /** Rachas de condiciones sostenidas (RF-EVA-05) que terminan en el último día recortado. */
+  sustained: Partial<Record<CrewIndicator, { days: number; endDay: number }>>;
 }
 
 export const SEVERITY: Record<StatusOrNone, number> = { none: -1, nominal: 0, caution: 1, critical: 2 };

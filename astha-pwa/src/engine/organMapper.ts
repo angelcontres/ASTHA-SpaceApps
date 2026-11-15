@@ -26,7 +26,7 @@ export function aggregateRegions(
   alerts: Alert[],
 ): { regions: Record<RegionId, RegionState>; global: StatusOrNone } {
   const regions = Object.fromEntries(
-    REGION_IDS.map((r) => [r, { status: 'none', alertCount: 0, dubious: false } as RegionState]),
+    REGION_IDS.map((r) => [r, { status: 'none', alertCount: 0, isSuspect: false } as RegionState]),
   ) as Record<RegionId, RegionState>;
 
   for (const ind of indicators) {
@@ -38,7 +38,7 @@ export function aggregateRegions(
     const r = regions[a.region];
     r.status = worst(r.status, a.status);
     if (a.status !== 'nominal') r.alertCount++;
-    if (a.dubious) r.dubious = true;
+    if (a.isSuspect) r.isSuspect = true;
   }
   let global: StatusOrNone = 'none';
   for (const id of REGION_IDS) global = worst(global, regions[id].status);

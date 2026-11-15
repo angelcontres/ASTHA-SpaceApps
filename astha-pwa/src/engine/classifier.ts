@@ -1,4 +1,4 @@
-// RF-EVA-01: Nominal / Precaución / Crítico por indicador (SRS §6.1).
+// Threshold Engine (SDD-02, issue #4) · RF-EVA-01: Nominal / Precaución / Crítico por indicador (SRS §6.1).
 // Un valor entre dos bandas se asigna a la más grave.
 import thresholds from '../data/thresholds.json';
 import { SEVERITY, type IndicatorId, type Status } from './types';
