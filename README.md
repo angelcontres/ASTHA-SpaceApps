@@ -113,15 +113,17 @@ Nasa-Project/
 │   ├── GLOSARIO_TERMINOLOGICO_AEROESPACIAL.md                  # Glosario formal con >60 términos (SANS, LBNP, CANS, etc.)
 │   ├── WIREFRAME_Y_DISENO_UI_UX.md                             # Especificación de ergonomía táctil y diseño UI/UX
 │   ├── SRS – Software de Monitoreo de Salud para Astronautas.md   # Especificación formal ISO/IEC/IEEE 29148
-│   ├── SDD/                                                    # Carpeta de Diseño Detallado SDD (Colección Modular UML)
-│   │   ├── README.md                                           # Índice Maestro y Control de Versiones IEEE 1016 / NASA-STD-8739.8
-│   │   ├── 01-Arquitectura-Global-del-Sistema.md               # SDD-01: Arquitectura Hexagonal y Reactive Edge Core
-│   │   ├── 02-Diagrama-de-Clases-UML.md                        # SDD-02: Diagrama de Clases UML y Dominio Clínico
-│   │   ├── 03-Diagramas-de-Secuencia-UML.md                    # SDD-03: Diagramas de Secuencia UML (3 Escenarios Críticos)
-│   │   ├── 04-Diagrama-de-Componentes-UML.md                   # SDD-04: Diagrama de Componentes UML y Puertos
-│   │   ├── 05-Diagrama-de-Despliegue-UML.md                    # SDD-05: Diagrama de Despliegue UML (Topología DST-1 / DSN)
-│   │   ├── 06-Diseno-de-Datos-y-Contratos-de-Interfaz.md       # SDD-06: Esquemas JSON Schema, DTN RFC 9171 y SQLite
-│   │   └── 07-Matriz-de-Trazabilidad-SRS-a-SDD.md              # SDD-07: Matriz de Trazabilidad Requisitos SRS a SDD
+│   ├── SDD/                                                    # Carpeta de Diseño Detallado SDD (Colección Modular UML v3.0.0)
+│   │   ├── README.md                                           # Índice Maestro, Regla de Autoridad y Mapa ADR/C4
+│   │   ├── 01-Arquitectura-Global-del-Sistema.md               # SDD-01: Hexagonal, Web Workers por Eventos y Z-Score MAD
+│   │   ├── 02-Diagrama-de-Clases-UML.md                        # SDD-02: Entidades SRS §5.1, WebCrypto AES-GCM y CRDT
+│   │   ├── 03-Diagramas-de-Secuencia-UML.md                    # SDD-03: Escalada Alarmas ADR-013, 3D Bajo Demanda, JSON Firmado
+│   │   ├── 04-Diagrama-de-Componentes-UML.md                   # SDD-04: Svelte 5, uPlot, Clinical & Data Workers, Sync Hub
+│   │   ├── 05-Diagrama-de-Despliegue-UML.md                    # SDD-05: Topología LAN Aislada C4-L4 y Pantallas de Cabina
+│   │   ├── 06-Diseno-de-Datos-y-Contratos-de-Interfaz.md       # SDD-06: JSON Schemas, Sobre Cifrado, CRDT HLC y Tokens AAA
+│   │   ├── 07-Matriz-de-Trazabilidad-SRS-a-SDD.md              # SDD-07: Trazabilidad 100% (42 RF + 19 RNF + 10 R-* + 3 D-*)
+│   │   └── 08-Architecture-decisions.md                          # SDD-08: Registro Consolidado de 20 ADRs (ADR-001..020)
+│   ├── c4/                                                     # Modelo de Arquitectura C4 (Contexto, Contenedores, Componentes, Despliegue)
 │   ├── SDD – Software Design Description ASTHA.md                 # Documento técnico consolidado complementario
 │   ├── VALIDACION_FUENTES_OFICIALES_NASA.md                    # Certificación cruzada contra NASA-STD-3001
 │   ├── DOCUMENTO_DOMINIO_Y_PROBLEMATICA_ESPACIAL.md            # Análisis de dominio operacional
