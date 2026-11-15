@@ -569,29 +569,63 @@
 
           </div>
 
-        <!-- NEW STREAMLINED INTERACTIVE ANATOMY HOTSPOT BAR (4 GLOWING TACTILE PILLS) -->
-        <div class="mt-3 space-y-1.5 font-mono">
-          <div class="flex items-center justify-between text-[11px] text-slate-300">
-            <span class="font-bold text-white flex items-center gap-1.5">
-              <i data-lucide="target" class="w-3.5 h-3.5 text-[#facc15]"></i>
-              Focos Anatómicos de Inspección (Haz clic en un órgano o tócalo en 3D):
-            </span>
-            <span class="text-[10px] text-slate-400">Triage Fisiológico</span>
+        <!-- DESPLEGABLE / COLLAPSIBLE ANATOMICAL HOTSPOTS ACCORDION -->
+        <div class="mt-3 font-mono bg-[#10274f]/90 border border-[#2a5ba8]/70 shadow-md overflow-hidden">
+          <!-- Accordion Header Bar (Click to toggle) -->
+          <div onclick="toggleHotspotsAccordion()" 
+               id="hotspots-accordion-header"
+               class="w-full flex items-center justify-between px-3 py-2 bg-[#122e5e] hover:bg-[#163a75] transition border-b border-[#2a5ba8]/60 cursor-pointer select-none text-left"
+               aria-expanded="true"
+               aria-controls="hotspots-collapsible-container"
+               role="button"
+               tabindex="0"
+               onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleHotspotsAccordion(); }"
+               title="Clic para plegar o desplegar los focos anatómicos">
+            <div class="flex items-center gap-2">
+              <i data-lucide="target" class="w-4 h-4 text-[#facc15]"></i>
+              <span class="font-bold text-white text-xs tracking-wider">
+                FOCOS ANATÓMICOS DE INSPECCIÓN
+              </span>
+              <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.5 bg-[#163a75] border border-[#facc15]/40 text-[#fef08a] font-mono">
+                TRIAGE 3D INTERACTIVO
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <span id="hotspots-status-summary" class="text-[10px] text-slate-300 font-mono hidden md:inline">
+                Activo: <strong class="text-[#facc15]" id="hotspots-active-summary">1. Cabeza (SANS)</strong>
+              </span>
+              <span class="text-[10px] text-[#facc15] font-bold px-2 py-0.5 bg-[#0d2244] border border-[#2a5ba8]/80 hover:border-[#facc15] transition flex items-center gap-1.5 shadow-sm">
+                <span id="hotspots-toggle-label">PLEGAR</span>
+                <i data-lucide="chevron-down" id="hotspots-chevron" class="w-3.5 h-3.5 text-[#facc15] transition-transform duration-300 transform rotate-180"></i>
+              </span>
+            </div>
           </div>
 
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <button onclick="triggerOrganInspection('eyes')" id="hotspot-btn-eyes" class="py-2 px-3 border border-[#2a5ba8]/70 bg-[#10274f] text-slate-200 hover:border-[#facc15] hover:text-[#fef08a] transition font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm" title="Inspeccionar Ojos, Visor y Cefalea SANS">
-              <span>👁️</span> <span>1. Cabeza (SANS)</span>
-            </button>
-            <button onclick="triggerOrganInspection('heart')" id="hotspot-btn-heart" class="py-2 px-3 border border-[#2a5ba8]/70 bg-[#10274f] text-slate-200 hover:border-[#facc15] hover:text-[#fef08a] transition font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm" title="Inspeccionar Pecho, Pulmones y Corazón">
-              <span>❤️</span> <span>2. Pecho (Cardio)</span>
-            </button>
-            <button onclick="triggerOrganInspection('kidneys')" id="hotspot-btn-kidneys" class="py-2 px-3 border border-[#2a5ba8]/70 bg-[#10274f] text-slate-200 hover:border-[#facc15] hover:text-[#fef08a] transition font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm" title="Inspeccionar Riñones y Espalda Lumbar a 180°">
-              <span>🩺</span> <span>3. Riñones (180°)</span>
-            </button>
-            <button onclick="triggerOrganInspection('bones')" id="hotspot-btn-bones" class="py-2 px-3 border border-[#2a5ba8]/70 bg-[#10274f] text-slate-200 hover:border-[#facc15] hover:text-[#fef08a] transition font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm" title="Inspeccionar Piernas y Densidad Ósea">
-              <span>🦴</span> <span>4. Piernas (Hueso)</span>
-            </button>
+          <!-- Collapsible Hotspots Content -->
+          <div id="hotspots-collapsible-container" class="transition-all duration-300 ease-in-out max-h-60 opacity-100 p-2.5 bg-[#0a1a35]/80 overflow-hidden">
+            <div class="text-[10px] text-slate-300 mb-2 flex items-center justify-between">
+              <span class="text-slate-400">Haz clic en un foco clínico o toca directamente los nodos en el modelo 3D:</span>
+              <span class="text-[#facc15] font-mono flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>Raycast Reactivo Activo</span>
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <button onclick="triggerOrganInspection('eyes')" id="hotspot-btn-eyes" class="py-2 px-3 border-2 border-[#facc15] bg-[#163a75] text-[#fef08a] font-bold text-xs flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(250,204,21,0.5)] transition" title="Inspeccionar Ojos, Visor y Cefalea SANS">
+                <span>👁️</span> <span>1. Cabeza (SANS)</span>
+              </button>
+              <button onclick="triggerOrganInspection('heart')" id="hotspot-btn-heart" class="py-2 px-3 border border-[#2a5ba8]/70 bg-[#10274f] text-slate-300 hover:border-[#facc15]/60 hover:text-white font-mono text-xs flex items-center justify-center gap-1.5 transition" title="Inspeccionar Pecho, Pulmones y Corazón">
+                <span>❤️</span> <span>2. Pecho (Cardio)</span>
+              </button>
+              <button onclick="triggerOrganInspection('kidneys')" id="hotspot-btn-kidneys" class="py-2 px-3 border border-[#2a5ba8]/70 bg-[#10274f] text-slate-300 hover:border-[#facc15]/60 hover:text-white font-mono text-xs flex items-center justify-center gap-1.5 transition" title="Inspeccionar Riñones y Espalda Lumbar a 180°">
+                <span>🩺</span> <span>3. Riñones (180°)</span>
+              </button>
+              <button onclick="triggerOrganInspection('bones')" id="hotspot-btn-bones" class="py-2 px-3 border border-[#2a5ba8]/70 bg-[#10274f] text-slate-300 hover:border-[#facc15]/60 hover:text-white font-mono text-xs flex items-center justify-center gap-1.5 transition" title="Inspeccionar Piernas y Densidad Ósea">
+                <span>🦴</span> <span>4. Piernas (Hueso)</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -3259,9 +3293,49 @@
       }
     };
 
+    function toggleHotspotsAccordion(forceOpen) {
+      const container = document.getElementById('hotspots-collapsible-container');
+      const chevron = document.getElementById('hotspots-chevron');
+      const toggleLabel = document.getElementById('hotspots-toggle-label');
+      const headerBtn = document.getElementById('hotspots-accordion-header');
+      if (!container) return;
+
+      const isCollapsed = container.classList.contains('max-h-0');
+      const shouldOpen = forceOpen !== undefined ? forceOpen : isCollapsed;
+
+      if (shouldOpen) {
+        container.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none');
+        container.classList.add('max-h-60', 'opacity-100');
+        if (chevron) chevron.classList.add('rotate-180');
+        if (toggleLabel) toggleLabel.innerText = 'PLEGAR';
+        if (headerBtn) headerBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        container.classList.add('max-h-0', 'opacity-0', 'pointer-events-none');
+        container.classList.remove('max-h-60', 'opacity-100');
+        if (chevron) chevron.classList.remove('rotate-180');
+        if (toggleLabel) toggleLabel.innerText = 'DESPLEGAR';
+        if (headerBtn) headerBtn.setAttribute('aria-expanded', 'false');
+      }
+
+      if (typeof playCockpitSound === 'function') playCockpitSound('blip');
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
     function triggerOrganInspection(organId) {
       if (!organId) organId = 'eyes';
       if (typeof playCockpitSound === 'function') playCockpitSound('blip');
+
+      // Update active summary text in accordion header
+      const organTitles = {
+        eyes: '1. Cabeza (SANS)',
+        heart: '2. Pecho (Cardio)',
+        kidneys: '3. Riñones (180°)',
+        bones: '4. Piernas (Hueso)'
+      };
+      const summaryElem = document.getElementById('hotspots-active-summary');
+      if (summaryElem && organTitles[organId]) {
+        summaryElem.innerText = organTitles[organId];
+      }
 
       // Highlight active hotspot pill
       ['eyes', 'heart', 'kidneys', 'bones'].forEach(part => {
@@ -3486,6 +3560,7 @@
       } else {
         triggerOrganInspection('eyes');
       }
+      toggleHotspotsAccordion(true);
     }
 
     function applyAlertProtocol() {
