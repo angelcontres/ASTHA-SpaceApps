@@ -76,13 +76,10 @@ export class WorkerBridge {
 
   /** Alertas de los tripulantes accesibles, sin duplicar las de hábitat, ordenadas por gravedad y urgencia. */
   activeAlerts = $derived.by<ActiveAlert[]>(() => {
-    // Colecciones temporales dentro del $derived: se recrean en cada cálculo, no necesitan ser reactivas.
-    /* eslint-disable svelte/prefer-svelte-reactivity */
     const seen = new Map<string, Alert>();
     for (const a of this.assessments) if (!a.statusOnly) for (const al of a.alerts) if (!seen.has(al.id)) seen.set(al.id, al);
     const acks = new Set(this.data.acks);
     const overrides = new Set(this.data.overrides);
-    /* eslint-enable svelte/prefer-svelte-reactivity */
     return [...seen.values()]
       .map((al) => ({
         ...al,
@@ -104,29 +101,24 @@ export class WorkerBridge {
   private frame: number | null = null;
   private microtask = false;
   private seq = 0;
-  // Contabilidad interna de latencias: no debe disparar renders.
-  // eslint-disable-next-line svelte/prefer-svelte-reactivity
   private sentAt = new Map<number, number>();
   private noticeSeq = 0;
-  /** Temporizador único del repintado a 0,2 fps en modo batería crítica (solo existe con datos pendientes). */
+  /** Single 0.2 fps redraw timer under critical battery (exists only with pending updates). */
   private slowTimer: ReturnType<typeof setTimeout> | null = null;
   private detach: (() => void) | null = null;
 
-  /** Arranca los workers y el canal directo entre ellos. Idempotente. */
+  /** Boots both dedicated workers and their direct MessageChannel. Idempotent. */
   start(): void {
     if (this.dataWorker) return;
-    // new URL(…, import.meta.url) es el patrón que Vite reconoce para empaquetar workers; no es estado reactivo.
-    /* eslint-disable svelte/prefer-svelte-reactivity */
     const data = new Worker(new URL('../../workers/dataSync.worker.ts', import.meta.url), { type: 'module', name: 'astha-data' });
     const clinical = new Worker(new URL('../../workers/clinical.worker.ts', import.meta.url), { type: 'module', name: 'astha-clinical' });
-    /* eslint-enable svelte/prefer-svelte-reactivity */
     const channel = new MessageChannel();
     clinical.postMessage({ type: 'connect' } satisfies UiToClinical, [channel.port2]);
     data.postMessage({ type: 'connect' } satisfies UiToData, [channel.port1]);
 
     clinical.onmessage = (e: MessageEvent<ClinicalToUi>) => this.enqueue({ from: 'clinical', msg: e.data });
     data.onmessage = (e: MessageEvent<DataToUi>) => this.enqueue({ from: 'data', msg: e.data });
-    const onError = (e: ErrorEvent) => this.pushNotice('error', 'worker', `Error en un worker: ${e.message}`);
+    const onError = (e: ErrorEvent) => this.pushNotice('error', 'worker', `Worker error: ${e.message}`);
     clinical.onerror = onError;
     data.onerror = onError;
     this.dataWorker = data;
@@ -192,8 +184,6 @@ export class WorkerBridge {
   private deferrable(item: Incoming): boolean {
     if (item.from === 'data') return item.msg.type === 'series';
     if (item.msg.type !== 'assessments' || this.sentAt.has(item.msg.reqId)) return false;
-    // Conjunto temporal de comparación, no estado reactivo.
-    // eslint-disable-next-line svelte/prefer-svelte-reactivity
     const known = new Set<string>();
     for (const a of this.assessments) for (const al of a.alerts) if (al.status === 'critical') known.add(al.id);
     return !item.msg.items.some((a) => a.alerts.some((al) => al.status === 'critical' && !known.has(al.id)));

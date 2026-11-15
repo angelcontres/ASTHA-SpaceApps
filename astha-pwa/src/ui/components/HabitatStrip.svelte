@@ -8,7 +8,7 @@
   import { bridge } from '../bridge/workerBridge.svelte';
 
   interface Props { onemergency: () => void; onsettings: () => void; zen: boolean; survival: boolean; red: boolean }
-  let { onemergency, onsettings, zen, survival, red }: Props = $props();
+  const { onemergency, onsettings, zen, survival, red }: Props = $props();
 
   const me = $derived(bridge.data.crew.find((c) => c.id === bridge.unlockedCrewId));
   const global = $derived(bridge.currentAssessment?.global ?? 'none');

@@ -148,8 +148,10 @@ describe('[UI-07] View C Lock Screen (ADR-014 & ADR-015)', () => {
 
   it('provides PIN keypad, keyboard input, NFC badge quick unlock, 630nm toggle, and 1500ms budget telemetry', () => {
     expect(lockSvelte).toContain('tapNfcBadge');
+    expect(lockSvelte).toContain('selectPerson');
     expect(lockSvelte).toContain('bridge.unlockBadge');
     expect(lockSvelte).toContain('onKeyDown');
+    expect(lockSvelte).toContain('HTMLButtonElement');
     expect(lockSvelte).toContain('ui.lockRedMode');
     expect(lockSvelte).toContain('1500 ms');
   });
@@ -184,6 +186,7 @@ describe('[UI-07] COMP-00 HabitatStrip, COMP-01 CrewBar & English Shell', () => 
     expect(crewBar).toContain('L-15');
     expect(crewBar).toContain('R+1');
     expect(crewBar).toContain('type="range"');
+    expect(crewBar).toContain('aria-valuetext=');
 
     const app = read('src/App.svelte');
     expect(app).toContain('1 · Biomedical');
