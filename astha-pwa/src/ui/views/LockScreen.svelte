@@ -8,6 +8,7 @@
     fd, fmt, indLabel, indShort, ROLE_LABEL, STATUS_LABEL, ui,
   } from '../bridge/uiState.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
+  import HudIcon from '../components/HudIcon.svelte';
 
   interface NdefReadingEventLike {
     message?: { records?: Array<{ recordType?: string }> };
@@ -133,13 +134,21 @@
 <svelte:window onkeydown={onKeyDown} />
 
 <main class="lock" class:cabin>
-  <header class="top">
+  <header class="top panel">
     <div class="top-brand">
-      <img class="logo-img" src="./icon.svg" alt="" width="36" height="36" />
+      <svg class="nasa-worm" viewBox="0 0 508.204 141.732" fill="currentColor" aria-hidden="true">
+        <path d="M91.991,104.699c1.576,5.961,4.119,8.266,8.613,8.266c4.659,0,7.102-2.799,7.102-8.266V3.2h29.184v101.499 c0,14.307-1.856,20.506-9.11,27.762c-5.228,5.229-14.871,9.271-27.047,9.271c-9.837,0-19.25-3.256-25.253-9.27 c-5.263-5.273-8.154-10.689-12.672-27.764L44.9,37.033c-1.577-5.961-4.119-8.265-8.613-8.265c-4.66,0-7.103,2.798-7.103,8.265 v101.5H0v-101.5C0,22.727,1.857,16.527,9.111,9.271C14.337,4.044,23.981,0,36.158,0c9.837,0,19.25,3.257,25.253,9.27 c5.263,5.273,8.154,10.689,12.672,27.764L91.991,104.699z"/>
+        <path d="M478.038,138.533L444.334,33.096c-0.372-1.164-0.723-2.152-1.263-2.811 c-0.926-1.127-2.207-1.719-3.931-1.719c-1.723,0-3.004,0.592-3.931,1.719c-0.539,0.658-0.891,1.646-1.262,2.811l-33.703,105.437 h-30.167l36.815-115.177c1.918-6,4.66-11.094,8.139-14.488C421.002,3.047,428.038,0,439.141,0s18.14,3.047,24.109,8.867 c3.479,3.395,6.221,8.488,8.14,14.488l36.814,115.177H478.038z"/>
+        <path d="M328.878,138.533c19.12,0,28.446-4.062,35.814-11.389c8.153-8.105,12.053-16.973,12.053-30.213 c0-11.699-4.283-22.535-10.804-29.019c-8.526-8.479-19.116-11.151-36.384-11.151L305.37,56.76c-9.242,0-12.925-1.117-15.839-3.98 c-2.001-1.964-2.939-4.885-2.939-8.328c0-3.559,0.857-7.074,3.303-9.475c2.171-2.131,5.13-3.109,10.816-3.109h69.903V3.2H306.05 c-19.12,0-28.445,4.063-35.814,11.389c-8.152,8.105-12.053,16.972-12.053,30.212c0,11.701,4.283,22.536,10.804,29.019 c8.527,8.479,19.116,11.152,36.384,11.152l24.188,0.002c9.242,0,12.925,1.115,15.839,3.979c2.001,1.965,2.939,4.885,2.939,8.328 c0,3.559-0.857,7.074-3.302,9.475c-2.172,2.131-5.131,3.109-10.817,3.109h-72.094l-27.651-86.509 c-1.918-6-4.66-11.094-8.139-14.488C220.363,3.047,213.327,0,202.224,0s-18.14,3.047-24.108,8.867 c-3.48,3.395-6.221,8.488-8.139,14.488l-36.815,115.177h30.166l33.704-105.437c0.372-1.164,0.723-2.152,1.263-2.811 c0.926-1.127,2.208-1.719,3.931-1.719s3.004,0.592,3.931,1.719c0.54,0.658,0.891,1.646,1.262,2.811l33.704,105.437H328.878z"/>
+      </svg>
       <div>
-        <strong class="brand">ASTHA {cabin ? 'CABIN MONITOR' : ''}</strong>
+        <div class="brand-tags">
+          <strong class="brand">ASTHA {cabin ? 'CABIN MONITOR' : ''}</strong>
+          <span class="hud-tag">ESTD 1958</span>
+          <span class="hud-tag">OFFLINE EDGE</span>
+        </div>
         <span class="label">
-          {cabin ? 'Public Cabin Monitor (ADR-014)' : 'Security Lock Screen'} · {fd(bridge.data.day || 1)}
+          {cabin ? 'Public Cabin Monitor' : 'Security Lock Screen'} · {fd(bridge.data.day || 1)}
         </span>
       </div>
     </div>
@@ -157,6 +166,7 @@
       </button>
     </div>
   </header>
+  <div class="nasa-spectrum" aria-hidden="true"></div>
 
   {#if habCritical.length}
     <section class="hab-alert st critical pulse" role="alert">
@@ -180,7 +190,7 @@
   {/if}
 
   <section aria-labelledby="crew-h">
-    <h2 id="crew-h" class="label">Crew Global Status · zero clinical values exposed (ADR-014)</h2>
+    <h2 id="crew-h" class="label">Crew Global Status · private clinical values protected</h2>
     <ul class="crew">
       {#each bridge.data.crew as c (c.id)}
         {@const st = bridge.crewStatus[c.id] ?? 'none'}
@@ -209,7 +219,7 @@
 
     {#if !cabin}
       <section class="panel unlock" aria-labelledby="pin-h">
-        <h2 id="pin-h" class="label">Rapid Clinical Unlock (&lt; 1.5 s · ADR-015)</h2>
+        <h2 id="pin-h" class="label">Rapid Clinical Unlock (&lt; 1.5 s)</h2>
         <div class="row people" role="group" aria-label="Select crew identity">
           {#each bridge.data.crew as c (c.id)}
             <button type="button" class="btn" aria-pressed={person === c.id} onclick={() => selectPerson(c.id)}>
@@ -225,7 +235,7 @@
           {#each ['1', '2', '3', '4', '5', '6', '7', '8', '9'] as d (d)}
             <button type="button" class="btn key" onclick={() => key(d)}>{d}</button>
           {/each}
-          <button type="button" class="btn key" aria-label="Backspace" onclick={() => (pin = pin.slice(0, -1))}>⌫</button>
+          <button type="button" class="btn key" aria-label="Backspace" onclick={() => (pin = pin.slice(0, -1))}><HudIcon name="backspace" size={20} /></button>
           <button type="button" class="btn key" onclick={() => key('0')}>0</button>
           <button
             type="button"
@@ -248,10 +258,10 @@
           </button>
         </div>
         {#if nfcStatus}<p class="nfc-note num small" aria-live="polite">{nfcStatus}</p>{/if}
-        {#if error}<p class="err" role="alert">✕ {error.message}</p>{/if}
+        {#if error}<p class="err" role="alert"><HudIcon name="x" size={15} /> {error.message}</p>{/if}
         {#if bridge.data.provisioning}<p class="muted small">Provisioning device cryptographic keyring…</p>{/if}
         <p class="muted small">
-          Demo PINs: 1001–1004 (C002 is CMO), keyboard 0–9/Enter, or NFC badge tap (ADR-020).
+          Demo PINs: 1001–1004 (C002 is CMO), keyboard 0–9/Enter, or NFC badge tap.
         </p>
       </section>
     {/if}
@@ -259,17 +269,18 @@
 
   <footer class="label foot">
     UI mounted {mountMs != null ? `${fmt(mountMs, 0)} ms` : '…'} · telemetry ready
-    {readyMs != null ? `${fmt(readyMs, 0)} ms` : '…'} (budget 1500 ms, RNF-PER-02) · node {bridge.data.nodeId || '—'}
+    {readyMs != null ? `${fmt(readyMs, 0)} ms` : '…'} (target &lt; 1500 ms) · node {bridge.data.nodeId || '—'}
     <br />Synthetic demo telemetry · not measured NASA flight data.
   </footer>
 </main>
 
 <style>
   .lock { max-width: 1200px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: var(--gap); }
-  .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--gap); }
-  .top-brand { display: flex; align-items: center; gap: 12px; }
-  .logo-img { display: block; width: 36px; height: 36px; flex: 0 0 auto; border-radius: 6px; }
-  .brand { display: block; letter-spacing: 0.14em; font-size: 1.25rem; }
+  .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--gap); padding: 12px 16px; }
+  .top-brand { display: flex; align-items: center; gap: 14px; }
+  .brand-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 2px; }
+  .nasa-worm { display: block; width: 78px; height: auto; flex: 0 0 auto; color: var(--text); }
+  .brand { display: block; letter-spacing: 0.14em; font-size: 1.25rem; font-family: var(--font-num); }
   .hab-alert { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap); padding: 12px; border: 3px solid var(--alert-red); border-radius: var(--radius); background-image: var(--st-fill); }
   .hab-alert div { flex: 1 1 260px; }
   .hab-alert p { color: var(--alert-red-text); }

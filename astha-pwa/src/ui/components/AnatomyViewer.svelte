@@ -210,6 +210,7 @@
           {#each REGION_IDS as id (id)}
             {@const r = regions[id]}
             {@const a = anchors[id]}
+            {@const sideOffset = id === 'general' ? (view === 'back' ? 54 : -54) : id === 'lumbar' ? -96 : id === 'legs' ? (view === 'back' ? -74 : 74) : 86}
             <button
               type="button"
               class="hotspot st {r?.status ?? 'none'}"
@@ -217,7 +218,7 @@
               class:selected={selected === id}
               class:away={a.hidden || dragging}
               class:dim={variant === 'crisis' && r?.status !== 'critical' && selected !== id}
-              style="translate: {a.x}px {a.y}px"
+              style="translate: {a.x + sideOffset}px {a.y}px"
               aria-pressed={selected === id}
               aria-label="{REGION_LABEL[id]}, {STATUS_LABEL[r?.status ?? 'none']}, {r?.alertCount ?? 0} alerts{r?.isSuspect ? ', suspect reading' : ''}"
               onfocus={() => { if (a.hidden) view = view === 'front' ? 'back' : 'front'; }}
@@ -273,7 +274,7 @@
   }
   .hotspot::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--st-fill); pointer-events: none; }
   .hotspot.selected, .hotspot:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-  .hotspot.away { opacity: 0.35; pointer-events: none; }
+  .hotspot.away { opacity: 0.14; pointer-events: none; }
   .hotspot.dim { opacity: 0.5; }
   .tag { font-size: 0.75rem; white-space: nowrap; }
   @media (max-width: 420px) { .tag { display: none; } }
