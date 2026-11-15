@@ -74,7 +74,7 @@
 
       {#if open && protocol}
         <CountermeasureGuide {protocol} alert={open} variant={open.urgency === 'emergency' ? 'emergency' : 'inline'}
-          oncheck={(s, c) => bridge.checkStep(open, s, c)} />
+          oncheck={(s, c, p) => bridge.checkStep(open, s, c, p)} />
         <div class="row">
           {#if open.status === 'critical' && !open.acknowledged}
             <button type="button" class="btn danger" onclick={() => bridge.acknowledge(open)}>Reconocer alerta</button>

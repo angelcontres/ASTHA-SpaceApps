@@ -51,7 +51,7 @@
 
   <div class="cols">
     {#if protocol}
-      <CountermeasureGuide {protocol} {alert} variant="emergency" oncheck={(s, c) => bridge.checkStep(alert, s, c)} />
+      <CountermeasureGuide {protocol} {alert} variant="emergency" oncheck={(s, c, p) => bridge.checkStep(alert, s, c, p)} />
     {/if}
 
     <aside class="panel stack" aria-labelledby="crew-h">
