@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import { SCENARIO_IDS, SYNTHETIC, type ScenarioDef } from './storage/telemetrySources';
   import AlarmManager from './ui/components/AlarmManager.svelte';
+  import BioPassportModal from './ui/components/BioPassportModal.svelte';
   import CrewBar from './ui/components/CrewBar.svelte';
   import EmergencyDrawer from './ui/components/EmergencyDrawer.svelte';
   import HabitatStrip from './ui/components/HabitatStrip.svelte';
@@ -82,6 +83,8 @@
   <title>{unlocked ? `ASTHA · ${bridge.unlockedCrewId}` : 'ASTHA · Security Lock'}</title>
 </svelte:head>
 
+<AlarmManager locked={!unlocked} />
+
 {#if !unlocked}
   <LockScreen />
 {:else}
@@ -92,7 +95,6 @@
     {survival}
     red={prefs.redMode}
   />
-  <AlarmManager />
   {#if !prefs.zen}<CrewBar />{/if}
 
   {#if power.low}
@@ -190,8 +192,10 @@
   {/if}
 
   {#if ui.emergencyOpen}<EmergencyDrawer />{/if}
-  {#if codeRed}<CodeRedView alert={codeRed} />{/if}
+  {#if ui.bioPassportOpen}<BioPassportModal />{/if}
 {/if}
+
+{#if codeRed}<CodeRedView alert={codeRed} locked={!unlocked} />{/if}
 
 <div class="notices" aria-live="polite">
   {#each bridge.notices.filter((n) => n.code !== 'wrong-pin') as n (n.id)}

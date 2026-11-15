@@ -116,7 +116,7 @@ describe('CounterResolver · resolución por alerta', () => {
     expect(alt.substitutedFor).toBe('lbnp');
     expect(alt.protocol.resources).not.toContain('lbnp');
     expect(alt.protocol.steps.length).toBeLessThanOrEqual(4);
-    expect(alt.protocol.steps.map((s) => s.text).join(' ')).toMatch(/30°.*compresión venosa/s);
+    expect(alt.protocol.steps.map((s) => s.text).join(' ')).toMatch(/30°.*venous compression/s);
 
     // Un recurso no operativo que el protocolo no usa no cambia nada.
     expect(resolveForAlert(alert({ countermeasureId: 'CM-RAD-01' }), new Set(['lbnp']))!.protocol.id).toBe('CM-RAD-01');
@@ -235,7 +235,7 @@ describe('CrisisSimulator · RF-SIM-01..05 (letras del SRS §3.8)', () => {
     expect(spe).toMatchObject({ status: 'critical', urgency: 'emergency' });
     expect(r.priority).toBe('high');
     expect(r.protocol.steps[0]).toMatchObject({ resource: 'shelter' });
-    expect(r.protocol.steps[0].text).toMatch(/refugio/i);
+    expect(r.protocol.steps[0].text).toMatch(/shelter/i);
     expect(elapsed).toBeLessThan(50);
   });
 });

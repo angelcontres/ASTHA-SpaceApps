@@ -1,800 +1,800 @@
 {
-  "_source": "RF-GUI-01..05, RNF-USA-05 con ADR-017 (máximo 4 pasos). Valores orientativos: deben validarse con personal médico antes de uso real (SRS §2.3). Pasos de CM-SANS-01, CM-RAD-01 y CM-ENV-01/02 alineados con AC-CLIN-03/04/05, CU-02, CU-08, CU-09 y HU-01. Alternativa CM-SANS-01-ALT por recurso no operativo según CU-07 FA-01. Glosario obligatorio (RF-GUI-04) y recursos prohibidos (AC-CLIN-06.3) validados por CounterResolver.",
+  "_source": "RF-GUI-01..05, RNF-USA-05 with ADR-017 (max 4 steps). Reference clinical protocols: require validation by Flight Surgeon personnel.",
   "maxSteps": 4,
   "inventory": {
-    "ared": "ARED (ejercicio resistivo)",
-    "cycle": "Cicloergómetro",
-    "treadmill": "Cinta de correr",
-    "lbnp": "LBNP (pantalón de presión negativa)",
-    "kit_alpha": "Botiquín Alfa (diagnóstico: tensiómetro, pulsioxímetro, rejilla de Amsler, tiras)",
-    "kit_bravo": "Botiquín Bravo (fármacos: antiemético, analgésico, cóctel radioprotector oral)",
-    "shelter": "Refugio de tormentas",
-    "lioh": "Cartuchos LiOH",
-    "cdra": "CDRA (removedor de CO₂)",
-    "water": "Dispensador de agua potable",
-    "dosimeters": "Dosímetros pasivos personales CANS",
-    "fans": "Ventiladores de circulación forzada",
-    "compression": "Bandas elásticas de compresión venosa (Botiquín Alfa)"
+    "ared": "ARED (resistive exercise device)",
+    "cycle": "Cycle ergometer",
+    "treadmill": "Treadmill",
+    "lbnp": "LBNP (lower body negative pressure suit)",
+    "kit_alpha": "Med Kit Alpha (diagnostics: BP cuff, pulse oximeter, Amsler grid, urinalysis strips)",
+    "kit_bravo": "Med Kit Bravo (medications: antiemetic, analgesic, oral radioprotective cocktail)",
+    "shelter": "Radiation storm shelter",
+    "lioh": "LiOH canisters",
+    "cdra": "CDRA (CO₂ scrubber)",
+    "water": "Potable water dispenser",
+    "dosimeters": "CANS personal passive dosimeters",
+    "fans": "Forced-circulation fans",
+    "compression": "Elastic venous compression cuffs (Med Kit Alpha)"
   },
   "protocols": {
     "CM-ENV-01": {
-      "title": "Fuga de CO₂ o ventilación deficiente",
-      "what": "El aire de la cabina acumula dióxido de carbono (CO₂) y el oxígeno en tu sangre baja. El cerebro y los músculos reciben menos oxígeno.",
-      "severity": "Crítica",
-      "timeToImpact": "minutos a 1 hora",
+      "title": "CO₂ leak or poor ventilation",
+      "what": "Cabin air is accumulating carbon dioxide (CO₂) and your blood oxygen is dropping. Brain and muscles receive less oxygen.",
+      "severity": "Critical",
+      "timeToImpact": "minutes to 1 hour",
       "steps": [
         {
           "id": "s1",
-          "text": "Avisa a la tripulación y ve al módulo con mejor ventilación.",
+          "text": "Alert the crew and move to the best-ventilated module.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Activa los ventiladores de circulación forzada y pasa el CDRA a ciclo forzado.",
+          "text": "Turn on forced-circulation fans and switch CDRA to forced cycle.",
           "resource": "fans"
         },
         {
           "id": "s3",
-          "text": "Instala un cartucho LiOH nuevo en el soporte de emergencia.",
+          "text": "Install a fresh LiOH canister in the emergency holder.",
           "resource": "lioh"
         },
         {
           "id": "s4",
-          "text": "Mide SpO₂ con el pulsioxímetro cada 10 min hasta que ppCO₂ baje de 2,0.",
+          "text": "Measure SpO₂ with the pulse oximeter every 10 min until ppCO₂ drops below 2.0.",
           "resource": "kit_alpha"
         }
       ],
-      "fsMessage": "R-ENV-01: ppCO₂ y SpO₂ con hora, filtros cambiados, SpO₂ tras 30 min."
+      "fsMessage": "R-ENV-01: ppCO₂ and SpO₂ with timestamps, filters replaced, SpO₂ after 30 min."
     },
     "CM-ENV-02": {
-      "title": "Dolor de cabeza por CO₂",
-      "what": "Hay una bolsa de CO₂ en la cabina: sin gravedad el aire no se mezcla solo. El CO₂ alto dilata los vasos de la cabeza y por eso duele. La causa es el ambiente, no una enfermedad.",
-      "severity": "Crítica",
-      "timeToImpact": "1 a 3 horas",
+      "title": "CO₂-induced headache",
+      "what": "A CO₂ pocket formed in the cabin: without gravity, air does not mix on its own. Elevated CO₂ dilates cerebral vessels and causes headache. The cause is environmental, not illness.",
+      "severity": "Critical",
+      "timeToImpact": "1 to 3 hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Verifica los ventiladores de circulación forzada y cambia el lecho del CDRA.",
+          "text": "Check forced-circulation fans and replace the CDRA sorbent bed.",
           "resource": "fans"
         },
         {
           "id": "s2",
-          "text": "Ve al módulo con mejor ventilación y quédate en reposo.",
+          "text": "Move to the best-ventilated module and rest.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Instala un cartucho LiOH si ppCO₂ sigue por encima de 3,0.",
+          "text": "Install an LiOH canister if ppCO₂ remains above 3.0.",
           "resource": "lioh"
         },
         {
           "id": "s4",
-          "text": "Toma 1 analgésico del Botiquín Bravo solo si el dolor sigue a los 30 min.",
+          "text": "Take 1 analgesic from Med Kit Bravo only if headache persists after 30 min.",
           "resource": "kit_bravo"
         }
       ],
-      "fsMessage": "R-ENV-02: ppCO₂, intensidad de cefalea (1-10), resultado Amsler y fármaco tomado."
+      "fsMessage": "R-ENV-02: ppCO₂, headache severity (1-10), Amsler result, and medication taken."
     },
     "CM-SANS-01": {
-      "title": "SANS agudo: visión y presión",
-      "what": "Sin gravedad, los líquidos suben a la cabeza y presionan el ojo (SANS: síndrome neuro-ocular del vuelo espacial). La presión alta lo empeora.",
-      "severity": "Crítica",
-      "timeToImpact": "días a semanas (daño visual)",
+      "title": "Acute SANS: vision and pressure",
+      "what": "In microgravity, fluids shift to the head and press on the eye (SANS: spaceflight-associated neuro-ocular syndrome). High blood pressure worsens it.",
+      "severity": "Critical",
+      "timeToImpact": "days to weeks (visual impairment)",
       "steps": [
         {
           "id": "s1",
-          "text": "Ponte el traje LBNP y presurízalo a −35 mmHg durante 60 min.",
+          "text": "Don the LBNP suit and depressurize to −35 mmHg for 60 min.",
           "resource": "lbnp"
         },
         {
           "id": "s2",
-          "text": "Haz la prueba de la rejilla de Amsler en esta pantalla al minuto 0 y al minuto 60.",
+          "text": "Perform the Amsler grid test on this screen at 0 min and 60 min.",
           "resource": "kit_alpha"
         },
         {
           "id": "s3",
-          "text": "Limita el sodio de tu ración a menos de 2,0 g al día.",
+          "text": "Limit dietary sodium intake to less than 2.0 g per day.",
           "resource": null
         }
       ],
-      "fsMessage": "R-SANS-01: PAS antes/después de LBNP, Amsler al minuto 0 y 60 por ojo, ingesta de sodio y fecha de inicio de la visión borrosa.",
+      "fsMessage": "R-SANS-01: SBP pre/post LBNP, Amsler at 0 and 60 min per eye, sodium intake, and onset date of blurred vision.",
       "alternatives": {
         "lbnp": "CM-SANS-01-ALT"
       }
     },
     "CM-SANS-02": {
-      "title": "Presión alta con poco sueño",
-      "what": "Dormir poco y tener la presión alta aumentan el líquido en la cabeza. Es la antesala del SANS.",
-      "severity": "Precaución alta",
-      "timeToImpact": "1 a 2 semanas",
+      "title": "High blood pressure with short sleep",
+      "what": "Short sleep combined with elevated blood pressure increases fluid pressure in the head. It is a precursor to SANS.",
+      "severity": "High caution",
+      "timeToImpact": "1 to 2 weeks",
       "steps": [
         {
           "id": "s1",
-          "text": "Programa 8 h de sueño esta noche con la luz de cabina en modo rojo.",
+          "text": "Schedule 8 h of sleep tonight with cabin lighting set to red mode.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Haz una sesión de LBNP a −30 mmHg durante 45 min.",
+          "text": "Complete an LBNP session at −30 mmHg for 45 min.",
           "resource": "lbnp"
         },
         {
           "id": "s3",
-          "text": "Mide la presión arterial mañana al despertar.",
+          "text": "Measure blood pressure tomorrow upon waking.",
           "resource": "kit_alpha"
         }
       ]
     },
     "CM-RAD-01": {
-      "title": "Tormenta solar: ir al refugio",
-      "what": "Una tormenta solar lanza partículas que atraviesan la nave y dañan las células. El refugio tiene más blindaje.",
-      "severity": "Crítica",
-      "timeToImpact": "inmediato (dosis acumulada)",
+      "title": "Solar storm: move to shelter",
+      "what": "A solar storm launches high-energy particles that penetrate the hull and damage cells. The storm shelter provides higher shielding.",
+      "severity": "Critical",
+      "timeToImpact": "immediate (cumulative dose)",
       "steps": [
         {
           "id": "s1",
-          "text": "Evacúa al refugio de tormentas del módulo central en menos de 5 min.",
+          "text": "Evacuate to the central module storm shelter in under 5 min.",
           "resource": "shelter"
         },
         {
           "id": "s2",
-          "text": "Toma el cóctel radioprotector oral del Botiquín Bravo.",
+          "text": "Take the oral radioprotective cocktail from Med Kit Bravo.",
           "resource": "kit_bravo"
         },
         {
           "id": "s3",
-          "text": "Coloca los dosímetros pasivos personales en el mamparo interior.",
+          "text": "Place personal passive dosimeters on the interior bulkhead.",
           "resource": "dosimeters"
         },
         {
           "id": "s4",
-          "text": "Sal solo cuando la tasa baje de 35 µSv/h durante 1 hora.",
+          "text": "Exit only after dose rate drops below 35 µSv/h for 1 hour.",
           "resource": null
         }
       ],
-      "fsMessage": "R-RAD-01: hora de entrada al refugio, tasa máxima (µSv/h), dosis acumulada y síntomas."
+      "fsMessage": "R-RAD-01: shelter entry time, peak dose rate (µSv/h), cumulative dose, and symptoms."
     },
     "CM-RAD-02": {
-      "title": "Tormenta solar con náuseas",
-      "what": "Las náuseas durante una tormenta solar pueden ser el primer aviso de exposición alta a radiación.",
-      "severity": "Crítica · emergencia",
-      "timeToImpact": "horas",
+      "title": "Solar storm with nausea",
+      "what": "Nausea during a solar particle storm can be the earliest warning sign of high radiation exposure.",
+      "severity": "Critical · emergency",
+      "timeToImpact": "hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Entra al refugio de tormentas y cierra la escotilla ahora.",
+          "text": "Enter the storm shelter and secure the hatch immediately.",
           "resource": "shelter"
         },
         {
           "id": "s2",
-          "text": "Toma 1 antiemético del Botiquín Bravo con un poco de agua.",
+          "text": "Take 1 antiemetic from Med Kit Bravo with a small sip of water.",
           "resource": "kit_bravo"
         },
         {
           "id": "s3",
-          "text": "Anota la hora del primer vómito o náusea fuerte en esta pantalla.",
+          "text": "Log the time of first emesis or severe nausea on this screen.",
           "resource": null
         },
         {
           "id": "s4",
-          "text": "Bebe 250 ml de agua cada hora mientras estés en el refugio.",
+          "text": "Drink 250 ml of water every hour while inside the shelter.",
           "resource": "water"
         }
       ],
-      "fsMessage": "R-RAD-02: hora de inicio de náuseas, vómitos (n.º), tasa de dosis máxima, antiemético y hora."
+      "fsMessage": "R-RAD-02: nausea onset time, emesis count, peak dose rate, antiemetic, and time."
     },
     "CM-COG-01": {
-      "title": "Fatiga y ritmo de sueño alterado",
-      "what": "Dormir poco y tener la variabilidad cardiaca baja indica que el cuerpo no se recupera. Aumentan los errores y el tiempo de reacción.",
-      "severity": "Precaución",
-      "timeToImpact": "1 a 3 días",
+      "title": "Fatigue and disrupted sleep rhythm",
+      "what": "Short sleep with low heart rate variability indicates poor autonomic recovery. Error rate and reaction time worsen.",
+      "severity": "Caution",
+      "timeToImpact": "1 to 3 days",
       "steps": [
         {
           "id": "s1",
-          "text": "Evita tareas críticas (EVA, maniobras) durante las próximas 24 h.",
+          "text": "Avoid safety-critical tasks (EVA, maneuvering) for the next 24 h.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Apaga pantallas 1 h antes de dormir y usa el modo rojo.",
+          "text": "Turn off screens 1 h before sleep and enable red lighting mode.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Duerme 8 h en tu saco con el antifaz.",
+          "text": "Sleep 8 h in crew quarters with sleep mask.",
           "resource": null
         }
       ]
     },
     "CM-REN-01": {
-      "title": "Sospecha de cálculo renal",
-      "what": "El hueso pierde calcio sin gravedad. Ese calcio pasa a la orina y puede formar una piedra en el riñón, que causa dolor lumbar.",
-      "severity": "Crítica",
-      "timeToImpact": "horas a días",
+      "title": "Suspected renal calculus",
+      "what": "Bones lose calcium in microgravity. Excess calcium enters urine and can form a kidney stone, causing lumbar pain.",
+      "severity": "Critical",
+      "timeToImpact": "hours to days",
       "steps": [
         {
           "id": "s1",
-          "text": "Bebe 500 ml de agua ahora y 250 ml cada hora.",
+          "text": "Drink 500 ml of water now and 250 ml every hour.",
           "resource": "water"
         },
         {
           "id": "s2",
-          "text": "Toma 1 analgésico del Botiquín Bravo si el dolor es mayor de 5 sobre 10.",
+          "text": "Take 1 analgesic from Med Kit Bravo if pain exceeds 5 out of 10.",
           "resource": "kit_bravo"
         },
         {
           "id": "s3",
-          "text": "Haz una tira de orina del Botiquín Alfa y anota si hay sangre.",
+          "text": "Run a urinalysis dipstick from Med Kit Alpha and log any hematuria.",
           "resource": "kit_alpha"
         },
         {
           "id": "s4",
-          "text": "Avisa al CMO si aparece fiebre o el dolor sube a 8 sobre 10.",
+          "text": "Notify CMO if fever appears or pain rises to 8 out of 10.",
           "resource": null
         }
       ],
-      "fsMessage": "R-REN-01: calcio urinario, escala de dolor (1-10), resultado de la tira y fármaco tomado."
+      "fsMessage": "R-REN-01: urinary calcium, pain scale (1-10), dipstick result, and medication taken."
     },
     "CM-REN-02": {
-      "title": "Calcio alto en la orina",
-      "what": "Los huesos están perdiendo calcio por la falta de gravedad. Más agua y ejercicio de carga lo frenan.",
-      "severity": "Precaución",
-      "timeToImpact": "semanas",
+      "title": "Elevated urinary calcium",
+      "what": "Bones are shedding calcium due to unloading in microgravity. Higher hydration and resistive loading slow bone loss.",
+      "severity": "Caution",
+      "timeToImpact": "weeks",
       "steps": [
         {
           "id": "s1",
-          "text": "Bebe al menos 2,5 L de agua hoy.",
+          "text": "Drink at least 2.5 L of water today.",
           "resource": "water"
         },
         {
           "id": "s2",
-          "text": "Haz 60 min de ARED con carga completa en piernas.",
+          "text": "Perform 60 min of ARED with full lower-body load.",
           "resource": "ared"
         },
         {
           "id": "s3",
-          "text": "Repite la medición de calcio urinario en 3 días.",
+          "text": "Repeat urinary calcium measurement in 3 days.",
           "resource": "kit_alpha"
         }
       ]
     },
     "CM-CARD-01": {
-      "title": "Mareo al ponerte de pie",
-      "what": "Sin gravedad, el corazón se acostumbra a bombear menos. Al levantarte, la sangre baja a las piernas y llega poca al cerebro.",
-      "severity": "Precaución alta",
-      "timeToImpact": "inmediato (riesgo de desmayo)",
+      "title": "Orthostatic dizziness",
+      "what": "Without gravity, the heart adapts to pumping less effortfully. On standing, blood pools in the legs and brain perfusion drops.",
+      "severity": "High caution",
+      "timeToImpact": "immediate (syncope risk)",
       "steps": [
         {
           "id": "s1",
-          "text": "Siéntate o sujétate de inmediato y espera 2 min.",
+          "text": "Sit down or brace immediately and wait 2 min.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Bebe 500 ml de agua con una ración de caldo salado.",
+          "text": "Drink 500 ml of water with a salted broth ration.",
           "resource": "water"
         },
         {
           "id": "s3",
-          "text": "Haz una sesión de LBNP a −30 mmHg durante 30 min.",
+          "text": "Complete an LBNP session at −30 mmHg for 30 min.",
           "resource": "lbnp"
         },
         {
           "id": "s4",
-          "text": "Mide pulso y presión de pie al terminar.",
+          "text": "Measure standing pulse and blood pressure upon completion.",
           "resource": "kit_alpha"
         }
       ]
     },
     "CM-IND-hr": {
-      "title": "Pulso fuera de rango",
-      "what": "El corazón late más rápido o más lento de lo normal en reposo.",
-      "severity": "Según el estado",
-      "timeToImpact": "horas",
+      "title": "Heart rate out of range",
+      "what": "Your resting heart rate is faster or slower than expected.",
+      "severity": "Status-dependent",
+      "timeToImpact": "hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Descansa sentado 10 min sin hablar.",
+          "text": "Rest seated quietly for 10 min without speaking.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Mide de nuevo el pulso con el pulsioxímetro.",
+          "text": "Re-measure pulse using the pulse oximeter.",
           "resource": "kit_alpha"
         },
         {
           "id": "s3",
-          "text": "Bebe 300 ml de agua.",
+          "text": "Drink 300 ml of water.",
           "resource": "water"
         },
         {
           "id": "s4",
-          "text": "Avisa al CMO si sigue fuera de rango.",
+          "text": "Notify CMO if heart rate remains out of range.",
           "resource": null
         }
       ],
-      "fsMessage": "FC en reposo (3 tomas), actividad previa y síntomas."
+      "fsMessage": "Resting HR (3 readings), prior activity, and symptoms."
     },
     "CM-IND-hrv": {
-      "title": "Variabilidad cardiaca baja",
-      "what": "La variabilidad cardiaca (HRV) mide cómo se recupera tu sistema nervioso. Baja indica estrés o cansancio acumulado.",
-      "severity": "Según el estado",
-      "timeToImpact": "1 a 3 días",
+      "title": "Low heart rate variability",
+      "what": "Heart rate variability (HRV) reflects nervous system recovery. Low values indicate accumulated stress or fatigue.",
+      "severity": "Status-dependent",
+      "timeToImpact": "1 to 3 days",
       "steps": [
         {
           "id": "s1",
-          "text": "Haz 5 min de respiración lenta: 6 respiraciones por minuto.",
+          "text": "Perform 5 min of slow paced breathing: 6 breaths per minute.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Cambia el ejercicio intenso de hoy por 30 min suaves en cicloergómetro.",
+          "text": "Swap today’s intense workout for 30 min light cycle ergometer.",
           "resource": "cycle"
         },
         {
           "id": "s3",
-          "text": "Duerme 8 h esta noche.",
+          "text": "Get 8 h of sleep tonight.",
           "resource": null
         }
       ],
-      "fsMessage": "HRV de los últimos 3 días, horas de sueño y carga de trabajo."
+      "fsMessage": "Last 3 days of HRV, sleep hours, and workload."
     },
     "CM-IND-sbp": {
-      "title": "Presión sistólica alta",
-      "what": "La presión con la que el corazón empuja la sangre está alta. Sin gravedad, eso aumenta el líquido en la cabeza y los ojos.",
-      "severity": "Según el estado",
-      "timeToImpact": "días",
+      "title": "High systolic blood pressure",
+      "what": "Arterial pressure during heart contraction is elevated. In microgravity, this drives extra fluid toward the head and eyes.",
+      "severity": "Status-dependent",
+      "timeToImpact": "days",
       "steps": [
         {
           "id": "s1",
-          "text": "Mide la presión sentado tras 5 min de reposo.",
+          "text": "Measure seated blood pressure after 5 min of quiet rest.",
           "resource": "kit_alpha"
         },
         {
           "id": "s2",
-          "text": "Reduce la sal: elige comidas marcadas como bajas en sodio hoy.",
+          "text": "Cut sodium today: select meals labeled low-sodium.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Haz una sesión de LBNP a −30 mmHg durante 45 min.",
+          "text": "Complete an LBNP session at −30 mmHg for 45 min.",
           "resource": "lbnp"
         }
       ],
-      "fsMessage": "PAS/PAD (3 tomas), síntomas visuales y sesiones LBNP."
+      "fsMessage": "SBP/DBP (3 readings), visual symptoms, and LBNP sessions."
     },
     "CM-IND-dbp": {
-      "title": "Presión diastólica alta",
-      "what": "La presión de la sangre entre latidos está alta. Suele subir con poco sueño y estrés.",
-      "severity": "Según el estado",
-      "timeToImpact": "días",
+      "title": "High diastolic blood pressure",
+      "what": "Resting vascular pressure between heartbeats is elevated. It commonly rises with short sleep and stress.",
+      "severity": "Status-dependent",
+      "timeToImpact": "days",
       "steps": [
         {
           "id": "s1",
-          "text": "Mide la presión sentado tras 5 min de reposo.",
+          "text": "Measure seated blood pressure after 5 min of quiet rest.",
           "resource": "kit_alpha"
         },
         {
           "id": "s2",
-          "text": "Duerme 8 h esta noche.",
+          "text": "Get 8 h of sleep tonight.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Haz 30 min de cicloergómetro suave.",
+          "text": "Perform 30 min of light cycle ergometer exercise.",
           "resource": "cycle"
         }
       ],
-      "fsMessage": "PAD (3 tomas), horas de sueño de la semana."
+      "fsMessage": "DBP (3 readings), weekly sleep duration."
     },
     "CM-IND-spo2": {
-      "title": "Oxígeno en sangre bajo",
-      "what": "Tu sangre lleva menos oxígeno de lo normal. Puede venir del aire de la cabina o de la respiración.",
-      "severity": "Según el estado",
-      "timeToImpact": "minutos a horas",
+      "title": "Low blood oxygen saturation",
+      "what": "Blood is carrying less oxygen than normal. Cause may be cabin atmosphere or ventilation.",
+      "severity": "Status-dependent",
+      "timeToImpact": "minutes to hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Revisa ppCO₂ y O₂ en la pestaña Entorno.",
+          "text": "Check cabin ppCO₂ and O₂ on the Habitat view.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Si SpO₂ es menor de 93, ve al módulo mejor ventilado y avisa al CMO.",
+          "text": "If SpO₂ is below 93, move to the best-ventilated module and notify CMO.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Mide SpO₂ en otro dedo con el pulsioxímetro.",
+          "text": "Re-check SpO₂ on another finger with the pulse oximeter.",
           "resource": "kit_alpha"
         }
       ],
-      "fsMessage": "SpO₂ (3 tomas), ppCO₂ y O₂ de cabina a la misma hora."
+      "fsMessage": "SpO₂ (3 readings), cabin ppCO₂ and O₂ at the same time."
     },
     "CM-IND-glucose": {
-      "title": "Glucosa fuera de rango",
-      "what": "El azúcar en la sangre está demasiado alto o bajo para estar en ayunas.",
-      "severity": "Según el estado",
-      "timeToImpact": "horas",
+      "title": "Fasting glucose out of range",
+      "what": "Fasting blood sugar is higher or lower than the expected range.",
+      "severity": "Status-dependent",
+      "timeToImpact": "hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Repite la medición con una tira nueva del Botiquín Alfa.",
+          "text": "Repeat measurement with a fresh test strip from Med Kit Alpha.",
           "resource": "kit_alpha"
         },
         {
           "id": "s2",
-          "text": "Si es baja (menor de 75), toma una ración de zumo o gel.",
+          "text": "If low (below 75), take a juice pouch or glucose gel.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Si es alta (mayor de 105), bebe 300 ml de agua y camina 20 min en cinta.",
+          "text": "If high (above 105), drink 300 ml water and walk 20 min on treadmill.",
           "resource": "treadmill"
         }
       ],
-      "fsMessage": "Glucemia (2 tomas), hora de la última comida."
+      "fsMessage": "Blood glucose (2 readings), time of last meal."
     },
     "CM-IND-temp": {
-      "title": "Temperatura alta",
-      "what": "Tu temperatura está por encima de lo normal. Puede ser una infección o calor por ejercicio.",
-      "severity": "Según el estado",
-      "timeToImpact": "horas",
+      "title": "Elevated body temperature",
+      "what": "Body temperature is above normal. It can reflect infection or heat retention after exercise.",
+      "severity": "Status-dependent",
+      "timeToImpact": "hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Descansa 30 min sin ejercicio y vuelve a medir.",
+          "text": "Rest 30 min without exercise and re-measure temperature.",
           "resource": "kit_alpha"
         },
         {
           "id": "s2",
-          "text": "Bebe 500 ml de agua.",
+          "text": "Drink 500 ml of water.",
           "resource": "water"
         },
         {
           "id": "s3",
-          "text": "Toma 1 antitérmico del Botiquín Bravo si pasa de 38,0 °C.",
+          "text": "Take 1 antipyretic from Med Kit Bravo if above 38.0 °C.",
           "resource": "kit_bravo"
         }
       ],
-      "fsMessage": "Temperatura (curva), otros síntomas y fármaco tomado."
+      "fsMessage": "Temperature curve, associated symptoms, and medication taken."
     },
     "CM-IND-sleep": {
-      "title": "Poco sueño",
-      "what": "Dormir poco reduce la atención y la recuperación del cuerpo.",
-      "severity": "Según el estado",
-      "timeToImpact": "1 a 2 días",
+      "title": "Short sleep duration",
+      "what": "Insufficient sleep impairs alertness and physiological recovery.",
+      "severity": "Status-dependent",
+      "timeToImpact": "1 to 2 days",
       "steps": [
         {
           "id": "s1",
-          "text": "Usa el modo rojo de pantallas desde 2 h antes de dormir.",
+          "text": "Switch displays to red mode starting 2 h before bedtime.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "No hagas ejercicio intenso en las 3 h previas al sueño.",
+          "text": "Avoid intense exercise within 3 h of sleep.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Programa 8 h de sueño con antifaz y tapones.",
+          "text": "Schedule 8 h of sleep using sleep mask and earplugs.",
           "resource": null
         }
       ],
-      "fsMessage": "Horas de sueño de los últimos 3 días y turnos de trabajo."
+      "fsMessage": "Sleep hours over the last 3 days and duty shifts."
     },
     "CM-IND-mood": {
-      "title": "Ánimo bajo",
-      "what": "El aislamiento y la rutina pueden bajar el ánimo. Es frecuente y tiene arreglo.",
-      "severity": "Según el estado",
-      "timeToImpact": "días",
+      "title": "Low mood score",
+      "what": "Isolation and routine can lower mood. This is common in long missions and manageable.",
+      "severity": "Status-dependent",
+      "timeToImpact": "days",
       "steps": [
         {
           "id": "s1",
-          "text": "Habla 10 min con un compañero de tripulación sobre cómo te sientes.",
+          "text": "Spend 10 min talking with a crewmate about how you feel.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Haz 30 min de cinta o cicloergómetro.",
+          "text": "Perform 30 min on treadmill or cycle ergometer.",
           "resource": "treadmill"
         },
         {
           "id": "s3",
-          "text": "Reserva un mensaje personal en la próxima ventana de comunicación.",
+          "text": "Book a private personal message during the next comm window.",
           "resource": null
         }
       ],
-      "fsMessage": "Ánimo de los últimos 5 días y eventos relevantes."
+      "fsMessage": "Last 5 days of mood scores and notable stressors."
     },
     "CM-IND-urineCa": {
-      "title": "Pérdida ósea",
-      "what": "El calcio de la orina sube cuando los huesos pierden masa por la falta de carga.",
-      "severity": "Según el estado",
-      "timeToImpact": "semanas",
+      "title": "Bone calcium loss",
+      "what": "Urinary calcium rises when bones demineralize due to mechanical unloading.",
+      "severity": "Status-dependent",
+      "timeToImpact": "weeks",
       "steps": [
         {
           "id": "s1",
-          "text": "Haz 60 min de ARED con carga completa en piernas y cadera.",
+          "text": "Perform 60 min of ARED with full leg and hip load.",
           "resource": "ared"
         },
         {
           "id": "s2",
-          "text": "Bebe al menos 2,5 L de agua hoy.",
+          "text": "Drink at least 2.5 L of water today.",
           "resource": "water"
         },
         {
           "id": "s3",
-          "text": "Repite la medición de calcio en 3 días.",
+          "text": "Repeat urinary calcium measurement in 3 days.",
           "resource": "kit_alpha"
         }
       ],
-      "fsMessage": "Calcio urinario (serie), minutos de ARED por semana."
+      "fsMessage": "Urinary calcium series, weekly ARED minutes."
     },
     "CM-IND-ppco2": {
-      "title": "CO₂ alto en cabina",
-      "what": "El aire de la cabina tiene más CO₂ del recomendado. Puede causar dolor de cabeza y cansancio.",
-      "severity": "Según el estado",
-      "timeToImpact": "horas",
+      "title": "Elevated cabin CO₂",
+      "what": "Cabin air contains more CO₂ than recommended. Can trigger headache and fatigue.",
+      "severity": "Status-dependent",
+      "timeToImpact": "hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Comprueba que el CDRA está encendido y sin alarmas.",
+          "text": "Verify CDRA is powered and fault-free.",
           "resource": "cdra"
         },
         {
           "id": "s2",
-          "text": "Retira obstáculos de las rejillas de ventilación del módulo.",
+          "text": "Clear any obstructions from module ventilation grilles.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Instala un cartucho LiOH si ppCO₂ supera 3,0.",
+          "text": "Install an LiOH canister if ppCO₂ exceeds 3.0.",
           "resource": "lioh"
         }
       ],
-      "fsMessage": "Serie de ppCO₂, estado del CDRA y cartuchos LiOH usados."
+      "fsMessage": "ppCO₂ series, CDRA status, and LiOH canisters used."
     },
     "CM-IND-pressure": {
-      "title": "Presión de cabina fuera de rango",
-      "what": "La presión del aire de la nave se aleja de la normal. Una bajada puede indicar una fuga.",
-      "severity": "Según el estado",
-      "timeToImpact": "minutos a horas",
+      "title": "Cabin pressure out of range",
+      "what": "Spacecraft air pressure deviates from nominal. A drop may indicate a hull leak.",
+      "severity": "Status-dependent",
+      "timeToImpact": "minutes to hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Avisa al Comandante y a la tripulación.",
+          "text": "Notify Commander and all crew members.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Cierra las escotillas entre módulos según el procedimiento de fuga.",
+          "text": "Close inter-module hatches per depressurization procedure.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Lee la presión de cada módulo cada 5 min en esta pantalla.",
+          "text": "Read pressure in each module every 5 min on this screen.",
           "resource": null
         }
       ],
-      "fsMessage": "Serie de presión por módulo, escotillas cerradas y hora."
+      "fsMessage": "Module pressure series, hatches closed, and timestamps."
     },
     "CM-IND-o2": {
-      "title": "Oxígeno de cabina fuera de rango",
-      "what": "La proporción de oxígeno del aire no es la normal. Poco oxígeno cansa; demasiado aumenta el riesgo de incendio.",
-      "severity": "Según el estado",
-      "timeToImpact": "horas",
+      "title": "Cabin oxygen out of range",
+      "what": "Cabin oxygen fraction is outside nominal limits. Too low causes fatigue; too high increases fire hazard.",
+      "severity": "Status-dependent",
+      "timeToImpact": "hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Avisa al Comandante.",
+          "text": "Notify the Commander.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Si O₂ es alto, apaga equipos que produzcan chispas.",
+          "text": "If O₂ is high, power down spark-producing equipment.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Si O₂ es bajo, mide tu SpO₂ con el pulsioxímetro.",
+          "text": "If O₂ is low, check your SpO₂ with the pulse oximeter.",
           "resource": "kit_alpha"
         }
       ],
-      "fsMessage": "Serie de O₂ de cabina y acciones tomadas."
+      "fsMessage": "Cabin O₂ series and corrective actions taken."
     },
     "CM-IND-radiation": {
-      "title": "Radiación por encima de lo habitual",
-      "what": "La tasa de radiación sube. Aún no es una tormenta, pero conviene reducir la exposición.",
-      "severity": "Según el estado",
-      "timeToImpact": "horas",
+      "title": "Elevated background radiation",
+      "what": "Dose rate is rising. Not yet a full solar storm, but exposure should be minimized.",
+      "severity": "Status-dependent",
+      "timeToImpact": "hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Pospón tareas en módulos con poco blindaje.",
+          "text": "Defer non-urgent tasks in lightly shielded modules.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Ten despejado el camino al refugio de tormentas.",
+          "text": "Keep access path to the storm shelter unobstructed.",
           "resource": "shelter"
         },
         {
           "id": "s3",
-          "text": "Vigila la tasa de dosis en la pestaña Entorno.",
+          "text": "Monitor dose rate continuously on the Habitat tab.",
           "resource": null
         }
       ],
-      "fsMessage": "Serie de tasa de dosis y dosis acumulada."
+      "fsMessage": "Dose rate series and cumulative mission dose."
     },
     "CM-DRIFT-01": {
-      "title": "Tendencia hacia precaución",
-      "what": "El valor aún es normal, pero la tendencia de 7 días indica que saldrá del rango pronto.",
-      "severity": "Aviso precoz",
-      "timeToImpact": "según los días indicados",
+      "title": "Drifting toward caution threshold",
+      "what": "Current value is still nominal, but the 7-day trend projects it will exit nominal range soon.",
+      "severity": "Early warning",
+      "timeToImpact": "per projected days",
       "steps": [
         {
           "id": "s1",
-          "text": "Revisa la gráfica de tendencia de este indicador.",
+          "text": "Review the 7-day trend chart for this indicator.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Aplica hoy la contramedida diaria del indicador (ejercicio, agua o sueño).",
+          "text": "Apply today’s daily countermeasure (exercise, hydration, or sleep).",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Registra la medición mañana a la misma hora.",
+          "text": "Log tomorrow’s measurement at the same time of day.",
           "resource": null
         }
       ]
     },
     "CM-DRIFT-02": {
-      "title": "Valor inusual para ti",
-      "what": "El valor se aleja mucho de tu línea base personal de los primeros 14 días, aunque siga dentro del rango general.",
-      "severity": "Aviso precoz",
-      "timeToImpact": "días",
+      "title": "Unusual value vs. baseline",
+      "what": "Reading deviates significantly from your days 1-14 personal baseline even if within population bounds.",
+      "severity": "Early warning",
+      "timeToImpact": "days",
       "steps": [
         {
           "id": "s1",
-          "text": "Repite la medición para descartar un error del sensor.",
+          "text": "Repeat the measurement to rule out sensor artifact.",
           "resource": "kit_alpha"
         },
         {
           "id": "s2",
-          "text": "Anota si dormiste, comiste o te ejercitaste distinto ayer.",
+          "text": "Note any unusual sleep, meal, or exercise change yesterday.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Registra la medición mañana a la misma hora.",
+          "text": "Log tomorrow’s measurement at the same time of day.",
           "resource": null
         }
       ]
     },
     "CM-DRIFT-03": {
-      "title": "Menos sueño y más presión diastólica",
-      "what": "Esta semana duermes menos y tu presión entre latidos sube. Juntos anticipan problemas de corazón y de visión.",
-      "severity": "Aviso precoz",
-      "timeToImpact": "1 a 2 semanas",
+      "title": "Less sleep with rising diastolic pressure",
+      "what": "This week you are sleeping less while resting vascular pressure rises. Together they precede cardiovascular and visual strain.",
+      "severity": "Early warning",
+      "timeToImpact": "1 to 2 weeks",
       "steps": [
         {
           "id": "s1",
-          "text": "Programa 8 h de sueño las próximas 3 noches.",
+          "text": "Schedule 8 h of sleep for the next 3 nights.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Usa el modo rojo de pantallas desde 2 h antes de dormir.",
+          "text": "Enable red display mode starting 2 h before bedtime.",
           "resource": null
         },
         {
           "id": "s3",
-          "text": "Haz 30 min de cicloergómetro suave por la mañana.",
+          "text": "Do 30 min of light cycle ergometer in the morning.",
           "resource": "cycle"
         },
         {
           "id": "s4",
-          "text": "Mide la presión mañana al despertar.",
+          "text": "Measure blood pressure tomorrow upon waking.",
           "resource": "kit_alpha"
         }
       ]
     },
     "CM-IND-cabinTemp": {
-      "title": "Temperatura de cabina fuera de rango",
-      "what": "El aire del módulo está demasiado frío o caliente. Afecta al sueño, al rendimiento y a la hidratación.",
-      "severity": "Según el estado",
-      "timeToImpact": "horas",
+      "title": "Cabin temperature out of range",
+      "what": "Module air is too cold or too warm. Affects sleep, cognitive performance, and hydration.",
+      "severity": "Status-dependent",
+      "timeToImpact": "hours",
       "steps": [
         {
           "id": "s1",
-          "text": "Avisa al Comandante para revisar el control térmico del módulo.",
+          "text": "Notify Commander to inspect module thermal control.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Si hace calor, bebe 300 ml de agua cada hora.",
+          "text": "If cabin is hot, drink 300 ml of water every hour.",
           "resource": "water"
         },
         {
           "id": "s3",
-          "text": "Pospón el ejercicio intenso hasta que vuelva al rango.",
+          "text": "Defer strenuous exercise until temperature returns to nominal.",
           "resource": null
         }
       ],
-      "fsMessage": "Serie de temperatura de cabina y acciones tomadas."
+      "fsMessage": "Cabin temperature series and corrective actions taken."
     },
     "CM-IND-humidity": {
-      "title": "Humedad de cabina fuera de rango",
-      "what": "El aire está demasiado seco o húmedo. Seco irrita ojos y garganta; húmedo favorece condensación y moho.",
-      "severity": "Según el estado",
-      "timeToImpact": "horas a días",
+      "title": "Cabin humidity out of range",
+      "what": "Air is too dry or too humid. Dry air irritates eyes and throat; high humidity promotes condensation and mold.",
+      "severity": "Status-dependent",
+      "timeToImpact": "hours to days",
       "steps": [
         {
           "id": "s1",
-          "text": "Avisa al Comandante para revisar el control de humedad.",
+          "text": "Notify Commander to inspect humidity control.",
           "resource": null
         },
         {
           "id": "s2",
-          "text": "Si el aire está seco, bebe 300 ml de agua extra.",
+          "text": "If air is dry, drink an extra 300 ml of water.",
           "resource": "water"
         },
         {
           "id": "s3",
-          "text": "Revisa superficies frías del módulo por condensación.",
+          "text": "Inspect cold module surfaces for condensation.",
           "resource": null
         }
       ],
-      "fsMessage": "Serie de humedad relativa y acciones tomadas."
+      "fsMessage": "Relative humidity series and corrective actions taken."
     },
     "CM-SANS-01-ALT": {
-      "title": "SANS sin LBNP: alternativa",
-      "what": "El LBNP no funciona. Sin gravedad, los líquidos suben a la cabeza y presionan el ojo (SANS). Elevar el torso y comprimir las piernas ayuda a bajarlos.",
-      "severity": "Crítica",
-      "timeToImpact": "días a semanas (daño visual)",
+      "title": "SANS without LBNP: fallback",
+      "what": "LBNP is inoperable. Without gravity, fluids pool in the head and press on the eye (SANS). Torso elevation and leg compression help shift fluid downward.",
+      "severity": "Critical",
+      "timeToImpact": "days to weeks (visual impairment)",
       "steps": [
         {
           "id": "a1",
-          "text": "Eleva el torso 30° respecto al eje de la cabeza y mantén esa postura.",
+          "text": "Elevate torso 30° relative to the head axis and hold that posture.",
           "resource": null
         },
         {
           "id": "a2",
-          "text": "Coloca las bandas elásticas de compresión venosa en ambos muslos.",
+          "text": "Apply elastic venous compression cuffs on both thighs.",
           "resource": "compression"
         },
         {
           "id": "a3",
-          "text": "Haz la prueba de la rejilla de Amsler en esta pantalla al minuto 0 y al minuto 60.",
+          "text": "Perform the Amsler grid test on this screen at 0 min and 60 min.",
           "resource": "kit_alpha"
         },
         {
           "id": "a4",
-          "text": "Limita el sodio de tu ración a menos de 2,0 g al día.",
+          "text": "Limit dietary sodium intake to less than 2.0 g per day.",
           "resource": null
         }
       ],
-      "fsMessage": "R-SANS-01 con LBNP no operativo: PAS antes/después, Amsler min 0 y 60, duración de la elevación de torso y compresión."
+      "fsMessage": "R-SANS-01 with LBNP inoperable: SBP pre/post, Amsler at 0 and 60 min, torso elevation duration, and compression."
     }
   },
   "glossary": {
-    "CO₂": "dióxido de carbono, el gas que exhalamos",
-    "O₂": "oxígeno",
-    "SpO₂": "saturación de oxígeno en la sangre, medida con el pulsioxímetro",
-    "LBNP": "pantalón de presión negativa que baja los líquidos del cuerpo hacia las piernas",
-    "CDRA": "equipo que retira el CO₂ del aire de la cabina",
-    "LiOH": "cartucho de hidróxido de litio que absorbe CO₂ en emergencias",
-    "SANS": "síndrome neuro-ocular del vuelo espacial: presión de líquidos sobre el ojo",
-    "ARED": "máquina de ejercicio de fuerza que carga huesos y músculos",
-    "CMO": "oficial médico de la tripulación",
-    "PAS": "presión arterial sistólica, el número alto de la tensión",
-    "PAD": "presión arterial diastólica, el número bajo de la tensión",
-    "HRV": "variabilidad del ritmo cardiaco: cuánto cambia el tiempo entre latidos",
-    "FC": "frecuencia cardiaca, latidos por minuto",
-    "EVA": "actividad extravehicular, salida al exterior de la nave",
-    "CANS": "dosímetro de neutrones de la nave"
+    "CO₂": "carbon dioxide, the gas exhaled during respiration",
+    "O₂": "oxygen",
+    "SpO₂": "blood oxygen saturation, measured with the pulse oximeter",
+    "LBNP": "lower body negative pressure suit that shifts fluids back toward the legs",
+    "CDRA": "carbon dioxide removal assembly that scrubs CO₂ from cabin air",
+    "LiOH": "lithium hydroxide canister that absorbs CO₂ in emergencies",
+    "SANS": "spaceflight-associated neuro-ocular syndrome: cephalic fluid pressure on the eye",
+    "ARED": "advanced resistive exercise device that loads bones and muscles",
+    "CMO": "Crew Medical Officer",
+    "SBP": "systolic blood pressure, the upper pressure reading",
+    "DBP": "diastolic blood pressure, the lower pressure reading",
+    "HRV": "heart rate variability: beat-to-beat timing variation",
+    "HR": "heart rate, beats per minute",
+    "EVA": "extravehicular activity, spacewalk outside the spacecraft",
+    "CANS": "compact neutron dosimeter aboard the spacecraft"
   },
   "forbidden": [
     "resonancia",
@@ -806,6 +806,11 @@
     "cirugía",
     "evacuación a tierra",
     "mri",
-    "ct scan"
+    "ct scan",
+    "intubation",
+    "intubate",
+    "operating room",
+    "surgery",
+    "ground evacuation"
   ]
 }

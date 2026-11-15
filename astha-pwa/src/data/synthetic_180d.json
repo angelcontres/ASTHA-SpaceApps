@@ -6,7 +6,7 @@
   "crew": [
     {
       "id": "C001",
-      "name": "Cmdte. Rachel Calloway",
+      "name": "Cmdr. Rachel Calloway",
       "role": "commander",
       "pin": "1001",
       "baseline": {
@@ -33,7 +33,7 @@
     },
     {
       "id": "C002",
-      "name": "Dra. Lauren Pierce",
+      "name": "Dr. Lauren Pierce",
       "role": "cmo",
       "pin": "1002",
       "baseline": {
@@ -54,7 +54,7 @@
     },
     {
       "id": "C003",
-      "name": "Ing. Marcus Dalton",
+      "name": "Eng. Marcus Dalton",
       "role": "engineer",
       "pin": "1003",
       "baseline": {
@@ -86,7 +86,7 @@
     },
     {
       "id": "C004",
-      "name": "Esp. Hannah Sutton",
+      "name": "Spec. Hannah Sutton",
       "role": "specialist",
       "pin": "1004",
       "baseline": {
@@ -150,7 +150,7 @@
   "scenarios": {
     "_note": "Letras del SRS §3.8 (RF-SIM-01..04): A SPE, B SANS, C CO₂, D hipercalciuria. E (sueño + HRV, RF-EVA-05/R-COG-01) es un escenario extra. F (fallo compuesto, issue #6) inyecta A y C a la vez: no está en el SRS y no añade umbrales nuevos.",
     "A": {
-      "label": "Tormenta solar (SPE)",
+      "label": "Solar Particle Event (SPE)",
       "req": "RF-SIM-01",
       "habitat": {
         "radiation": 185
@@ -160,7 +160,7 @@
       ]
     },
     "B": {
-      "label": "SANS agudo",
+      "label": "Acute SANS",
       "req": "RF-SIM-02",
       "measurement": {
         "sbp": 144,
@@ -172,7 +172,7 @@
       ]
     },
     "C": {
-      "label": "Microfuga de CO₂",
+      "label": "CO₂ Micro-leak",
       "req": "RF-SIM-03",
       "habitat": {
         "ppco2": 3.6
@@ -184,7 +184,7 @@
       "allCrew": true
     },
     "D": {
-      "label": "Hipercalciuria / cálculo renal",
+      "label": "Hypercalciuria / Renal Calculus",
       "req": "RF-SIM-04",
       "measurement": {
         "urineCa": 325
@@ -194,7 +194,7 @@
       ]
     },
     "E": {
-      "label": "Privación de sueño + HRV baja",
+      "label": "Sleep Deprivation + Low HRV",
       "req": "RF-EVA-05, R-COG-01",
       "measurement": {
         "sleep": 5.0,
@@ -203,7 +203,7 @@
       "sustainedDays": 2
     },
     "F": {
-      "label": "Fallo compuesto: tormenta solar + fuga de CO₂",
+      "label": "Compound Failure: Solar Storm + CO₂ Leak",
       "req": "Issue #6 (RF-SIM-01 + RF-SIM-03)",
       "habitat": {
         "radiation": 185,

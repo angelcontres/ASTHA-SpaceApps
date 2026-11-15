@@ -52,7 +52,7 @@ export function classify(id: IndicatorId, v: number, defs = INDICATORS): Classif
 }
 
 function fmt(n: number): string {
-  return String(n).replace('.', ',');
+  return String(n);
 }
 
 export function bandText(b: Band | null, unit: string): string {

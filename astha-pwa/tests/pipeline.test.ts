@@ -127,7 +127,7 @@ describe('Contrato postMessage Data Worker → Clinical Engine', () => {
     const b = evaluate(compact);
     expect(b.gamification).toEqual(a.gamification);
     expect(a.gamification?.streak).toBe(120);
-    expect(b.alerts.find((x) => x.ruleId === 'SUS-sleep')?.explanation).toContain('Sostenido 120 día(s)');
+    expect(b.alerts.find((x) => x.ruleId === 'SUS-sleep')?.explanation).toContain('Sustained 120 day(s)');
     expect(stripLatency(b)).toEqual(stripLatency(a));
   });
 

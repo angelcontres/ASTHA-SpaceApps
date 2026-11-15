@@ -430,30 +430,30 @@ async function handle(msg: UiToData): Promise<void> {
         if (crewId && !canWrite(crewId)) { skipped++; continue; }
         await persist(body, keyRefFor(crewId));
       }
-      await log('scenario', target, `Escenario ${msg.id} inyectado en el día ${sim.day}${skipped ? ` (${skipped} registros omitidos por RBAC)` : ''}`);
+      await log('scenario', target, `Scenario ${msg.id} injected on day ${sim.day}${skipped ? ` (${skipped} records skipped by RBAC)` : ''}`);
       return scheduleEval(reqId);
     }
     case 'reset':
       if (!session) return;
       await persist(resetOp(sim.day), 'hab');
-      await log('reset', null, `Estado nominal restablecido en el día ${sim.day}`);
+      await log('reset', null, `Nominal state restored on day ${sim.day}`);
       return scheduleEval(reqId);
     case 'manualEntry': {
-      if (!canWrite(msg.crewId)) return notice('error', 'forbidden', 'Sin acceso a ese tripulante.', reqId);
+      if (!canWrite(msg.crewId)) return notice('error', 'forbidden', 'Access denied for this crew member.', reqId);
       const r = manualEntry(msg.crewId, sim.day, msg.fields);
       const firstToday = ![...crdt.ops.values()].some(
         (o) => o.body.t === 'measurement' && o.body.source === 'manual' && o.body.crewId === msg.crewId && o.body.day === sim.day,
       );
       await persist(r.body, msg.crewId);
       if (firstToday) await persist({ t: 'pn', key: `xp:${msg.crewId}`, delta: 20 }, msg.crewId); // RF-GAM-01
-      await log('measurement', msg.crewId, `Registro manual: ${Object.entries(r.body.t === 'measurement' ? r.body.fields : {}).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-      if (r.suspect.length) notice('info', 'suspect', `Datos marcados como dudosos: ${r.suspect.join(', ')}`, reqId);
+      await log('measurement', msg.crewId, `Manual entry: ${Object.entries(r.body.t === 'measurement' ? r.body.fields : {}).map(([k, v]) => `${k}=${v}`).join(', ')}`);
+      if (r.suspect.length) notice('info', 'suspect', `Values flagged as suspect: ${r.suspect.join(', ')}`, reqId);
       return scheduleEval(reqId);
     }
     case 'symptom':
       if (!canWrite(msg.crewId)) return;
       await persist(symptomToggle(msg.crewId, sim.day, msg.symptom, msg.active), msg.crewId);
-      await log('symptom', msg.crewId, `${msg.symptom} ${msg.active ? 'reportado' : 'retirado'}`);
+      await log('symptom', msg.crewId, `${msg.symptom} ${msg.active ? 'reported' : 'cleared'}`);
       return scheduleEval(reqId);
     case 'check':
       if (!canWrite(msg.crewId)) return;
@@ -463,12 +463,12 @@ async function handle(msg: UiToData): Promise<void> {
     case 'ack':
       if (!canWrite(msg.crewId)) return;
       await persist({ t: 'ack', alertId: msg.alertId, crewId: msg.crewId, day: sim.day, by: session!.personId }, keyRefFor(msg.crewId));
-      await log('ack', keyRefFor(msg.crewId) === 'hab' ? null : msg.crewId, `Reconocida ${msg.alertId}`);
+      await log('ack', keyRefFor(msg.crewId) === 'hab' ? null : msg.crewId, `Acknowledged ${msg.alertId}`);
       return postState();
     case 'override':
-      if (session?.role !== 'cmo' || !canWrite(msg.crewId)) return notice('error', 'forbidden', 'Solo el CMO puede anular alertas.', reqId);
+      if (session?.role !== 'cmo' || !canWrite(msg.crewId)) return notice('error', 'forbidden', 'Only the CMO can override alerts.', reqId);
       await persist({ t: 'override', alertId: msg.alertId, crewId: msg.crewId, day: sim.day, by: session.personId, reason: msg.reason }, keyRefFor(msg.crewId));
-      await log('override', keyRefFor(msg.crewId) === 'hab' ? null : msg.crewId, `Anulada ${msg.alertId}: ${msg.reason}`);
+      await log('override', keyRefFor(msg.crewId) === 'hab' ? null : msg.crewId, `Overridden ${msg.alertId}: ${msg.reason}`);
       return postState();
     case 'setPref':
       if (!session) return;
@@ -511,7 +511,7 @@ async function handle(msg: UiToData): Promise<void> {
     case 'import': {
       if (!session) return;
       const payload = await parseImport(msg.text);
-      if (!payload) return notice('error', 'bad-import', 'Archivo inválido o firma no verificable.', reqId);
+      if (!payload) return notice('error', 'bad-import', 'Invalid file or unverifiable signature.', reqId);
       let n = 0;
       for (const m of payload.measurements) {
         if (!canWrite(m.crewId)) continue;
@@ -520,14 +520,14 @@ async function handle(msg: UiToData): Promise<void> {
         await persist({ t: 'measurement', crewId, day, fields, source: 'import' }, crewId);
         n++;
       }
-      await log('import', null, `${n} mediciones importadas (firma ${payload.generatedAt})`);
-      notice('info', 'imported', `${n} mediciones importadas.`, reqId);
+      await log('import', null, `${n} measurements imported (signed ${payload.generatedAt})`);
+      notice('info', 'imported', `${n} measurements imported.`, reqId);
       return scheduleEval(reqId);
     }
     case 'injectBitFlip': {
       if (!db || !session) return;
       const candidates = [...envCache.keys()];
-      if (!candidates.length) return notice('info', 'no-data', 'No hay registros persistidos que corromper todavía.', reqId);
+      if (!candidates.length) return notice('info', 'no-data', 'No persisted records to corrupt yet.', reqId);
       const id = candidates[Math.floor(Math.random() * candidates.length)];
       const field = Math.random() < 0.5 ? 'ct' : 'iv';
       const bit = Math.floor(Math.random() * 96);
@@ -536,8 +536,8 @@ async function handle(msg: UiToData): Promise<void> {
       const before = recoveredCount;
       await reload(); // la verificación SHA-256 lo detecta: lo restaura desde la réplica o lo aísla
       notice('info', 'seu', recoveredCount > before
-        ? `Bit ${bit} invertido en ${field} de ${id.slice(0, 8)}…: detectado y restaurado desde la réplica local.`
-        : `Bit ${bit} invertido en ${field} de ${id.slice(0, 8)}… y en su réplica: aislado en cuarentena, réplica pedida al Hub.`, reqId);
+        ? `Bit ${bit} flipped in ${field} of ${id.slice(0, 8)}…: detected and restored from local replica.`
+        : `Bit ${bit} flipped in ${field} of ${id.slice(0, 8)}… and its replica: quarantined, replica requested from Hub.`, reqId);
       return scheduleEval(reqId);
     }
     case 'verifyLedger':
@@ -571,8 +571,8 @@ async function exportNow(kind: 'history' | 'summary', anonymize: boolean, reqId?
   const doc = await signExport(payload, device, await ledger.tip());
   const pkg = await packageForDsn(doc);
   post({ type: 'exported', fileName: pkg.fileName, text: pkg.text, gz: pkg.gz });
-  await log('export', null, `Exportación ${kind} firmada (${doc.payloadSha256.slice(0, 12)}…)`);
-  notice('info', 'exported', 'Paquete firmado listo para el enlace con Tierra.', reqId);
+  await log('export', null, `Signed ${kind} export (${doc.payloadSha256.slice(0, 12)}…)`);
+  notice('info', 'exported', 'Signed package ready for Earth downlink.', reqId);
 }
 
 // ---------------- arranque ----------------
@@ -582,7 +582,7 @@ async function boot(): Promise<void> {
     db = await AsthaDb.open();
   } catch {
     db = null;
-    notice('error', 'no-idb', 'IndexedDB no disponible: modo sin persistencia.');
+    notice('error', 'no-idb', 'IndexedDB unavailable: running without persistence.');
   }
   if (db) {
     device = (await db.getVault<DeviceIdentity>('device')) ?? null;
@@ -593,9 +593,9 @@ async function boot(): Promise<void> {
     clock = new HybridClock(device.nodeId);
     ledger = new Ledger(db, device, clock);
     guard = new IntegrityGuard(db, authorKeys, {
-      onQuarantine: (id, reason) => void serial(() => log('quarantine', null, `${id.slice(0, 12)}… aislado: ${reason}`)),
+      onQuarantine: (id, reason) => void serial(() => log('quarantine', null, `${id.slice(0, 12)}… quarantined: ${reason}`)),
       onReplicaRequest: (id) => sync?.requestReplica(id),
-      onRecovered: (id, reason) => void serial(() => log('quarantine', null, `${id.slice(0, 8)}… restaurado desde réplica local: ${reason}`)),
+      onRecovered: (id, reason) => void serial(() => log('quarantine', null, `${id.slice(0, 8)}… restored from local replica: ${reason}`)),
     });
     sync = new SyncClient({
       nodeId: device.nodeId,
