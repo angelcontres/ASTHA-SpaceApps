@@ -1,0 +1,37 @@
+/* ASTHA Design System Tokens — NASA-STD-3001 / MIL-STD-1472H / WCAG 2.1 AAA */
+/* Traceability: RNF-USA-01..03, ADR-003, ADR-018, ADR-019, docs/Diseno-UI-UX/02-Guia-de-Estilo-y-Design-System.md */
+
+:root {
+  /* Zero-Glare Aerospace Surfaces */
+  --space-950: #030712;
+  --space-900: #060913;
+  --space-800: #0c1222;
+  --space-border: #141e36;
+
+  /* Technical Blueprint Tokens */
+  --blueprint-bg: #040915;
+  --blueprint-line: #79a7df;
+  --blueprint-text: #9fc5f8;
+
+  /* Interactive Accent & Semantic States */
+  --cyan-400: #38bdf8;
+  --alert-green: #10b981;
+  --alert-yellow: #f59e0b;
+  --alert-red: #ef4444; /* Fills, 3px pulsing borders & large icons ONLY — NEVER body text */
+  --alert-red-text: #fca5a5; /* Mandatory WCAG AAA critical text (10.61:1 over #030712, ADR-018) */
+
+  /* Neutral Text Hierarchy */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+
+  /* Native System Font Stacks ONLY (ADR-003 — Zero external Google Fonts) */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* Microgravity Ergonomics (RNF-USA-01) */
+  --touch-min: 48px;
+  --touch-gap: 12px;
+  --radius-card: 8px;
+  --radius-btn: 6px;
+}
