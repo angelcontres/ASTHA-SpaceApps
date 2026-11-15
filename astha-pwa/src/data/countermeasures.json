@@ -1,0 +1,752 @@
+{
+  "_source": "RF-GUI-01..05, RNF-USA-05 con ADR-017 (máximo 4 pasos). Valores orientativos: deben validarse con personal médico antes de uso real (SRS §2.3).",
+  "maxSteps": 4,
+  "inventory": {
+    "ared": "ARED (ejercicio resistivo)",
+    "cycle": "Cicloergómetro",
+    "treadmill": "Cinta de correr",
+    "lbnp": "LBNP (pantalón de presión negativa)",
+    "kit_alpha": "Botiquín Alfa (diagnóstico: tensiómetro, pulsioxímetro, rejilla de Amsler, tiras)",
+    "kit_bravo": "Botiquín Bravo (fármacos: antiemético, analgésico)",
+    "shelter": "Refugio de tormentas",
+    "lioh": "Cartuchos LiOH",
+    "cdra": "CDRA (removedor de CO₂)",
+    "water": "Dispensador de agua potable"
+  },
+  "protocols": {
+    "CM-ENV-01": {
+      "title": "Fuga de CO₂ o ventilación deficiente",
+      "what": "El aire de la cabina acumula dióxido de carbono (CO₂) y el oxígeno en tu sangre baja. El cerebro y los músculos reciben menos oxígeno.",
+      "severity": "Crítica",
+      "timeToImpact": "minutos a 1 hora",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Avisa a la tripulación y ve al módulo con mejor ventilación.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Comprueba que el CDRA está encendido y sin alarmas en su panel.",
+          "resource": "cdra"
+        },
+        {
+          "id": "s3",
+          "text": "Instala un cartucho LiOH nuevo en el soporte de emergencia.",
+          "resource": "lioh"
+        },
+        {
+          "id": "s4",
+          "text": "Mide SpO₂ con el pulsioxímetro cada 10 min hasta que ppCO₂ baje de 2,0.",
+          "resource": "kit_alpha"
+        }
+      ],
+      "fsMessage": "R-ENV-01: ppCO₂ y SpO₂ con hora, filtros cambiados, SpO₂ tras 30 min."
+    },
+    "CM-ENV-02": {
+      "title": "Dolor de cabeza por CO₂",
+      "what": "El CO₂ alto dilata los vasos de la cabeza y sube la presión dentro del cráneo. Por eso duele la cabeza.",
+      "severity": "Crítica",
+      "timeToImpact": "1 a 3 horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Ve al módulo con mejor ventilación y quédate en reposo.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Verifica el CDRA e instala un cartucho LiOH si ppCO₂ sigue por encima de 3,0.",
+          "resource": "lioh"
+        },
+        {
+          "id": "s3",
+          "text": "Haz la prueba de la rejilla de Amsler con cada ojo por separado.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s4",
+          "text": "Toma 1 analgésico del Botiquín Bravo solo si el dolor sigue a los 30 min.",
+          "resource": "kit_bravo"
+        }
+      ],
+      "fsMessage": "R-ENV-02: ppCO₂, intensidad de cefalea (1-10), resultado Amsler y fármaco tomado."
+    },
+    "CM-SANS-01": {
+      "title": "SANS agudo: visión y presión",
+      "what": "Sin gravedad, los líquidos suben a la cabeza y presionan el ojo (SANS: síndrome neuro-ocular del vuelo espacial). La presión alta lo empeora.",
+      "severity": "Crítica",
+      "timeToImpact": "días a semanas (daño visual)",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Haz la prueba de la rejilla de Amsler con cada ojo y anota líneas torcidas.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s2",
+          "text": "Mide la presión arterial sentado tras 5 min de reposo.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s3",
+          "text": "Haz una sesión de LBNP a −35 mmHg durante 60 min.",
+          "resource": "lbnp"
+        },
+        {
+          "id": "s4",
+          "text": "Repite Amsler y presión al terminar y regístralos aquí.",
+          "resource": "kit_alpha"
+        }
+      ],
+      "fsMessage": "R-SANS-01: PAS antes/después de LBNP, resultado Amsler por ojo y fecha de inicio de la visión borrosa."
+    },
+    "CM-SANS-02": {
+      "title": "Presión alta con poco sueño",
+      "what": "Dormir poco y tener la presión alta aumentan el líquido en la cabeza. Es la antesala del SANS.",
+      "severity": "Precaución alta",
+      "timeToImpact": "1 a 2 semanas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Programa 8 h de sueño esta noche con la luz de cabina en modo rojo.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Haz una sesión de LBNP a −30 mmHg durante 45 min.",
+          "resource": "lbnp"
+        },
+        {
+          "id": "s3",
+          "text": "Mide la presión arterial mañana al despertar.",
+          "resource": "kit_alpha"
+        }
+      ]
+    },
+    "CM-RAD-01": {
+      "title": "Tormenta solar: ir al refugio",
+      "what": "Una tormenta solar lanza partículas que atraviesan la nave y dañan las células. El refugio tiene más blindaje.",
+      "severity": "Crítica",
+      "timeToImpact": "inmediato (dosis acumulada)",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Deja la tarea actual y ve al refugio de tormentas ahora.",
+          "resource": "shelter"
+        },
+        {
+          "id": "s2",
+          "text": "Cierra la escotilla del refugio y confirma que todos están dentro.",
+          "resource": "shelter"
+        },
+        {
+          "id": "s3",
+          "text": "Lee la tasa de dosis en esta pantalla cada 15 min.",
+          "resource": null
+        },
+        {
+          "id": "s4",
+          "text": "Sal solo cuando la tasa baje de 35 µSv/h durante 1 hora.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "R-RAD-01: hora de entrada al refugio, tasa máxima (µSv/h), dosis acumulada y síntomas."
+    },
+    "CM-RAD-02": {
+      "title": "Tormenta solar con náuseas",
+      "what": "Las náuseas durante una tormenta solar pueden ser el primer aviso de exposición alta a radiación.",
+      "severity": "Crítica · emergencia",
+      "timeToImpact": "horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Entra al refugio de tormentas y cierra la escotilla ahora.",
+          "resource": "shelter"
+        },
+        {
+          "id": "s2",
+          "text": "Toma 1 antiemético del Botiquín Bravo con un poco de agua.",
+          "resource": "kit_bravo"
+        },
+        {
+          "id": "s3",
+          "text": "Anota la hora del primer vómito o náusea fuerte en esta pantalla.",
+          "resource": null
+        },
+        {
+          "id": "s4",
+          "text": "Bebe 250 ml de agua cada hora mientras estés en el refugio.",
+          "resource": "water"
+        }
+      ],
+      "fsMessage": "R-RAD-02: hora de inicio de náuseas, vómitos (n.º), tasa de dosis máxima, antiemético y hora."
+    },
+    "CM-COG-01": {
+      "title": "Fatiga y ritmo de sueño alterado",
+      "what": "Dormir poco y tener la variabilidad cardiaca baja indica que el cuerpo no se recupera. Aumentan los errores y el tiempo de reacción.",
+      "severity": "Precaución",
+      "timeToImpact": "1 a 3 días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Evita tareas críticas (EVA, maniobras) durante las próximas 24 h.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Apaga pantallas 1 h antes de dormir y usa el modo rojo.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Duerme 8 h en tu saco con el antifaz.",
+          "resource": null
+        }
+      ]
+    },
+    "CM-REN-01": {
+      "title": "Sospecha de cálculo renal",
+      "what": "El hueso pierde calcio sin gravedad. Ese calcio pasa a la orina y puede formar una piedra en el riñón, que causa dolor lumbar.",
+      "severity": "Crítica",
+      "timeToImpact": "horas a días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Bebe 500 ml de agua ahora y 250 ml cada hora.",
+          "resource": "water"
+        },
+        {
+          "id": "s2",
+          "text": "Toma 1 analgésico del Botiquín Bravo si el dolor es mayor de 5 sobre 10.",
+          "resource": "kit_bravo"
+        },
+        {
+          "id": "s3",
+          "text": "Haz una tira de orina del Botiquín Alfa y anota si hay sangre.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s4",
+          "text": "Avisa al CMO si aparece fiebre o el dolor sube a 8 sobre 10.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "R-REN-01: calcio urinario, escala de dolor (1-10), resultado de la tira y fármaco tomado."
+    },
+    "CM-REN-02": {
+      "title": "Calcio alto en la orina",
+      "what": "Los huesos están perdiendo calcio por la falta de gravedad. Más agua y ejercicio de carga lo frenan.",
+      "severity": "Precaución",
+      "timeToImpact": "semanas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Bebe al menos 2,5 L de agua hoy.",
+          "resource": "water"
+        },
+        {
+          "id": "s2",
+          "text": "Haz 60 min de ARED con carga completa en piernas.",
+          "resource": "ared"
+        },
+        {
+          "id": "s3",
+          "text": "Repite la medición de calcio urinario en 3 días.",
+          "resource": "kit_alpha"
+        }
+      ]
+    },
+    "CM-CARD-01": {
+      "title": "Mareo al ponerte de pie",
+      "what": "Sin gravedad, el corazón se acostumbra a bombear menos. Al levantarte, la sangre baja a las piernas y llega poca al cerebro.",
+      "severity": "Precaución alta",
+      "timeToImpact": "inmediato (riesgo de desmayo)",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Siéntate o sujétate de inmediato y espera 2 min.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Bebe 500 ml de agua con una ración de caldo salado.",
+          "resource": "water"
+        },
+        {
+          "id": "s3",
+          "text": "Haz una sesión de LBNP a −30 mmHg durante 30 min.",
+          "resource": "lbnp"
+        },
+        {
+          "id": "s4",
+          "text": "Mide pulso y presión de pie al terminar.",
+          "resource": "kit_alpha"
+        }
+      ]
+    },
+    "CM-IND-hr": {
+      "title": "Pulso fuera de rango",
+      "what": "El corazón late más rápido o más lento de lo normal en reposo.",
+      "severity": "Según el estado",
+      "timeToImpact": "horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Descansa sentado 10 min sin hablar.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Mide de nuevo el pulso con el pulsioxímetro.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s3",
+          "text": "Bebe 300 ml de agua.",
+          "resource": "water"
+        },
+        {
+          "id": "s4",
+          "text": "Avisa al CMO si sigue fuera de rango.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "FC en reposo (3 tomas), actividad previa y síntomas."
+    },
+    "CM-IND-hrv": {
+      "title": "Variabilidad cardiaca baja",
+      "what": "La variabilidad cardiaca (HRV) mide cómo se recupera tu sistema nervioso. Baja indica estrés o cansancio acumulado.",
+      "severity": "Según el estado",
+      "timeToImpact": "1 a 3 días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Haz 5 min de respiración lenta: 6 respiraciones por minuto.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Cambia el ejercicio intenso de hoy por 30 min suaves en cicloergómetro.",
+          "resource": "cycle"
+        },
+        {
+          "id": "s3",
+          "text": "Duerme 8 h esta noche.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "HRV de los últimos 3 días, horas de sueño y carga de trabajo."
+    },
+    "CM-IND-sbp": {
+      "title": "Presión sistólica alta",
+      "what": "La presión con la que el corazón empuja la sangre está alta. Sin gravedad, eso aumenta el líquido en la cabeza y los ojos.",
+      "severity": "Según el estado",
+      "timeToImpact": "días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Mide la presión sentado tras 5 min de reposo.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s2",
+          "text": "Reduce la sal: elige comidas marcadas como bajas en sodio hoy.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Haz una sesión de LBNP a −30 mmHg durante 45 min.",
+          "resource": "lbnp"
+        }
+      ],
+      "fsMessage": "PAS/PAD (3 tomas), síntomas visuales y sesiones LBNP."
+    },
+    "CM-IND-dbp": {
+      "title": "Presión diastólica alta",
+      "what": "La presión de la sangre entre latidos está alta. Suele subir con poco sueño y estrés.",
+      "severity": "Según el estado",
+      "timeToImpact": "días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Mide la presión sentado tras 5 min de reposo.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s2",
+          "text": "Duerme 8 h esta noche.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Haz 30 min de cicloergómetro suave.",
+          "resource": "cycle"
+        }
+      ],
+      "fsMessage": "PAD (3 tomas), horas de sueño de la semana."
+    },
+    "CM-IND-spo2": {
+      "title": "Oxígeno en sangre bajo",
+      "what": "Tu sangre lleva menos oxígeno de lo normal. Puede venir del aire de la cabina o de la respiración.",
+      "severity": "Según el estado",
+      "timeToImpact": "minutos a horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Revisa ppCO₂ y O₂ en la pestaña Entorno.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Si SpO₂ es menor de 93, ve al módulo mejor ventilado y avisa al CMO.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Mide SpO₂ en otro dedo con el pulsioxímetro.",
+          "resource": "kit_alpha"
+        }
+      ],
+      "fsMessage": "SpO₂ (3 tomas), ppCO₂ y O₂ de cabina a la misma hora."
+    },
+    "CM-IND-glucose": {
+      "title": "Glucosa fuera de rango",
+      "what": "El azúcar en la sangre está demasiado alto o bajo para estar en ayunas.",
+      "severity": "Según el estado",
+      "timeToImpact": "horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Repite la medición con una tira nueva del Botiquín Alfa.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s2",
+          "text": "Si es baja (menor de 75), toma una ración de zumo o gel.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Si es alta (mayor de 105), bebe 300 ml de agua y camina 20 min en cinta.",
+          "resource": "treadmill"
+        }
+      ],
+      "fsMessage": "Glucemia (2 tomas), hora de la última comida."
+    },
+    "CM-IND-temp": {
+      "title": "Temperatura alta",
+      "what": "Tu temperatura está por encima de lo normal. Puede ser una infección o calor por ejercicio.",
+      "severity": "Según el estado",
+      "timeToImpact": "horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Descansa 30 min sin ejercicio y vuelve a medir.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s2",
+          "text": "Bebe 500 ml de agua.",
+          "resource": "water"
+        },
+        {
+          "id": "s3",
+          "text": "Toma 1 antitérmico del Botiquín Bravo si pasa de 38,0 °C.",
+          "resource": "kit_bravo"
+        }
+      ],
+      "fsMessage": "Temperatura (curva), otros síntomas y fármaco tomado."
+    },
+    "CM-IND-sleep": {
+      "title": "Poco sueño",
+      "what": "Dormir poco reduce la atención y la recuperación del cuerpo.",
+      "severity": "Según el estado",
+      "timeToImpact": "1 a 2 días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Usa el modo rojo de pantallas desde 2 h antes de dormir.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "No hagas ejercicio intenso en las 3 h previas al sueño.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Programa 8 h de sueño con antifaz y tapones.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "Horas de sueño de los últimos 3 días y turnos de trabajo."
+    },
+    "CM-IND-mood": {
+      "title": "Ánimo bajo",
+      "what": "El aislamiento y la rutina pueden bajar el ánimo. Es frecuente y tiene arreglo.",
+      "severity": "Según el estado",
+      "timeToImpact": "días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Habla 10 min con un compañero de tripulación sobre cómo te sientes.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Haz 30 min de cinta o cicloergómetro.",
+          "resource": "treadmill"
+        },
+        {
+          "id": "s3",
+          "text": "Reserva un mensaje personal en la próxima ventana de comunicación.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "Ánimo de los últimos 5 días y eventos relevantes."
+    },
+    "CM-IND-urineCa": {
+      "title": "Pérdida ósea",
+      "what": "El calcio de la orina sube cuando los huesos pierden masa por la falta de carga.",
+      "severity": "Según el estado",
+      "timeToImpact": "semanas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Haz 60 min de ARED con carga completa en piernas y cadera.",
+          "resource": "ared"
+        },
+        {
+          "id": "s2",
+          "text": "Bebe al menos 2,5 L de agua hoy.",
+          "resource": "water"
+        },
+        {
+          "id": "s3",
+          "text": "Repite la medición de calcio en 3 días.",
+          "resource": "kit_alpha"
+        }
+      ],
+      "fsMessage": "Calcio urinario (serie), minutos de ARED por semana."
+    },
+    "CM-IND-ppco2": {
+      "title": "CO₂ alto en cabina",
+      "what": "El aire de la cabina tiene más CO₂ del recomendado. Puede causar dolor de cabeza y cansancio.",
+      "severity": "Según el estado",
+      "timeToImpact": "horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Comprueba que el CDRA está encendido y sin alarmas.",
+          "resource": "cdra"
+        },
+        {
+          "id": "s2",
+          "text": "Retira obstáculos de las rejillas de ventilación del módulo.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Instala un cartucho LiOH si ppCO₂ supera 3,0.",
+          "resource": "lioh"
+        }
+      ],
+      "fsMessage": "Serie de ppCO₂, estado del CDRA y cartuchos LiOH usados."
+    },
+    "CM-IND-pressure": {
+      "title": "Presión de cabina fuera de rango",
+      "what": "La presión del aire de la nave se aleja de la normal. Una bajada puede indicar una fuga.",
+      "severity": "Según el estado",
+      "timeToImpact": "minutos a horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Avisa al Comandante y a la tripulación.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Cierra las escotillas entre módulos según el procedimiento de fuga.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Lee la presión de cada módulo cada 5 min en esta pantalla.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "Serie de presión por módulo, escotillas cerradas y hora."
+    },
+    "CM-IND-o2": {
+      "title": "Oxígeno de cabina fuera de rango",
+      "what": "La proporción de oxígeno del aire no es la normal. Poco oxígeno cansa; demasiado aumenta el riesgo de incendio.",
+      "severity": "Según el estado",
+      "timeToImpact": "horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Avisa al Comandante.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Si O₂ es alto, apaga equipos que produzcan chispas.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Si O₂ es bajo, mide tu SpO₂ con el pulsioxímetro.",
+          "resource": "kit_alpha"
+        }
+      ],
+      "fsMessage": "Serie de O₂ de cabina y acciones tomadas."
+    },
+    "CM-IND-radiation": {
+      "title": "Radiación por encima de lo habitual",
+      "what": "La tasa de radiación sube. Aún no es una tormenta, pero conviene reducir la exposición.",
+      "severity": "Según el estado",
+      "timeToImpact": "horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Pospón tareas en módulos con poco blindaje.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Ten despejado el camino al refugio de tormentas.",
+          "resource": "shelter"
+        },
+        {
+          "id": "s3",
+          "text": "Vigila la tasa de dosis en la pestaña Entorno.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "Serie de tasa de dosis y dosis acumulada."
+    },
+    "CM-DRIFT-01": {
+      "title": "Tendencia hacia precaución",
+      "what": "El valor aún es normal, pero la tendencia de 7 días indica que saldrá del rango pronto.",
+      "severity": "Aviso precoz",
+      "timeToImpact": "según los días indicados",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Revisa la gráfica de tendencia de este indicador.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Aplica hoy la contramedida diaria del indicador (ejercicio, agua o sueño).",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Registra la medición mañana a la misma hora.",
+          "resource": null
+        }
+      ]
+    },
+    "CM-DRIFT-02": {
+      "title": "Valor inusual para ti",
+      "what": "El valor se aleja mucho de tu línea base personal de los primeros 14 días, aunque siga dentro del rango general.",
+      "severity": "Aviso precoz",
+      "timeToImpact": "días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Repite la medición para descartar un error del sensor.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "s2",
+          "text": "Anota si dormiste, comiste o te ejercitaste distinto ayer.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Registra la medición mañana a la misma hora.",
+          "resource": null
+        }
+      ]
+    },
+    "CM-DRIFT-03": {
+      "title": "Menos sueño y más presión diastólica",
+      "what": "Esta semana duermes menos y tu presión entre latidos sube. Juntos anticipan problemas de corazón y de visión.",
+      "severity": "Aviso precoz",
+      "timeToImpact": "1 a 2 semanas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Programa 8 h de sueño las próximas 3 noches.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Usa el modo rojo de pantallas desde 2 h antes de dormir.",
+          "resource": null
+        },
+        {
+          "id": "s3",
+          "text": "Haz 30 min de cicloergómetro suave por la mañana.",
+          "resource": "cycle"
+        },
+        {
+          "id": "s4",
+          "text": "Mide la presión mañana al despertar.",
+          "resource": "kit_alpha"
+        }
+      ]
+    },
+    "CM-IND-cabinTemp": {
+      "title": "Temperatura de cabina fuera de rango",
+      "what": "El aire del módulo está demasiado frío o caliente. Afecta al sueño, al rendimiento y a la hidratación.",
+      "severity": "Según el estado",
+      "timeToImpact": "horas",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Avisa al Comandante para revisar el control térmico del módulo.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Si hace calor, bebe 300 ml de agua cada hora.",
+          "resource": "water"
+        },
+        {
+          "id": "s3",
+          "text": "Pospón el ejercicio intenso hasta que vuelva al rango.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "Serie de temperatura de cabina y acciones tomadas."
+    },
+    "CM-IND-humidity": {
+      "title": "Humedad de cabina fuera de rango",
+      "what": "El aire está demasiado seco o húmedo. Seco irrita ojos y garganta; húmedo favorece condensación y moho.",
+      "severity": "Según el estado",
+      "timeToImpact": "horas a días",
+      "steps": [
+        {
+          "id": "s1",
+          "text": "Avisa al Comandante para revisar el control de humedad.",
+          "resource": null
+        },
+        {
+          "id": "s2",
+          "text": "Si el aire está seco, bebe 300 ml de agua extra.",
+          "resource": "water"
+        },
+        {
+          "id": "s3",
+          "text": "Revisa superficies frías del módulo por condensación.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "Serie de humedad relativa y acciones tomadas."
+    }
+  }
+}

@@ -1,0 +1,531 @@
+{
+  "_source": "SRS §6.1 (documento de dominio, NASA-STD-3001). assumed=true marca los umbrales con * del SRS o los tomados del WIREFRAME §6.2; son supuestos editables como datos. Temperatura y humedad de cabina provienen del WIREFRAME §6.2 y docs/Diseno-UI-UX (6 parámetros ECLSS); no están en el SRS y solo se muestran con semáforo, sin reglas clínicas.",
+  "_gapRule": "Un valor entre dos bandas se clasifica en la más grave (SRS §6.1). Excepción explícita del SRS: radiación 81-100 µSv/h es Precaución, por eso su banda de precaución llega a 100.",
+  "indicators": {
+    "hr": {
+      "label": "Frecuencia cardiaca",
+      "short": "FC",
+      "unit": "bpm",
+      "scope": "crew",
+      "decimals": 0,
+      "plausible": [
+        20,
+        250
+      ],
+      "assumed": false,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 45,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 45,
+          "max": 54,
+          "assumed": true
+        },
+        {
+          "status": "nominal",
+          "min": 55,
+          "max": 85
+        },
+        {
+          "status": "caution",
+          "min": 86,
+          "max": 105
+        },
+        {
+          "status": "critical",
+          "min": 110,
+          "minExclusive": true
+        }
+      ]
+    },
+    "hrv": {
+      "label": "Variabilidad cardiaca (rMSSD)",
+      "short": "HRV",
+      "unit": "ms",
+      "scope": "crew",
+      "decimals": 0,
+      "plausible": [
+        1,
+        300
+      ],
+      "assumed": false,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 20,
+          "maxExclusive": true,
+          "sustainedDays": 2
+        },
+        {
+          "status": "caution",
+          "min": 20,
+          "max": 34
+        },
+        {
+          "status": "nominal",
+          "min": 35,
+          "max": 70
+        }
+      ]
+    },
+    "sbp": {
+      "label": "Presión sistólica",
+      "short": "PAS",
+      "unit": "mmHg",
+      "scope": "crew",
+      "decimals": 0,
+      "plausible": [
+        50,
+        260
+      ],
+      "assumed": false,
+      "bands": [
+        {
+          "status": "nominal",
+          "min": 105,
+          "max": 125
+        },
+        {
+          "status": "caution",
+          "min": 126,
+          "max": 139
+        },
+        {
+          "status": "critical",
+          "min": 140
+        }
+      ]
+    },
+    "dbp": {
+      "label": "Presión diastólica",
+      "short": "PAD",
+      "unit": "mmHg",
+      "scope": "crew",
+      "decimals": 0,
+      "plausible": [
+        20,
+        160
+      ],
+      "assumed": true,
+      "bands": [
+        {
+          "status": "nominal",
+          "min": 65,
+          "max": 84
+        },
+        {
+          "status": "caution",
+          "min": 85,
+          "max": 89
+        },
+        {
+          "status": "critical",
+          "min": 90
+        }
+      ]
+    },
+    "spo2": {
+      "label": "Saturación de oxígeno",
+      "short": "SpO₂",
+      "unit": "%",
+      "scope": "crew",
+      "decimals": 0,
+      "plausible": [
+        50,
+        100
+      ],
+      "assumed": false,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 93,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 93,
+          "max": 95
+        },
+        {
+          "status": "nominal",
+          "min": 96,
+          "max": 100
+        }
+      ]
+    },
+    "glucose": {
+      "label": "Glucemia en ayunas",
+      "short": "Glu",
+      "unit": "mg/dL",
+      "scope": "crew",
+      "decimals": 0,
+      "plausible": [
+        20,
+        600
+      ],
+      "assumed": false,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 65,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 65,
+          "max": 74,
+          "assumed": true
+        },
+        {
+          "status": "nominal",
+          "min": 75,
+          "max": 105
+        },
+        {
+          "status": "caution",
+          "min": 106,
+          "max": 125
+        },
+        {
+          "status": "critical",
+          "min": 140,
+          "minExclusive": true
+        }
+      ]
+    },
+    "temp": {
+      "label": "Temperatura corporal",
+      "short": "Temp",
+      "unit": "°C",
+      "scope": "crew",
+      "decimals": 1,
+      "plausible": [
+        30,
+        44
+      ],
+      "assumed": true,
+      "bands": [
+        {
+          "status": "nominal",
+          "min": 36.2,
+          "max": 37.3
+        },
+        {
+          "status": "caution",
+          "min": 37.4,
+          "max": 37.9
+        },
+        {
+          "status": "critical",
+          "min": 38.0
+        }
+      ]
+    },
+    "sleep": {
+      "label": "Sueño diario",
+      "short": "Sueño",
+      "unit": "h",
+      "scope": "crew",
+      "decimals": 1,
+      "plausible": [
+        0,
+        24
+      ],
+      "assumed": false,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 5.5,
+          "maxExclusive": true,
+          "sustainedDays": 2
+        },
+        {
+          "status": "caution",
+          "min": 5.5,
+          "max": 6.9
+        },
+        {
+          "status": "nominal",
+          "min": 7.0,
+          "max": 8.5
+        }
+      ]
+    },
+    "mood": {
+      "label": "Ánimo",
+      "short": "Ánimo",
+      "unit": "/10",
+      "scope": "crew",
+      "decimals": 0,
+      "plausible": [
+        1,
+        10
+      ],
+      "assumed": true,
+      "bands": [
+        {
+          "status": "critical",
+          "min": 1,
+          "max": 3
+        },
+        {
+          "status": "caution",
+          "min": 4,
+          "max": 6
+        },
+        {
+          "status": "nominal",
+          "min": 7,
+          "max": 10
+        }
+      ]
+    },
+    "urineCa": {
+      "label": "Calcio urinario",
+      "short": "Ca orina",
+      "unit": "mg/día",
+      "scope": "crew",
+      "decimals": 0,
+      "plausible": [
+        0,
+        1500
+      ],
+      "assumed": true,
+      "bands": [
+        {
+          "status": "nominal",
+          "max": 250,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 250,
+          "max": 300
+        },
+        {
+          "status": "critical",
+          "min": 300,
+          "minExclusive": true
+        }
+      ]
+    },
+    "ppco2": {
+      "label": "ppCO₂ de cabina",
+      "short": "ppCO₂",
+      "unit": "mmHg",
+      "scope": "habitat",
+      "decimals": 2,
+      "plausible": [
+        0,
+        20
+      ],
+      "assumed": false,
+      "bands": [
+        {
+          "status": "nominal",
+          "max": 2.0,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 2.0,
+          "max": 3.0
+        },
+        {
+          "status": "critical",
+          "min": 3.0,
+          "minExclusive": true
+        }
+      ]
+    },
+    "pressure": {
+      "label": "Presión de cabina",
+      "short": "P cab",
+      "unit": "kPa",
+      "scope": "habitat",
+      "decimals": 1,
+      "plausible": [
+        30,
+        120
+      ],
+      "assumed": true,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 95.0,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 95.0,
+          "max": 98.5
+        },
+        {
+          "status": "nominal",
+          "min": 98.6,
+          "max": 102.7
+        },
+        {
+          "status": "caution",
+          "min": 102.8,
+          "max": 104.0
+        },
+        {
+          "status": "critical",
+          "min": 104.0,
+          "minExclusive": true
+        }
+      ]
+    },
+    "o2": {
+      "label": "Oxígeno en cabina",
+      "short": "O₂",
+      "unit": "%",
+      "scope": "habitat",
+      "decimals": 1,
+      "plausible": [
+        5,
+        40
+      ],
+      "assumed": true,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 18.0,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 18.0,
+          "max": 19.4
+        },
+        {
+          "status": "nominal",
+          "min": 19.5,
+          "max": 23.0
+        },
+        {
+          "status": "caution",
+          "min": 23.1,
+          "max": 23.5
+        },
+        {
+          "status": "critical",
+          "min": 23.5,
+          "minExclusive": true
+        }
+      ]
+    },
+    "radiation": {
+      "label": "Tasa de dosis (CANS)",
+      "short": "Rad",
+      "unit": "µSv/h",
+      "scope": "habitat",
+      "decimals": 1,
+      "plausible": [
+        0,
+        100000
+      ],
+      "assumed": false,
+      "bands": [
+        {
+          "status": "nominal",
+          "min": 15,
+          "max": 35
+        },
+        {
+          "status": "caution",
+          "min": 36,
+          "max": 100
+        },
+        {
+          "status": "critical",
+          "min": 100,
+          "minExclusive": true
+        }
+      ]
+    },
+    "cabinTemp": {
+      "label": "Temperatura de cabina",
+      "short": "T cab",
+      "unit": "°C",
+      "scope": "habitat",
+      "decimals": 1,
+      "plausible": [
+        0,
+        60
+      ],
+      "assumed": true,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 16.0,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 16.0,
+          "max": 18.2
+        },
+        {
+          "status": "nominal",
+          "min": 18.3,
+          "max": 26.7
+        },
+        {
+          "status": "caution",
+          "min": 26.8,
+          "max": 29.0
+        },
+        {
+          "status": "critical",
+          "min": 29.0,
+          "minExclusive": true
+        }
+      ]
+    },
+    "humidity": {
+      "label": "Humedad relativa",
+      "short": "HR",
+      "unit": "%",
+      "scope": "habitat",
+      "decimals": 0,
+      "plausible": [
+        0,
+        100
+      ],
+      "assumed": true,
+      "bands": [
+        {
+          "status": "critical",
+          "max": 20,
+          "maxExclusive": true
+        },
+        {
+          "status": "caution",
+          "min": 20,
+          "max": 24
+        },
+        {
+          "status": "nominal",
+          "min": 25,
+          "max": 75
+        },
+        {
+          "status": "caution",
+          "min": 76,
+          "max": 80
+        },
+        {
+          "status": "critical",
+          "min": 80,
+          "minExclusive": true
+        }
+      ]
+    }
+  }
+}
