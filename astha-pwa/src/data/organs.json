@@ -1,0 +1,154 @@
+{
+  "_source": "RF-EVA-03 (7 sistemas) y RF-ANA-02 (5 regiones). GAP del C4 (Organ Mapper): el SRS no asigna región a cognitivo, radiación ni respiratorio/ambiental; se adopta cognitivo → cabeza, radiación y respiratorio → general. Glucosa y temperatura no tienen sistema en el SRS: se asignan a cardiovascular con región general (supuesto).",
+  "regions": {
+    "head": {
+      "label": "Ojos y cabeza",
+      "order": 1,
+      "anchor": [
+        0,
+        1.62,
+        0.08
+      ]
+    },
+    "chest": {
+      "label": "Tórax y corazón",
+      "order": 2,
+      "anchor": [
+        0,
+        1.3,
+        0.12
+      ]
+    },
+    "lumbar": {
+      "label": "Zona lumbar y riñones",
+      "order": 3,
+      "anchor": [
+        0,
+        1.02,
+        -0.12
+      ]
+    },
+    "legs": {
+      "label": "Piernas y fémur",
+      "order": 4,
+      "anchor": [
+        0.1,
+        0.5,
+        0.06
+      ]
+    },
+    "general": {
+      "label": "Sistema general y sangre",
+      "order": 5,
+      "anchor": [
+        -0.32,
+        1.05,
+        0.05
+      ]
+    }
+  },
+  "systems": {
+    "neuro_ocular": {
+      "label": "Neuro-ocular",
+      "region": "head"
+    },
+    "cardiovascular": {
+      "label": "Cardiovascular",
+      "region": "chest"
+    },
+    "musculoskeletal": {
+      "label": "Musculoesquelético",
+      "region": "legs"
+    },
+    "renal": {
+      "label": "Renal",
+      "region": "lumbar"
+    },
+    "cognitive": {
+      "label": "Cognitivo",
+      "region": "head"
+    },
+    "radiation": {
+      "label": "Radiación",
+      "region": "general"
+    },
+    "respiratory_env": {
+      "label": "Respiratorio / ambiental",
+      "region": "general"
+    }
+  },
+  "indicators": {
+    "hr": {
+      "system": "cardiovascular"
+    },
+    "hrv": {
+      "system": "cardiovascular"
+    },
+    "sbp": {
+      "system": "cardiovascular"
+    },
+    "dbp": {
+      "system": "cardiovascular"
+    },
+    "spo2": {
+      "system": "respiratory_env"
+    },
+    "glucose": {
+      "system": "cardiovascular",
+      "region": "general"
+    },
+    "temp": {
+      "system": "cardiovascular",
+      "region": "general"
+    },
+    "sleep": {
+      "system": "cognitive"
+    },
+    "mood": {
+      "system": "cognitive"
+    },
+    "urineCa": {
+      "system": "musculoskeletal"
+    },
+    "ppco2": {
+      "system": "respiratory_env"
+    },
+    "pressure": {
+      "system": "respiratory_env"
+    },
+    "o2": {
+      "system": "respiratory_env"
+    },
+    "radiation": {
+      "system": "radiation"
+    },
+    "cabinTemp": {
+      "system": "respiratory_env"
+    },
+    "humidity": {
+      "system": "respiratory_env"
+    }
+  },
+  "symptoms": {
+    "blurred_vision": {
+      "label": "Visión borrosa",
+      "system": "neuro_ocular"
+    },
+    "headache": {
+      "label": "Dolor de cabeza",
+      "system": "neuro_ocular"
+    },
+    "nausea": {
+      "label": "Náuseas",
+      "system": "radiation"
+    },
+    "back_pain": {
+      "label": "Dolor lumbar",
+      "system": "renal"
+    },
+    "orthostatic_dizziness": {
+      "label": "Mareo al ponerse de pie",
+      "system": "cardiovascular"
+    }
+  }
+}

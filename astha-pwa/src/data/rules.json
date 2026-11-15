@@ -1,0 +1,71 @@
+{
+  "_source": "SRS §6.2 (correlación), §6.3 (deriva, con Z modificado MAD según ADR-011) y RF-EVA-05 (sostenidas).",
+  "correlation": [
+    {
+      "id": "R-ENV-01", "organ": "respiratory_env", "status": "critical", "urgency": "emergency",
+      "all": [{ "var": "ppco2", "op": ">", "value": 3.0 }, { "var": "spo2", "op": "<", "value": 94 }],
+      "summary": "Fuga o ventilación deficiente", "countermeasureId": "CM-ENV-01"
+    },
+    {
+      "id": "R-ENV-02", "organ": "neuro_ocular", "status": "critical", "urgency": "high",
+      "all": [{ "var": "ppco2", "op": ">", "value": 3.0 }, { "symptom": "headache" }],
+      "summary": "Hipertensión craneal por CO₂", "countermeasureId": "CM-ENV-02"
+    },
+    {
+      "id": "R-SANS-01", "organ": "neuro_ocular", "status": "critical", "urgency": "high",
+      "all": [{ "var": "sbp", "op": ">", "value": 135 }, { "symptom": "blurred_vision" }],
+      "summary": "Alerta precoz de SANS", "countermeasureId": "CM-SANS-01"
+    },
+    {
+      "id": "R-SANS-02", "organ": "neuro_ocular", "status": "caution", "urgency": "high",
+      "all": [{ "var": "sbp", "op": ">", "value": 135 }, { "var": "sleep", "op": "<", "value": 6 }],
+      "summary": "Deriva hipertensiva cefálica", "countermeasureId": "CM-SANS-02"
+    },
+    {
+      "id": "R-RAD-01", "organ": "radiation", "status": "critical", "urgency": "high",
+      "all": [{ "var": "radiation", "op": ">", "value": 100 }],
+      "summary": "Sospecha de evento de partículas solares: ir al refugio", "countermeasureId": "CM-RAD-01"
+    },
+    {
+      "id": "R-RAD-02", "organ": "radiation", "status": "critical", "urgency": "emergency",
+      "all": [{ "var": "radiation", "op": ">", "value": 100 }, { "symptom": "nausea" }],
+      "summary": "Protocolo de refugio solar con síntomas", "countermeasureId": "CM-RAD-02",
+      "supersedes": ["R-RAD-01"]
+    },
+    {
+      "id": "R-COG-01", "organ": "cognitive", "status": "caution", "urgency": "routine",
+      "all": [{ "var": "sleep", "op": "<", "value": 5.5 }, { "var": "hrv", "op": "<", "value": 25 }],
+      "summary": "Fatiga y desincronización circadiana", "countermeasureId": "CM-COG-01"
+    },
+    {
+      "id": "R-REN-01", "organ": "renal", "status": "critical", "urgency": "high",
+      "all": [{ "var": "urineCa", "op": ">", "value": 300 }, { "symptom": "back_pain" }],
+      "summary": "Sospecha de cálculo renal", "countermeasureId": "CM-REN-01",
+      "supersedes": ["R-REN-02"]
+    },
+    {
+      "id": "R-REN-02", "organ": "renal", "status": "caution", "urgency": "routine",
+      "all": [{ "var": "urineCa", "op": ">=", "value": 250 }, { "var": "urineCa", "op": "<=", "value": 300 }],
+      "summary": "Hipercalciuria por pérdida ósea", "countermeasureId": "CM-REN-02"
+    },
+    {
+      "id": "R-CARD-01", "organ": "cardiovascular", "status": "caution", "urgency": "high",
+      "all": [{ "symptom": "orthostatic_dizziness" }, { "var": "hr", "op": ">", "value": 100 }],
+      "summary": "Intolerancia ortostática", "countermeasureId": "CM-CARD-01"
+    }
+  ],
+  "sustained": [
+    { "indicator": "hrv", "op": "<", "value": 20, "days": 2 },
+    { "indicator": "sleep", "op": "<", "value": 5.5, "days": 2 }
+  ],
+  "drift": {
+    "windowDays": 7,
+    "horizonDays": 7,
+    "baselineDays": 14,
+    "zThreshold": 2.5,
+    "minR2": 0.5,
+    "indicators": ["hr", "hrv", "sbp", "dbp", "spo2", "glucose", "temp", "sleep"],
+    "d03": { "sleepSlopeMax": -0.05, "dbpSlopeMin": 0.3 },
+    "countermeasures": { "D-01": "CM-DRIFT-01", "D-02": "CM-DRIFT-02", "D-03": "CM-DRIFT-03" }
+  }
+}
