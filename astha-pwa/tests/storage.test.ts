@@ -11,7 +11,7 @@ import { buildPayload, parseImport, serialize, signExport, verifyExport, compres
 import { AsthaDb, flipBit, type Envelope } from '../src/storage/idb';
 import { checkEnvelope, IntegrityGuard, sealEnvelope, WriteVerifyError } from '../src/storage/integrity';
 import { Ledger } from '../src/storage/ledger';
-import { SyncClient, type WebSocketLike } from '../src/storage/syncClient';
+import { hubUrlFor, SyncClient, type WebSocketLike } from '../src/storage/syncClient';
 import {
   buildView, generateDataset, manualEntry, resetOp, scenarioOps, SimClock, SYNTHETIC, symptomToggle,
 } from '../src/storage/telemetrySources';
@@ -616,6 +616,12 @@ describe('Sync Client (RNF-NET-01..03)', () => {
     expect(FakeWs.instances.at(-1)!.readyState).toBe(0); // reconecta al volver
     client.stop();
     expect(pending).toHaveLength(0);
+  });
+
+  it('derives the relay URL from the page origin (the hub serves the app, ADR-007)', () => {
+    expect(hubUrlFor({ protocol: 'https:', host: 'astha.local:8443' })).toBe('wss://astha.local:8443/ws/sync');
+    expect(hubUrlFor({ protocol: 'http:', host: 'localhost:8443' })).toBe('ws://localhost:8443/ws/sync');
+    expect(hubUrlFor(undefined)).toBe('wss://astha.local:8443/ws/sync');
   });
 
   it('pide réplica por id de un sobre aislado', async () => {

@@ -18,7 +18,7 @@ import { completedProtocols, type CheckEvent } from '../engine/gamification';
 import { compactInput } from '../engine/inputWindow';
 import { IntegrityGuard, sealEnvelope } from '../storage/integrity';
 import { Ledger, type LedgerType } from '../storage/ledger';
-import { SyncClient, type CabinGlobalStatus } from '../storage/syncClient';
+import { hubEnabledByDefault, hubUrlFor, SyncClient, type CabinGlobalStatus } from '../storage/syncClient';
 import {
   buildView, generateDataset, manualEntry, resetOp, scenarioOps, SimClock, SYNTHETIC, symptomToggle,
   type TelemetryView,
@@ -593,6 +593,10 @@ async function boot(): Promise<void> {
     });
     sync = new SyncClient({
       nodeId: device.nodeId,
+      // Same origin as the page (the hub serves the app, ADR-007). Enabled on *.local, or on any host in a
+      // `npm run build:hub` build for local testing against `astha-sync-hub --insecure-http`.
+      url: hubUrlFor((globalThis as { location?: { protocol: string; host: string } }).location),
+      enabled: hubEnabledByDefault() || import.meta.env.VITE_ASTHA_HUB === '1',
       // VV of every stored envelope, including ones this session cannot decrypt (RBAC): they are relayed too.
       getVersionVector: () => vvOf(envCache.values()),
       getDelta: (remote) => deltaFor(envCache.values(), remote),

@@ -51,6 +51,21 @@ openssl x509 -req -in astha.local.csr -CA ca.crt -CAkey ca.key -CAcreateserial -
 
 The PWA shows each device's record in **Simulator → Sync Hub enrollment record**. The `deviceId` must match the key: it is the first 12 hex characters of SHA-256(canonical JWK), and the hub refuses mismatched entries. Devices whose browser only offers ECDSA P-256 cannot be enrolled.
 
+## Local frontend testing (no certificates)
+
+```bash
+cd astha-pwa && npm run build:hub      # build mode `hub`: enables the sync client on localhost
+cd ../sync-hub && echo "[]" > devices.json
+cargo run -- --insecure-http --no-mdns --bind 127.0.0.1:8443 --enrollment devices.json --static-dir ../astha-pwa/dist
+```
+
+1. Open `http://localhost:8443` in **two browser profiles**. Each profile has its own IndexedDB, so it acts as a separate tablet. Avoid incognito windows: they lose the device identity when closed.
+2. In each profile, unlock with a demo PIN, then copy **Simulator → Sync Hub enrollment record** into the `devices.json` array.
+3. Restart the hub and reload both tabs. The Simulator shows **Sync Hub: online**, and records entered on one tablet appear on the other.
+4. Try stopping the hub, writing on both tablets and starting it again: they converge without losing anything. A profile missing from `devices.json` is refused (WebSocket close `4401`).
+
+The relay URL is always the page's own origin (`ws://localhost:8443/ws/sync` here, `wss://astha.local:8443/ws/sync` aboard). In a normal `npm run build` the client only turns on when the app is served from a `*.local` host.
+
 ## API (`openapi.yaml`, base `/api/v1`)
 
 | Method | Path | Result |

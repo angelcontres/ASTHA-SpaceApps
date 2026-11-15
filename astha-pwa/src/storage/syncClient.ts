@@ -84,6 +84,15 @@ export interface SyncClientOptions {
 
 const OPEN = 1;
 
+/**
+ * The hub serves the PWA itself (ADR-007), so the relay always lives on the page's own origin:
+ * https://astha.local:8443 → wss://astha.local:8443/ws/sync; http://localhost:8443 → ws://localhost:8443/ws/sync.
+ */
+export function hubUrlFor(loc: { protocol: string; host: string } | undefined): string {
+  if (!loc?.host) return DEFAULT_SYNC_URL;
+  return `${loc.protocol === 'https:' ? 'wss' : 'ws'}://${loc.host}/ws/sync`;
+}
+
 export function hubEnabledByDefault(): boolean {
   const host = (globalThis as { location?: { hostname?: string } }).location?.hostname ?? '';
   return host.endsWith('.local');

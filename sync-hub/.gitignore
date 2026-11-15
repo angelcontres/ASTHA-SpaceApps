@@ -1,2 +1,8 @@
 /target
 /hub-data
+# local provisioning material: never commit keys, certificates or enrolled devices
+devices.json
+*.key
+*.crt
+*.csr
+*.srl
