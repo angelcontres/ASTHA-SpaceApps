@@ -1,0 +1,11 @@
+.git
+.github
+node_modules
+dist
+dist-ssr
+data/nasa_official_telemetry
+docs
+*.log
+.env
+.env.*
+coverage
