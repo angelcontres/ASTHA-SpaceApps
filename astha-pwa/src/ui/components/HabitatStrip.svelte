@@ -16,7 +16,7 @@
 
 <header class="strip">
   <div class="brand">
-    <span class="logo" aria-hidden="true">◎</span>
+    <img src="./icon.svg" alt="" width="28" height="28" class="logo-img" />
     <div>
       <strong>ASTHA</strong>
       <span class="label">{fd(bridge.data.day)} · de {bridge.data.maxDay}</span>
@@ -81,7 +81,7 @@
     border-bottom: 1px solid var(--border);
   }
   .brand { display: flex; align-items: center; gap: 10px; }
-  .logo { color: var(--accent); font-size: 1.5rem; }
+  .logo-img { display: block; width: 28px; height: 28px; flex: 0 0 auto; }
   .brand strong { display: block; letter-spacing: 0.12em; }
   .who { display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-left: 3px solid var(--st); }
   .who .sym { color: var(--st-text); }

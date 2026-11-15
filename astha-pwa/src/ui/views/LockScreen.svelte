@@ -49,9 +49,12 @@
 
 <main class="lock" class:cabin>
   <header class="top">
-    <div>
-      <strong class="brand">ASTHA {cabin ? 'CABIN MONITOR' : ''}</strong>
-      <span class="label">{cabin ? 'Modo público de cabina (ADR-014)' : 'Bloqueo de seguridad'} · {fd(bridge.data.day || 1)}</span>
+    <div class="top-brand">
+      <img src="./icon.svg" alt="" width="28" height="28" class="logo-img" />
+      <div>
+        <strong class="brand">ASTHA {cabin ? 'CABIN MONITOR' : ''}</strong>
+        <span class="label">{cabin ? 'Modo público de cabina (ADR-014)' : 'Bloqueo de seguridad'} · {fd(bridge.data.day || 1)}</span>
+      </div>
     </div>
     <button type="button" class="btn" aria-pressed={cabin} onclick={() => (cabin = !cabin)}>
       {cabin ? 'Salir del modo cabina' : 'Modo pantalla de cabina'}
@@ -143,6 +146,8 @@
 <style>
   .lock { max-width: 1200px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: var(--gap); }
   .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--gap); }
+  .top-brand { display: flex; align-items: center; gap: 10px; }
+  .logo-img { display: block; width: 28px; height: 28px; flex: 0 0 auto; }
   .brand { display: block; letter-spacing: 0.14em; font-size: 1.25rem; }
   .hab-alert { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap); padding: 12px; border: 3px solid var(--alert-red); border-radius: var(--radius); background-image: var(--st-fill); }
   .hab-alert div { flex: 1 1 260px; }
