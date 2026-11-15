@@ -7,6 +7,7 @@ import { evaluateCorrelations } from '../src/engine/correlation';
 import { validateCatalog } from '../src/engine/countermeasures';
 import { baselineFor, modifiedZ, RollingRegression } from '../src/engine/drift';
 import { evaluate } from '../src/engine/pipeline';
+import { accumulatedDose, CAREER_LIMIT_MSV, integrateMsv, SPE_EVENT_LIMIT_MSV } from '../src/engine/dose';
 import { applySustained } from '../src/engine/sustained';
 import { validateValue } from '../src/engine/validator';
 import type { DailyMeasurement, HabitatRecord } from '../src/engine/types';
@@ -137,4 +138,29 @@ describe('Pureza del engine (RF-EVA-07)', () => {
       expect(src).not.toMatch(/\b(fetch|WebSocket|XMLHttpRequest|document|window|localStorage|indexedDB|navigator)\b/);
     });
   }
+});
+
+describe('Dosis acumulada (AC-CLIN-05, CU-08)', () => {
+  it('integra µSv/h × 24 h por registro diario en mSv', () => {
+    expect(integrateMsv(25)).toBeCloseTo(0.6, 10);
+    const d = accumulatedDose([{ day: 1, radiation: 25 }, { day: 2, radiation: 25 }, { day: 3, radiation: null }]);
+    expect(d.missionMsv).toBeCloseTo(1.2, 10);
+    expect(d.lastDayMsv).toBeCloseTo(0.6, 10);
+    expect(d.speDays).toBe(0);
+  });
+
+  it('aísla el evento SPE en curso (días consecutivos finales > 100 µSv/h) frente al límite de 250 mSv', () => {
+    const d = accumulatedDose([{ day: 3, radiation: 184.2 }, { day: 1, radiation: 30 }, { day: 2, radiation: 150 }]);
+    expect(d.speDays).toBe(2);
+    expect(d.speEventMsv).toBeCloseTo(((150 + 184.2) * 24) / 1000, 10);
+    expect(d.speFraction).toBeCloseTo(d.speEventMsv / SPE_EVENT_LIMIT_MSV, 10);
+    expect(accumulatedDose([{ day: 1, radiation: 150 }, { day: 3, radiation: 150 }]).speDays).toBe(1); // hueco: otro evento
+    expect(accumulatedDose([{ day: 1, radiation: 100 }]).speDays).toBe(0); // 100 exacto no es crítico (SRS §6.1)
+  });
+
+  it('ignora valores no numéricos o negativos y compara con el límite de carrera de 600 mSv', () => {
+    const d = accumulatedDose([{ day: 1, radiation: -5 }, { day: 2, radiation: Number.NaN }, { day: 3, radiation: 1000 }]);
+    expect(d.missionMsv).toBeCloseTo(24, 10);
+    expect(d.careerFraction).toBeCloseTo(24 / CAREER_LIMIT_MSV, 10);
+  });
 });

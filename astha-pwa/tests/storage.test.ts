@@ -535,7 +535,7 @@ describe('Export Builder (RF-ING-06, RF-REG-02, RNF-NET-04)', () => {
 
   it('anonimiza nombres para usos no médicos (ADR-012)', () => {
     const p = buildPayload({
-      kind: 'summary', missionDay: 1, crew: [{ id: 'C001', name: 'Cmdte. Lía Ortega', role: 'commander' }], assessments: [],
+      kind: 'summary', missionDay: 1, crew: [{ id: 'C001', name: 'Cmdte. Rachel Calloway', role: 'commander' }], assessments: [],
       measurements: [], habitat: [], ledger: [], fsMessages: {}, anonymize: true,
     });
     expect(p.crew[0].name).toBe('C001');

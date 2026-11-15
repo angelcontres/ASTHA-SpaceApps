@@ -4,6 +4,8 @@
 // pendiente (RNF-POW-01): en reposo no hay ningún frame, temporizador ni bucle.
 import { HABITAT_INDICATORS, type Alert, type Assessment, type DailyMeasurement, type HabitatRecord, type IndicatorState, type Role, type SymptomType } from '../../engine/types';
 import type { ChainCheck, DecryptedEntry } from '../../storage/ledger';
+import { power } from './power.svelte';
+import { LOW_POWER_FRAME_MS } from './powerPolicy';
 import type { ScenarioId } from '../../storage/telemetrySources';
 import {
   DEFAULT_PREFS,
@@ -106,6 +108,8 @@ export class WorkerBridge {
   // eslint-disable-next-line svelte/prefer-svelte-reactivity
   private sentAt = new Map<number, number>();
   private noticeSeq = 0;
+  /** Temporizador único del repintado a 0,2 fps en modo batería crítica (solo existe con datos pendientes). */
+  private slowTimer: ReturnType<typeof setTimeout> | null = null;
   private detach: (() => void) | null = null;
 
   /** Arranca los workers y el canal directo entre ellos. Idempotente. */
@@ -146,6 +150,8 @@ export class WorkerBridge {
     this.dataWorker = this.clinicalWorker = null;
     if (this.frame !== null) cancelAnimationFrame(this.frame);
     this.frame = null;
+    if (this.slowTimer !== null) clearTimeout(this.slowTimer);
+    this.slowTimer = null;
     this.queue = [];
   }
 
@@ -154,6 +160,19 @@ export class WorkerBridge {
   private enqueue(item: Incoming): void {
     this.queue.push(item);
     if (this.frame !== null || this.microtask) return;
+    // Modo batería crítica (AC-TECH-02 §3): la telemetría rutinaria se repinta a 0,2 fps. Una alerta crítica nueva
+    // o la respuesta a una acción del usuario no espera: vacía también lo acumulado en el siguiente frame.
+    if (power.low && this.deferrable(item)) {
+      this.slowTimer ??= setTimeout(() => {
+        this.slowTimer = null;
+        this.flush();
+      }, LOW_POWER_FRAME_MS);
+      return;
+    }
+    if (this.slowTimer !== null) {
+      clearTimeout(this.slowTimer);
+      this.slowTimer = null;
+    }
     // Con la pestaña oculta rAF no se dispara: se aplica en microtarea para no retrasar una alarma crítica.
     if (typeof requestAnimationFrame === 'function' && document.visibilityState === 'visible') {
       this.frame = requestAnimationFrame(() => {
@@ -167,6 +186,17 @@ export class WorkerBridge {
         this.flush();
       });
     }
+  }
+
+  /** Mensajes que pueden esperar al siguiente repintado lento: series y evaluaciones sin novedades críticas. */
+  private deferrable(item: Incoming): boolean {
+    if (item.from === 'data') return item.msg.type === 'series';
+    if (item.msg.type !== 'assessments' || this.sentAt.has(item.msg.reqId)) return false;
+    // Conjunto temporal de comparación, no estado reactivo.
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity
+    const known = new Set<string>();
+    for (const a of this.assessments) for (const al of a.alerts) if (al.status === 'critical') known.add(al.id);
+    return !item.msg.items.some((a) => a.alerts.some((al) => al.status === 'critical' && !known.has(al.id)));
   }
 
   private flush(): void {

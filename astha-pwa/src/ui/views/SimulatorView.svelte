@@ -2,6 +2,7 @@
   // Pestaña 4 · Simulador de crisis (RF-SIM-01..05, COMP-06), bitácora append-only (RF-REG-01), prueba de SEU
   // (RNF-SEC-03) y exportación JSON firmada para el enlace con Tierra (RF-REG-02, RNF-NET-04).
   import { SCENARIO_IDS, SYNTHETIC, type ScenarioDef, type ScenarioId } from '../../storage/telemetrySources';
+  import { power } from '../bridge/power.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
   import { fd, fmt } from '../bridge/uiState.svelte';
 
@@ -70,11 +71,15 @@
       <div><dt class="label">Restaurados desde réplica</dt><dd>{bridge.data.recoveredCount}</dd></div>
       <div><dt class="label">Registros en cuarentena</dt><dd>{bridge.quarantinedCount}</dd></div>
       <div><dt class="label">Sync Hub</dt><dd>{bridge.syncStatus}</dd></div>
+      <div><dt class="label">Batería</dt><dd>{power.supported && power.level !== null ? `${Math.round(power.level * 100)} %${power.charging ? ' · cargando' : ''}` : 'API no disponible'}{power.low ? ' · modo crítico' : ''}</dd></div>
       <div><dt class="label">Nodo</dt><dd>{bridge.data.nodeId}</dd></div>
     </dl>
     <div class="row">
       <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip()}>Inyectar SEU (bit-flip)</button>
       <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip(true)}>SEU en sobre y réplica</button>
+      <button type="button" class="btn" aria-pressed={power.simulated} onclick={() => power.simulate(!power.simulated)}>
+        {power.simulated ? 'Restaurar batería' : 'Simular batería crítica (EPS)'}
+      </button>
       <button type="button" class="btn" onclick={() => bridge.verifyLedger()}>Verificar cadena de bitácora</button>
     </div>
     {#if bridge.ledgerChain}
