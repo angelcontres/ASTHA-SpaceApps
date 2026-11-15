@@ -355,8 +355,35 @@
 
   <!-- MAIN VIEWPORT: UNIFIED SCI-FI BIO-TERMINAL (ALL-IN-ONE COCKPIT) -->
     <!-- MAIN VIEWPORT: HERO 3D ASTRONAUT + PRINCIPAL METRICS + REACTIVE 3D INSPECTION -->
+    <!-- ========================================================================= -->
+  <!-- MISSION CONTROL SECTION SWITCHER: 1. HEALTH MONITORING vs 2. HABITAT/ECLSS -->
+  <!-- ========================================================================= -->
+  <nav class="border-b border-[#2a5ba8]/60 bg-[#122e5e]/95 backdrop-blur-md px-6 py-2 sticky top-[53px] z-30 flex flex-wrap items-center justify-between gap-3 shadow-md">
+    <div class="flex items-center space-x-2">
+      <!-- Section 1: Astronaut Health -->
+      <button onclick="switchMainSection('health')" id="tab-btn-health" class="flex items-center space-x-2 px-4 py-2 border-b-2 border-[#facc15] bg-[#163a75] text-[#fef08a] font-bold text-xs font-mono transition shadow-md">
+        <i data-lucide="heart-pulse" class="w-4 h-4 text-[#facc15]"></i>
+        <span>1. MONITOREO DE SALUD (BIOMETRÍA ASTRONAUTAS)</span>
+      </button>
+
+      <!-- Section 2: Habitat & Environment -->
+      <button onclick="switchMainSection('habitat')" id="tab-btn-habitat" class="flex items-center space-x-2 px-4 py-2 border-b-2 border-transparent hover:border-[#38bdf8] bg-[#0d2244] text-slate-300 hover:text-white font-bold text-xs font-mono transition">
+        <i data-lucide="gauge" class="w-4 h-4 text-[#38bdf8]"></i>
+        <span>2. CONTROL DE HÁBITAT Y CABINA (ECLSS NASA-STD-3001)</span>
+      </button>
+    </div>
+
+    <!-- Active Indicator & Normative Tag -->
+    <div class="hidden lg:flex items-center space-x-3 text-[11px] font-mono text-slate-300">
+      <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> TELEMETRÍA ECLSS ACTIVA</span>
+      <span class="text-slate-500">|</span>
+      <span class="text-[#facc15] font-bold" id="habitat-top-summary">CABINA NOMINAL (CDRA & OGS OK)</span>
+    </div>
+  </nav>
+
   <main class="flex-1 p-4 lg:p-6 max-w-[1920px] w-full mx-auto space-y-4">
 
+    <div id="section-health" class="space-y-4">
     <!-- ========================================================================= -->
     <!-- 1. CREW SELECTOR BAR: 4 ASTRONAUT PILLS (1 CLICK TO SWITCH CHARACTER)      -->
     <!-- ========================================================================= -->
@@ -769,44 +796,6 @@
           </div>
         </div>
 
-        <!-- 2. HABITAT ENVIRONMENT & ECLSS (THAT ASTRONAUT'S CABIN) -->
-        <div class="hud-card p-3 space-y-2">
-          <div class="flex items-center justify-between border-b border-nasa-border/60 pb-1.5 text-xs font-mono">
-            <span class="text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <i data-lucide="gauge" class="w-3.5 h-3.5 text-emerald-400"></i>
-              Entorno Hábitat Cabina (ECLSS)
-            </span>
-            <span class="text-emerald-400 text-[10px] flex items-center gap-1" id="status-cdra">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> CDRA & OGS OK
-            </span>
-          </div>
-
-          <div class="grid grid-cols-4 gap-2 text-[10px] font-mono text-center">
-            <div class="bg-[#10274f] p-1.5 border border-nasa-border/60">
-              <span class="text-slate-400 block text-[9px]">Presión</span>
-              <strong class="text-white text-xs"><span id="env-pressure">101.3</span> kPa</strong>
-            </div>
-            <div class="bg-[#10274f] p-1.5 border border-nasa-border/60">
-              <span class="text-slate-400 block text-[9px]">ppCO₂</span>
-              <strong class="text-emerald-400 text-xs"><span id="env-co2">2.85</span> mmHg</strong>
-              <span id="env-co2-ppm" class="hidden"></span>
-            </div>
-            <div class="bg-[#10274f] p-1.5 border border-nasa-border/60">
-              <span class="text-slate-400 block text-[9px]">Oxígeno</span>
-              <strong class="text-white text-xs"><span id="env-o2">20.8</span>%</strong>
-            </div>
-            <div class="bg-[#10274f] p-1.5 border border-nasa-border/60">
-              <span class="text-slate-400 block text-[9px]">Radiación</span>
-              <strong class="text-emerald-400 text-xs"><span id="env-rad">32.8</span> µSv</strong>
-            </div>
-          </div>
-
-          <div class="text-[9px] font-mono text-slate-400 flex justify-between px-1">
-            <span>Temp: <strong class="text-white" id="env-temp">21.8</strong>°C · Humedad: <strong class="text-white" id="env-humidity">46</strong>%</span>
-            <button onclick="openTrendsModal()" class="text-nasa-pastel hover:underline">Ver Gráficos Históricos →</button>
-          </div>
-        </div>
-
         <!-- 3. SHIP COMPUTER GUIDANCE & CHECKLIST -->
         <div class="hud-card p-3 space-y-2">
           <div class="flex items-center justify-between border-b border-nasa-border/60 pb-1.5 text-xs font-mono">
@@ -862,8 +851,252 @@
         </div>
       </div>
     </div>
+    </div>
 
     <!-- ========================================================================= -->
+    <!-- SECTION 2: DEDICATED HABITAT & CABIN ENVIRONMENT MONITORING (ECLSS)       -->
+    <!-- ========================================================================= -->
+    <div id="section-habitat" class="space-y-4 hidden">
+      
+      <!-- 1. HABITAT OVERVIEW & ATMOSPHERIC SAFETY BANNER -->
+      <div class="hud-card p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#2a5ba8]/60 pb-3 text-xs font-mono">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-[#163a75] border-2 border-[#38bdf8] flex items-center justify-center text-[#38bdf8] shadow-md">
+              <i data-lucide="shield-check" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-white font-bold text-sm uppercase">Módulo Hábitat Presurizado · Cabina Principal</span>
+                <span class="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 font-bold text-[10px] animate-pulse">ESTADO: SEGURO</span>
+                <span class="px-2 py-0.5 bg-[#facc15] text-[#0f2854] font-bold text-[10px]">NASA-STD-3001</span>
+              </div>
+              <p class="text-slate-300 text-[11px]">Volumen Habitable: 9.3 m³ · Control Ambiental y Soporte de Vida Regenerativo en Vuelo</p>
+            </div>
+          </div>
+
+          <!-- Status Indicator Pill -->
+          <div class="flex items-center space-x-2 bg-[#0d2244] px-3 py-1.5 border border-[#2a5ba8]/70 text-xs">
+            <span class="text-slate-400">Ensamblaje CDRA:</span>
+            <span class="text-emerald-400 font-bold flex items-center gap-1.5" id="status-cdra">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ACTIVO NOMINAL
+            </span>
+          </div>
+        </div>
+
+        <!-- 2. PRIMARY ATMOSPHERIC TELEMETRY GAUGES (4 CORE METRICS) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 font-mono">
+          <!-- Metric 1: Cabin Pressure -->
+          <div class="bg-[#10274f] p-3.5 border-2 border-[#2a5ba8]/70 relative">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                <i data-lucide="gauge" class="w-4 h-4 text-[#38bdf8]"></i> Presión Atmosférica
+              </span>
+              <span class="px-1.5 py-0.2 bg-emerald-950/80 text-emerald-300 border border-emerald-600 text-[9px] font-bold">NOMINAL</span>
+            </div>
+            <div class="flex items-baseline space-x-1.5 my-1">
+              <span class="text-2xl font-bold text-white" id="env-pressure">101.3</span>
+              <span class="text-xs text-slate-400">kPa</span>
+              <span class="text-[11px] text-slate-400 ml-1">(14.7 psi / 1.0 atm)</span>
+            </div>
+            <div class="w-full h-2 bg-[#0d2244] border border-[#2a5ba8]/50 relative overflow-hidden mt-2">
+              <div class="absolute inset-y-0 left-[25%] w-[50%] bg-emerald-500/25 border-x border-emerald-400" title="Rango Seguro 98-103 kPa"></div>
+              <div class="absolute top-0 bottom-0 w-1.5 bg-[#facc15] shadow-[0_0_6px_#facc15]" style="left: 50%;"></div>
+            </div>
+            <div class="flex justify-between text-[9px] text-slate-400 mt-1">
+              <span>90 kPa</span><span class="text-emerald-400">98 - 103 Normal</span><span>110 kPa</span>
+            </div>
+          </div>
+
+          <!-- Metric 2: Partial Pressure CO2 -->
+          <div class="bg-[#10274f] p-3.5 border-2 border-[#2a5ba8]/70 relative">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                <i data-lucide="cloud" class="w-4 h-4 text-emerald-400"></i> Dióxido de Carbono (ppCO₂)
+              </span>
+              <span class="px-1.5 py-0.2 bg-emerald-950/80 text-emerald-300 border border-emerald-600 text-[9px] font-bold">CONTROLADO</span>
+            </div>
+            <div class="flex items-baseline space-x-1.5 my-1">
+              <span class="text-2xl font-bold text-emerald-400" id="env-co2">2.85</span>
+              <span class="text-xs text-slate-400">mmHg</span>
+              <span class="text-[11px] text-slate-400 ml-1" id="env-co2-ppm">~3,750 ppm</span>
+            </div>
+            <div class="w-full h-2 bg-[#0d2244] border border-[#2a5ba8]/50 relative overflow-hidden mt-2">
+              <div class="absolute inset-y-0 left-0 w-[55%] bg-emerald-500/25 border-r border-emerald-400" title="Zona Verde < 3.0 mmHg"></div>
+              <div class="absolute inset-y-0 left-[55%] w-[25%] bg-amber-500/25 border-r border-amber-400" title="Zona Advertencia 3.0-3.8 mmHg"></div>
+              <div class="absolute top-0 bottom-0 w-1.5 bg-[#facc15] shadow-[0_0_6px_#facc15]" style="left: 48%;"></div>
+            </div>
+            <div class="flex justify-between text-[9px] text-slate-400 mt-1">
+              <span>0.0</span><span class="text-amber-400">Límite Crítico: 3.8 mmHg</span><span>5.0 mmHg</span>
+            </div>
+          </div>
+
+          <!-- Metric 3: Oxygen Concentration -->
+          <div class="bg-[#10274f] p-3.5 border-2 border-[#2a5ba8]/70 relative">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                <i data-lucide="wind" class="w-4 h-4 text-[#38bdf8]"></i> Concentración O₂
+              </span>
+              <span class="px-1.5 py-0.2 bg-emerald-950/80 text-emerald-300 border border-emerald-600 text-[9px] font-bold">ÓPTIMO</span>
+            </div>
+            <div class="flex items-baseline space-x-1.5 my-1">
+              <span class="text-2xl font-bold text-white" id="env-o2">20.8</span>
+              <span class="text-xs text-slate-400">%</span>
+              <span class="text-[11px] text-slate-400 ml-1">(ppO₂: 21.0 kPa)</span>
+            </div>
+            <div class="w-full h-2 bg-[#0d2244] border border-[#2a5ba8]/50 relative overflow-hidden mt-2">
+              <div class="absolute inset-y-0 left-[35%] w-[45%] bg-emerald-500/25 border-x border-emerald-400" title="Rango Seguro 19.5% - 23.0%"></div>
+              <div class="absolute top-0 bottom-0 w-1.5 bg-[#facc15] shadow-[0_0_6px_#facc15]" style="left: 62%;"></div>
+            </div>
+            <div class="flex justify-between text-[9px] text-slate-400 mt-1">
+              <span>16.0%</span><span class="text-emerald-400">19.5% - 23.0% Seguro</span><span>25.0%</span>
+            </div>
+          </div>
+
+          <!-- Metric 4: Radiation Dosimetry -->
+          <div class="bg-[#10274f] p-3.5 border-2 border-[#2a5ba8]/70 relative">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                <i data-lucide="radioactive" class="w-4 h-4 text-amber-400"></i> Dosimetría Radiación CANS
+              </span>
+              <span class="px-1.5 py-0.2 bg-emerald-950/80 text-emerald-300 border border-emerald-600 text-[9px] font-bold">SEGURO</span>
+            </div>
+            <div class="flex items-baseline space-x-1.5 my-1">
+              <span class="text-2xl font-bold text-emerald-400" id="env-rad">32.8</span>
+              <span class="text-xs text-slate-400">µSv/h</span>
+              <span class="text-[11px] text-slate-400 ml-1">(CSA Space Agency)</span>
+            </div>
+            <div class="w-full h-2 bg-[#0d2244] border border-[#2a5ba8]/50 relative overflow-hidden mt-2">
+              <div class="absolute inset-y-0 left-0 w-[50%] bg-emerald-500/25 border-r border-emerald-400" title="Zona Segura < 50 µSv/h"></div>
+              <div class="absolute top-0 bottom-0 w-1.5 bg-[#facc15] shadow-[0_0_6px_#facc15]" style="left: 33%;"></div>
+            </div>
+            <div class="flex justify-between text-[9px] text-slate-400 mt-1">
+              <span>0 µSv</span><span class="text-rose-400">Alerta SPE: > 100 µSv</span><span>200 µSv</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Environmental Conditions -->
+        <div class="p-2.5 bg-[#0d2244] border border-[#2a5ba8]/60 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-300">
+          <div class="flex items-center space-x-4">
+            <span>🌡️ Temp Cabina: <strong class="text-white" id="env-temp">21.8</strong> °C (Nominal 18-24°C)</span>
+            <span>💧 Humedad Relativa: <strong class="text-white" id="env-humidity">46</strong>% (Nominal 30-60%)</span>
+            <span>💨 Flujo Convectivo: <strong class="text-emerald-400">0.15 m/s</strong> (Evita bolsas de CO₂)</span>
+          </div>
+          <span class="text-[10px] text-slate-400">Certificación: NASA-STD-3001 Vol 2 · Vuelo Tripulado</span>
+        </div>
+      </div>
+
+      <!-- 3. ECLSS CRITICAL LIFE SUPPORT SUBSYSTEMS ARCHITECTURE -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 font-mono">
+        <!-- Subsystem 1: CDRA -->
+        <div class="hud-card p-4 space-y-2 border-l-4 border-l-[#facc15]">
+          <div class="flex justify-between items-center text-xs border-b border-[#2a5ba8]/60 pb-1.5">
+            <span class="font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-4 h-4 text-[#facc15]"></i> Ensamblaje CDRA
+            </span>
+            <span class="text-[10px] text-emerald-400 font-bold">OPERACIONAL</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-tight">Remoción de CO₂ mediante Lechos de Zeolita 5A Regenerativos.</p>
+          <div class="text-[10px] space-y-1 text-slate-400 pt-1">
+            <div class="flex justify-between"><span>Lecho A:</span><span class="text-emerald-300 font-bold">Adsorbiendo Cabina</span></div>
+            <div class="flex justify-between"><span>Lecho B:</span><span class="text-[#38bdf8] font-bold">Desorción al Vacío</span></div>
+            <div class="flex justify-between"><span>Ciclo de Válvula:</span><span class="text-white">144 min restantes</span></div>
+          </div>
+        </div>
+
+        <!-- Subsystem 2: OGS -->
+        <div class="hud-card p-4 space-y-2 border-l-4 border-l-[#38bdf8]">
+          <div class="flex justify-between items-center text-xs border-b border-[#2a5ba8]/60 pb-1.5">
+            <span class="font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="zap" class="w-4 h-4 text-[#38bdf8]"></i> Generador O₂ (OGS)
+            </span>
+            <span class="text-[10px] text-emerald-400 font-bold">100% EFICIENCIA</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-tight">Electrólisis de agua pura a alta presión para generación de O₂ metabólico.</p>
+          <div class="text-[10px] space-y-1 text-slate-400 pt-1">
+            <div class="flex justify-between"><span>Producción O₂:</span><span class="text-emerald-300 font-bold">2.42 kg/día (4 trip.)</span></div>
+            <div class="flex justify-between"><span>Presión Celda SPE:</span><span class="text-white">1.2 MPa</span></div>
+            <div class="flex justify-between"><span>Venteo H₂ a Espacio:</span><span class="text-emerald-300 font-bold">Nominal Seguro</span></div>
+          </div>
+        </div>
+
+        <!-- Subsystem 3: VCCS -->
+        <div class="hud-card p-4 space-y-2 border-l-4 border-l-[#10b981]">
+          <div class="flex justify-between items-center text-xs border-b border-[#2a5ba8]/60 pb-1.5">
+            <span class="font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="fan" class="w-4 h-4 text-[#10b981]"></i> Clima y Ventilación (VCCS)
+            </span>
+            <span class="text-[10px] text-emerald-400 font-bold">FLUJO CONTINUO</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-tight">Circulación forzada de aire para disipar bolsas de CO₂ y filtración HEPA.</p>
+          <div class="text-[10px] space-y-1 text-slate-400 pt-1">
+            <div class="flex justify-between"><span>Velocidad Cabina:</span><span class="text-emerald-300 font-bold">0.15 m/s (NASA Spec)</span></div>
+            <div class="flex justify-between"><span>Filtro HEPA:</span><span class="text-white">99.97% Retención</span></div>
+            <div class="flex justify-between"><span>Control de Contaminantes:</span><span class="text-emerald-300 font-bold">TCCS Activo</span></div>
+          </div>
+        </div>
+
+        <!-- Subsystem 4: WRS -->
+        <div class="hud-card p-4 space-y-2 border-l-4 border-l-[#db3b68]">
+          <div class="flex justify-between items-center text-xs border-b border-[#2a5ba8]/60 pb-1.5">
+            <span class="font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="droplet" class="w-4 h-4 text-[#db3b68]"></i> Recuperación de Agua (WRS)
+            </span>
+            <span class="text-[10px] text-emerald-400 font-bold">94.5% RECICLAJE</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-tight">Destilación por compresión de vapor y desinfección catalítica para agua potable.</p>
+          <div class="text-[10px] space-y-1 text-slate-400 pt-1">
+            <div class="flex justify-between"><span>Tanque Agua Potable:</span><span class="text-emerald-300 font-bold">94.5% Lleno</span></div>
+            <div class="flex justify-between"><span>Ensamblaje UPA:</span><span class="text-white">En Ciclo</span></div>
+            <div class="flex justify-between"><span>Calidad Microbiológica:</span><span class="text-emerald-300 font-bold">0 UFC / 100ml</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. LIVE ATMOSPHERIC DYNAMICS TELEMETRY CHART -->
+      <div class="hud-card p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#2a5ba8]/60 pb-2 text-xs font-mono">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="line-chart" class="w-4 h-4 text-[#38bdf8]"></i>
+            <h4 class="font-bold text-sm text-white uppercase">Dinámica Atmosférica de Cabina a lo largo de la Misión (ppCO₂ vs Radiación CANS)</h4>
+          </div>
+          <span class="text-[10px] text-slate-400">Curvas longitudinales de vuelo · Telemetría en tiempo real</span>
+        </div>
+        <div class="h-64 w-full">
+          <canvas id="habitatEnvChart"></canvas>
+        </div>
+      </div>
+
+      <!-- 5. HABITAT CRISIS SIMULATION & ENVIRONMENTAL CONTROLS -->
+      <div class="hud-card p-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+        <div class="flex items-center space-x-2">
+          <span class="text-slate-400 font-bold uppercase text-[10px]">Controles de Emergencia de Hábitat:</span>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button onclick="injectCrisis('CO2')" class="px-2.5 py-1.5 border border-amber-500/60 bg-amber-950/50 text-amber-300 hover:bg-amber-900/60 transition flex items-center gap-1 text-[11px] font-bold">
+              ⚠️ Simular Fuga CO₂ (3.85 mmHg)
+            </button>
+            <button onclick="injectCrisis('SPE')" class="px-2.5 py-1.5 border border-rose-500/60 bg-rose-950/50 text-rose-300 hover:bg-rose-900/60 transition flex items-center gap-1 text-[11px] font-bold">
+              💥 Simular Tormenta Radiación SPE
+            </button>
+            <button onclick="purgeCdraAction()" class="px-2.5 py-1.5 border border-[#38bdf8]/60 bg-[#163a75] text-[#38bdf8] hover:bg-[#1a4c9c] transition flex items-center gap-1 text-[11px] font-bold">
+              💨 Forzar Purga Rápida CDRA
+            </button>
+            <button onclick="deployO2MasksAction()" class="px-2.5 py-1.5 border border-[#facc15]/60 bg-[#10274f] text-[#fef08a] hover:bg-[#16366f] transition flex items-center gap-1 text-[11px] font-bold">
+              🤿 Presurizar Mascarillas O₂
+            </button>
+            <button onclick="resetNominal()" class="px-2.5 py-1.5 border border-emerald-500/60 bg-emerald-950/50 text-emerald-300 hover:bg-emerald-900/60 transition flex items-center gap-1 text-[11px] font-bold">
+              🔄 Restablecer Atmósfera Nominal
+            </button>
+          </div>
+        </div>
+
+        <span class="text-[10px] text-slate-400 font-mono">ECLSS Control Suite · NASA Johnson Space Center</span>
+      </div>
+
+    </div>
+
+<!-- ========================================================================= -->
     <!-- 4. BOTTOM BAR: MISSION TIMELINE & CRISIS SIMULATION INJECTOR              -->
     <!-- ========================================================================= -->
     <div class="hud-card p-3 flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-mono">
@@ -1548,6 +1781,176 @@
         envChartInstance.data.datasets[1].data = astro.phases.map(p => p.rad);
         envChartInstance.update();
       }
+    }
+
+    // =========================================================================
+    // DUAL SECTION SWITCHER: 1. HEALTH MONITORING vs 2. HABITAT/ECLSS
+    // =========================================================================
+    let activeMainSection = 'health';
+    let habitatChartInstance = null;
+
+    function switchMainSection(sec) {
+      activeMainSection = sec;
+      const healthSec = document.getElementById('section-health');
+      const habitatSec = document.getElementById('section-habitat');
+      const btnHealth = document.getElementById('tab-btn-health');
+      const btnHabitat = document.getElementById('tab-btn-habitat');
+
+      if (sec === 'health') {
+        if (healthSec) healthSec.classList.remove('hidden');
+        if (habitatSec) habitatSec.classList.add('hidden');
+        if (btnHealth) btnHealth.className = "flex items-center space-x-2 px-4 py-2 border-b-2 border-[#facc15] bg-[#163a75] text-[#fef08a] font-bold text-xs font-mono transition shadow-md";
+        if (btnHabitat) btnHabitat.className = "flex items-center space-x-2 px-4 py-2 border-b-2 border-transparent hover:border-[#38bdf8] bg-[#0d2244] text-slate-300 hover:text-white font-bold text-xs font-mono transition";
+        
+        // Trigger Three.js resize to ensure mannequin renders perfectly
+        setTimeout(() => {
+          if (renderer3d && camera3d) {
+            const container = document.getElementById('container-3d');
+            if (container) {
+              const w = container.clientWidth || 400;
+              const h = container.clientHeight || 450;
+              camera3d.aspect = w / h;
+              camera3d.updateProjectionMatrix();
+              renderer3d.setSize(w, h);
+            }
+          }
+        }, 50);
+      } else {
+        if (healthSec) healthSec.classList.add('hidden');
+        if (habitatSec) habitatSec.classList.remove('hidden');
+        if (btnHealth) btnHealth.className = "flex items-center space-x-2 px-4 py-2 border-b-2 border-transparent hover:border-[#facc15] bg-[#0d2244] text-slate-300 hover:text-white font-bold text-xs font-mono transition";
+        if (btnHabitat) btnHabitat.className = "flex items-center space-x-2 px-4 py-2 border-b-2 border-[#38bdf8] bg-[#163a75] text-[#38bdf8] font-bold text-xs font-mono transition shadow-md";
+        
+        // Initialize or update Habitat Chart
+        setTimeout(() => {
+          initHabitatViewChart();
+        }, 50);
+      }
+
+      if (typeof playCockpitSound === 'function') playCockpitSound('blip');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function initHabitatViewChart() {
+      const canvas = document.getElementById('habitatEnvChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      const ctx = canvas.getContext('2d');
+      const phases = telemetryDataset[currentCrew].phases;
+      const labels = phases.map(p => p.phase);
+      const co2Data = phases.map(p => p.co2);
+      const radData = phases.map(p => p.rad);
+      const pressData = phases.map(p => p.pressure);
+
+      if (habitatChartInstance) {
+        habitatChartInstance.data.labels = labels;
+        habitatChartInstance.data.datasets[0].data = co2Data;
+        habitatChartInstance.data.datasets[1].data = radData;
+        habitatChartInstance.data.datasets[2].data = pressData;
+        habitatChartInstance.update();
+        return;
+      }
+
+      habitatChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'ppCO₂ Cabina (mmHg)',
+              data: co2Data,
+              borderColor: '#facc15',
+              backgroundColor: 'rgba(250, 204, 21, 0.12)',
+              borderWidth: 2.5,
+              pointBackgroundColor: '#fef08a',
+              pointRadius: 4,
+              yAxisID: 'yCO2',
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'Radiación CANS (µSv/h)',
+              data: radData,
+              borderColor: '#db3b68',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              pointBackgroundColor: '#f43f5e',
+              pointRadius: 4,
+              yAxisID: 'yRad',
+              tension: 0.3
+            },
+            {
+              label: 'Presión Cabina (kPa)',
+              data: pressData,
+              borderColor: '#38bdf8',
+              backgroundColor: 'transparent',
+              borderWidth: 1.8,
+              borderDash: [5, 5],
+              pointBackgroundColor: '#38bdf8',
+              pointRadius: 3,
+              yAxisID: 'yPress',
+              tension: 0.2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              labels: { color: '#cbd5e1', font: { family: 'monospace', size: 10 } }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(42, 91, 168, 0.2)' },
+              ticks: { color: '#cbd5e1', font: { family: 'monospace', size: 10 } }
+            },
+            yCO2: {
+              type: 'linear',
+              position: 'left',
+              title: { display: true, text: 'ppCO₂ (mmHg)', color: '#facc15', font: { size: 10 } },
+              grid: { color: 'rgba(42, 91, 168, 0.25)' },
+              ticks: { color: '#facc15', font: { family: 'monospace', size: 9 } }
+            },
+            yRad: {
+              type: 'linear',
+              position: 'right',
+              title: { display: true, text: 'Radiación (µSv/h)', color: '#db3b68', font: { size: 10 } },
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#db3b68', font: { family: 'monospace', size: 9 } }
+            },
+            yPress: {
+              type: 'linear',
+              position: 'right',
+              display: false,
+              min: 90,
+              max: 110
+            }
+          }
+        }
+      });
+    }
+
+    function purgeCdraAction() {
+      playCockpitSound('chime');
+      const cdra = document.getElementById('status-cdra');
+      if (cdra) {
+        cdra.innerHTML = '<span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span> PURGANDO LECHOS';
+        cdra.className = "text-cyan-300 font-bold flex items-center gap-1.5 animate-pulse";
+      }
+      setTimeout(() => {
+        telemetryDataset[currentCrew].phases[currentPhaseIndex].co2 = 0.35;
+        updateUI();
+        if (habitatChartInstance) initHabitatViewChart();
+      }, 1200);
+    }
+
+    function deployO2MasksAction() {
+      playCockpitSound('warning');
+      telemetryDataset[currentCrew].phases[currentPhaseIndex].o2 = 22.5;
+      updateUI();
+      if (habitatChartInstance) initHabitatViewChart();
     }
 
     function selectAstronaut(id) {
