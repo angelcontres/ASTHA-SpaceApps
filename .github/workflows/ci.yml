@@ -21,3 +21,53 @@ jobs:
           cache-dependency-path: astha-pwa/package-lock.json
       - run: npm ci
       - run: npm run verify
+
+  verify-docker-image:
+    needs: verify-astha-pwa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Docker Compose configuration
+        run: |
+          docker compose config -q
+          ASTHA_DOMAIN=astha.example.com docker compose --profile tls config -q
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build ASTHA PWA container image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./astha-pwa
+          file: ./astha-pwa/Dockerfile
+          load: true
+          tags: astha-pwa:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test hardened container runtime
+        run: |
+          docker run -d --name astha-smoke \
+            --read-only \
+            --tmpfs /tmp:noexec,nosuid,size=16m \
+            --tmpfs /var/cache/nginx:noexec,nosuid,size=32m \
+            --security-opt no-new-privileges:true \
+            -p 127.0.0.1:8080:8080 \
+            astha-pwa:ci
+
+          trap 'docker logs astha-smoke || true; docker rm -f astha-smoke || true' EXIT
+
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8080/healthz | grep -qx "ok"; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://127.0.0.1:8080/healthz | grep -qx "ok"
+          curl -fsSI http://127.0.0.1:8080/ | grep -qi "X-Frame-Options: DENY"
+          curl -fsSI http://127.0.0.1:8080/ | grep -qi "X-Content-Type-Options: nosniff"
+          curl -fsSI http://127.0.0.1:8080/sw.js | grep -qi "no-store"
+          curl -fsSI http://127.0.0.1:8080/manifest.webmanifest | grep -qi "application/manifest+json"
+          curl -fsS http://127.0.0.1:8080/icon.svg | grep -q "<svg"

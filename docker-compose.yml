@@ -1,0 +1,53 @@
+services:
+  astha-pwa:
+    image: ${ASTHA_IMAGE:-ghcr.io/angelcontres/astha-spaceapps-pwa:latest}
+    build:
+      context: ./astha-pwa
+      dockerfile: Dockerfile
+    container_name: astha-pwa
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=16m
+      - /var/cache/nginx:noexec,nosuid,size=32m
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "${ASTHA_BIND_ADDR:-127.0.0.1}:${ASTHA_HTTP_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz | grep -q ok || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  caddy:
+    image: caddy:2.9-alpine
+    container_name: astha-caddy
+    profiles: ["tls"]
+    restart: unless-stopped
+    depends_on:
+      astha-pwa:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      ASTHA_DOMAIN: ${ASTHA_DOMAIN:-localhost}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+volumes:
+  caddy_data:
+  caddy_config:
