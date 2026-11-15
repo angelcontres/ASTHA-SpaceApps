@@ -1,67 +1,87 @@
-/* ASTHA · Tokens tácticos (WIREFRAME §4.1, ADR-018, RNF-USA-01..04, ADR-019).
-   Sin fuentes externas: solo pilas del sistema. Todos los colores pasan por tokens para que los modos
-   (OLED, espectral rojo, supervivencia, alto contraste) se apliquen también a canvas (uPlot, Three.js). */
+/* ASTHA · Tactical Design System Tokens (WIREFRAME §4.1, ADR-018, RNF-USA-01..04, ADR-019).
+   Zero external fonts: system stacks only. Every visual & canvas component consumes CSS variables
+   so OLED, 630 nm spectral red, <5 W survival, and high-contrast modes propagate uniformly. */
 
 :root {
-  /* Superficies */
-  --space-950: #030712; /* fondo absoluto (OLED) */
-  --space-900: #060913; /* contenedores */
-  --space-800: #0c1222; /* tarjetas */
+  /* Surfaces */
+  --space-950: #030712; /* master OLED background */
+  --space-900: #060913; /* containers & sticky bars */
+  --space-800: #0c1222; /* active panels & vital cards */
+  --blueprint-bg: #040915;
+  --blueprint-line: #79a7df;
+  --blueprint-text: #9fc5f8;
   --border: #141e36;
   --border-strong: #24324f;
 
-  /* Texto (contraste medido sobre space-950 / space-800) */
-  --text: #e5e7eb;        /* 16,2:1 */
-  --text-muted: #a3acbd;  /* 8,3:1 */
+  /* Normative aliases from Style Guide (02-Guia-de-Estilo-y-Design-System.md) */
+  --color-space-950: var(--space-950);
+  --color-space-900: var(--space-900);
+  --color-space-800: var(--space-800);
+  --color-blueprint-bg: var(--blueprint-bg);
+  --color-blueprint-line: var(--blueprint-line);
+  --color-blueprint-text: var(--blueprint-text);
 
-  /* Estados — doble canal obligatorio: color + patrón + símbolo */
-  --alert-green: #10b981;     /* 7,94:1 texto y relleno */
-  --alert-yellow: #f59e0b;    /* 9,37:1 texto y relleno */
-  --alert-red: #ef4444;       /* 5,35:1 → SOLO bordes, rellenos y pulso */
-  --alert-red-text: #fca5a5;  /* 10,61:1 → todo texto crítico (ADR-018) */
-  --accent: #38bdf8;          /* cyan-400, 9,40:1 */
-  --none: #6b7280;
+  /* Text — WCAG 2.1 AAA (>= 7:1) measured against #030712 and #0c1222 */
+  --text: #e5e7eb;        /* 16.2:1 */
+  --text-muted: #a3acbd;  /* 8.3:1 */
+
+  /* Semantic Statuses — mandatory dual coding: color + border/fill pattern + symbol */
+  --alert-green: #10b981;     /* 7.94:1 AAA text & fill */
+  --alert-yellow: #f59e0b;    /* 9.37:1 AAA text & fill */
+  --alert-red: #ef4444;       /* 5.35:1 → ONLY borders, fills, and >=24px pulse icons (ADR-018) */
+  --alert-red-text: #fca5a5;  /* 10.61:1 AAA → MANDATORY for all critical text (ADR-018) */
+  --accent: #38bdf8;          /* cyan-400, 9.40:1 AAA */
+  --cyan-400: var(--accent);
+  --none: #94a3b8;            /* slate-400, 7.90:1 AAA neutral status */
+
+  --color-cyan-400: var(--accent);
+  --color-alert-green: var(--alert-green);
+  --color-alert-yellow: var(--alert-yellow);
+  --color-alert-red: var(--alert-red);
+  --color-alert-red-text: var(--alert-red-text);
 
   --nominal-fill: color-mix(in srgb, var(--alert-green) 18%, transparent);
   --caution-fill: color-mix(in srgb, var(--alert-yellow) 18%, transparent);
   --critical-fill: color-mix(in srgb, var(--alert-red) 14%, transparent);
 
-  /* Tipografía del sistema (nunca se descarga ninguna fuente) */
-  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, 'Inter', sans-serif;
+  /* System Typography (Zero-CDN, ADR-003) */
+  --font-ui: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
   --font-num: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
   --fs: 16px;
 
-  /* Ergonomía táctil (RNF-USA-01) */
+  /* Microgravity Touch Ergonomics (RNF-USA-01) */
   --touch: 48px;
+  --touch-min: 48px;
   --gap: 12px;
-  --radius: 8px;       /* tarjetas */
-  --radius-btn: 6px;   /* botones */
-  --unit: #94a3b8;     /* slate-400: unidades y rangos (7,9:1) */
+  --touch-gap: 12px;
+  --radius: 8px;       /* cards & panels */
+  --radius-btn: 6px;   /* buttons & controls */
+  --unit: #94a3b8;     /* slate-400: units & reference bands (7.90:1 AAA) */
 
   --pulse: astha-pulse 1.5s ease-in-out infinite;
   color-scheme: dark;
 }
 
-/* Modo Espectral Rojo nocturno (~630 nm, RNF-USA-03; docs/Diseno-UI-UX/02 §4): filtro `night-red-630`
-   (SVG feColorMatrix en index.html) que lleva la luminancia al canal rojo y atenúa verde y azul.
-   En monocromo rojo los estados se distinguen SOLO por patrón + símbolo, que son obligatorios. */
+/* Cabin Night Spectral Red Mode (~630 nm, RNF-USA-03): night-red-630 SVG filter
+   attenuates blue/green channels. Dual-coded patterns + symbols preserve readability. */
 :root[data-red] body { filter: url(#night-red-630); }
 
-/* Alto contraste (RF-REG-03) */
+/* High Contrast Accessibility Mode (RF-REG-03) */
 :root[data-contrast] {
   --text: #ffffff;
   --text-muted: #e5e7eb;
-  --border: #6b7280;
+  --unit: #e5e7eb;
+  --border: #94a3b8;
   --border-strong: #ffffff;
   --space-800: #000000;
   --space-900: #000000;
 }
 
-/* Texto grande (RF-REG-03) */
+/* Large Text Mode (RF-REG-03) */
 :root[data-large] { --fs: 20px; }
 
-/* Modo Supervivencia Energética (ADR-019, docs/Diseno-UI-UX/02 §4): fondo #000 puro, texto monocromo,
-   0 animaciones, sin Three.js ni uPlot (lectura tabular). El triage y las alarmas siguen intactos. */
+/* Power Survival Mode (< 5 W, ADR-019): pure #000 OLED canvas, monochrome text,
+   zero animations/transitions, and canvas renderers disabled while keeping clinical alarms active. */
 :root[data-survival] {
   --space-950: #000000;
   --space-900: #000000;
@@ -101,7 +121,6 @@ p { margin: 0; }
 button, input, select { font: inherit; color: inherit; }
 
 .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
-/* Escala tipográfica (docs/Diseno-UI-UX/02 §3) */
 .value { font: 700 2rem/1.1 var(--font-num); font-variant-numeric: tabular-nums; }
 .unit { font: 500 0.75rem/1.2 var(--font-num); color: var(--unit); }
 .label { font: 700 0.6875rem/1.2 var(--font-num); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
@@ -109,7 +128,7 @@ button, input, select { font: inherit; color: inherit; }
 .muted { color: var(--text-muted); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- controles táctiles: ≥ 48 × 48 px y 12 px de separación ---------- */
+/* ---------- Tactile Controls: >= 48 x 48 px and >= 12 px spacing (RNF-USA-01) ---------- */
 .btn {
   min-width: var(--touch);
   min-height: var(--touch);
@@ -125,14 +144,20 @@ button, input, select { font: inherit; color: inherit; }
   justify-content: center;
   gap: 8px;
   touch-action: manipulation;
-  transition: transform 100ms;
+  transition: transform 100ms, border-color 120ms;
 }
 .btn:active { transform: scale(0.98); }
-.btn:focus-visible, .focusable:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-.btn[aria-pressed='true'], .btn.primary { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, var(--space-800)); }
+.btn:focus-visible, .focusable:focus-visible, input[type='range']:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn[aria-pressed='true'], .btn.primary {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, var(--space-800));
+}
 .btn.danger { border-color: var(--alert-red); background: var(--critical-fill); color: var(--alert-red-text); }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn.icon { padding: 0; width: var(--touch); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn.icon { padding: 0; min-width: var(--touch); width: var(--touch); }
 
 .row { display: flex; flex-wrap: wrap; gap: var(--gap); align-items: center; }
 .stack { display: flex; flex-direction: column; gap: var(--gap); }
@@ -149,27 +174,38 @@ button, input, select { font: inherit; color: inherit; }
   border-radius: var(--radius);
 }
 
-/* ---------- estados: color + patrón + símbolo (RF-ANA-03, RNF-USA-04) ---------- */
-.st { --st: var(--none); --st-text: var(--text-muted); --st-fill: transparent; }
-.st.nominal { --st: var(--alert-green); --st-text: var(--alert-green); --st-fill: var(--nominal-fill); }
+/* ---------- Dual-Coded States: Color + Pattern + Symbol (RF-ANA-03, RNF-USA-04) ---------- */
+.st { --st: var(--none); --st-text: var(--text-muted); --st-fill: transparent; --st-bw: 1px; }
+.st.nominal { --st: var(--alert-green); --st-text: var(--alert-green); --st-fill: var(--nominal-fill); --st-bw: 1px; }
 .st.caution {
-  --st: var(--alert-yellow); --st-text: var(--alert-yellow);
+  --st: var(--alert-yellow); --st-text: var(--alert-yellow); --st-bw: 2px;
   --st-fill: repeating-linear-gradient(135deg, var(--caution-fill) 0 6px, transparent 6px 12px);
 }
 .st.critical {
-  --st: var(--alert-red); --st-text: var(--alert-red-text);
+  --st: var(--alert-red); --st-text: var(--alert-red-text); --st-bw: 3px;
   --st-fill:
     repeating-linear-gradient(0deg, var(--critical-fill) 0 2px, transparent 2px 8px),
     repeating-linear-gradient(90deg, var(--critical-fill) 0 2px, transparent 2px 8px);
 }
-.st { --st-bw: 1px; }
-.st.caution { --st-bw: 2px; }
-.st.critical { --st-bw: 3px; }
 .sym::before { font-weight: 800; }
 .st.nominal .sym::before, .sym.nominal::before { content: '✓'; }
 .st.caution .sym::before, .sym.caution::before { content: '▲'; }
 .st.critical .sym::before, .sym.critical::before { content: '✕'; }
 .st.none .sym::before, .sym.none::before { content: '–'; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: var(--radius-btn);
+  border: var(--st-bw) solid var(--st);
+  background-color: var(--space-800);
+  background-image: var(--st-fill);
+  color: var(--st-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
 
 .pulse { animation: var(--pulse); }
 @keyframes astha-pulse {

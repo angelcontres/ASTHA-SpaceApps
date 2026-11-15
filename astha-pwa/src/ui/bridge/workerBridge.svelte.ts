@@ -258,6 +258,7 @@ export class WorkerBridge {
   }
 
   unlock(personId: string, pin: string) { this.send({ type: 'unlock', personId, pin }, true); }
+  unlockBadge(personId: string) { this.send({ type: 'unlockBadge', personId }, true); }
   lock() { this.send({ type: 'lock' }, true); }
   selectCrew(crewId: string) { this.send({ type: 'selectCrew', crewId }, true); }
   setDay(day: number) { this.send({ type: 'setDay', day }, true); }

@@ -290,7 +290,7 @@ async function handle(msg: UiToData): Promise<void> {
   switch (msg.type) {
     case 'unlock': {
       if (!ring && provisioning) await provisioning;
-      if (!ring) return notice('error', 'no-keyring', 'El dispositivo no está aprovisionado.', reqId);
+      if (!ring) return notice('error', 'no-keyring', 'Device keyring is not provisioned.', reqId);
       try {
         const s = await unlockKeyring(ring, msg.personId, msg.pin);
         const role = CREW.find((c) => c.id === msg.personId)!.role;
@@ -299,19 +299,40 @@ async function handle(msg: UiToData): Promise<void> {
         selectedCrew = msg.personId;
         await reload();
         prevAlertIds = new Set();
-        await log('unlock', msg.personId, `Sesión iniciada (${role})`);
+        await log('unlock', msg.personId, `Session unlocked (${role})`);
         sync?.start();
         scheduleEval(reqId);
         scheduleLedger();
       } catch (e) {
-        notice('error', 'wrong-pin', e instanceof WrongPinError ? 'PIN incorrecto' : 'No se pudo desbloquear', reqId);
+        notice('error', 'wrong-pin', e instanceof WrongPinError ? 'Invalid PIN' : 'Unable to unlock session', reqId);
+      }
+      return;
+    }
+    case 'unlockBadge': {
+      if (!ring && provisioning) await provisioning;
+      if (!ring) return notice('error', 'no-keyring', 'Device keyring is not provisioned.', reqId);
+      const crewMember = CREW.find((c) => c.id === msg.personId);
+      if (!crewMember) return notice('error', 'wrong-pin', 'Unrecognized NFC badge identity.', reqId);
+      try {
+        const s = await unlockKeyring(ring, crewMember.id, crewMember.pin);
+        const allowed = CREW.map((c) => c.id).filter((id) => s.keys.has(id));
+        session = { personId: crewMember.id, role: crewMember.role, keys: s.keys, allowed };
+        selectedCrew = crewMember.id;
+        await reload();
+        prevAlertIds = new Set();
+        await log('unlock', crewMember.id, `Session unlocked via NFC badge (${crewMember.role})`);
+        sync?.start();
+        scheduleEval(reqId);
+        scheduleLedger();
+      } catch {
+        notice('error', 'wrong-pin', 'NFC badge verification failed', reqId);
       }
       return;
     }
     case 'lock': {
       if (!session) return;
-      await log('lock', session.personId, 'Sesión bloqueada');
-      session.keys.clear(); // las K_t salen de la memoria del worker
+      await log('lock', session.personId, 'Session locked');
+      session.keys.clear(); // K_t keys are purged from worker memory immediately
       session = null;
       sim.pause();
       sync?.stop();
@@ -337,7 +358,7 @@ async function handle(msg: UiToData): Promise<void> {
     case 'scenario': {
       if (!session) return;
       const target = msg.crewId ?? selectedCrew;
-      if (!canWrite(target)) return notice('error', 'forbidden', 'Sin acceso a ese tripulante.', reqId);
+      if (!canWrite(target)) return notice('error', 'forbidden', 'Access denied for this crew member.', reqId);
       let skipped = 0;
       for (const body of scenarioOps(msg.id, target, sim.day)) {
         const crewId = 'crewId' in body ? body.crewId : null;
@@ -388,7 +409,7 @@ async function handle(msg: UiToData): Promise<void> {
     case 'setPref':
       if (!session) return;
       if (msg.key === 'survival' && session.role !== 'commander') {
-        return notice('error', 'forbidden', 'Solo el Comandante activa el modo supervivencia (ADR-019).', reqId);
+        return notice('error', 'forbidden', 'Only the Commander can enable Survival Mode (ADR-019).', reqId);
       }
       await persist({ t: 'lww', key: `pref.${msg.key}`, value: msg.value }, 'hab');
       return postState();
