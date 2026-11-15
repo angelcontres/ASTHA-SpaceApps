@@ -210,7 +210,7 @@ export function buildView(ds: Dataset, ops: Op[], day: number): TelemetryView {
       }
       Object.assign(row, b.fields);
       if (b.source === 'manual') row.manual = true;
-    } else if (b.t === 'habitat' && b.day <= day && live(op)) {
+    } else if (b.t === 'habitat' && b.day <= day && (b.source !== 'sim' || live(op))) {
       const h = habitat.find((x) => x.day === b.day);
       if (h) Object.assign(h, b.fields);
     } else if (b.t === 'symptom' && b.day === day && (b.source !== 'sim' || live(op))) {
