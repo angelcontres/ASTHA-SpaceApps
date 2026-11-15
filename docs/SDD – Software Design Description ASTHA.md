@@ -1,67 +1,67 @@
-# 🛰️ SDD – Software Design Description (Diseño Detallado del Software)
+# 🛰️ SDD – Software Design Description
 ## ASTHA: Autonomous Space Telemetry & Health Analytics
 ### NASA Space Apps Challenge 2026 | Human Spaceflight Biomedical Engineering
 
 ---
 
-| **Metadato** | **Especificación Oficial de Ingeniería** |
+| **Metadata** | **Official Engineering Specification** |
 | :--- | :--- |
-| **Identificador del Documento** | `NASA-ASTHA-SDD-2026-REV-3.0` *(Histórico Consolidado — Ver `docs/SDD/` para Baseline Canónico)* |
-| **Estándar de Ingeniería** | **NASA-STD-8739.8** (Software Engineering Requirements) / **IEEE Std 1016-2009** |
-| **Estándares Médicos de Referencia** | **NASA-STD-3001** (Vol 1: Crew Health; Vol 2: Habitat Ergonomics & ECLSS) |
-| **Clasificación de Seguridad de Software** | **Class B – Non-Core Avionics / Mission Critical Crew Safety Supporting Software** |
-| **Arquitectura de Referencia** | *Hexagonal Event-Driven Web Workers (Svelte 5 + uPlot + Three.js Bajo Demanda) + IndexedDB WebCrypto + Sync Hub LAN* |
-| **Misión Operativa de Referencia** | Tránsito Interplanetario a Marte (*Deep Space Transport DST-1*) / LAN Aislada Zero-WAN |
-| **Estado de Verificación** | **Fase 2: Diseño Detallado Aprobado (Baseline v3.0.0 — Cero Desfase SRS/ADR)** |
+| **Document Identifier** | `NASA-ASTHA-SDD-2026-REV-3.0` *(Consolidated Archive — See `docs/SDD/` for Canonical Baseline)* |
+| **Engineering Standard** | **NASA-STD-8739.8** (Software Engineering Requirements) / **IEEE Std 1016-2009** |
+| **Reference Medical Standards** | **NASA-STD-3001** (Vol 1: Crew Health; Vol 2: Habitat Ergonomics & ECLSS) |
+| **Software Safety Classification** | **Class B – Non-Core Avionics / Mission Critical Crew Safety Supporting Software** |
+| **Reference Architecture** | *Hexagonal Event-Driven Web Workers (Svelte 5 + uPlot + On-Demand Three.js) + IndexedDB WebCrypto + Sync Hub LAN* |
+| **Reference Operational Mission** | Interplanetary Mars Transit (*Deep Space Transport DST-1*) / Isolated Zero-WAN LAN |
+| **Verification Status** | **Phase 2: Approved Detailed Design (Baseline v3.0.0 — Zero SRS/ADR Drift)** |
 
 ---
 
-> ⚠️ **AVISO DE AUTORIDAD DOCUMENTAL (`ADR-001`):**  
-> La **especificación canónica vigente (v3.0.0 — Cero Desfase con SRS y ADRs 001–020)** reside en el directorio modular [**docs/SDD/**](SDD/README.md). Este archivo monolítico se conserva únicamente como referencia histórica preliminar; ante cualquier discrepancia prevalece la colección modular:
-> * [**SDD-01:** Arquitectura Global (Workers, Presupuestos <5W/3% CPU, Z-Score MAD)](SDD/01-Arquitectura-Global-del-Sistema.md)
-> * [**SDD-02:** Diagrama de Clases UML (Entidades SRS §5.1, WebCrypto AES-GCM, CRDT)](SDD/02-Diagrama-de-Clases-UML.md)
-> * [**SDD-03:** Diagramas de Secuencia UML (Escalada ADR-013, 3D Bajo Demanda, JSON Firmado)](SDD/03-Diagramas-de-Secuencia-UML.md)
-> * [**SDD-04:** Diagrama de Componentes UML (Svelte 5, uPlot, 2 Workers, Sync Hub)](SDD/04-Diagrama-de-Componentes-UML.md)
-> * [**SDD-05:** Diagrama de Despliegue UML (LAN Aislada C4-L4, CA Interna, Cabina ADR-014)](SDD/05-Diagrama-de-Despliegue-UML.md)
-> * [**SDD-06:** Diseño de Datos y Contratos de Interfaz (Schemas SRS, CRDT, Tokens AAA)](SDD/06-Diseno-de-Datos-y-Contratos-de-Interfaz.md)
-> * [**SDD-07:** Matriz de Trazabilidad Completa SRS a SDD (42 RF + 19 RNF + 10 R-* + 3 D-*)](SDD/07-Matriz-de-Trazabilidad-SRS-a-SDD.md)
-> * [**SDD-08:** Registro de Decisiones de Arquitectura (ADR-001 a ADR-020)](SDD/08-Architecture-decisions.md)
+> ⚠️ **DOCUMENT AUTHORITY NOTICE (`ADR-001`):**  
+> The **current canonical specification (v3.0.0 — Zero Drift with SRS and ADRs 001–020)** resides in the modular directory [**docs/SDD/**](SDD/README.md). This monolithic file is preserved solely as a preliminary historical reference; in the event of any discrepancy, the modular collection prevails:
+> * [**SDD-01:** Global System Architecture (Workers, <5W/3% CPU Budgets, Z-Score MAD)](SDD/01-Arquitectura-Global-del-Sistema.md)
+> * [**SDD-02:** UML Class Diagram (SRS §5.1 Entities, WebCrypto AES-GCM, CRDT)](SDD/02-Diagrama-de-Clases-UML.md)
+> * [**SDD-03:** UML Sequence Diagrams (ADR-013 Escalation, On-Demand 3D, Signed JSON)](SDD/03-Diagramas-de-Secuencia-UML.md)
+> * [**SDD-04:** UML Component Diagram (Svelte 5, uPlot, 2 Workers, Sync Hub)](SDD/04-Diagrama-de-Componentes-UML.md)
+> * [**SDD-05:** UML Deployment Diagram (Isolated C4-L4 LAN, Internal CA, Cabin ADR-014)](SDD/05-Diagrama-de-Despliegue-UML.md)
+> * [**SDD-06:** Data Design and Interface Contracts (SRS Schemas, CRDT, AAA Tokens)](SDD/06-Diseno-de-Datos-y-Contratos-de-Interfaz.md)
+> * [**SDD-07:** Complete SRS-to-SDD Traceability Matrix (42 RF + 19 RNF + 10 R-* + 3 D-*)](SDD/07-Matriz-de-Trazabilidad-SRS-a-SDD.md)
+> * [**SDD-08:** Architecture Decision Record (ADR-001 to ADR-020)](SDD/08-Architecture-decisions.md)
 
 ---
 
-## 📑 Tabla de Contenidos
-1. [Introducción y Alcance del Sistema](#1-introducción-y-alcance-del-sistema)
-2. [Visión General de la Arquitectura de Software](#2-visión-general-de-la-arquitectura-de-software)
-3. [Diagrama de Clases UML (Class Diagram)](#3-diagrama-de-clases-uml-class-diagram)
-4. [Diagramas de Secuencia UML (Sequence Diagrams)](#4-diagramas-de-secuencia-uml-sequence-diagrams)
-   - *Escenario A: Ingesta en Tiempo Real, Detección de Deriva (Modified Z-Score) y Master Caution*
-   - *Escenario B: Triage Fisiológico Interactivo en 3D y Ejecución de Contramedidas*
-   - *Escenario C: Empaquetamiento y Sincronización Asíncrona Resiliente DTN*
-5. [Diagrama de Componentes UML (Component Diagram)](#5-diagrama-de-componentes-uml-component-diagram)
-6. [Diagrama de Despliegue UML (Deployment Diagram)](#6-diagrama-de-despliegue-uml-deployment-diagram)
-7. [Diseño de Datos y Contratos de Interfaz (Data & Interface Design)](#7-diseño-de-datos-y-contratos-de-interfaz)
-8. [Matriz de Trazabilidad de Requisitos a Diseño (RTM: SRS ➔ SDD)](#8-matriz-de-trazabilidad-de-requisitos-a-diseño-rtm-srs--sdd)
+## 📑 Table of Contents
+1. [Introduction and System Scope](#1-introduction-and-system-scope)
+2. [Software Architecture Overview](#2-software-architecture-overview)
+3. [UML Class Diagram](#3-uml-class-diagram)
+4. [UML Sequence Diagrams](#4-uml-sequence-diagrams)
+   - *Scenario A: Real-Time Ingestion, Drift Detection (Modified Z-Score), and Master Caution*
+   - *Scenario B: Interactive 3D Physiological Triage and Countermeasure Execution*
+   - *Scenario C: Resilient DTN Packaging and Asynchronous Synchronization*
+5. [UML Component Diagram](#5-uml-component-diagram)
+6. [UML Deployment Diagram](#6-uml-deployment-diagram)
+7. [Data Design and Interface Contracts](#7-data-design-and-interface-contracts)
+8. [Requirements-to-Design Traceability Matrix (RTM: SRS to SDD)](#8-requirements-to-design-traceability-matrix-rtm-srs-to-sdd)
 
 ---
 
-## 1. Introducción y Alcance del Sistema
+## 1. Introduction and System Scope
 
-### 1.1 Propósito
-Este documento de **Diseño Detallado de Software (SDD)** especifica la descomposición estructural, el diseño orientado a objetos, el flujo dinámico de eventos, los componentes y la topología de despliegue para el sistema **ASTHA (Autonomous Space Telemetry & Health Analytics)**, en estricto cumplimiento con la norma **NASA-STD-8739.8** y el estándar internacional **IEEE Std 1016-2009**.
+### 1.1 Purpose
+This **Software Design Description (SDD)** specifies the structural decomposition, object-oriented design, dynamic event flows, components, and deployment topology for the **ASTHA (Autonomous Space Telemetry & Health Analytics)** system, in strict compliance with **NASA-STD-8739.8** and international standard **IEEE Std 1016-2009**.
 
-### 1.2 Alcance del Sistema
-ASTHA es una plataforma médica de soporte a la decisión clínica (*Clinical Decision Support System - CDSS*) y telemetría autónoma de borde (*Edge Computing*), diseñada para salvaguardar la vida de la tripulación en misiones hacia el espacio profundo donde la asistencia médica terrestre en tiempo real es imposible debido a la latencia relativista de comunicación (hasta **22 minutos por sentido** / 44 minutos de retardo de ida y vuelta hacia Marte).
+### 1.2 System Scope
+ASTHA is an autonomous edge-computing medical **Clinical Decision Support System (CDSS)** and telemetry analytics platform engineered to safeguard crew lives during deep-space exploration missions where real-time Earth-based medical assistance is physically impossible due to relativistic communication latency (up to **22 minutes one-way** / 44 minutes round-trip delay to Mars).
 
-El sistema opera bajo los siguientes mandatos operativos:
-1. **Autonomía Operativa Nivel 4 (NASA ExMC):** Capacidad diagnóstica y terapéutica guiada sin intervención de control de misión en Tierra.
-2. **Determinismo Fisiológico:** Detección predictiva de anomalías antes de eventos catastróficos mediante el algoritmo de desviación robusta **Modified Z-Score (MAD)**.
-3. **Resiliencia de Conectividad Cero:** Persistencia local y transmisión asíncrona mediante el protocolo de paquetes tolerantes a demoras e interrupciones (**DTN Bundle Protocol RFC 9171**).
+The system operates under the following operational mandates:
+1. **Level 4 Operational Autonomy (NASA ExMC):** Guided diagnostic and therapeutic capability without Mission Control intervention from Earth.
+2. **Physiological Determinism:** Predictive anomaly detection prior to catastrophic events using the robust **Modified Z-Score (MAD)** deviation algorithm.
+3. **Zero-Connectivity Resilience:** Local persistence and asynchronous transmission via Delay/Disruption Tolerant Networking (**DTN Bundle Protocol RFC 9171**).
 
 ---
 
-## 2. Visión General de la Arquitectura de Software
+## 2. Software Architecture Overview
 
-La arquitectura de ASTHA implementa el patrón **Hexagonal (Ports & Adapters)** combinado con un **Modelo Reactivo Orientado a Eventos en el Borde (Event-Driven Edge Processing)**.
+The ASTHA architecture implements the **Hexagonal (Ports & Adapters)** pattern combined with an **Event-Driven Edge Processing Reactive Model**.
 
 ```
 +------------------------------------------------------------------------------------+
@@ -82,16 +82,16 @@ La arquitectura de ASTHA implementa el patrón **Hexagonal (Ports & Adapters)** 
 +------------------------------------------------------------------------------------+
 ```
 
-### 2.1 Principios Arquitectónicos Clave
-* **Borde Primero (Edge First):** El 100% de la lógica de evaluación diagnóstica corre localmente en el runtime de la nave. Cero dependencias de servidores en la nube o servicios externos.
-* **Separación de Responsabilidades:** El motor de renderizado 3D (Three.js WebGL) está desacoplado del motor de cálculo fisiológico. El estado fluye en un solo sentido (*Unidirectional Data Flow*).
-* **Tolerancia a Fallos Dual-Fault Tolerant:** Si un sensor falla o emite ruido telemétrico, el filtro de mediana absoluta (MAD) aísla el valor atípico sin disparar falsas alarmas que saturen cognitivamente al astronauta.
+### 2.1 Key Architectural Principles
+* **Edge First:** 100% of diagnostic evaluation logic executes locally within the spacecraft runtime. Zero dependencies on cloud servers or external services.
+* **Separation of Concerns:** The 3D rendering engine (Three.js WebGL) is decoupled from the physiological computation engine. State flows unidirectionally (*Unidirectional Data Flow*).
+* **Dual-Fault Tolerant Reliability:** If a sensor degrades or emits telemetry noise, the Median Absolute Deviation (MAD) filter isolates the outlier without triggering false alarms that cognitively overload the astronaut.
 
 ---
 
-## 3. Diagrama de Clases UML (Class Diagram)
+## 3. UML Class Diagram
 
-El diagrama de clases modela las entidades del dominio fisiológico y ambiental, los evaluadores clínicos del CDSS, la capa de persistencia DTN y los controladores de visualización biomédica.
+The class diagram models the physiological and environmental domain entities, the CDSS clinical evaluators, the DTN persistence layer, and the biomedical visualization controllers.
 
 ```mermaid
 classDiagram
@@ -195,23 +195,23 @@ classDiagram
     DtnBundleProtocolEngine ..> AstronautProfile : packages
 ```
 
-### 3.1 Detalle de Responsabilidades de Clases Principales
-* **`AstronautProfile`**: Representa el expediente médico longitudinal del tripulante. Gestiona el mapeo entre biometría en tiempo real y el fondo genómico de referencia (**NASA OSDR OSD-574**).
-* **`VitalSignReading`**: Objeto inmutable que almacena la lectura instantánea de signos vitales capturados por los biosensores de la camiseta inteligente Astroskin (Bio-Monitor).
-* **`CdssRuleEngine`**: Orquestador central del soporte a la decisión clínica. Cruza la telemetría vital humana con los parámetros ambientales del hábitat (**NASA-STD-3001 Vol 2**).
-* **`ModifiedZScoreDetector`**: Implementación determinista del algoritmo de detección de anomalías basado en la **Desviación Absoluta de la Mediana ($MAD$)**:
-  $$M_i = rac{0.6745 \cdot (x_i - 	ilde{x})}{MAD}$$
-  Evita falsos positivos por picos aislados de ruido telemétrico.
-* **`DigitalTwin3DController`**: Abstracción del subsistema de renderizado WebGL (Three.js) que proyecta el gemelo digital biomecánico y administra el raycasting interactivo sobre órganos internos.
-* **`DtnBundleProtocolEngine`**: Implementación de la norma **RFC 9171 / CCSDS 734.2-B-1** para empaquetado asíncrono *Store-and-Forward*, garantizando entrega a Tierra una vez reestablecido el enlace DSN.
+### 3.1 Core Class Responsibilities
+* **`AstronautProfile`**: Represents the crew member's longitudinal medical record. Manages mapping between real-time biometrics and reference genomic background (**NASA OSDR OSD-574**).
+* **`VitalSignReading`**: Immutable object storing instantaneous vital-sign readings captured by the Astroskin (Bio-Monitor) smart garment biosensors.
+* **`CdssRuleEngine`**: Central clinical decision support orchestrator. Cross-correlates human vital telemetry against habitat environmental parameters (**NASA-STD-3001 Vol 2**).
+* **`ModifiedZScoreDetector`**: Deterministic implementation of the anomaly detection algorithm based on the **Median Absolute Deviation ($MAD$)**:
+  $$M_i = \frac{0.6745 \cdot (x_i - \tilde{x})}{MAD}$$
+  Prevents false positives caused by isolated telemetry noise spikes.
+* **`DigitalTwin3DController`**: Abstraction of the WebGL rendering subsystem (Three.js) that renders the biomechanical digital twin and manages interactive raycasting over internal organs.
+* **`DtnBundleProtocolEngine`**: Implementation of **RFC 9171 / CCSDS 734.2-B-1** for asynchronous *Store-and-Forward* bundling, ensuring guaranteed delivery to Earth once a DSN link is re-established.
 
 ---
 
-## 4. Diagramas de Secuencia UML (Sequence Diagrams)
+## 4. UML Sequence Diagrams
 
-### 4.1 Escenario A: Ingesta en Tiempo Real, Detección de Deriva (Modified Z-Score) y Master Caution
+### 4.1 Scenario A: Real-Time Ingestion, Drift Detection (Modified Z-Score), and Master Caution
 
-Este diagrama ilustra el flujo crítico cuando un astronauta sufre una deriva fisiológica (por ejemplo, hipertensión intracraneal y pérdida de variabilidad cardíaca por tormenta solar o acumulación de $	ext{CO}_2$ en microgravedad).
+This diagram illustrates the critical workflow when an astronaut experiences physiological drift (for example, intracranial hypertension and loss of heart rate variability triggered by a solar storm or $\text{CO}_2$ buildup in microgravity).
 
 ```mermaid
 sequenceDiagram
@@ -244,9 +244,9 @@ sequenceDiagram
 
 ---
 
-### 4.2 Escenario B: Triage Fisiológico Interactivo en 3D y Ejecución de Contramedidas
+### 4.2 Scenario B: Interactive 3D Physiological Triage and Countermeasure Execution
 
-Describe la interacción directa cuando el oficial médico de la tripulación o el astronauta inspecciona un órgano comprometido mediante raycasting en el modelo 3D y aplica un protocolo médico guiado.
+Models direct interaction when the Crew Medical Officer or astronaut inspects a compromised organ via raycasting on the 3D model and executes a guided medical protocol.
 
 ```mermaid
 sequenceDiagram
@@ -265,9 +265,9 @@ sequenceDiagram
     Canvas->>Drawer: triggerOrganInspection('eyes')
     Drawer->>Drawer: Load Pathophysiology, Pain Score (7/10), SANS Protocol
     Drawer-->>Astronaut: Display Clinical Drawer with Action Checklist
-    Astronaut->>Drawer: Confirm Directive: "Infusión IV Salina Hipertónica 3% + LBNP"
+    Astronaut->>Drawer: Confirm Directive: "3% Hypertonic Saline IV Infusion + LBNP"
     Drawer->>Protocol: applyDrawerTreatment()
-    Protocol->>Protocol: Update Pain Score (7/10 -> 1/10 Aliviado)
+    Protocol->>Protocol: Update Pain Score (7/10 -> 1/10 Relieved)
     Protocol->>DTN: Log Treatment Execution into Mission Medical Logbook
     Note over DTN: Package into RFC 9171 DTN Bundle (Bundle Protocol v7)
     DTN-->>FlightSurgeon: Asynchronous Telemetry Delivery via Deep Space Network (22-min delay)
@@ -275,9 +275,9 @@ sequenceDiagram
 
 ---
 
-### 4.3 Escenario C: Empaquetamiento y Sincronización Asíncrona Resiliente DTN
+### 4.3 Scenario C: Resilient DTN Packaging and Asynchronous Synchronization
 
-Modela el protocolo *Store-and-Forward* para la bitácora médica de vuelo bajo interrupciones o blackouts de telecomunicaciones orbitales.
+Models the *Store-and-Forward* protocol for the flight medical logbook during orbital communications blackouts or planetary occultations.
 
 ```mermaid
 sequenceDiagram
@@ -313,13 +313,13 @@ sequenceDiagram
 
 ---
 
-## 5. Diagrama de Componentes UML (Component Diagram)
+## 5. UML Component Diagram
 
-Muestra la descomposición modular de alto nivel de ASTHA, destacando los puertos y adaptadores de ingesta, el núcleo de soporte de decisiones, la persistencia local y la interfaz de cabina.
+Illustrates ASTHA's high-level modular decomposition, highlighting ingestion ports and adapters, the decision-support core, local persistence, and the cockpit interface.
 
 ```mermaid
 flowchart TB
-    subgraph UI_Layer ["Capa de Presentación y Experiencia de Vuelo (Avionics Cockpit)"]
+    subgraph UI_Layer ["Presentation and Flight Experience Layer (Avionics Cockpit)"]
         HUD["Tactical HUD Controller"]
         ThreeJS["Digital Twin 3D Viewport (Three.js WebGL)"]
         ChartTelemetry["Aerospace Telemetry Charts (Chart.js)"]
@@ -327,20 +327,20 @@ flowchart TB
         AudioFX["Web Audio Synthesizer (Cockpit Sounds & Klaxon)"]
     end
 
-    subgraph CDSS_Layer ["Capa de Soporte de Decisiones Clínicas (CDSS Core)"]
+    subgraph CDSS_Layer ["Clinical Decision Support Layer (CDSS Core)"]
         IngestionService["Telemetry Ingestion & Validation Service"]
         MAD_Engine["Modified Z-Score & Outlier Engine (MAD)"]
         ClinicalRules["Aerospace Clinical Rule Engine (NASA-STD-3001)"]
         CountermeasureCtrl["Countermeasure & Protocol Execution Controller"]
     end
 
-    subgraph Storage_DTN ["Capa de Resiliencia Edge & Red Tolerante a Retardos (DTN)"]
+    subgraph Storage_DTN ["Edge Resilience and Delay-Tolerant Networking Layer (DTN)"]
         LocalStore["Local Edge Storage (IndexedDB / LocalStorage)"]
         DtnPackager["DTN Space-Link Packager (RFC 9171 / CCSDS)"]
         SyncManager["Store-and-Forward Synchronization Manager"]
     end
 
-    subgraph External_Sensors ["Fuentes Telemétricas & Sensores de Cabina"]
+    subgraph External_Sensors ["Telemetry Sources & Cabin Sensors"]
         AstroskinBLE["Astroskin Smart-Shirt (BLE / Mesh WiFi)"]
         ECLSS_Bus["ECLSS Cabin Sensors (MIL-STD-1553 / RS-485)"]
         OSDR_API["NASA Open Science Data Repository (OSDR REST API)"]
@@ -367,34 +367,34 @@ flowchart TB
 
 ---
 
-## 6. Diagrama de Despliegue UML (Deployment Diagram)
+## 6. UML Deployment Diagram
 
-Representa la topología de ejecución distribuida entre los sensores corporales del astronauta, la red de a bordo de la nave espacial (*Deep Space Transport DST-1*), el enlace de espacio profundo y el centro de control en la Tierra.
+Represents the distributed execution topology spanning astronaut body-worn sensors, the spacecraft onboard network (*Deep Space Transport DST-1*), the deep-space link, and the Earth control center.
 
 ```mermaid
 flowchart TB
-    subgraph Crew_Wearable ["Nodo Vestible Tripulación (Crew Wearable Node)"]
-        Astroskin["Astroskin / Bio-Monitor Smart Shirt<br>• ECG 3-Derivaciones (250 Hz)<br>• Pletismografía Inductiva Torácica (25 Hz)<br>• Acelerómetro Triaxial & Temp Cutánea"]
-        SmartWrist["Wrist Telemetry Display<br>• Alertas Hápticas & BLE 5.0 Link"]
+    subgraph Crew_Wearable ["Crew Wearable Node"]
+        Astroskin["Astroskin / Bio-Monitor Smart Shirt<br>• 3-Lead ECG (250 Hz)<br>• Thoracic Inductive Plethysmography (25 Hz)<br>• Triaxial Accelerometer & Skin Temp"]
+        SmartWrist["Wrist Telemetry Display<br>• Haptic Alerts & BLE 5.0 Link"]
         Astroskin -->|Bluetooth Low Energy| SmartWrist
     end
 
-    subgraph Habitat_ECLSS ["Nodo de Sensores de Hábitat (Cabin ECLSS Bus)"]
-        AtmSensors["Sensores Atmosféricos de Cabina<br>• Presión Total (CDRA/OGS)<br>• PCO2 & PO2 Estequiométrica<br>• Dosímetro de Radiación de Neutrones (CANS)"]
+    subgraph Habitat_ECLSS ["Habitat Sensor Node (Cabin ECLSS Bus)"]
+        AtmSensors["Cabin Atmospheric Sensors<br>• Total Pressure (CDRA/OGS)<br>• Stoichiometric PCO2 & PO2<br>• Neutron Radiation Dosimeter (CANS)"]
     end
 
-    subgraph Deep_Space_Transport ["Vehículo Espacial de Espacio Profundo (DST-1 Mars Transit Node)"]
-        subgraph Edge_Medical_Server ["Servidor Médico de Bordo Redundante (Dual-Fault Tolerant)"]
+    subgraph Deep_Space_Transport ["Deep Space Transport Spacecraft (DST-1 Mars Transit Node)"]
+        subgraph Edge_Medical_Server ["Redundant Onboard Medical Server (Dual-Fault Tolerant)"]
             ASTHA_Core["ASTHA Core Telemetry & CDSS Engine<br>• NodeJS / Edge Runtime<br>• SQLite / IndexedDB Local Storage<br>• Offline NASA OSDR Enriched Database"]
             DTN_Daemon["DTN Bundle Protocol v7 Agent<br>• RFC 9171 Store-and-Forward Buffer"]
         end
 
-        subgraph Crew_Terminal ["Terminal Médico de Cabina (Crew Workstation)"]
+        subgraph Crew_Terminal ["Cabin Medical Terminal (Crew Workstation)"]
             Browser["Avionics Web Cockpit (PWA / WebGL)<br>• Three.js 3D Digital Twin Mannequin<br>• Chart.js Flight Telemetry Dashboard<br>• Master Caution & Warning System"]
         end
     end
 
-    subgraph Ground_Segment ["Segmento Terrestre (NASA Johnson Space Center / Houston)"]
+    subgraph Ground_Segment ["Ground Segment (NASA Johnson Space Center / Houston)"]
         DSN["Deep Space Network (DSN 70m Antennas Goldstone/Madrid/Canberra)"]
         FlightSurgeonConsole["Flight Surgeon Telemetry Console (BMed / Houston)<br>• Asynchronous DTN Bundle Reassembly<br>• Longitudinal Mission Telemetry Archive"]
     end
@@ -404,15 +404,15 @@ flowchart TB
     ASTHA_Core <-->|WebSocket / Local IPC| Browser
     ASTHA_Core --> DTN_Daemon
 
-    DTN_Daemon <==|Enlace Óptico / Ka-Band (22 min de latencia one-way)|==> DSN
+    DTN_Daemon <==|Optical / Ka-Band Link (22-min one-way latency)|==> DSN
     DSN --> FlightSurgeonConsole
 ```
 
 ---
 
-## 7. Diseño de Datos y Contratos de Interfaz
+## 7. Data Design and Interface Contracts
 
-### 7.1 Esquema de Telemetría Biomédica Unificada (JSON Schema)
+### 7.1 Unified Biomedical Telemetry Schema (JSON Schema)
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -459,13 +459,13 @@ flowchart TB
 }
 ```
 
-### 7.2 Estructura del Paquete DTN (RFC 9171 / CCSDS Bundle)
+### 7.2 DTN Bundle Packet Structure (RFC 9171 / CCSDS Bundle)
 ```
 +-------------------------------------------------------------------------+
 |                  PRIMARY BUNDLE HEADER (RFC 9171)                       |
 | Bundle Processing Flags | Destination EID: dtn://jsc.nasa.gov/bmed      |
 | Source EID: dtn://dst1.mars/astha | Creation Timestamp: MET 048:14:28:10 |
-| Lifetime: 604,800 s (7 días)      | Payload Length: 4,096 bytes         |
+| Lifetime: 604,800 s (7 days)      | Payload Length: 4,096 bytes         |
 +-------------------------------------------------------------------------+
 |                    BUNDLE PAYLOAD BLOCK (CBOR Encoded)                  |
 |  - Encrypted Medical Telemetry Vector (AES-256-GCM)                    |
@@ -477,26 +477,26 @@ flowchart TB
 
 ---
 
-## 8. Matriz de Trazabilidad de Requisitos a Diseño (RTM: SRS ➔ SDD)
+## 8. Requirements-to-Design Traceability Matrix (RTM: SRS to SDD)
 
-Esta matriz vincula formalmente los Requisitos Funcionales y No Funcionales especificados en el documento **SRS (Fase 1)** contra los componentes y clases arquitectónicas diseñadas en este **SDD (Fase 2)**.
+This matrix formally traces the Functional and Non-Functional Requirements specified in the **SRS (Phase 1)** to the architectural components and classes designed in this **SDD (Phase 2)**.
 
-| ID Requisito SRS | Descripción del Requisito Funcional | Clase / Módulo de Diseño SDD | Mecanismo de Verificación en Diseño |
+| SRS Requirement ID | Functional Requirement Description | SDD Design Class / Module | Design Verification Mechanism |
 | :--- | :--- | :--- | :--- |
-| **RF-01** | Ingesta telemétrica de signos vitales (HR, BP, SpO2, HRV, Temp) | `TelemetryIngestionService`, `VitalSignReading` | Diagrama de Clases & Secuencia Escenario A |
-| **RF-02** | Detección de deriva fisiológica y filtrado de anomalías sin falsas alarmas | `ModifiedZScoreDetector` | Algoritmo MAD (Capa CDSS) |
-| **RF-03** | Gemelo Digital 3D interactivo con capas anatómicas y raycasting | `DigitalTwin3DController`, `RaycastPicker` | Diagrama de Componentes (Three.js WebGL) |
-| **RF-04** | Alarma centralizada Master Caution & Warning visual y sonora | `MasterCautionSystem`, `CockpitAudioEngine` | Diagrama de Secuencia Escenario A |
-| **RF-05** | Prescripción y checklist de contramedidas paso a paso | `ClinicalDirective`, `CountermeasureEngine` | Diagrama de Secuencia Escenario B |
-| **RF-06** | Correlación ambiental de soporte vital (ECLSS NASA-STD-3001) | `EclssEnvironmentReading`, `CdssRuleEngine` | Diagrama de Componentes & Clases |
-| **RF-07** | Integración genómica con NASA OSDR (OSD-574 Inspiration4) | `GenomicBiomarkerProfile`, `OSDR_API` Gateway | Diagrama de Clases & Datos |
-| **RF-08** | Almacenamiento local persistente y transmisión asíncrona DTN | `DtnBundleProtocolEngine`, `LocalStore` | Diagrama de Secuencia Escenario C & Despliegue |
-| **RNF-01** | Autonomía 100% Edge en la nave (Cero dependencia de servidores en la nube) | `Edge_Medical_Server` (DST-1 Node) | Diagrama de Despliegue |
-| **RNF-02** | Latencia de renderizado 3D $\le 16.6	ext{ ms}$ (60 FPS estables) | `DigitalTwin3DController` (Three.js procedural) | Capa de Presentación |
-| **RNF-03** | Resiliencia temporal ante retardo de comunicación de hasta 22 minutos | `DTN_Daemon` (RFC 9171 Store-and-Forward) | Diagrama de Despliegue & Secuencia C |
+| **RF-01** | Vital signs telemetry ingestion (HR, BP, SpO2, HRV, Temp) | `TelemetryIngestionService`, `VitalSignReading` | Class Diagram & Sequence Scenario A |
+| **RF-02** | Physiological drift detection and anomaly filtering without false alarms | `ModifiedZScoreDetector` | MAD Algorithm (CDSS Layer) |
+| **RF-03** | Interactive 3D Digital Twin with anatomical layers and raycasting | `DigitalTwin3DController`, `RaycastPicker` | Component Diagram (Three.js WebGL) |
+| **RF-04** | Centralized visual and audible Master Caution & Warning alarm | `MasterCautionSystem`, `CockpitAudioEngine` | Sequence Scenario A |
+| **RF-05** | Step-by-step countermeasure prescription and checklist | `ClinicalDirective`, `CountermeasureEngine` | Sequence Scenario B |
+| **RF-06** | Life-support environmental correlation (ECLSS NASA-STD-3001) | `EclssEnvironmentReading`, `CdssRuleEngine` | Component & Class Diagrams |
+| **RF-07** | Genomic integration with NASA OSDR (OSD-574 Inspiration4) | `GenomicBiomarkerProfile`, `OSDR_API` Gateway | Class & Data Design |
+| **RF-08** | Local persistent storage and asynchronous DTN transmission | `DtnBundleProtocolEngine`, `LocalStore` | Sequence Scenario C & Deployment |
+| **RNF-01** | 100% onboard Edge autonomy (Zero dependency on cloud servers) | `Edge_Medical_Server` (DST-1 Node) | Deployment Diagram |
+| **RNF-02** | 3D rendering latency $\le 16.6\text{ ms}$ (steady 60 FPS) | `DigitalTwin3DController` (procedural Three.js) | Presentation Layer |
+| **RNF-03** | Temporal resilience to communication delays up to 22 minutes | `DTN_Daemon` (RFC 9171 Store-and-Forward) | Deployment Diagram & Sequence C |
 
 ---
 
-### Conclusión y Firma de Diseño
-El presente **Diseño Detallado de Software (SDD)** valida formalmente la transición de la **Fase 1 (Requerimientos / SRS)** a la **Fase 2 (Diseño Arquitectónico / SDD)** del sistema **ASTHA**. 
-Proporciona la base técnica integral requerida por la **NASA Space Apps Challenge** para auditoría de código, verificación de confiabilidad de software crítico de soporte de vida y evaluación por jueces aeroespaciales.
+### Conclusion and Design Sign-Off
+This **Software Design Description (SDD)** formally validates the transition from **Phase 1 (Requirements / SRS)** to **Phase 2 (Architectural Design / SDD)** of the **ASTHA** system.  
+It provides the comprehensive technical foundation required by the **NASA Space Apps Challenge** for code auditing, safety-critical life-support software verification, and evaluation by aerospace engineering panels.

@@ -1,12 +1,12 @@
-# 🗺️ Modelo de Datos: Diagrama Entidad-Relación (ERD)
+# 🗺️ Data Model: Entity-Relationship Diagram (ERD)
 ### ASTHA — Autonomous Space Telemetry & Health Analytics | NASA Space Apps Challenge 2026
-**Autoridad:** SRS §5.1 · **ADRs:** [ADR-006](../SDD/08-Architecture-decisions.md#adr-006), [ADR-008](../SDD/08-Architecture-decisions.md#adr-008), [ADR-009](../SDD/08-Architecture-decisions.md#adr-009), [ADR-012](../SDD/08-Architecture-decisions.md#adr-012), [ADR-014](../SDD/08-Architecture-decisions.md#adr-014), [ADR-016](../SDD/08-Architecture-decisions.md#adr-016), [ADR-017](../SDD/08-Architecture-decisions.md#adr-017)
+**Authority:** SRS §5.1 · **ADRs:** [ADR-006](../SDD/08-Architecture-decisions.md#adr-006), [ADR-008](../SDD/08-Architecture-decisions.md#adr-008), [ADR-009](../SDD/08-Architecture-decisions.md#adr-009), [ADR-012](../SDD/08-Architecture-decisions.md#adr-012), [ADR-014](../SDD/08-Architecture-decisions.md#adr-014), [ADR-016](../SDD/08-Architecture-decisions.md#adr-016), [ADR-017](../SDD/08-Architecture-decisions.md#adr-017)
 
 ---
 
-## 1. Diagrama Entidad-Relación Lógico (Dominio Clínico, Seguridad y Sync)
+## 1. Logical Entity-Relationship Diagram (Clinical, Security, and Sync Domains)
 
-Modela las entidades lógicas del expediente biomédico, los catálogos normativos **NASA-STD-3001**, el motor de contramedidas de $\le 4$ pasos (`ADR-017`), la bitácora inmutable (`RNF-SEC-04`) y el envoltorio criptográfico/CRDT (`ADR-006`, `ADR-009`).
+Models the logical entities of the biomedical record, the **NASA-STD-3001** regulatory catalogs, the $\le 4$-step countermeasure engine (`ADR-017`), the immutable audit ledger (`RNF-SEC-04`), and the cryptographic/CRDT envelope (`ADR-006`, `ADR-009`).
 
 ```mermaid
 erDiagram
@@ -141,33 +141,33 @@ erDiagram
         string ct_habitat_key
     }
 
-    CREW_MEMBER ||--|| KEY_VAULT : "protegido_por (ADR-012)"
-    CREW_MEMBER ||--o{ DAILY_MEASUREMENT : "registra_diario (ADR-016)"
-    CREW_MEMBER ||--o{ SUBJECTIVE_SYMPTOM : "reporta (RF-ING-04)"
-    CREW_MEMBER ||--o{ CLINICAL_ALERT : "genera_alerta"
-    CREW_MEMBER ||--o{ PROTOCOL_EXECUTION : "ejecuta"
-    CREW_MEMBER ||--|| CABIN_GLOBAL_STATUS : "publica_semaforo (ADR-014)"
+    CREW_MEMBER ||--|| KEY_VAULT : "protected_by (ADR-012)"
+    CREW_MEMBER ||--o{ DAILY_MEASUREMENT : "logs_daily (ADR-016)"
+    CREW_MEMBER ||--o{ SUBJECTIVE_SYMPTOM : "reports (RF-ING-04)"
+    CREW_MEMBER ||--o{ CLINICAL_ALERT : "generates_alert"
+    CREW_MEMBER ||--o{ PROTOCOL_EXECUTION : "executes"
+    CREW_MEMBER ||--|| CABIN_GLOBAL_STATUS : "publishes_traffic_light (ADR-014)"
 
-    DAILY_MEASUREMENT ||--o{ CLINICAL_ALERT : "evaluado_en"
-    HABITAT_TELEMETRY ||--o{ CLINICAL_ALERT : "correlaciona (RF-EVA-04)"
+    DAILY_MEASUREMENT ||--o{ CLINICAL_ALERT : "evaluated_in"
+    HABITAT_TELEMETRY ||--o{ CLINICAL_ALERT : "correlates (RF-EVA-04)"
 
-    COUNTERMEASURE_PROTOCOL ||--o| COUNTERMEASURE_PROTOCOL : "encadena_si_excede_4 (ADR-017)"
-    COUNTERMEASURE_PROTOCOL ||--o{ PROTOCOL_EXECUTION : "instanciado_en"
-    CLINICAL_ALERT ||--o| PROTOCOL_EXECUTION : "resuelto_mediante"
+    COUNTERMEASURE_PROTOCOL ||--o| COUNTERMEASURE_PROTOCOL : "chains_if_exceeds_4 (ADR-017)"
+    COUNTERMEASURE_PROTOCOL ||--o{ PROTOCOL_EXECUTION : "instantiated_in"
+    CLINICAL_ALERT ||--o| PROTOCOL_EXECUTION : "resolved_via"
 
-    CREW_MEMBER ||--o{ AUDIT_LEDGER_ENTRY : "registra_inmutable (RNF-SEC-04)"
-    CREW_MEMBER ||--o{ ENCRYPTED_ENVELOPE : "aisla_en_IndexedDB (ADR-006)"
+    CREW_MEMBER ||--o{ AUDIT_LEDGER_ENTRY : "records_immutable (RNF-SEC-04)"
+    CREW_MEMBER ||--o{ ENCRYPTED_ENVELOPE : "isolates_in_IndexedDB (ADR-006)"
 ```
 
 ---
 
-## 2. Mapeo Físico: IndexedDB (Navegador) y Op-Log (Sync Hub)
+## 2. Physical Mapping: IndexedDB (Browser) & Op-Log (Sync Hub)
 
-Conforme a **[ADR-006](../SDD/08-Architecture-decisions.md#adr-006)**, **[ADR-008](../SDD/08-Architecture-decisions.md#adr-008)** y **[SRS §5.2](../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md)**, las entidades lógicas no se almacenan en tablas SQL en claro, sino encapsuladas en *Object Stores* de IndexedDB cifrados con `window.crypto.subtle` y replicadas en el Sync Hub:
+In accordance with **[ADR-006](../SDD/08-Architecture-decisions.md#adr-006)**, **[ADR-008](../SDD/08-Architecture-decisions.md#adr-008)**, and **[SRS §5.2](../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md)**, logical entities are not stored in plaintext SQL tables, but rather encapsulated in IndexedDB *Object Stores* encrypted via `window.crypto.subtle` and replicated on the Sync Hub:
 
 ```mermaid
 flowchart LR
-    subgraph Logical ["Entidades Lógicas Clínicas"]
+    subgraph Logical ["Logical Clinical Entities"]
         L1["DAILY_MEASUREMENT"]
         L2["SUBJECTIVE_SYMPTOM"]
         L3["CLINICAL_ALERT"]
@@ -176,31 +176,31 @@ flowchart LR
         L6["HABITAT_TELEMETRY / CABIN_GLOBAL_STATUS"]
     end
 
-    subgraph IDB ["IndexedDB Local (ASTHA_EDGE_DB v1)"]
+    subgraph IDB ["Local IndexedDB (ASTHA_EDGE_DB v1)"]
         direction TB
-        S1[("ObjectStore: envelopes_gset<br>Índices: by_hlc, by_crew, by_type<br>Valor: {id, hlc, autor, iv, ct, sha256, firma}")]
-        S2[("ObjectStore: lww_preferences<br>Índice: by_hlc<br>Valor: LWW-Map (Alto contraste, idioma, acks)")]
-        S3[("ObjectStore: pn_counters<br>Índice: by_crew_node<br>Valor: PN-Counter XP y racha")]
-        S4[("ObjectStore: audit_chain<br>Índice: by_seq (Auto-Increment)<br>Valor: Cadena SHA-256 + Ed25519")]
-        S5[("ObjectStore: key_vault<br>Valor: Claves simétricas envueltas por PIN")]
+        S1[("ObjectStore: envelopes_gset<br>Indexes: by_hlc, by_crew, by_type<br>Value: {id, hlc, autor, iv, ct, sha256, firma}")]
+        S2[("ObjectStore: lww_preferences<br>Index: by_hlc<br>Value: LWW-Map (High contrast, language, acks)")]
+        S3[("ObjectStore: pn_counters<br>Index: by_crew_node<br>Value: PN-Counter XP & streak")]
+        S4[("ObjectStore: audit_chain<br>Index: by_seq (Auto-Increment)<br>Value: SHA-256 + Ed25519 Chain")]
+        S5[("ObjectStore: key_vault<br>Value: PIN-wrapped symmetric keys")]
     end
 
-    subgraph Hub ["Sync Hub Opcional en Rust (ADR-008)"]
-        H1[("Archivo Append-Only: hub_oplog.jsonl<br>Almacena únicamente EncryptedEnvelopes cifrados<br>(Zero-Knowledge sobre datos clínicos)")]
+    subgraph Hub ["Optional Rust Sync Hub (ADR-008)"]
+        H1[("Append-Only File: hub_oplog.jsonl<br>Stores solely encrypted EncryptedEnvelopes<br>(Zero-Knowledge over clinical data)")]
     end
 
-    L1 & L2 & L3 & L4 -->|"AES-GCM 256 (Clave Tripulante ADR-012)"| S1
-    L5 -->|"Encadenamiento SHA-256 + Ed25519"| S4
-    L6 -->|"AES-GCM 256 (Clave de Hábitat ADR-014)"| S1
-    S1 & S2 & S3 <==>|"Deltas CRDT vía WSS TLS 1.3 (ADR-009)"| H1
+    L1 & L2 & L3 & L4 -->|"AES-GCM 256 (Crew Key ADR-012)"| S1
+    L5 -->|"SHA-256 + Ed25519 Chaining"| S4
+    L6 -->|"AES-GCM 256 (Habitat Key ADR-014)"| S1
+    S1 & S2 & S3 <==>|"CRDT Deltas via WSS TLS 1.3 (ADR-009)"| H1
 ```
 
 ---
 
-## 3. Reglas de Integridad Referencial y Restricciones
+## 3. Referential Integrity Rules & Constraints
 
-1. **Inmutabilidad Clínica (`RNF-SEC-04`, `ADR-009`):** No existen operaciones `UPDATE` o `DELETE` sobre `DAILY_MEASUREMENT`, `SUBJECTIVE_SYMPTOM`, `CLINICAL_ALERT` ni `AUDIT_LEDGER_ENTRY`. Toda corrección o reconocimiento de alerta genera un nuevo evento con su reloj lógico `hlc`.
-2. **Protección contra Bit-Flips por Radiación (`RNF-SEC-03`):** Todo `ENCRYPTED_ENVELOPE` recalcula y verifica `sha256_seu` antes del descifrado. Si falla la verificación, el sobre corrupto es puesto en cuarentena y se solicita réplica limpia al `Sync Hub` (`hub_oplog.jsonl`) o pares.
-3. **Aislamiento Criptográfico RBAC (`RNF-SEC-02`, `ADR-012`):** Los datos clínicos de `DAILY_MEASUREMENT` y `CLINICAL_ALERT` se cifran con la `crewDataKey` exclusiva del tripulante (`KEY_VAULT`), envuelta con su PIN y con el PIN del CMO. El `Sync Hub` y las `CABIN_GLOBAL_STATUS` (pantallas públicas) **no poseen** `crewDataKey`.
-4. **Cardinalidad Diaria (`ADR-016`):** En condiciones operacionales nominales, `DAILY_MEASUREMENT` mantiene 1 registro consolidado por `(crew_id, mission_day)` durante 180 días ($4 \times 180 = 720$ registros base), más inyecciones puntuales del simulador (`RF-SIM-01..05`).
-5. **Límite de Pasos (`ADR-017`):** Todo registro en `COUNTERMEASURE_PROTOCOL.steps_max_4` debe satisfacer `length(steps) <= 4`. Procedimientos complejos utilizan `chained_next_id` para enlazar protocolos sucesivos.
+1. **Clinical Immutability (`RNF-SEC-04`, `ADR-009`):** There are no `UPDATE` or `DELETE` operations on `DAILY_MEASUREMENT`, `SUBJECTIVE_SYMPTOM`, `CLINICAL_ALERT`, or `AUDIT_LEDGER_ENTRY`. Any correction or alert acknowledgment generates a new event stamped with its logical clock `hlc`.
+2. **Radiation Bit-Flip Protection (`RNF-SEC-03`):** Every `ENCRYPTED_ENVELOPE` recalculates and verifies `sha256_seu` prior to decryption. If verification fails, the corrupted envelope is quarantined and a clean replica is requested from the `Sync Hub` (`hub_oplog.jsonl`) or peers.
+3. **RBAC Cryptographic Isolation (`RNF-SEC-02`, `ADR-012`):** Clinical data in `DAILY_MEASUREMENT` and `CLINICAL_ALERT` is encrypted with the crew member's exclusive `crewDataKey` (`KEY_VAULT`), wrapped with both their PIN and the CMO's PIN. The `Sync Hub` and `CABIN_GLOBAL_STATUS` (public bulkhead displays) **do not possess** `crewDataKey`.
+4. **Daily Cardinality (`ADR-016`):** Under nominal operational conditions, `DAILY_MEASUREMENT` maintains 1 consolidated record per `(crew_id, mission_day)` across 180 days ($4 \times 180 = 720$ baseline records), plus ad-hoc simulator injections (`RF-SIM-01..05`).
+5. **Step Limit (`ADR-017`):** Every record in `COUNTERMEASURE_PROTOCOL.steps_max_4` must satisfy `length(steps) <= 4`. Complex procedures use `chained_next_id` to link successive protocols.

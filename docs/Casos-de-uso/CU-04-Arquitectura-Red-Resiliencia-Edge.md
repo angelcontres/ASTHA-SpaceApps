@@ -1,139 +1,139 @@
-# 🛡️ Paquete 4: Arquitectura, Resiliencia y Comunicaciones
-**Módulo:** Red Malla P2P, Protocolo DTN y Eficiencia Energética | **Estándar:** CCSDS DTN / Deep Space Constraints
+# 🛡️ Package 4: Architecture, Resilience, and Communications
+**Module:** P2P Mesh Network, DTN Protocol, and Power Efficiency | **Standard:** CCSDS DTN / Deep Space Constraints
 
 ---
 
-## 📋 Caso de Uso: CU-10
-### Nombre: Sincronización Descentralizada Malla P2P entre Nodos de Cabina
+## 📋 Use Case: CU-10
+### Title: Decentralized P2P Mesh Synchronization Across Cabin Nodes
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-10` |
-| **Actor Primario** | Nodo Local ASTHA (Cliente Edge) |
-| **Actores Secundarios** | Nodos Vecinos en Cabina / Ingeniero de Software |
-| **Nivel** | Nivel de Arquitectura / Sincronización Distribuida |
-| **Requisitos SRS** | `RNF-NET-02`, `RNF-NET-04`, `RNF-SEC-04` |
-| **Historias Trazadas** | `HU-15`, `HU-16` |
+| **Identifier** | `CU-10` |
+| **Primary Actor** | Local ASTHA Node (Edge Client) |
+| **Secondary Actors** | Neighboring Cabin Nodes / Software Engineer |
+| **Level** | Architecture Level / Distributed Synchronization |
+| **SRS Requirements** | `RNF-NET-02`, `RNF-NET-04`, `RNF-SEC-04` |
+| **Traced Stories** | `HU-15`, `HU-16` |
 
-### 1. Descripción Breve:
-Garantiza que cualquier modificación en el estado de salud, checklist completado o lectura de telemetría realizada en un dispositivo (ej. tableta en camarote) se propague y reconcilie de forma automática con las demás terminales de la nave mediante una red de malla ad-hoc sin depender de un servidor central.
+### 1. Brief Description:
+Ensures that any change in health status, completed checklist, or telemetry reading performed on one device (e.g., crew quarters tablet) propagates and reconciles automatically across all other spacecraft terminals over an ad-hoc mesh network without relying on a central server.
 
-### 2. Precondiciones:
-1. Al menos dos terminales de ASTHA están encendidas y con sus interfaces de radio local (Wi-Fi 802.11s o Bluetooth Mesh) habilitadas.
-2. Cada nodo posee un par de claves criptográficas asimétricas locales para autenticar las transacciones.
+### 2. Preconditions:
+1. At least two ASTHA terminals are powered on with their local radio interfaces (Wi-Fi 802.11s or Bluetooth Mesh) enabled.
+2. Each node holds a local asymmetric cryptographic key pair to authenticate transactions.
 
-### 3. Disparador (Trigger):
-Conclusión de un checklist médico, cambio de estado clínico o conexión de un nuevo nodo a la red local.
+### 3. Trigger:
+Completion of a medical checklist, clinical state change, or connection of a new node to the local network.
 
-### 4. Flujo Principal de Eventos:
-1. Un astronauta completa una tarea en su tableta táctil (ej. administración de fármaco oral en el camarote).
-2. El nodo emisor crea un registro estructurado con identificador único UUIDv4, marca de tiempo MET y firma digital con clave privada.
-3. El registro se almacena en la base de datos distribuida local basada en tipos de datos replicados libres de conflicto (**CRDT - Conflict-free Replicated Data Type**).
-4. El nodo emisor transmite un vector de estado comprimido a sus pares directos en la red malla mediante protocolo Gossip sobre UDP multicast.
-5. Los nodos vecinos reciben el paquete, verifican la firma criptográfica y comparan su reloj lógico de Lamport.
-6. Al detectar un evento más reciente, los nodos pares integran la mutación en sus bases de datos locales sin generar bloqueos ni inconsistencias.
-7. En menos de 3 segundos, todas las pantallas de mamparo y tabletas de la nave reflejan el checklist completado.
+### 4. Main Flow of Events:
+1. An astronaut completes a task on their touchscreen tablet (e.g., oral medication administration in crew quarters).
+2. The emitting node creates a structured record with a unique UUIDv4 identifier, MET timestamp, and private-key digital signature.
+3. The record is stored in the local distributed database based on **CRDT (Conflict-free Replicated Data Type)** structures.
+4. The emitting node broadcasts a compressed state vector to its direct mesh peers using a Gossip protocol over UDP multicast.
+5. Neighboring nodes receive the packet, verify the cryptographic signature, and compare their Lamport logical clock.
+6. Upon detecting a newer event, peer nodes merge the mutation into their local databases without locks or inconsistencies.
+7. In under 3 seconds, all bulkhead displays and tablets aboard the spacecraft reflect the completed checklist.
 
-### 5. Flujos Alternativos:
-* **FA-01: Reconciliación tras partición de red (puertas blindadas cerradas):**
-  1. Si un módulo queda temporalmente aislado por el cierre de una compuerta neumática blindada, el nodo de ese compartimento continúa operando y registrando datos de forma local.
-  2. Al reabrirse la compuerta y restablecerse el enlace de radio, los nodos intercambian sus historiales y resuelven cualquier conflicto utilizando la regla del reloj causal determinista (*Last-Write-Wins con vector timestamps*).
+### 5. Alternative Flows:
+* **FA-01: Reconciliation after network partition (shielded hatches closed):**
+  1. If a module becomes temporarily isolated by closing a pneumatic shielded hatch, the node in that compartment continues operating and logging data locally.
+  2. Once the hatch reopens and the radio link is restored, the nodes exchange their histories and resolve any conflict using a deterministic causal clock rule (*Last-Write-Wins with vector timestamps*).
 
-### 6. Flujos de Excepción:
-* **FE-01: Intrusión o corrupción de paquete por radiación:**
-  1. Si un nodo recibe un paquete cuya firma digital o checksum SHA-256 no coincide, el paquete es rechazado inmediatamente, se añade la IP/MAC a una lista de aislamiento temporal y se notifica al Ingeniero de Comunicaciones.
+### 6. Exception Flows:
+* **FE-01: Intrusion or radiation-induced packet corruption:**
+  1. If a node receives a packet whose digital signature or SHA-256 checksum fails verification, the packet is immediately rejected, the IP/MAC is placed on a temporary quarantine list, and the Communications Engineer is notified.
 
-### 7. Postcondiciones:
-* **Éxito:** Coherencia de datos al $100\%$ en toda la nave sin que exista un punto único de fallo (*No Single Point of Failure*).
+### 7. Postconditions:
+* **Success:** $100\%$ data consistency across the entire spacecraft with no single point of failure (*No Single Point of Failure*).
 
 ---
 
-## 📋 Caso de Uso: CU-11
-### Nombre: Empaquetado y Encolamiento Asíncrono DTN para Houston
+## 📋 Use Case: CU-11
+### Title: Asynchronous DTN Bundling and Queuing for Houston
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-11` |
-| **Actor Primario** | Motor de Comunicaciones ASTHA |
-| **Actores Secundarios** | Cirujano de Vuelo en Tierra (Houston Flight Surgeon) |
-| **Nivel** | Nivel de Comunicación Interplanetaria / Protocolo de Transporte |
-| **Requisitos SRS** | `RF-GUI-05`, `RNF-NET-03`, `RNF-SEC-01` |
-| **Historias Trazadas** | `HU-14` |
+| **Identifier** | `CU-11` |
+| **Primary Actor** | ASTHA Communications Engine |
+| **Secondary Actors** | Ground Flight Surgeon (Houston Flight Surgeon) |
+| **Level** | Interplanetary Communication Level / Transport Protocol |
+| **SRS Requirements** | `RF-GUI-05`, `RNF-NET-03`, `RNF-SEC-01` |
+| **Traced Stories** | `HU-14` |
 
-### 1. Descripción Breve:
-Consolida, comprime y cifra la telemetría histórica, los incidentes clínicos y las acciones de contramedida en paquetes autónomos compatibles con el estándar de redes tolerantes a demoras e interrupciones (**DTN - Delay-Tolerant Networking / CCSDS Bundle Protocol**), gestionando su transmisión hacia la Red de Espacio Profundo (DSN) sin esperar confirmación en tiempo real.
+### 1. Brief Description:
+Consolidates, compresses, and encrypts historical telemetry, clinical incidents, and countermeasure actions into autonomous packets compliant with Delay- and Disruption-Tolerant Networking (**DTN / CCSDS Bundle Protocol**), managing transmission to the Deep Space Network (DSN) without blocking for real-time acknowledgment.
 
-### 2. Precondiciones:
-1. El sistema ha acumulado telemetría durante el ciclo diario de vuelo o se ha producido una alerta médica de prioridad Media/Alta.
-2. La nave espacial tiene configurado el router DTN interplanetario conectado al transpondedor de banda X/Ka.
+### 2. Preconditions:
+1. The system has accumulated telemetry over the daily flight cycle or a Medium/High priority medical alert has occurred.
+2. The spacecraft has the interplanetary DTN router configured and connected to the X/Ka-band transponder.
 
-### 3. Disparador (Trigger):
-Fin de ciclo diario (23:59 MET), disparo de una alerta clínica crítica o apertura de una ventana de enlace de radio con la Tierra.
+### 3. Trigger:
+End of daily cycle (23:59 MET), firing of a critical clinical alert, or opening of a radio link window with Earth.
 
-### 4. Flujo Principal de Eventos:
-1. El motor de comunicaciones extrae el log consolidado de las últimas 24 horas (o del episodio agudo).
-2. El sistema aplica compresión Brotli/Gzip de alta eficiencia, reduciendo el tamaño del archivo en más del $75\%$.
-3. Se encapsula la información en un paquete estándar **Bundle Protocol (RFC 5050 / CCSDS 734.2-B-1)**.
-4. Se firma criptográficamente el bundle con certificado digital de misión de la nave.
-5. El bundle se transfiere a la cola de salida persistente del router de a bordo.
-6. Cuando la antena de alta ganancia establece contacto con una estación terrestre de la DSN (Goldstone, Madrid o Canberra), el bundle es transmitido a la velocidad disponible.
-7. El sistema no bloquea ninguna función de a bordo y continúa su operación médica autónoma, asumiendo un retraso de propagación de 22 minutos de ida hacia la Tierra.
+### 4. Main Flow of Events:
+1. The communications engine extracts the consolidated log for the past 24 hours (or the acute episode).
+2. The system applies high-efficiency Brotli/Gzip compression, reducing file size by more than $75\%$.
+3. The information is encapsulated into a standard **Bundle Protocol (RFC 5050 / CCSDS 734.2-B-1)** packet.
+4. The bundle is cryptographically signed with the spacecraft's mission digital certificate.
+5. The bundle is transferred to the persistent outbound queue of the onboard router.
+6. When the high-gain antenna establishes contact with a DSN ground station (Goldstone, Madrid, or Canberra), the bundle is transmitted at the available link rate.
+7. The system does not block any onboard function and continues autonomous medical operations, assuming a 22-minute one-way propagation delay to Earth.
 
-### 5. Flujos Alternativos:
-* **FA-01: Recepción de mensaje de recomendación médica diferido desde Houston:**
-  1. Tras 44 minutos (22 min ida + 22 min vuelta), el transpondedor recibe un bundle de respuesta firmado por el Cirujano de Vuelo en Tierra.
-  2. ASTHA valida la autenticidad del mensaje y despliega una notificación no intrusiva: "Mensaje Asíncrono del Flight Surgeon recibido; consultar sugerencias secundarias".
-  3. El Oficial Médico revisa las sugerencias de Houston como apoyo consultivo, manteniendo la autonomía operativa de la nave.
+### 5. Alternative Flows:
+* **FA-01: Receipt of delayed medical recommendation message from Houston:**
+  1. After 44 minutes (22 min outbound + 22 min return), the transponder receives a response bundle signed by the Ground Flight Surgeon.
+  2. ASTHA validates message authenticity and displays a non-intrusive notification: "Asynchronous Flight Surgeon Message received; review secondary suggestions".
+  3. The Crew Medical Officer reviews Houston's suggestions as consultative support while maintaining spacecraft operational autonomy.
 
-### 6. Flujos de Excepción:
-* **FE-01: Pérdida prolongada de señal con la DSN (Conjunción solar):**
-  1. Durante la conjunción solar con Marte, el Sol bloquea toda comunicación de radio por hasta 2 semanas.
-  2. Los bundles DTN permanecen protegidos en el almacenamiento no volátil local sin descartarse por caducidad (*Time-to-Live* extendido a 30 días).
+### 6. Exception Flows:
+* **FE-01: Prolonged DSN signal blackout (Solar conjunction):**
+  1. During Mars solar conjunction, the Sun blocks all radio communication for up to 2 weeks.
+  2. DTN bundles remain safeguarded in local non-volatile storage without expiring (*Time-to-Live* extended to 30 days).
 
-### 7. Postcondiciones:
-* **Éxito:** Los datos médicos se preservan y transmiten sin pérdidas, adaptándose a las leyes físicas de la propagación interplanetaria.
+### 7. Postconditions:
+* **Success:** Medical data are preserved and transmitted losslessly, adapting to the physics of interplanetary signal propagation.
 
 ---
 
-## 📋 Caso de Uso: CU-12
-### Nombre: Conmutación a Perfil de Contingencia Eléctrica (< 5W)
+## 📋 Use Case: CU-12
+### Title: Switching to Electrical Contingency Profile (< 5W)
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-12` |
-| **Actor Primario** | Bus de Potencia de la Nave (EPS - Electrical Power System) |
-| **Actores Secundarios** | Comandante de Misión |
-| **Nivel** | Nivel de Supervivencia de Aviónica / Gestión Térmica y de Energía |
-| **Requisitos SRS** | `RNF-POW-01..04`, `RNF-POW-03` |
-| **Historias Trazadas** | `HU-20` |
+| **Identifier** | `CU-12` |
+| **Primary Actor** | Spacecraft Electrical Power System Bus (EPS) |
+| **Secondary Actors** | Mission Commander |
+| **Level** | Avionics Survival Level / Thermal and Power Management |
+| **SRS Requirements** | `RNF-POW-01..04`, `RNF-POW-03` |
+| **Traced Stories** | `HU-20` |
 
-### 1. Descripción Breve:
-Cuando la nave espacial sufre un fallo en la generación de energía (ej. rotura de paneles solares o desvío de potencia a maniobras de propulsión de emergencia) y entra en modo de baterías de respaldo, ASTHA reduce drásticamente su demanda eléctrica a menos de 5 Watts para garantizar la continuidad ininterrumpida del monitoreo vital durante días.
+### 1. Brief Description:
+When the spacecraft experiences a power generation failure (e.g., solar array damage or power diversion to emergency propulsion maneuvers) and enters backup battery mode, ASTHA drastically reduces its electrical draw to under 5 Watts to guarantee uninterrupted vital monitoring for days.
 
-### 2. Precondiciones:
-1. El subsistema de potencia EPS emite la señal de contingencia "Bus de Batería Primaria Bajo / Nivel 2".
-2. ASTHA recibe la señal a través de la interfaz de gestión de energía del sistema operativo embebido.
+### 2. Preconditions:
+1. The EPS power subsystem emits the contingency signal "Primary Battery Bus Low / Level 2".
+2. ASTHA receives the signal through the embedded operating system's power management interface.
 
-### 3. Disparador (Trigger):
-Recepción de evento de telemetría de bus de energía: $\text{PowerState} == \text{BATTERY\_CRITICAL}$.
+### 3. Trigger:
+Receipt of power-bus telemetry event: $\text{PowerState} == \text{BATTERY\_CRITICAL}$.
 
-### 4. Flujo Principal de Eventos:
-1. El núcleo de ASTHA intercepta el evento de emergencia eléctrica.
-2. El sistema desactiva de inmediato todas las animaciones gráficas complejas, sombras CSS y transiciones fluidas.
-3. La tasa de refresco visual de la pantalla se reduce de 60 Hz a 0.2 Hz (1 actualización cada 5 segundos).
-4. El brillo de la pantalla táctil OLED se reduce al $20\%$ (aprovechando que los píxeles negros apagan los diodos orgánicos, reduciendo el consumo del panel en más del $65\%$).
-5. Se suspende la sincronización periódica Gossip en la red malla, transmitiendo únicamente ante eventos clínicos de severidad roja.
-6. El hilo de ejecución del procesador se configura en frecuencia reducida (CPU Governor en modo `powersave`), manteniendo un consumo sostenido del SoC por debajo de $2.5\text{ W}$.
-7. El sistema verifica que los algoritmos de detección de paro cardíaco, taquicardia ventricular y anoxia permanecen $100\%$ activos en memoria.
-8. Se muestra en la esquina superior una insignia discreta: "Modo Supervivencia Energética Activo (< 5W)".
+### 4. Main Flow of Events:
+1. The ASTHA core intercepts the electrical emergency event.
+2. The system immediately disables all complex graphical animations, CSS shadows, and smooth transitions.
+3. The display visual refresh rate drops from 60 Hz to 0.2 Hz (1 update every 5 seconds).
+4. OLED touchscreen brightness drops to $20\%$ (leveraging black pixels that turn off organic diodes, cutting panel draw by more than $65\%$).
+5. Periodic Gossip synchronization over the mesh network is suspended, transmitting only on red-severity clinical events.
+6. The processor execution thread is set to a reduced frequency (CPU Governor in `powersave` mode), keeping sustained SoC draw below $2.5\text{ W}$.
+7. The system verifies that cardiac arrest, ventricular tachycardia, and anoxia detection algorithms remain $100\%$ active in memory.
+8. A discreet badge appears in the upper corner: "Power Survival Mode Active (< 5W)".
 
-### 5. Flujos Alternativos:
-* **FA-01: Restauración del bus de potencia solar:**
-  1. Al normalizarse el flujo de corriente desde los paneles fotovoltaicos, el sistema restaura gradualmente la tasa de refresco a 60 fps y el brillo táctico normal.
+### 5. Alternative Flows:
+* **FA-01: Solar power bus restoration:**
+  1. Once current flow from the photovoltaic arrays normalizes, the system gradually restores the refresh rate to 60 fps and normal tactical brightness.
 
-### 6. Flujos de Excepción:
-* **FE-01: Temperatura crítica por falta de convección de aire:**
-  1. Si los ventiladores de refrigeración se apagan por ahorro eléctrico y la temperatura del procesador supera los $75^\circ\text{C}$, el software desactiva hilos secundarios no vitales (ej. cálculo de regresión lineal predictiva) para prevenir el estrangulamiento térmico (*thermal throttling*).
+### 6. Exception Flows:
+* **FE-01: Critical temperature due to lack of air convection:**
+  1. If cooling fans are shut down for power savings and processor temperature exceeds $75^\circ\text{C}$, the software disables non-vital background threads (e.g., predictive linear regression computation) to prevent thermal throttling.
 
-### 7. Postcondiciones:
-* **Éxito:** El sistema de monitoreo de vida continúa salvaguardando a los astronautas sin acelerar el agotamiento de las baterías críticas de la nave.
+### 7. Postconditions:
+* **Success:** The life-monitoring system continues safeguarding the astronauts without accelerating depletion of critical spacecraft batteries.

@@ -1,176 +1,176 @@
-# ESPECIFICACIÓN DEL DOMINIO DEL PROBLEMA Y CONTEXTO OPERACIONAL
-## MONITOREO BIOMÉDICO Y AUTONOMÍA CLÍNICA EN MISIONES DE ESPACIO PROFUNDO
-### Documento Base para Ingeniería de Requisitos (Alineado a ISO/IEC/IEEE 29148)
+# PROBLEM DOMAIN SPECIFICATION AND OPERATIONAL CONTEXT
+## BIOMEDICAL MONITORING AND CLINICAL AUTONOMY IN DEEP SPACE MISSIONS
+### Baseline Document for Requirements Engineering (Aligned with ISO/IEC/IEEE 29148)
 
 ---
 
-## 1. DESCRIPCIÓN DEL DOMINIO DEL PROBLEMA
+## 1. PROBLEM DOMAIN DESCRIPTION
 
-### 1.1 Declaración del Problema (Problem Statement)
-| Dimensión | Descripción |
+### 1.1 Problem Statement
+| Dimension | Description |
 | :--- | :--- |
-| **El problema de:** | La degradación multisistémica acelerada de la salud humana y la falta de capacidad diagnóstica/terapéutica autónoma *in-situ*. |
-| **Afecta a:** | Tripulaciones de astronautas en misiones de exploración más allá de la órbita baja terrestre (Programa Artemis a la Luna y misiones tripuladas a Marte). |
-| **Cuyo impacto es:** | Pérdida de agudeza visual permanente, eventos cardiovasculares agudos, desmineralización ósea severa, formación de cálculos renales, deterioro cognitivo por fatiga extrema, riesgo letal por exposición a radiación espacial, y potencial fracaso catastrófico de la misión. |
-| **Una solución exitosa debe:** | Permitir la detección temprana, triage clínico, correlación de telemetría ambiental-fisiológica y ejecución de contramedidas médicas en un régimen de **autonomía absoluta**, mitigando el aislamiento operacional provocado por la latencia de comunicaciones con la Tierra. |
+| **The problem of:** | Accelerated multisystemic degradation of human health and the lack of autonomous *in-situ* diagnostic and therapeutic capabilities. |
+| **Affects:** | Astronaut crews on exploration missions beyond Low Earth Orbit (Artemis Lunar Program and crewed missions to Mars). |
+| **The impact of which is:** | Permanent loss of visual acuity, acute cardiovascular events, severe bone demineralization, renal stone formation, cognitive impairment due to extreme fatigue, lethal risk from space radiation exposure, and potential catastrophic mission failure. |
+| **A successful solution must:** | Enable early detection, clinical triage, environmental-physiological telemetry correlation, and execution of medical countermeasures under a regime of **absolute autonomy**, mitigating the operational isolation caused by Earth communication latency. |
 
-### 1.2 Contexto Operacional y la Brecha de Comunicación (The 22-Minute Latency Gap)
-En misiones en la Estación Espacial Internacional (LEO), la tripulación dispone de enlace telemétrico en tiempo real y comunicación instantánea con el Cirujano de Vuelo (*Flight Surgeon*) del Centro de Control de Misión en Houston o Montreal. 
+### 1.2 Operational Context and the Communication Gap (The 22-Minute Latency Gap)
+In missions aboard the International Space Station (LEO), the crew relies on real-time telemetry downlinks and instantaneous voice/video communication with the Flight Surgeon at Mission Control Center in Houston or Montreal.
 
-En misiones a Marte, la distancia orbital (hasta 400 millones de kilómetros) introduce un retraso de propagación electromagnética de **entre 3 y 22 minutos por sentido** (hasta 44 minutos para un ciclo de pregunta-respuesta).
-* **Consecuencia de Dominio:** Ante una emergencia médica o una deriva fisiológica acelerada, la consulta con especialistas terrestres en tiempo real es **físicamente inviable**.
-* **Realidad de la Tripulación:** Los miembros de la tripulación son ingenieros, pilotos y científicos, no médicos especialistas en emergencias ni radiólogos. La toma de decisiones clínicas debe ser guiada y comprensible para no expertos.
+On missions to Mars, orbital separation (up to 400 million kilometers) introduces an electromagnetic signal propagation delay of **3 to 22 minutes one-way** (up to 44 minutes for a complete question-and-response cycle).
+* **Domain Consequence:** During a medical emergency or accelerated physiological drift, real-time consultation with Earth-based specialists is **physically unfeasible**.
+* **Crew Reality:** Crew members are engineers, pilots, and scientists—not emergency medicine physicians or radiologists. Clinical decision-making must be guided and immediately actionable by non-specialists.
 
 ---
 
-## 2. ACTORES DEL DOMINIO Y PERFILES DE INTERESADOS (STAKEHOLDERS)
+## 2. DOMAIN ACTORS AND STAKEHOLDER PROFILES
 
 ```mermaid
 flowchart LR
-    subgraph SpaceHabitat["Hábitat Espacial / Nave en Tránsito"]
-        A[Astronauta / Sujeto de Monitoreo] -->|Telemetría Pasiva| B[Oficial Médico de Tripulación - CMO]
-        B -->|Triage y Contramedidas In-Situ| A
+    subgraph SpaceHabitat["Space Habitat / Transit Spacecraft"]
+        A["Astronaut / Monitored Subject"] -->|Passive Telemetry| B["Crew Medical Officer - CMO"]
+        B -->|In-Situ Triage & Countermeasures| A
     end
-    subgraph EarthGround["Soporte Terrestre (Retraso 3 a 22 min)"]
-        B -.->|Telemetría Asíncrona| C[Cirujano de Vuelo / Flight Surgeon]
-        C -.->|Recomendaciones Asíncronas| B
+    subgraph EarthGround["Ground Support (3 to 22 min One-Way Delay)"]
+        B -.->|Asynchronous Telemetry| C["Flight Surgeon"]
+        C -.->|Asynchronous Recommendations| B
     end
 ```
 
-| Actor / Rol | Responsabilidad en el Dominio | Necesidad Crítica de Dominio |
+| Actor / Role | Domain Responsibility | Critical Domain Need |
 | :--- | :--- | :--- |
-| **Astronauta (Crew Member)** | Monitorizar su propio estado, reportar síntomas subjetivos y ejecutar contramedidas diarias (ejercicio, nutrición, sueño). | Requiere interpretación inmediata de su estado de salud sin terminología médica incomprensible ni alarmas falsas. |
-| **Oficial Médico de Tripulación (CMO - Crew Medical Officer)** | Tripulante con entrenamiento médico básico (no especialista) asignado para atender emergencias a bordo. | Requiere protocolos de soporte a decisiones clínicas paso a paso para diagnosticar, evaluar gravedad y tratar al paciente. |
-| **Cirujano de Vuelo en Tierra (Flight Surgeon)** | Médico especializado en medicina aeroespacial en Houston/CSA que supervisa la misión. | Requiere consolidación asíncrona de tendencias y eventos anómalos para validar tratamientos a largo plazo. |
+| **Astronaut (Crew Member)** | Monitor personal health status, report subjective symptoms, and execute daily countermeasures (exercise, nutrition, sleep). | Requires immediate interpretation of health status without impenetrable medical jargon or false alarms. |
+| **Crew Medical Officer (CMO)** | Crew member with basic medical training (non-specialist) assigned to manage onboard medical emergencies. | Requires step-by-step clinical decision support protocols to diagnose, assess severity, and treat the patient. |
+| **Ground Flight Surgeon** | Aerospace medicine specialist physician at Houston/CSA overseeing mission medical operations. | Requires asynchronous consolidation of longitudinal trends and anomalous events to validate long-term treatment plans. |
 
 ---
 
-## 3. MODELO DE AMENAZAS BIOMÉDICAS (THE NASA HAZARD & RISK FRAMEWORK)
+## 3. BIOMEDICAL THREAT MODEL (THE NASA HAZARD & RISK FRAMEWORK)
 
-El entorno espacial somete al cuerpo humano a cinco peligros interconectados (Modelo oficial **NASA R.I.D.G.E.**):
+The spaceflight environment subjects the human body to five interconnected hazards (official **NASA R.I.D.G.E.** Framework):
 
-### 3.1 Los 5 Peligros Ambientales (NASA Hazards)
-1. **Radiation (Radiación Espacial):**
-   * Exposición continua a Radiación Cósmica Galáctica (GCR) y Eventos de Partículas Solares imprevistos (SPE).
-   * La radiación de neutrones secundarios aporta aproximadamente el **30% de la dosis biológica absorbida** en estructuras presurizadas.
-   * *Impacto:* Daño genotóxico, síndrome agudo de radiación, carcinogénesis y cataratas tempranas.
-2. **Isolation & Confinement (Aislamiento y Confinamiento):**
-   * Pérdida de pistas circadianas naturales terrestres (ciclos de luz/oscuridad artificiales o 16 amaneceres diarios en LEO).
-   * *Impacto:* Ruptura del ritmo circadiano, insomnio crónico, degradación del rendimiento cognitivo, apatía y estrés psicosocial.
-3. **Distance from Earth (Distancia de la Tierra):**
-   * Imposibilidad de evacuación de emergencia (*No MEDEVAC*) y suministro limitado de recursos farmacológicos y equipos médicos.
-4. **Gravity Fields (Campos Gravitatorios Alterados: 0G, 1/6G lunar, 3/8G marciano):**
-   * Ausencia de gradiente hidrostático terrestre: los líquidos corporales migran hacia el tórax y la cabeza (~2 litros de fluidos desplazados cefálicamente).
-   * Descondicionamiento biomecánico: falta de carga axial sobre el sistema musculoesquelético.
-5. **Hostile Closed Environments (Entornos Cerrados Hostiles):**
-   * Espacio confinado con recirculación artificial de atmósfera: acumulación de $CO_2$ en bolsas estancadas, aerosoles tóxicos, polvo lunar/marciano irritante y proliferación de biopelículas microbianas resistentes.
+### 3.1 The 5 Environmental Hazards (NASA Hazards)
+1. **Radiation (Space Radiation):**
+   * Continuous exposure to Galactic Cosmic Rays (GCR) and unpredictable Solar Particle Events (SPE).
+   * Secondary neutron radiation contributes approximately **30% of the absorbed biological dose** inside pressurized spacecraft structures.
+   * *Impact:* Genotoxic damage, acute radiation syndrome, carcinogenesis, and early-onset cataracts.
+2. **Isolation & Confinement:**
+   * Loss of natural terrestrial circadian cues (artificial light/dark cycles or 16 orbital sunrises per day in LEO).
+   * *Impact:* Circadian rhythm disruption, chronic insomnia, cognitive performance degradation, apathy, and psychosocial stress.
+3. **Distance from Earth:**
+   * Impossibility of emergency medical evacuation (*No MEDEVAC*) and strictly limited supply of pharmacological resources and medical hardware.
+4. **Gravity Fields (Altered Gravity Fields: 0G, 1/6G Lunar, 3/8G Martian):**
+   * Absence of terrestrial hydrostatic gradient: bodily fluids shift toward the thorax and head (~2 liters of cephalad fluid shift).
+   * Biomechanical deconditioning: absence of axial mechanical loading on the musculoskeletal system.
+5. **Hostile Closed Environments:**
+   * Confined volume with closed-loop artificial atmosphere recirculation: localized $CO_2$ accumulation in stagnant pockets, toxic aerosols, irritating lunar/Martian regolith dust, and proliferation of resistant microbial biofilms.
 
-### 3.2 Riesgos Clínicos Prioritarios de la NASA (HRP Clinical Matrix)
-Los fenómenos patológicos concretos que deben ser monitorizados y correlacionados:
+### 3.2 NASA Priority Clinical Risks (HRP Clinical Matrix)
+Specific pathological phenomena that must be continuously monitored and correlated:
 
 * **SANS (Spaceflight Associated Neuro-ocular Syndrome):**
-  * *Mecanismo:* La redistribución cefálica de fluidos eleva la presión venosa intracraneal y orbitaria.
-  * *Manifestación:* Aplanamiento del globo ocular, pliegues coroideos, edema de papila óptica e hipermetropía progresiva irreversible.
-* **Pérdida de Densidad Mineral Ósea e Hipercalciuria:**
-  * *Mecanismo:* Desactivación osteoblástica y reabsorción osteoclástica acelerada por falta de impacto gravitatorio.
-  * *Tasa de pérdida:* **1.0% a 1.5% de masa ósea por mes** en huesos de soporte (pelvis, fémur, calcáneo).
-  * *Complicación secundaria:* El calcio disuelto pasa a la sangre y orina, provocando **nefrolitiasis (cálculos renales obstructivos)**, emergencia médica de máxima gravedad en el espacio.
-* **Atrofia Cardiovascular y Desautonomía:**
-  * *Mecanismo:* Disminución de la masa miocárdica del ventrículo izquierdo, reducción del volumen plasmático circulante y rigidez vascular.
-  * *Manifestación:* Pérdida de Variabilidad de la Frecuencia Cardíaca (HRV deprimida), propensión a arritmias y colapso ortostático severo al volver a interactuar con gravedad.
-* **Desregulación Inmune y Reactivación Viral:**
-  * *Mecanismo:* Combinación de estrés crónico por confinamiento, cortisol elevado y microgravedad.
-  * *Manifestación:* Reactivación asintomática o aguda de virus del herpes latentes (Epstein-Barr, Varicela-Zóster, Citomegalovirus).
-* **Trombosis Venosa Profunda / Flujo Retrógrado en Vena Yugular:**
-  * *Mecanismo:* Estasis sanguínea prolongada en la circulación venosa de cabeza y cuello debido a la microgravedad.
+  * *Mechanism:* Cephalad fluid redistribution elevates intracranial and orbital venous pressure.
+  * *Manifestation:* Globe flattening, choroidal folds, optic disc edema, and progressive irreversible hyperopic shift.
+* **Bone Mineral Density Loss and Hypercalciuria:**
+  * *Mechanism:* Osteoblastic deactivation and accelerated osteoclastic resorption driven by lack of gravitational loading.
+  * *Loss Rate:* **1.0% to 1.5% bone mass per month** in weight-bearing bones (pelvis, femur, calcaneus).
+  * *Secondary Complication:* Mobilized calcium enters blood and urine, causing **nephrolithiasis (obstructive renal stones)**—a highest-severity medical emergency in spaceflight.
+* **Cardiovascular Atrophy and Dysautonomia:**
+  * *Mechanism:* Reduction of left ventricular myocardial mass, decreased circulating plasma volume, and increased arterial stiffness.
+  * *Manifestation:* Loss of Heart Rate Variability (depressed HRV), susceptibility to arrhythmias, and severe orthostatic collapse upon re-exposure to gravity.
+* **Immune Dysregulation and Viral Reactivation:**
+  * *Mechanism:* Combination of chronic confinement stress, elevated cortisol, and microgravity.
+  * *Manifestation:* Asymptomatic or acute reactivation of latent herpesviruses (Epstein-Barr, Varicella-Zoster, Cytomegalovirus).
+* **Deep Vein Thrombosis / Retrograde Jugular Venous Flow:**
+  * *Mechanism:* Prolonged blood stasis in the head and neck venous circulation caused by microgravity.
 
 ---
 
-## 4. FLUJOS DE INFORMACIÓN Y CANALES DE TELEMETRÍA DEL DOMINIO
+## 4. DOMAIN INFORMATION FLOWS AND TELEMETRY CHANNELS
 
-El sistema analítico del dominio debe correlacionar dos corrientes de datos complementarias:
+The domain analytics engine must correlate two complementary data streams:
 
 ```mermaid
 flowchart TD
-    subgraph EnvTelemetry["Telemetría Ambiental (Hábitat / Traje)"]
-        E1[Dosimetría de Radiación Neutrones/GCR uSv/h]
-        E2[Concentración de CO2 en Cabina mmHg]
-        E3[Presión Barométrica y O2 psi / %]
-        E4[Ciclos de Espectro Lumínico Lux / Kelvin]
+    subgraph EnvTelemetry["Environmental Telemetry (Habitat / Suit)"]
+        E1["Radiation Dosimetry Neutrons/GCR uSv/h"]
+        E2["Cabin CO2 Concentration mmHg"]
+        E3["Barometric Pressure & O2 psi / %"]
+        E4["Light Spectrum Cycles Lux / Kelvin"]
     end
 
-    subgraph BioTelemetry["Telemetría Fisiológica (Sujeto Humano)"]
-        B1[Electrocardiograma ECG / Frecuencia Cardíaca bpm]
-        B2[Variabilidad de Frecuencia Cardíaca HRV ms]
-        B3[Presión Arterial Sistólica/Diastólica mmHg]
-        B4[Saturación de Oxígeno SpO2 %]
-        B5[Temperatura Cutánea / Central °C]
-        B6[Biomarcadores Bioquímicos Glucosa mg/dL / Calcio]
-        B7[Métricas Subjetivas Sueño / Estrés / Fatiga]
+    subgraph BioTelemetry["Physiological Telemetry (Human Subject)"]
+        B1["Electrocardiogram ECG / Heart Rate bpm"]
+        B2["Heart Rate Variability HRV ms"]
+        B3["Systolic/Diastolic Blood Pressure mmHg"]
+        B4["Oxygen Saturation SpO2 %"]
+        B5["Skin / Core Temperature °C"]
+        B6["Biochemical Biomarkers Glucose mg/dL / Calcium"]
+        B7["Subjective Metrics Sleep / Stress / Fatigue"]
     end
 
-    subgraph CorrelationEngine["Correlación de Dominio"]
-        CR1["Ejemplo: Subida de CO2 (>3 mmHg) + SpO2 bajo (<94%) = Alerta Fuga / Ventilación Deficiente"]
-        CR2["Ejemplo: Presión Sistólica alta (>135) + Visión borrosa = Alerta Precoz SANS"]
-        CR3["Ejemplo: Radiación (>100 uSv/h) + Náuseas = Protocolo Refugio Solar SPE"]
+    subgraph CorrelationEngine["Domain Correlation Engine"]
+        CR1["Example: CO2 Spike (>3 mmHg) + Low SpO2 (<94%) = Leak / Ventilation Fault Alert"]
+        CR2["Example: High Systolic BP (>135) + Blurred Vision = Early SANS Alert"]
+        CR3["Example: Radiation (>100 uSv/h) + Nausea = SPE Solar Storm Shelter Protocol"]
     end
 
     EnvTelemetry --> CorrelationEngine
     BioTelemetry --> CorrelationEngine
 ```
 
-### 4.1 Fuentes y Tipología de Telemetría Oficiales
+### 4.1 Official Telemetry Sources and Typology
 
-1. **Telemetría Fisiológica Humana Continua (Estilo CSA Bio-Monitor / Astroskin):**
-   * Capturada mediante prendas inteligentes bio-sensorizadas: trazados de ECG continuo de 3 derivaciones, pletismografía por inductancia respiratoria, fotopletismografía ($SpO_2$), acelerometría triaxial y temperatura periférica.
-2. **Telemetría Ambiental de Cabina (Estilo ISS ECLSS / ISS-Mimic):**
-   * Presión parcial de dióxido de carbono ($ppCO_2$), presión total de cabina, porcentaje de $O_2$, temperatura y velocidad del flujo de aire en los módulos habitables.
-3. **Telemetría de Radiación Espacial (Estilo NASA MSL RAD y CSA CANS):**
-   * Tasa de dosis de radiación absorbida ($\mu Gy/h$), tasa de dosis equivalente ($\mu Sv/h$), flujo de partículas cargadas y espectrometría de neutrones en tiempo real.
+1. **Continuous Human Physiological Telemetry (CSA Bio-Monitor / Astroskin Style):**
+   * Captured via bio-sensorized smart garments: continuous 3-lead ECG waveforms, respiratory inductance plethysmography, photoplethysmography ($SpO_2$), triaxial accelerometry, and peripheral skin temperature.
+2. **Cabin Environmental Telemetry (ISS ECLSS / ISS-Mimic Style):**
+   * Partial pressure of carbon dioxide ($ppCO_2$), total cabin pressure, $O_2$ percentage, ambient temperature, and airflow velocity across habitable modules.
+3. **Space Radiation Telemetry (NASA MSL RAD and CSA CANS Style):**
+   * Absorbed radiation dose rate ($\mu Gy/h$), dose equivalent rate ($\mu Sv/h$), charged particle flux, and real-time neutron spectrometry.
 
 ---
 
-## 5. LÍMITES DE DOMINIO Y UMBRALES CLÍNICOS (GROUND TRUTH NASA-STD-3001)
+## 5. DOMAIN BOUNDARIES AND CLINICAL THRESHOLDS (NASA-STD-3001 GROUND TRUTH)
 
-Para definir las reglas de negocio de evaluación de estados fisiológicos, la norma de referencia es el estándar técnico **NASA-STD-3001 (Space Flight Human-System Standard, Vol. 1 & 2)**:
+To define the business rules for physiological state evaluation, the authoritative reference standard is **NASA-STD-3001 (Space Flight Human-System Standard, Vol. 1 & 2)**:
 
-| Indicador Biomédico / Ambiental | Rango Fisiológico Nominal | Rango de Precaución (Amarillo) | Umbral Crítico de Emergencia (Rojo) | Justificación de Dominio |
+| Biomedical / Environmental Indicator | Nominal Physiological Range | Caution Range (Yellow) | Critical Emergency Threshold (Red) | Domain Justification |
 | :--- | :--- | :--- | :--- | :--- |
-| **Frecuencia Cardíaca en Reposo (HR)** | 55 – 85 bpm | 86 – 105 bpm | $< 45\text{ bpm}$ o $> 110\text{ bpm}$ | Detección de taquicardia refleja, arritmias o shock. |
-| **Variabilidad Cardíaca (HRV rMSSD)** | 35 – 70 ms | 20 – 34 ms | $< 20\text{ ms}$ sostenido | Marcador de estrés autonómico agudo, fatiga y descompensación simpática. |
-| **Presión Arterial Sistólica** | 105 – 125 mmHg | 126 – 139 mmHg | $\ge 140\text{ mmHg}$ | Presiones elevadas aceleran la congestión ocular y el desarrollo de SANS. |
-| **Saturación de Oxígeno ($SpO_2$)** | 96% – 100% | 93% – 95% | $< 93\%$ | Indica hipoxia hipóxica en cabina o depresión ventilatoria. |
-| **Presión Parcial de $CO_2$ en Cabina** | $< 2.0\text{ mmHg}$ | 2.0 – 3.0 mmHg | $> 3.0\text{ mmHg}$ | En microgravedad, concentraciones de $CO_2 > 3\text{ mmHg}$ inducen cefaleas e hipertensión craneal. |
-| **Dosimetría de Radiación** | $15 – 35\ \mu Sv/h$ | $36 – 80\ \mu Sv/h$ | $> 100\ \mu Sv/h$ | Umbral de sospecha de Evento de Partículas Solares (SPE). |
-| **Duración del Sueño Diario** | 7.0 – 8.5 hrs | 5.5 – 6.9 hrs | $< 5.5\text{ hrs}$ por $\ge 2$ días | Aumenta el tiempo de reacción psicomotor y el error humano operacional. |
-| **Glucemia en Ayunas** | 75 – 105 mg/dL | 106 – 125 mg/dL | $< 65$ o $> 140\text{ mg/dL}$ | Alteraciones metabólicas secundarias a estrés metabólico en vuelo. |
+| **Resting Heart Rate (HR)** | 55 – 85 bpm | 86 – 105 bpm | $< 45\text{ bpm}$ or $> 110\text{ bpm}$ | Detection of reflex tachycardia, arrhythmias, or shock. |
+| **Heart Rate Variability (HRV rMSSD)** | 35 – 70 ms | 20 – 34 ms | $< 20\text{ ms}$ sustained | Marker of acute autonomic stress, fatigue, and sympathetic decompensation. |
+| **Systolic Blood Pressure** | 105 – 125 mmHg | 126 – 139 mmHg | $\ge 140\text{ mmHg}$ | Elevated pressures accelerate ocular congestion and SANS progression. |
+| **Oxygen Saturation ($SpO_2$)** | 96% – 100% | 93% – 95% | $< 93\%$ | Indicates cabin hypoxic hypoxia or ventilatory depression. |
+| **Cabin $CO_2$ Partial Pressure** | $< 2.0\text{ mmHg}$ | 2.0 – 3.0 mmHg | $> 3.0\text{ mmHg}$ | In microgravity, $CO_2$ concentrations $> 3\text{ mmHg}$ induce headaches and intracranial hypertension. |
+| **Radiation Dosimetry** | $15 – 35\ \mu Sv/h$ | $36 – 80\ \mu Sv/h$ | $> 100\ \mu Sv/h$ | Suspected Solar Particle Event (SPE) threshold. |
+| **Daily Sleep Duration** | 7.0 – 8.5 hrs | 5.5 – 6.9 hrs | $< 5.5\text{ hrs}$ for $\ge 2$ days | Increases psychomotor reaction time and operational human error. |
+| **Fasting Blood Glucose** | 75 – 105 mg/dL | 106 – 125 mg/dL | $< 65$ or $> 140\text{ mg/dL}$ | Metabolic alterations secondary to in-flight metabolic stress. |
 
 ---
 
-## 6. RESTRICCIONES DE DOMINIO Y ENTORNO DE OPERACIÓN
+## 6. DOMAIN CONSTRAINTS AND OPERATING ENVIRONMENT
 
-Cualquier sistema que opere en este dominio está sujeto a las siguientes restricciones no negociables:
+Any system operating within this domain is bound by the following non-negotiable constraints:
 
-1. **Restricción de Conectividad (Zero External Dependency):**
-   * No existe acceso a la nube, servidores terrestres ni bases de datos remotas. Todo modelo de datos, heurística de decisión y conocimiento médico debe residir localmente en el nodo de la nave.
-2. **Restricción de Entrenamiento del Usuario (Non-Specialist Interface):**
-   * El sistema no puede asumir un nivel de médico intensivista en el usuario. Las advertencias deben traducirse en:
-     * *Qué está ocurriendo anatómicamente.*
-     * *Cuál es la severidad y tiempo estimado de impacto.*
-     * *Cuáles son las acciones de contramedida exactas, secuenciales y verificables.*
-3. **Restricción de Recursos Físicos Médicos:**
-   * Las intervenciones sugeridas deben ser viables con los recursos limitados a bordo: dispositivo de ejercicio resistivo (ARED), cicloergómetro/cinta de correr, pantalones de presión negativa para la parte inferior del cuerpo (LBNP), fármacos de botiquín de exploración y cabina de aislamiento/refugio de tormentas.
-4. **Restricción de Fatiga y Carga Cognitiva:**
-   * La interfaz de captura y consulta no puede imponer formularios clínicos tediosos. La interacción debe ser de bajo esfuerzo cognitivo, con código de colores inequívoco y visualización anatómica espacial intuitiva.
+1. **Connectivity Constraint (Zero External Dependency):**
+   * There is no access to cloud infrastructure, Earth-based servers, or remote databases. Every data model, decision heuristic, and medical knowledge base must reside locally on the spacecraft node.
+2. **User Training Constraint (Non-Specialist Interface):**
+   * The system cannot assume the user has critical-care physician training. Warnings must be translated into:
+     * *What is occurring anatomically.*
+     * *What the severity and estimated time-to-impact are.*
+     * *What exact, sequential, and verifiable countermeasure actions are required.*
+3. **Physical Medical Resource Constraint:**
+   * Recommended interventions must be feasible using limited onboard hardware: Advanced Resistive Exercise Device (ARED), cycle ergometer/treadmill, Lower Body Negative Pressure (LBNP) suit, exploration medical kit pharmaceuticals, and isolation/storm shelter compartment.
+4. **Fatigue and Cognitive Load Constraint:**
+   * Data capture and inspection interfaces must not impose tedious clinical forms. Interaction must require minimal cognitive effort, featuring unambiguous color coding and intuitive spatial anatomical visualization.
 
 ---
 
-## 7. CRITERIOS DE ÉXITO Y RESOLUCIÓN DEL PROBLEMA (ACCEPTANCE CRITERIA)
+## 7. SUCCESS CRITERIA AND PROBLEM RESOLUTION (ACCEPTANCE CRITERIA)
 
-Para considerar que la problemática del dominio ha sido abordada con éxito por un diseño de ingeniería, deben cumplirse las siguientes condiciones observables:
+To consider the domain problem successfully addressed by an engineering design, the following observable conditions must be met:
 
-* **AC-01 (Autonomía Diagnóstica Local):** Capacidad de categorizar el estado de salud de cada astronauta en un esquema tripartito (Nominal, Precaución, Crítico) sin paquetes de red enviados ni recibidos de la Tierra.
-* **AC-02 (Detección de Deriva Precoz):** Identificación de tendencias sutiles en series temporales (ej. caída progresiva de horas de descanso + incremento de presión diastólica) antes de que el astronauta experimente un síntoma incapacitante.
-* **AC-03 (Trazabilidad Fisiológica y Anatómica):** Asociación inequívoca entre los biomarcadores numéricos y los sistemas de órganos afectados (sistema neuro-ocular, cardiovascular, musculoesquelético, renal y cognitivo).
-* **AC-04 (Guía de Contramedidas Operativas):** Generación de instrucciones claras y ejecutables asociadas a cada desviación de la norma NASA-STD-3001.
-* **AC-05 (Resiliencia ante Eventos Ambientales Extremos):** Respuesta ante perturbaciones externas del hábitat (inyección de picos de radiación o enriquecimiento de $CO_2$) con protocolos inmediatos de contingencia física.
+* **AC-01 (Local Diagnostic Autonomy):** Ability to classify each astronaut's health status within a three-tier scheme (Nominal, Caution, Critical) without transmitting or receiving network packets from Earth.
+* **AC-02 (Early Drift Detection):** Identification of subtle time-series trends (e.g., progressive drop in sleep duration + rising diastolic blood pressure) before the astronaut experiences an incapacitating symptom.
+* **AC-03 (Physiological and Anatomical Traceability):** Unambiguous mapping between numerical biomarkers and affected organ systems (neuro-ocular, cardiovascular, musculoskeletal, renal, and cognitive systems).
+* **AC-04 (Operational Countermeasure Guidance):** Generation of clear, actionable step-by-step instructions tied to each deviation from NASA-STD-3001.
+* **AC-05 (Resilience to Extreme Environmental Events):** Immediate response to external habitat perturbations (injected radiation spikes or $CO_2$ enrichment) with physical contingency protocols.

@@ -1,73 +1,73 @@
-# 🏛️ SDD-01: Arquitectura Global del Sistema
+# 🏛️ SDD-01: Global System Architecture
 ### ASTHA — Software Design Description | NASA Space Apps Challenge 2026
-**Normas de Referencia:** NASA-STD-8739.8 | IEEE Std 1016-2009 | ISO/IEC/IEEE 29148 | **ADRs:** 001, 002, 003, 005, 011, 015, 019
+**Reference Standards:** NASA-STD-8739.8 | IEEE Std 1016-2009 | ISO/IEC/IEEE 29148 | **ADRs:** 001, 002, 003, 005, 011, 015, 019
 
 ---
 
-## 1. Estilo Arquitectónico: Hexagonal + Event-Driven Edge Workers
+## 1. Architectural Style: Hexagonal + Event-Driven Edge Workers
 
-De acuerdo con **[ADR-003](08-Architecture-decisions.md#adr-003)** y **[ADR-005](08-Architecture-decisions.md#adr-005)**, ASTHA implementa una arquitectura **Hexagonal (Ports & Adapters)** ejecutada íntegramente en la capa del cliente (**PWA Offline**), donde el hilo principal de interfaz queda aislado del cómputo clínico y de la persistencia mediante **dos Dedicated Web Workers dirigidos por eventos** (cero *polling*).
+In accordance with **[ADR-003](08-Architecture-decisions.md#adr-003)** and **[ADR-005](08-Architecture-decisions.md#adr-005)**, ASTHA implements a **Hexagonal (Ports & Adapters)** architecture executed entirely on the client layer (**Offline PWA**), where the main UI thread is isolated from clinical computation and persistence by **two event-driven Dedicated Web Workers** (zero polling).
 
 ```text
 +----------------------------------------------------------------------------------------+
-|               CREW PWA — HILO PRINCIPAL (UI COMPILADA SIN VDOM - ADR-003)              |
-|   Svelte 5 Runes UI  |  uPlot Canvas 2D  |  Three.js Bajo Demanda (ADR-004) + SVG      |
-|   Web Audio (800-1200Hz RNF-USA-04)      |  Tokens WCAG AAA (alert-red-text ADR-018)   |
+|               CREW PWA — MAIN THREAD (COMPILED VDOM-LESS UI - ADR-003)                 |
+|   Svelte 5 Runes UI  |  uPlot 2D Canvas  |  On-Demand Three.js (ADR-004) + SVG         |
+|   Web Audio (800-1200Hz RNF-USA-04)      |  WCAG AAA Tokens (alert-red-text ADR-018)   |
 +----------------------------------------------------------------------------------------+
-                 │ ▲ (postMessage: Comandos de UI / Resultados de Triage < 50ms)
+                 │ ▲ (postMessage: UI Commands / Triage Results < 50ms)
                  ▼ │
 +----------------------------------------------------------------------------------------+
-|            CLINICAL ENGINE WORKER (DEDICATED WORKER DETERMINISTA - ADR-005)            |
-|   Pipeline O(reglas): Validación RF-ING-05 ➔ Clasificación RF-EVA-01 ➔ Sostenidos      |
-|   Correlación R-ENV..R-CARD ➔ Deriva D-01..D-03 (MAD ADR-011) ➔ Resolver <=4 pasos     |
-|   [PROHIBIDO: fetch, WebSocket, DOM, timers/polling]                                   |
+|            CLINICAL ENGINE WORKER (DETERMINISTIC DEDICATED WORKER - ADR-005)           |
+|   O(rules) Pipeline: RF-ING-05 Validation ➔ RF-EVA-01 Classification ➔ Sustained       |
+|   R-ENV..R-CARD Correlation ➔ D-01..D-03 Drift (MAD ADR-011) ➔ <=4-Step Resolver       |
+|   [FORBIDDEN: fetch, WebSocket, DOM, timers/polling]                                   |
 +----------------------------------------------------------------------------------------+
-                 │ ▲ (MessageChannel: Registros validados y eventos)
+                 │ ▲ (MessageChannel: Validated records and events)
                  ▼ │
 +----------------------------------------------------------------------------------------+
-|           DATA & SYNC WORKER (PERSISTENCIA CIFRADA & LAN SYNC - ADR-006/008/009)       |
-|   IndexedDB Web Crypto (AES-GCM 256, SHA-256, Ed25519, PBKDF2) | Bitácora Append-Only  |
-|   CRDT (G-Set, LWW-Map, PN-Counter + HLC) | WSS Client (astha.local) | Export JSON DSN |
+|           DATA & SYNC WORKER (ENCRYPTED PERSISTENCE & LAN SYNC - ADR-006/008/009)      |
+|   IndexedDB Web Crypto (AES-GCM 256, SHA-256, Ed25519, PBKDF2) | Append-Only Ledger    |
+|   CRDT (G-Set, LWW-Map, PN-Counter + HLC) | WSS Client (astha.local) | DSN JSON Export |
 +----------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 2. Principios de Diseño Aeroespacial y Restricciones de Dominio
+## 2. Aerospace Design Principles and Domain Constraints
 
-### 2.1 Autonomía Edge-First y Cero WAN (`ADR-002`, `RF-EVA-07`, `RNF-NET-01`)
-* **Frontera de Red Cerrada:** ASTHA opera como un nodo autónomo completo en cada tableta de tripulación o consola médica. No emite ni recibe tráfico hacia Internet (cero APIs remotas, cero CDNs).
-* **Service Worker Cache-Only:** Tras el aprovisionamiento en Tierra (**[ADR-020](08-Architecture-decisions.md#adr-020)**), todos los activos y el dataset sintético de 180 días ($\le 5.0\text{ MB}$ total según `RNF-POW-04`) se sirven exclusivamente desde Cache Storage local.
-* **Enlace con Tierra Desacoplado (`ADR-010`):** El software no implementa una pila de red DTN interplanetaria dentro del navegador; genera un archivo **JSON firmado criptográficamente con Ed25519** (`RNF-NET-04`), que el CMO entrega al router de comunicaciones de la nave.
+### 2.1 Edge-First Autonomy and Zero WAN (`ADR-002`, `RF-EVA-07`, `RNF-NET-01`)
+* **Closed Network Boundary:** ASTHA operates as a fully autonomous node on each crew tablet or medical console. It neither sends nor receives Internet traffic (zero remote APIs, zero CDNs).
+* **Cache-Only Service Worker:** Following ground provisioning (**[ADR-020](08-Architecture-decisions.md#adr-020)**), all assets and the 180-day synthetic dataset ($\le 5.0\text{ MB}$ total per `RNF-POW-04`) are served exclusively from local Cache Storage.
+* **Decoupled Ground Link (`ADR-010`):** The software does not implement an interplanetary DTN networking stack inside the browser; it generates a **cryptographically Ed25519-signed JSON file** (`RNF-NET-04`), which the CMO hands off to the spacecraft communications router.
 
-### 2.2 Presupuesto Energético, Cómputo y Arranque (`RNF-POW-01..04`, `RNF-PER-01..02`)
+### 2.2 Power, Compute, and Startup Budgets (`RNF-POW-01..04`, `RNF-PER-01..02`)
 
-| Presupuesto (SRS §4.1) | Límite Estricto | Estrategia de Diseño en ASTHA | ADR de Soporte |
+| Budget (SRS §4.1) | Strict Limit | ASTHA Design Strategy | Supporting ADR |
 | :--- | :---: | :--- | :--- |
-| **Uso de CPU en Reposo (`RNF-POW-01`)** | $\le 3.0\%$ | Cero `setInterval` ni bucles `requestAnimationFrame`. Workers dormidos hasta evento `postMessage`. Avatar 3D en 0 FPS pasivos. | ADR-003, ADR-004, ADR-005 |
-| **Consumo Eléctrico (`RNF-POW-02`)** | $< 350\text{ mW}$ (16h) | Fondo `#030712` (píxeles OLED apagados), `powerPreference: 'low-power'`, suspensión en `visibilitychange`. | ADR-003, ADR-019 |
-| **Memoria RAM (`RNF-POW-03`)** | $\le 150\text{ MB}$ | 720 mediciones en `Float32Array` ($< 1\text{ MB}$); liberación WebGL (`dispose()`) al salir de vista anatómica. | ADR-004, ADR-016 |
-| **Peso del Bundle (`RNF-POW-04`)** | $\le 5.0\text{ MB}$ | Svelte 5 compilado (~KB), uPlot (~KB), Three.js modular local, dataset sintético (~273 KB). *Excluye archivos pesados de 24 MB.* | ADR-003, C4-02 |
-| **Latencia de Triage (`RNF-PER-01`)** | $< 50\text{ ms}$ | Sumas móviles $O(1)$ para regresión de 7 días y evaluación determinista de reglas en Worker. | ADR-005, ADR-011 |
-| **Arranque en Frío (`RNF-PER-02`)** | $< 1.5\text{ s}$ | Medido hasta la **pantalla de bloqueo**, la cual ya muestra telemetría ECLSS y semáforo global (sin esperar derivación PBKDF2 del PIN). | ADR-014, ADR-015 |
+| **Idle CPU Usage (`RNF-POW-01`)** | $\le 3.0\%$ | Zero `setInterval` or `requestAnimationFrame` loops. Workers sleep until a `postMessage` event. 3D avatar at 0 passive FPS. | ADR-003, ADR-004, ADR-005 |
+| **Power Consumption (`RNF-POW-02`)** | $< 350\text{ mW}$ (16h) | `#030712` background (OLED pixels off), `powerPreference: 'low-power'`, suspension on `visibilitychange`. | ADR-003, ADR-019 |
+| **RAM Memory (`RNF-POW-03`)** | $\le 150\text{ MB}$ | 720 measurements in `Float32Array` ($< 1\text{ MB}$); WebGL disposal (`dispose()`) upon leaving anatomy view. | ADR-004, ADR-016 |
+| **Bundle Weight (`RNF-POW-04`)** | $\le 5.0\text{ MB}$ | Compiled Svelte 5 (~KB), uPlot (~KB), local modular Three.js, synthetic dataset (~273 KB). *Excludes 24 MB files.* | ADR-003, C4-02 |
+| **Triage Latency (`RNF-PER-01`)** | $< 50\text{ ms}$ | $O(1)$ rolling sums for 7-day regression and deterministic rule evaluation inside Worker. | ADR-005, ADR-011 |
+| **Cold Startup (`RNF-PER-02`)** | $< 1.5\text{ s}$ | Measured to the **lock screen**, which already displays ECLSS telemetry and global status lights (without waiting for PIN PBKDF2 derivation). | ADR-014, ADR-015 |
 
-### 2.3 Modo de Supervivencia Energética (`ADR-019`)
-Ante una contingencia eléctrica de la nave, el Comandante activa manualmente el **Modo Supervivencia**:
-* Desactiva completamente el contexto WebGL del avatar 3D (conmuta a SVG estático) y desactiva gráficas históricas.
-* Reduce el brillo mediante CSS y restringe la sincronización WSS únicamente a eventos de severidad crítica.
-* El pipeline clínico de evaluación y las alarmas sonoras de 800–1200 Hz permanecen 100% operativos.
+### 2.3 Power Survival Mode (`ADR-019`)
+During a spacecraft electrical power contingency, the Commander manually activates **Survival Mode**:
+* Completely disables the 3D avatar WebGL context (switches to static SVG) and disables historical charts.
+* Dims display brightness via CSS and restricts WSS synchronization strictly to critical-severity events.
+* The clinical evaluation pipeline and 800–1200 Hz audible alarms remain 100% operational.
 
 ---
 
-## 3. Algoritmos de Detección de Deriva Fisiológica (`RF-DER-01..04`)
+## 3. Physiological Drift Detection Algorithms (`RF-DER-01..04`)
 
-El `Clinical Engine Worker` ejecuta tres detectores complementarios en cada evento de registro diario:
+The `Clinical Engine Worker` executes three complementary detectors on every daily logging event:
 
-1. **D-01 (Proyección por Regresión Lineal de 7 Días — `RF-DER-01`, `RF-DER-02`):**
-   Calculada en complejidad temporal $O(1)$ manteniendo sumas móviles ($\Sigma x, \Sigma y, \Sigma xy, \Sigma x^2$). Emite alerta precoz si la recta proyectada a 7 días cruza un umbral de precaución cuando el valor actual aún es nominal.
-2. **D-02 (Modified Z-Score con MAD — `ADR-011`, `RF-DER-03`):**
-   Sobre la línea base individual de los primeros 14 días de vuelo, se calcula la Mediana ($\tilde{x}$) y la Desviación Absoluta de la Mediana ($MAD$):
-   $$\text{MAD} = \text{mediana}(|x_i - \tilde{x}|), \qquad M_i = \frac{0.6745 \cdot (x_i - \tilde{x})}{\text{MAD}}$$
-   Si $|M_i| \ge 2.5$ (con guardia `MAD > 0`), se dispara una alerta precoz inmune a valores atípicos (*outliers*).
-3. **D-03 (Patrón Combinado Multivariado — `RF-DER-04`):**
-   Correlaciona pendiente negativa sostenida en horas de sueño junto con pendiente positiva en presión arterial diastólica (PAD) dentro de la misma ventana de 7 días.
+1. **D-01 (7-Day Linear Regression Projection — `RF-DER-01`, `RF-DER-02`):**
+   Computed in $O(1)$ time complexity by maintaining rolling sums ($\Sigma x, \Sigma y, \Sigma xy, \Sigma x^2$). Emits an early alert if the 7-day projected line crosses a caution threshold while the current value is still nominal.
+2. **D-02 (Modified Z-Score with MAD — `ADR-011`, `RF-DER-03`):**
+   Over the individual baseline from mission days 1–14, the Median ($\tilde{x}$) and Median Absolute Deviation ($MAD$) are computed:
+   $$\text{MAD} = \text{median}(|x_i - \tilde{x}|), \qquad M_i = \frac{0.6745 \cdot (x_i - \tilde{x})}{\text{MAD}}$$
+   If $|M_i| \ge 2.5$ (guarded by `MAD > 0`), an outlier-immune early alert is triggered.
+3. **D-03 (Multivariate Combined Pattern — `RF-DER-04`):**
+   Correlates a sustained negative slope in sleep hours together with a positive slope in diastolic blood pressure (DBP / PAD) within the same 7-day window.

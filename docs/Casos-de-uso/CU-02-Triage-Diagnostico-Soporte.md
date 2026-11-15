@@ -1,145 +1,145 @@
-# 🧠 Paquete 2: Triage Clínico y Soporte a la Decisión (CDSS)
-**Módulo:** Motor de Reglas e Inteligencia Local Edge | **Estándar:** NASA-STD-3001 Vol 1 / NASA HRP Risks
+# 🧠 Package 2: Clinical Triage and Decision Support (CDSS)
+**Module:** Edge Local Intelligence and Rule Engine | **Standard:** NASA-STD-3001 Vol 1 / NASA HRP Risks
 
 ---
 
-## 📋 Caso de Uso: CU-04
-### Nombre: Triage Visual mediante Exploración del Mapa Anatómico Interactivo
+## 📋 Use Case: CU-04
+### Title: Visual Triage via Interactive Anatomical Map Exploration
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-04` |
-| **Actor Primario** | Astronauta en Misión / Oficial Médico (CMO) |
-| **Actores Secundarios** | Motor Gráfico SVG / Canvas |
-| **Nivel** | Nivel de Usuario / Interacción Diagnóstica |
-| **Requisitos SRS** | `RF-ANA-01..04`, `RNF-USA-02`, `RNF-USA-03` |
-| **Historias Trazadas** | `HU-05`, `HU-08` |
+| **Identifier** | `CU-04` |
+| **Primary Actor** | Mission Astronaut / Crew Medical Officer (CMO) |
+| **Secondary Actors** | SVG / Canvas Graphics Engine |
+| **Level** | User Level / Diagnostic Interaction |
+| **SRS Requirements** | `RF-ANA-01..04`, `RNF-USA-02`, `RNF-USA-03` |
+| **Traced Stories** | `HU-05`, `HU-08` |
 
-### 1. Descripción Breve:
-El usuario interactúa con la figura anatómica humana 2D/3D rendered en pantalla táctil. Al pulsar sobre cualquier región corporal (cabeza/ojos, tórax/corazón, abdomen/riñones, extremidades/huesos), el sistema realiza un triage visual instantáneo, desplegando el estado de salud, la fisiopatología en microgravedad y las bioseñales vinculadas.
+### 1. Brief Description:
+The user interacts with the 2D/3D human anatomical figure rendered on a touchscreen. Tapping any body region (head/eyes, thorax/heart, abdomen/kidneys, extremities/bones) triggers instant visual triage, displaying health status, microgravity pathophysiology, and linked biosignals.
 
-### 2. Precondiciones:
-1. La aplicación ASTHA está en ejecución y mostrando el panel táctico principal.
-2. Los datos fisiológicos del tripulante seleccionado han sido procesados por el motor de evaluación.
+### 2. Preconditions:
+1. The ASTHA application is running and displaying the main tactical dashboard.
+2. The selected crew member's physiological data have been processed by the evaluation engine.
 
-### 3. Disparador (Trigger):
-El usuario toca o hace clic en un órgano o región del mapa anatómico.
+### 3. Trigger:
+The user taps or clicks an organ or region on the anatomical map.
 
-### 4. Flujo Principal de Eventos:
-1. El usuario toca el hotspot de **Ojos y Cráneo** en el mapa anatómico.
-2. El sistema resalta la región seleccionada con un resplandor cian brillante (glow effect) y atenúa el resto del cuerpo.
-3. El sistema extrae de la base de datos el estado actual del **Sistema Neuro-Ocular**.
-4. La tarjeta informativa inferior se actualiza en menos de $50\text{ ms}$ mostrando:
-   * **Nombre del Sistema:** "Sistema Neuro-Ocular (Ojos y Cerebro)".
-   * **Insignia de Estado:** "ALERTA SANS - DERIVA / PRECAUCIÓN" (Fondo ámbar / texto blanco).
-   * **Métricas Clave:** Presión Arterial Sistólica ($144\text{ mmHg}$), Agudeza Visual ($20/25$).
-   * **Fisiopatología:** "Desplazamiento cefálico de fluidos en microgravedad. Riesgo de congestión venosa y aplanamiento del globo ocular".
-5. Si el órgano presenta una alerta activa, el sistema despliega un botón de acceso directo: "Ver Protocolo de Contramedida LBNP".
+### 4. Main Flow of Events:
+1. The user taps the **Eyes and Cranium** hotspot on the anatomical map.
+2. The system highlights the selected region with a bright cyan glow effect and dims the rest of the body.
+3. The system retrieves the current status of the **Neuro-Ocular System** from the database.
+4. The lower information card updates in under $50\text{ ms}$, displaying:
+   * **System Name:** "Neuro-Ocular System (Eyes and Brain)".
+   * **Status Badge:** "SANS ALERT - DRIFT / CAUTION" (Amber background / white text).
+   * **Key Metrics:** Systolic Blood Pressure ($144\text{ mmHg}$), Visual Acuity ($20/25$).
+   * **Pathophysiology:** "Cephalad fluid shift in microgravity. Risk of venous congestion and globe flattening".
+5. If the organ has an active alert, the system displays a direct-access button: "View LBNP Countermeasure Protocol".
 
-### 5. Flujos Alternativos:
-* **FA-01: Selección de Órgano Cardiovascular (Corazón/Tórax):**
-  1. El sistema despliega: Frecuencia Cardíaca actual, Curva ECG sintética, Variabilidad $\text{HRV rMSSD}$ ($19.5\text{ ms}$) y estado del tono vagal.
-* **FA-02: Selección de Órgano Renal (Riñones/Lumbar):**
-  1. El sistema despliega: Estimación de excreción de calcio en orina ($> 300\text{ mg/día}$), volumen hídrico diario consumido ($2.1\text{ L}$) y riesgo de formación de cálculos de oxalato de calcio.
-* **FA-03: Selección de Sistema Óseo (Fémur/Columna):**
-  1. El sistema despliega: Tasa de resorción ósea acumulada estimada ($1.2\%/\text{mes}$), minutos de ejercicio resistivo completados en ARED (120 de 150 min objetivo).
+### 5. Alternative Flows:
+* **FA-01: Selection of Cardiovascular Organ (Heart/Thorax):**
+  1. The system displays: current Heart Rate, synthetic ECG curve, $\text{HRV rMSSD}$ variability ($19.5\text{ ms}$), and vagal tone status.
+* **FA-02: Selection of Renal Organ (Kidneys/Lumbar):**
+  1. The system displays: estimated urinary calcium excretion ($> 300\text{ mg/day}$), daily fluid intake volume ($2.1\text{ L}$), and risk of calcium oxalate stone formation.
+* **FA-03: Selection of Skeletal System (Femur/Spine):**
+  1. The system displays: estimated cumulative bone resorption rate ($1.2\%/\text{month}$) and resistive exercise minutes completed on ARED (120 of 150 min target).
 
-### 6. Flujos de Excepción:
-* **FE-01: Dispositivo con aceleración gráfica deshabilitada:**
-  1. El sistema conmuta automáticamente a una vista esquemática vectorial SVG ligera para mantener los 60 fps en la animación táctil.
+### 6. Exception Flows:
+* **FE-01: Device with graphics acceleration disabled:**
+  1. The system automatically switches to a lightweight SVG schematic view to maintain 60 fps during touch animation.
 
-### 7. Postcondiciones:
-* **Éxito:** El usuario comprende inmediatamente el estado clínico del órgano sin necesidad de conocimientos médicos especializados.
+### 7. Postconditions:
+* **Success:** The user immediately understands the organ's clinical status without requiring specialized medical knowledge.
 
 ---
 
-## 📋 Caso de Uso: CU-05
-### Nombre: Detección Precoz y Estratificación del Síndrome Neuro-Ocular (SANS)
+## 📋 Use Case: CU-05
+### Title: Early Detection and Stratification of Spaceflight Associated Neuro-ocular Syndrome (SANS)
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-05` |
-| **Actor Primario** | Oficial Médico (CMO) |
-| **Actores Secundarios** | Astronauta Afectado (Paciente) |
-| **Nivel** | Nivel Clínico / Soporte a la Decisión Médica |
-| **Requisitos SRS** | `RF-EVA-01`, `RF-EVA-03`, `RF-GUI-01` |
-| **Historias Trazadas** | `HU-06` |
+| **Identifier** | `CU-05` |
+| **Primary Actor** | Crew Medical Officer (CMO) |
+| **Secondary Actors** | Affected Astronaut (Patient) |
+| **Level** | Clinical Level / Medical Decision Support |
+| **SRS Requirements** | `RF-EVA-01`, `RF-EVA-03`, `RF-GUI-01` |
+| **Traced Stories** | `HU-06` |
 
-### 1. Descripción Breve:
-El motor CDSS analiza en segundo plano la presión arterial continua, la presencia de síntomas visuales subjetivos y el historial de vuelo en microgravedad. Cuando detecta hipertensión cefálica sostenida con sospecha de edema papilar (SANS), activa el protocolo de contingencia antes de que se produzca una pérdida visual permanente.
+### 1. Brief Description:
+The CDSS engine continuously analyzes blood pressure, subjective visual symptoms, and microgravity flight history in the background. When it detects sustained cephalic hypertension with suspected optic disc edema (SANS), it activates the contingency protocol before permanent vision loss occurs.
 
-### 2. Precondiciones:
-1. El astronauta se encuentra en fase de vuelo en microgravedad ($\text{Fase} \ge \text{FD-01}$).
-2. Existen lecturas validadas de presión arterial continua.
+### 2. Preconditions:
+1. The astronaut is in microgravity flight phase ($\text{Phase} \ge \text{FD-01}$).
+2. Validated continuous blood pressure readings are available.
 
-### 3. Disparador (Trigger):
-La Presión Arterial Sistólica alcanza o supera los $140\text{ mmHg}$ ($\text{PAS} \ge 140\text{ mmHg}$) o se combina una $\text{PAS} \ge 130\text{ mmHg}$ con reporte de visión borrosa.
+### 3. Trigger:
+Systolic Blood Pressure reaches or exceeds $140\text{ mmHg}$ ($\text{SBP} \ge 140\text{ mmHg}$) or $\text{SBP} \ge 130\text{ mmHg}$ combined with a report of blurred vision.
 
-### 4. Flujo Principal de Eventos:
-1. El sensor pletismográfico reporta una lectura de $\text{PA} = 144/92\text{ mmHg}$ en el tripulante `C003` (Dra. Sian Proctor).
-2. El motor de reglas de ASTHA verifica que el tripulante se encuentra en el día 2 de vuelo (FD-02), fase crítica de redistribución cefálica de sangre y líquido cefalorraquídeo.
-3. El sistema clasifica el evento con nivel de severidad **Crítico (Rojo)**.
-4. La tarjeta de Presión Arterial en pantalla entra en animación de pulso rojo intermitente con el texto "SANS CRITICAL".
-5. El hotspot de los ojos en el mapa anatómico pasa de cian a rojo (#ef4444).
-6. El sistema actualiza el panel de contramedidas con el plan específico de descompresión venosa:
-   * **Paso 1:** Presurización de pantalones LBNP a $-35\text{ mmHg}$ por 60 min.
-   * **Paso 2:** Prueba visual con Rejilla de Amsler en pantalla táctil.
-   * **Paso 3:** Restricción estricta de sodio en dieta a menos de $2.0\text{ g/día}$.
-7. Se genera una alerta de prioridad alta en la tableta del Oficial Médico (`C002` - Hayley Arceneaux).
+### 4. Main Flow of Events:
+1. The plethysmographic sensor reports a reading of $\text{BP} = 144/92\text{ mmHg}$ for crew member `C003` (Dr. Sian Proctor).
+2. The ASTHA rule engine verifies that the crew member is on Flight Day 2 (FD-02), a critical phase of cephalad blood and cerebrospinal fluid redistribution.
+3. The system classifies the event with **Critical (Red)** severity level.
+4. The on-screen Blood Pressure card enters an intermittent red pulse animation displaying "SANS CRITICAL".
+5. The eye hotspot on the anatomical map switches from cyan to red (#ef4444).
+6. The system updates the countermeasures panel with the specific venous decompression plan:
+   * **Step 1:** Pressurize LBNP suit to $-35\text{ mmHg}$ for 60 min.
+   * **Step 2:** Conduct visual test with the touchscreen Amsler Grid.
+   * **Step 3:** Enforce strict dietary sodium restriction below $2.0\text{ g/day}$.
+7. A high-priority alert is generated on the Crew Medical Officer's tablet (`C002` - Hayley Arceneaux).
 
-### 5. Flujos Alternativos:
-* **FA-01: Hipertensión transitoria por ejercicio físico intenso:**
-  1. Si la acelerometría indica que el astronauta acaba de finalizar su sesión de ejercicio en ARED, el sistema pospone la evaluación de SANS durante 15 minutos para permitir la normalización hemodinámica post-esfuerzo.
+### 5. Alternative Flows:
+* **FA-01: Transient hypertension due to intense physical exercise:**
+  1. If accelerometry indicates that the astronaut has just finished an ARED exercise session, the system defers SANS evaluation for 15 minutes to allow post-exertion hemodynamic normalization.
 
-### 6. Flujos de Excepción:
-* **FE-01: Progresión refractaria a pesar de contramedidas:**
-  1. Si tras 60 minutos de LBNP la presión sistólica no desciende de $135\text{ mmHg}$ o el tripulante reporta escotomas o pérdida de visión central, el sistema eleva la alerta a "Emergencia Neuro-Ocular de Nivel 3" y sugiere la administración oral de acetazolamida (inhibidor de anhidrasa carbónica del botiquín de vuelo).
+### 6. Exception Flows:
+* **FE-01: Refractory progression despite countermeasures:**
+  1. If after 60 minutes of LBNP systolic pressure does not drop below $135\text{ mmHg}$ or the crew member reports scotomas or central vision loss, the system escalates the alert to "Level 3 Neuro-Ocular Emergency" and suggests oral administration of acetazolamide (carbonic anhydrase inhibitor from the flight medical kit).
 
-### 7. Postcondiciones:
-* **Éxito:** Se interviene tempranamente el edema papilar y se preserva la visión del astronauta.
+### 7. Postconditions:
+* **Success:** Optic disc edema is treated early and the astronaut's vision is preserved.
 
 ---
 
-## 📋 Caso de Uso: CU-06
-### Nombre: Detección Algorítmica de Deriva Fisiológica (Z-Score Modificado)
+## 📋 Use Case: CU-06
+### Title: Algorithmic Detection of Physiological Drift (Modified Z-Score)
 
-| Atributo | Detalle |
+| Attribute | Detail |
 | :--- | :--- |
-| **Identificador** | `CU-06` |
-| **Actor Primario** | Motor Matemático CDSS |
-| **Actores Secundarios** | Oficial Médico (CMO) |
-| **Nivel** | Nivel de Algoritmo / Vigilancia Preventiva |
-| **Requisitos SRS** | `RF-DER-01..03`, `RNF-USA-05` |
-| **Historias Trazadas** | `HU-07` |
+| **Identifier** | `CU-06` |
+| **Primary Actor** | CDSS Mathematical Engine |
+| **Secondary Actors** | Crew Medical Officer (CMO) |
+| **Level** | Algorithm Level / Preventive Surveillance |
+| **SRS Requirements** | `RF-DER-01..03`, `RNF-USA-05` |
+| **Traced Stories** | `HU-07` |
 
-### 1. Descripción Breve:
-El sistema calcula el Modified Z-score sobre una ventana móvil de 7 días para todas las constantes vitales del astronauta, comparándolas contra su propia línea base previa al vuelo (L-44). Si detecta una tendencia sostenida hacia el deterioro, emite una alerta preventiva antes de que el valor absoluto cruce el límite crítico de NASA-STD-3001.
+### 1. Brief Description:
+The system calculates the Modified Z-score over a 7-day sliding window for all astronaut vital signs, comparing them against their own pre-flight baseline (L-44). If it detects a sustained downward or upward trend toward deterioration, it issues a preventive alert before the absolute value crosses the NASA-STD-3001 critical limit.
 
-### 2. Precondiciones:
-1. El astronauta tiene al menos 3 días de mediciones históricas registradas en la nave.
-2. Se cuenta con la línea base terrestre individual pre-vuelo (`L-44`).
+### 2. Preconditions:
+1. The astronaut has at least 3 days of historical measurements recorded onboard.
+2. The individual pre-flight ground baseline (`L-44`) is available.
 
-### 3. Disparador (Trigger):
-Cálculo diario programado a las 06:00 MET o recepción de una nueva serie de telemetría.
+### 3. Trigger:
+Scheduled daily calculation at 06:00 MET or receipt of a new telemetry series.
 
-### 4. Flujo Principal de Eventos:
-1. El algoritmo extrae el vector de datos de los últimos 7 días para cada biomarcador (ej. Frecuencia Cardíaca en reposo matutina).
-2. El algoritmo calcula la mediana ($\tilde{x}$) y la desviación absoluta respecto a la mediana ($\text{MAD}$):
-   $$\text{MAD} = \text{mediana}(|x_i - \tilde{x}|)$$
-3. Se evalúa el valor actual $x_{\text{hoy}}$ calculando el Z-Score Modificado de Iglewicz & Hoaglin:
-   $$M_i = \frac{0.6745 \cdot (x_{\text{hoy}} - \tilde{x})}{\text{MAD}}$$
-4. El sistema evalúa la condición de deriva estadística: Si $|M_i| \ge 2.5$, se marca la variable como **Deriva Anómala**.
-5. Se ejecuta una regresión lineal sobre los 7 puntos temporales para calcular la pendiente de cambio ($\beta_1$).
-6. Si la pendiente proyecta que en menos de 7 días se cruzará el umbral de alerta médica (ej. presión sistólica cruzará $135\text{ mmHg}$), el sistema genera una **"Alerta Predictiva de Deriva"**.
-7. En el tablero del CMO se muestra un badge amarillo con el mensaje: "Deriva detectada en FC: Desviación $Z = +2.7$ respecto a línea base; tendencia de $+2.1\text{ bpm/día}$".
+### 4. Main Flow of Events:
+1. The algorithm extracts the data vector of the last 7 days for each biomarker (e.g., morning resting Heart Rate).
+2. The algorithm computes the median ($\tilde{x}$) and the median absolute deviation ($\text{MAD}$):
+   $$\text{MAD} = \text{median}(|x_i - \tilde{x}|)$$
+3. The current value $x_{\text{today}}$ is evaluated by computing the Iglewicz & Hoaglin Modified Z-Score:
+   $$M_i = \frac{0.6745 \cdot (x_{\text{today}} - \tilde{x})}{\text{MAD}}$$
+4. The system evaluates the statistical drift condition: If $|M_i| \ge 2.5$, the variable is flagged as **Anomalous Drift**.
+5. A linear regression is executed over the 7 time points to compute the rate-of-change slope ($\beta_1$).
+6. If the slope projects that the medical alert threshold will be crossed in fewer than 7 days (e.g., systolic pressure will cross $135\text{ mmHg}$), the system generates a **"Predictive Drift Alert"**.
+7. On the CMO dashboard, a yellow badge displays the message: "Drift detected in HR: Deviation $Z = +2.7$ vs. baseline; trend of $+2.1\text{ bpm/day}$".
 
-### 5. Flujos Alternativos:
-* **FA-01: Dispersión nula ($\text{MAD} = 0$):**
-  1. Si las mediciones pasadas son idénticas ($\text{MAD} = 0$), el algoritmo conmuta automáticamente a la desviación media absoluta para evitar división por cero.
+### 5. Alternative Flows:
+* **FA-01: Zero dispersion ($\text{MAD} = 0$):**
+  1. If past measurements are identical ($\text{MAD} = 0$), the algorithm automatically switches to mean absolute deviation to avoid division by zero.
 
-### 6. Flujos de Excepción:
-* **FE-01: Datos incompletos por fallo de transmisión:**
-  1. Si en la ventana de 7 días faltan más del $40\%$ de las lecturas, el sistema no calcula la proyección y notifica al CMO: "Datos insuficientes para regresión lineal predictiva; se mantiene monitoreo por umbrales estáticos".
+### 6. Exception Flows:
+* **FE-01: Incomplete data due to transmission loss:**
+  1. If more than $40\%$ of readings are missing in the 7-day window, the system skips projection calculation and notifies the CMO: "Insufficient data for predictive linear regression; static threshold monitoring maintained".
 
-### 7. Postcondiciones:
-* **Éxito:** Se anticipa el agotamiento físico o el desacondicionamiento cardiovascular varios días antes de que se manifieste como una emergencia aguda.
+### 7. Postconditions:
+* **Success:** Physical exhaustion or cardiovascular deconditioning is anticipated several days before manifesting as an acute emergency.

@@ -1,223 +1,223 @@
-# 📚 Glosario Terminológico Aeroespacial, Biomédico y de Software
+# 📚 Aerospace, Biomedical, and Software Engineering Glossary
 ### ASTHA — NASA Space Apps Challenge 2026
-**Normas de Referencia:** NASA-STD-3001 Vol 1 & 2 | NASA SP-2016-6105 | ISO/IEC/IEEE 29148:2018 | CCSDS Blue Books
+**Reference Standards:** NASA-STD-3001 Vol 1 & 2 | NASA SP-2016-6105 | ISO/IEC/IEEE 29148:2018 | CCSDS Blue Books
 
 ---
 
-## 📑 Índice de Categorías
-1. [Fisiología Espacial y Medicina Operacional](#1-fisiología-espacial-y-medicina-operacional)
-2. [Entorno Espacial, Hábitat y Peligros (R.I.D.G.E.)](#2-entorno-espacial-hábitat-y-peligros-ridge)
-3. [Ingeniería de Software, Aviónica y Redes de Espacio Profundo](#3-ingeniería-de-software-aviónica-y-redes-de-espacio-profundo)
-4. [Misión, Operaciones de Vuelo y Programas de la NASA](#4-misión-operaciones-de-vuelo-y-programas-de-la-nasa)
-5. [Acrónimos, Estándares y Organizaciones Reguladoras](#5-acrónimos-estándares-y-organizaciones-reguladoras)
+## 📑 Category Index
+1. [Space Physiology and Operational Medicine](#1-space-physiology-and-operational-medicine)
+2. [Space Environment, Habitat, and Hazards (R.I.D.G.E.)](#2-space-environment-habitat-and-hazards-ridge)
+3. [Software Engineering, Avionics, and Deep Space Networks](#3-software-engineering-avionics-and-deep-space-networks)
+4. [Mission, Flight Operations, and NASA Programs](#4-mission-flight-operations-and-nasa-programs)
+5. [Acronyms, Standards, and Regulatory Organizations](#5-acronyms-standards-and-regulatory-organizations)
 
 ---
 
-## 1. Fisiología Espacial y Medicina Operacional
+## 1. Space Physiology and Operational Medicine
 
 ### ARED (Advanced Resistive Exercise Device)
-Dispositivo de ejercicio resistivo instalado a bordo de la ISS que simula el levantamiento de pesas en microgravedad mediante cilindros de vacío. Proporciona hasta $2670\text{ N}$ ($600\text{ lb}$) de carga constante para contrarrestar la resorción ósea y la atrofia muscular en misiones de larga duración.
+Resistive exercise device installed aboard the ISS that simulates weightlifting in microgravity using vacuum cylinders. Provides up to $2670\text{ N}$ ($600\text{ lb}$) of constant load to counteract bone resorption and muscle atrophy during long-duration missions.
 
-### Barorreceptores
-Sensores de presión biológicos ubicados en el seno carotídeo y el arco aórtico. En microgravedad, el desplazamiento de sangre hacia el tórax y la cabeza satura los barorreceptores, engañando al cerebro haciéndole creer que hay un exceso de volumen circulatorio, lo que desencadena pérdida rápida de plasma y atenuación del tono vascular.
+### Baroreceptors
+Biological pressure sensors located in the carotid sinus and aortic arch. In microgravity, the shift of blood toward the thorax and head saturates the baroreceptors, signaling the brain that excess circulatory volume exists, which triggers rapid plasma loss and attenuation of vascular tone.
 
-### Bradicardia Espacial
-Frecuencia cardíaca en reposo anormalmente baja ($< 50\text{ bpm}$) observada en astronautas adaptados a la microgravedad debido a la menor demanda de bombeo contra la gravedad y a la redistribución del gasto cardíaco.
+### Space Bradycardia
+Abnormally low resting heart rate ($< 50\text{ bpm}$) observed in microgravity-adapted astronauts due to reduced pumping demand against gravity and redistribution of cardiac output.
 
 ### CDSS (Clinical Decision Support System)
-Sistema computarizado de soporte a la decisión clínica que analiza datos biomédicos, evalúa reglas clínicas y genera recomendaciones de diagnóstico, triage y tratamiento farmacológico o procedimental para asistir a operadores médicos y no médicos.
+Computerized clinical decision support system that analyzes biomedical data, evaluates clinical rules, and generates diagnostic, triage, and pharmacological or procedural treatment recommendations to assist medical and non-medical operators.
 
-### Desacondicionamiento Cardiovascular
-Degradación adaptativa de la masa del miocardio (atrofia del ventrículo izquierdo), pérdida de tono vascular periférico y disminución de la volemia como respuesta a la ausencia prolongada de gravedad terrestre ($1\text{G}$).
+### Cardiovascular Deconditioning
+Adaptive degradation of myocardial mass (left ventricular atrophy), loss of peripheral vascular tone, and decreased blood volume in response to prolonged absence of Earth gravity ($1\text{G}$).
 
-### Desplazamiento Cefálico de Fluidos (Cephalad Fluid Shift)
-Migración masiva de aproximadamente $1.5\text{ a }2.0\text{ litros}$ de sangre y líquido intersticial desde las extremidades inferiores hacia el tórax, cuello y cráneo durante las primeras 72 horas de microgravedad. Causa congestión facial ("Puffy Face"), congestión yugular y sobrepresión venosa intracraneal.
+### Cephalad Fluid Shift
+Massive migration of approximately $1.5\text{ to }2.0\text{ liters}$ of blood and interstitial fluid from the lower extremities toward the thorax, neck, and cranium during the first 72 hours of microgravity. Causes facial congestion ("Puffy Face"), jugular venous engorgement, and elevated intracranial venous pressure.
 
-### Hipercalciuria
-Excreción anormalmente elevada de calcio en la orina ($> 300\text{ mg/día}$). En el espacio, la falta de carga mecánica sobre el esqueleto estimula los osteoclastos a degradar matriz ósea, volcando iones de calcio al torrente sanguíneo y saturando los túbulos renales.
+### Hypercalciuria
+Abnormally elevated urinary calcium excretion ($> 300\text{ mg/day}$). In space, the absence of mechanical loading on the skeleton stimulates osteoclasts to break down bone matrix, releasing calcium ions into the bloodstream and supersaturating the renal tubules.
 
 ### HRV rMSSD (Heart Rate Variability - Root Mean Square of Successive Differences)
-Raíz cuadrada de la media de las diferencias al cuadrado entre intervalos R-R sucesivos del electrocardiograma. Es el biomarcador estándar de oro de la actividad parasimpática (vagal) cardíaca. Valores $< 20\text{ ms}$ indican agotamiento autonómico, fatiga acumulada o estrés agudo de vuelo.
+Root mean square of successive differences between adjacent R-R intervals of the electrocardiogram. It is the gold-standard biomarker of cardiac parasympathetic (vagal) activity. Values $< 20\text{ ms}$ indicate autonomic exhaustion, cumulative fatigue, or acute flight stress.
 
 ### LBNP (Lower Body Negative Pressure)
-Contramedida física consistente en una cámara neumática sellada en la cintura que aplica presión negativa (succión de $-35\text{ a }-50\text{ mmHg}$) en las piernas. Fuerza a la sangre estancada en la cabeza a descender hacia las extremidades inferiores, reduciendo la presión intracraneal y descomprimiendo la órbita ocular.
+Physical countermeasure consisting of a waist-sealed pneumatic chamber that applies negative pressure (suction of $-35\text{ to }-50\text{ mmHg}$) to the legs. Forces pooled blood in the head back down toward the lower extremities, reducing intracranial pressure and decompressing the ocular orbit.
 
-### Litiasis Renal (Cálculos Renales)
-Formación de concreciones sólidas de oxalato o fosfato de calcio en las vías urinarias. Constituye una de las mayores emergencias incapacitantes en tránsito a Marte por el dolor severo (cólico nefrítico) y el riesgo de anuria obstructiva.
+### Renal Lithiasis (Kidney Stones)
+Formation of solid calcium oxalate or calcium phosphate concretions in the urinary tract. Represents one of the highest-severity incapacitating medical emergencies during Mars transit due to acute pain (renal colic) and risk of obstructive anuria.
 
 ### PVT (Psychomotor Vigilance Task)
-Prueba neuroconductual computarizada de 5 a 10 minutos que mide la velocidad de reacción motora ante estímulos visuales aleatorios. Evalúa la degradación de la atención sostenida provocada por privación de sueño y fatiga circadiana.
+Computerized 5-to-10-minute neurobehavioral test measuring motor reaction speed to random visual stimuli. Evaluates degradation of sustained attention caused by sleep deprivation and circadian fatigue.
 
-### Rejilla de Amsler (Amsler Grid)
-Instrumento diagnóstico oftálmico consistente en una cuadrícula con un punto central. Permite al tripulante detectar metamorfopsias (líneas onduladas) o escotomas (zonas ciegas), signos característicos de edema macular o aplanamiento retiniano en SANS.
+### Amsler Grid
+Ophthalmic diagnostic instrument consisting of a grid pattern with a central fixation dot. Enables a crew member to detect metamorphopsia (wavy lines) or scotomas (blind spots), characteristic signs of macular edema or retinal flattening in SANS.
 
-### Resorción Ósea Acelerada
-Pérdida acelerada de densidad mineral ósea (entre $1.0\%\text{ y }1.5\%$ mensual en fémur y vértebras lumbares) debida a la ausencia de estrés piezoeléctrico en microgravedad, incrementando drásticamente el riesgo de fracturas patológicas.
+### Accelerated Bone Resorption
+Rapid loss of bone mineral density (between $1.0\%\text{ and }1.5\%$ per month in the femur and lumbar vertebrae) caused by the absence of piezoelectric mechanical stress in microgravity, drastically increasing the risk of pathological fractures.
 
 ### SANS (Spaceflight Associated Neuro-ocular Syndrome)
-Síndrome neuro-ocular asociado al vuelo espacial. Condición patológica que afecta a tripulantes de misiones prolongadas, caracterizada por edema de la papila óptica (papiledema), aplanamiento del polo posterior del globo ocular, pliegues coroideos y desplazamientos hipermetrópicos de la refracción visual provocados por sobrepresión intracraneal.
+Pathological condition affecting long-duration spaceflight crews, characterized by optic disc edema (papilledema), posterior globe flattening, choroidal folds, and hyperopic refractive shifts driven by elevated intracranial pressure.
 
 ### SAS (Space Adaptation Syndrome)
-Síndrome de adaptación espacial (mareo del espacio). Afecta al $60-80\%$ de los astronautas durante las primeras 48 a 72 horas de microgravedad. Provocado por el conflicto sensorial entre el sistema vestibular (otolitos), la vista y los propioceptores musculares.
+Space motion sickness. Affects $60-80\%$ of astronauts during the first 48 to 72 hours of microgravity. Caused by sensory conflict between the vestibular system (otoliths), vision, and muscular proprioceptors.
 
-### Tono Vagal
-Actividad del nervio vago (décimo par craneal) que disminuye la frecuencia cardíaca y modula la relajación cardiovascular. Su supresión en misiones espaciales precede a arritmias y síncopes.
+### Vagal Tone
+Activity of the vagus nerve (tenth cranial nerve) that lowers heart rate and modulates cardiovascular relaxation. Its suppression during spaceflight precedes arrhythmias and syncope.
 
 ---
 
-## 2. Entorno Espacial, Hábitat y Peligros (R.I.D.G.E.)
+## 2. Space Environment, Habitat, and Hazards (R.I.D.G.E.)
 
-### Bolsa de Dióxido de Carbono ($CO_2$ Pocket)
-Acumulación localizada de aire exhalado con alta concentración de dióxido de carbono ($> 3950\text{ ppm}$) en zonas de la cabina donde falla la circulación forzada. En ausencia de gravedad no hay convección natural (el aire caliente no sube), por lo que un astronauta dormido puede asfixiarse en su propia nube de exhalación.
+### $CO_2$ Pocket (Carbon Dioxide Pocket)
+Localized accumulation of exhaled air with elevated carbon dioxide concentration ($> 3950\text{ ppm}$) in cabin zones where forced air circulation fails. In the absence of gravity, natural convection does not occur (warm air does not rise), creating a hazard where a sleeping astronaut could suffocate in their own exhalation cloud.
 
 ### CANS (Canadian Advanced Neutron Spectrometer)
-Espectrómetro avanzado de neutrones desarrollado por la Agencia Espacial Canadiense (CSA). Detecta y cuantifica en tiempo real el espectro de neutrones térmicos y rápidos en el interior de vehículos espaciales, los cuales representan aproximadamente el $30\%$ de la dosis biológica total recibida por la tripulación.
+Advanced neutron spectrometer developed by the Canadian Space Agency (CSA). Detects and quantifies in real time the thermal and fast neutron spectrum inside spacecraft, which accounts for approximately $30\%$ of the total biological radiation dose received by the crew.
 
 ### CDRA (Carbon Dioxide Removal Assembly)
-Sistema de regeneración ambiental de la cabina que absorbe dióxido de carbono mediante lechos de zeolita desecante y tamices moleculares, expulsando el gas al espacio o derivándolo al sistema Sabatier para recuperación de oxígeno.
+Cabin environmental regeneration system that adsorbs carbon dioxide using desiccant zeolite beds and molecular sieves, venting the gas overboard or routing it to the Sabatier reactor for oxygen recovery.
 
-### Dosímetro Personal Activo
-Dispositivo sensor electrónico portátil que mide la tasa de dosis instantánea ($\mu\text{Sv/h}$) y la dosis absorbida acumulada ($\text{mSv}$) por un astronauta individual, emitiendo alarmas sonoras al rebasar umbrales límite.
+### Active Personal Dosimeter
+Portable electronic sensor device that measures instantaneous radiation dose rate ($\mu\text{Sv/h}$) and cumulative absorbed dose ($\text{mSv}$) for an individual astronaut, emitting audible alarms when threshold limits are exceeded.
 
 ### ECLSS (Environmental Control and Life Support System)
-Conjunto de sistemas físico-químicos que presurizan la cabina, suministran oxígeno, eliminan dióxido de carbono y contaminantes traza, regulan la temperatura y humedad, y reciclan el agua en naves espaciales y hábitats.
+Suite of physicochemical systems that pressurize the cabin, supply oxygen, scrub carbon dioxide and trace contaminants, regulate temperature and humidity, and recycle water aboard spacecraft and habitats.
 
 ### GCR (Galactic Cosmic Rays)
-Rayos cósmicos galácticos. Partículas atómicas ionizadas de ultra-alta energía (protones y núcleos pesados HZE) provenientes del exterior del sistema solar. Constituyen una radiación de fondo continua y altamente penetrante en espacio profundo ($15 - 35\ \mu\text{Sv/h}$).
+Ultra-high-energy ionized atomic particles (protons and heavy HZE nuclei) originating outside the solar system. They form a continuous, highly penetrating background radiation field in deep space ($15 - 35\ \mu\text{Sv/h}$).
 
 ### HZE (High-Z and High-Energy Nuclei)
-Núcleos atómicos pesados totalmente ionizados (número atómico $Z > 2$, ej. núcleos de hierro $^{56}\text{Fe}$) que viajan a velocidades relativistas. Poseen una densidad de ionización tan extrema que atraviesan los blindajes de la nave y causan roturas complejas de doble cadena en el ADN humano.
+Fully ionized heavy atomic nuclei (atomic number $Z > 2$, e.g., iron nuclei $^{56}\text{Fe}$) traveling at relativistic speeds. Their extreme ionization density allows them to penetrate spacecraft shielding and cause complex double-strand breaks in human DNA.
 
-### Hipercapnia
-Nivel anormalmente elevado de dióxido de carbono disuelto en la sangre arterial ($\text{PaCO}_2 > 45\text{ mmHg}$). Provoca cefaleas pulsátiles, disnea, confusión cognitiva, visión borrosa y acidosis sistémica.
+### Hypercapnia
+Abnormally elevated concentration of dissolved carbon dioxide in arterial blood ($\text{PaCO}_2 > 45\text{ mmHg}$). Causes throbbing headaches, dyspnea, cognitive confusion, blurred vision, and systemic acidosis.
 
-### LiOH (Hidróxido de Litio)
-Compuesto químico utilizado en cartuchos desechables de absorción para atrapar dióxido de carbono de la atmósfera de la cabina mediante reacción exotérmica: $2\text{LiOH} + \text{CO}_2 \rightarrow \text{Li}_2\text{CO}_3 + \text{H}_2\text{O}$. Constituye el respaldo primario si falla el sistema regenerativo CDRA.
+### LiOH (Lithium Hydroxide)
+Chemical compound used in expendable scrubbing canisters to capture carbon dioxide from cabin air via an exothermic reaction: $2\text{LiOH} + \text{CO}_2 \rightarrow \text{Li}_2\text{CO}_3 + \text{H}_2\text{O}$. Serves as the primary backup if the regenerative CDRA system fails.
 
-### Microgravedad ($0\text{G}$)
-Estado de caída libre continua en órbita donde las fuerzas gravitacionales aparentes son virtualmente nulas ($10^{-6}\text{G}$), suprimiendo la sedimentación, la flotabilidad térmica y la presión hidrostática en el organismo humano.
+### Microgravity ($0\text{G}$)
+State of continuous orbital free fall in which apparent gravitational forces are virtually zero ($10^{-6}\text{G}$), suppressing sedimentation, thermal buoyancy, and hydrostatic pressure gradients in the human body.
 
 ### ppCO2 (Partial Pressure of Carbon Dioxide)
-Presión parcial de dióxido de carbono en la mezcla gaseosa de la atmósfera de la cabina, expresada en milímetros de mercurio ($\text{mmHg}$). Umbral nominal NASA $< 2.0\text{ mmHg}$; umbral crítico de violación de regla de vuelo $> 3.0\text{ mmHg}$ ($3950\text{ ppm}$).
+Partial pressure of carbon dioxide in the cabin atmospheric gas mixture, expressed in millimeters of mercury ($\text{mmHg}$). Nominal NASA threshold $< 2.0\text{ mmHg}$; critical flight rule violation threshold $> 3.0\text{ mmHg}$ ($3950\text{ ppm}$).
 
 ### R.I.D.G.E. Framework
-Marco de clasificación de riesgos humanos de la NASA para misiones de exploración interplanetaria: **R**adiation (Radiación cósmica y solar), **I**solation and Confinement (Aislamiento y confinamiento), **D**istance from Earth (Distancia a la Tierra / Sin evacuación), **G**ravity Fields (Campos de gravedad alternos: 0G, 1/6G lunar, 3/8G marciano), **E**nvironments (Entornos hostiles y cerrados del hábitat).
+NASA human risk classification framework for interplanetary exploration missions: **R**adiation (cosmic and solar radiation), **I**solation and Confinement, **D**istance from Earth (no evacuation), **G**ravity Fields (0G, 1/6G lunar, 3/8G Martian), and hostile closed **E**nvironments.
 
 ### SPE (Solar Particle Event)
-Evento de partículas solares (Tormenta Solar). Emisión masiva y repentina de protones de alta energía expulsados por el Sol durante eyecciones de masa coronal o fulguraciones. Provoca tasas de dosis letales ($> 100\text{ a }1000\ \mu\text{Sv/h}$) en cuestión de minutos en espacio profundo.
+Solar storm involving a sudden, massive emission of high-energy protons ejected by the Sun during coronal mass ejections or solar flares. Produces potentially lethal dose rates ($> 100\text{ to }1000\ \mu\text{Sv/h}$) within minutes in deep space.
 
 ### SPELs (Space Permissible Exposure Limits)
-Límites permisibles de exposición a radiación establecidos por la NASA para órganos críticos (cristalino, piel, sistema hematopoyético) y cuerpo entero, calibrados para no superar un riesgo de muerte por cáncer inducido por radiación (REIC) del $3\%$ al límite de confianza del $95\%$.
+Radiation exposure limits established by NASA for critical organs (ocular lens, skin, blood-forming organs) and whole-body exposure, calibrated not to exceed a $3\%$ Risk of Exposure-Induced Death (REIC) from cancer at the $95\%$ confidence limit.
 
-### Storm Shelter (Refugio Antirradiación Central)
-Compartimento interior del vehículo espacial ubicado en el centro de masa de la nave, rodeado por los tanques de agua potable, blindaje de polietileno hidrogenado y raciones alimentarias densas para maximizar la absorción de partículas ionizantes durante tormentas solares SPE.
+### Storm Shelter (Central Radiation Shelter)
+Interior spacecraft compartment located near the vehicle's center of mass, surrounded by potable water tanks, hydrogenated polyethylene shielding, and dense food rations to maximize ionizing particle attenuation during SPE solar storms.
 
 ---
 
-## 3. Ingeniería de Software, Aviónica y Redes de Espacio Profundo
+## 3. Software Engineering, Avionics, and Deep Space Networks
 
-### Bit-Flip (Inversión de Bit)
-Cambio espontáneo del estado lógico de una celda de memoria electrónica (de 0 a 1, o de 1 a 0) provocado por el impacto de un ion pesado o neutrón cósmico.
+### Bit-Flip
+Spontaneous change in the logical state of an electronic memory cell (from 0 to 1, or 1 to 0) caused by the strike of a heavy cosmic ion or neutron.
 
 ### Bundle Protocol (RFC 5050 / CCSDS 734.2-B-1)
-Protocolo de nivel de transporte y aplicación diseñado para Redes Tolerantes a Demoras (DTN). Encapsula datos en bloques autónomos (*bundles*) con almacenamiento persistente en cada nodo intermedio (*Store-and-Forward*), sin requerir una conexión de extremo a extremo continua.
+Transport- and application-layer protocol designed for Delay-Tolerant Networking (DTN). Encapsulates data into self-contained blocks (*bundles*) with persistent *Store-and-Forward* storage at each intermediate node, without requiring a continuous end-to-end connection.
 
 ### CRC32 (Cyclic Redundancy Check)
-Código detector de errores cíclico de 32 bits utilizado para validar que los paquetes de telemetría biomédica y ambiental transmitidos por bus no han sufrido corrupción física en el canal.
+32-bit cyclic error-detecting code used to verify that biomedical and environmental telemetry packets transmitted over a bus have not suffered physical corruption in transit.
 
 ### CRDT (Conflict-free Replicated Data Type)
-Tipo de dato abstracto replicado en múltiples nodos de una red distribuida que garantiza convergencia determinista automática sin requerir consenso central ni bloqueos, resolviendo escrituras concurrentes sin pérdida de información.
+Abstract data type replicated across multiple nodes in a distributed network that guarantees automatic deterministic convergence without requiring central consensus or locks, resolving concurrent writes without data loss.
 
 ### DTN (Delay-Tolerant Networking)
-Arquitectura de redes diseñada para comunicaciones en espacio profundo donde los retardos de propagación electromagnética van desde minutos hasta horas, y los enlaces sufren frecuentes interrupciones por rotación planetaria o conjunción solar.
+Network architecture designed for deep space communications where electromagnetic propagation delays range from minutes to hours, and links experience frequent interruptions due to planetary rotation or solar conjunction.
 
-### Edge Computing (Computación de Borde)
-Paradigma computacional donde el procesamiento de bioseñales, la ejecución de algoritmos y el almacenamiento de bases de datos se realizan localmente en el dispositivo físico de vuelo (nodo de cabina), sin enviar datos a servidores remotos ni a la nube.
+### Edge Computing
+Computational paradigm in which biosignal processing, algorithm execution, and database storage occur locally on the physical flight device (cabin node) without sending data to remote servers or the cloud.
 
 ### MAD (Median Absolute Deviation)
-Desviación absoluta respecto a la mediana. Medida estadística no paramétrica de dispersión, definida como $\text{mediana}(|x_i - \tilde{x}|)$. Es inmune a valores atípicos y extremos, siendo la base del cálculo del Z-Score Modificado.
+Non-parametric statistical measure of dispersion defined as $\text{median}(|x_i - \tilde{x}|)$. It is immune to extreme outliers and serves as the foundation for the Modified Z-Score calculation.
 
-### Modified Z-Score (Z-Score Modificado de Iglewicz & Hoaglin)
-Métrica estadística robusta utilizada para detectar anomalías en series de tiempo: $M_i = \frac{0.6745 \cdot (x_i - \tilde{x})}{\text{MAD}}$. Identifica variaciones significativas de salud cuando $|M_i| \ge 2.5$.
+### Modified Z-Score (Iglewicz & Hoaglin Modified Z-Score)
+Robust statistical metric used for anomaly detection in time series: $M_i = \frac{0.6745 \cdot (x_i - \tilde{x})}{\text{MAD}}$. Identifies significant physiological deviations when $|M_i| \ge 2.5$.
 
-### P2P Mesh Network (Red en Malla Punto a Punto)
-Topología de red local descentralizada donde cada tableta, monitor de mamparo y nodo de módulo se comunica directamente con sus pares vecinos, reenviando paquetes de telemetría de forma cooperativa sin un router o servidor maestro.
+### P2P Mesh Network (Peer-to-Peer Mesh Network)
+Decentralized local network topology where each tablet, bulkhead monitor, and module node communicates directly with neighboring peers, cooperatively forwarding telemetry packets without a master router or central server.
 
 ### SEU (Single-Event Upset)
-Efecto de evento único provocado por radiación. Perturbación transitoria en un circuito microelectrónico causada por el depósito de carga ionizante de una partícula cósmica, típicamente manifestada como un bit-flip en la memoria RAM o registros de la CPU.
+Radiation-induced transient perturbation in a microelectronic circuit caused by ionizing charge deposition from a cosmic particle, typically manifesting as a bit-flip in RAM or CPU registers.
 
 ### SQLite / SQLCipher
-Motor de base de datos relacional serverless, embebido y de alta confiabilidad (cumple ACID) que almacena los registros de vuelo en un único archivo en memoria flash, cifrado a nivel de bloque mediante algoritmo criptográfico AES-256.
+Serverless, embedded, high-reliability (ACID-compliant) relational database engine that stores flight records in a single flash-memory file, encrypted at the block level using the AES-256 cryptographic algorithm.
 
-### Vector Timestamps (Relojes Vectoriales)
-Mecanismo de ordenamiento causal en sistemas distribuidos que asigna marcas de tiempo relativas a cada evento para reconciliar el historial médico entre tabletas tras una partición de red.
+### Vector Timestamps (Vector Clocks)
+Causal ordering mechanism in distributed systems that assigns relative logical timestamps to each event to reconcile medical histories across tablets following a network partition.
 
 ### Zero-Ping Architecture
-Arquitectura de software que asume una latencia de red externa infinita. Ningún hilo de ejecución ni flujo de interfaz se bloquea esperando respuestas de un servidor externo; todas las operaciones clínicas son $100\%$ locales y autónomas.
+Software architecture that assumes infinite external network latency. No execution thread or UI workflow ever blocks waiting for responses from an external server; all clinical operations are $100\%$ local and autonomous.
 
 ---
 
-## 4. Misión, Operaciones de Vuelo y Programas de la NASA
+## 4. Mission, Flight Operations, and NASA Programs
 
-### Conjunción Solar de Marte
-Alineación geométrica que ocurre cada 26 meses en la cual el Sol se interpone directamente entre la Tierra y Marte. El plasma solar ionizado bloquea y corrompe por completo las ondas de radio electromagnéticas durante aproximadamente dos semanas, aislando a la tripulación de cualquier contacto con Houston.
+### Mars Solar Conjunction
+Geometric alignment occurring every 26 months in which the Sun passes directly between Earth and Mars. Ionized solar plasma completely blocks and corrupts electromagnetic radio waves for approximately two weeks, isolating the crew from any contact with Houston.
 
 ### DSN (Deep Space Network)
-Red de Espacio Profundo de la NASA. Red global de antenas parabólicas gigantes ubicadas en Goldstone (California), Madrid (España) y Canberra (Australia), coordinadas por el Jet Propulsion Laboratory (JPL) para rastrear y comunicar sondas interplanetarias.
+NASA's global network of giant parabolic antennas located in Goldstone (California), Madrid (Spain), and Canberra (Australia), coordinated by the Jet Propulsion Laboratory (JPL) to track and communicate with interplanetary spacecraft.
 
 ### DTE (Direct-to-Earth Communication)
-Enlace de comunicaciones de radio de alta ganancia establecido directamente entre el vehículo espacial interplanetario y las estaciones terrenas de la DSN sin pasar por satélites repetidores intermedios.
+High-gain radio communications link established directly between an interplanetary spacecraft and DSN ground stations without passing through intermediate relay satellites.
 
 ### EVA (Extravehicular Activity)
-Actividad extravehicular (paseo espacial). Operación donde el astronauta sale de la atmósfera presurizada de la nave al vacío del espacio vestido con un traje autónomo presurizado. Exige máxima estabilidad cardiovascular y vigilancia fisiológica continua.
+Spacewalk operation in which an astronaut exits the pressurized spacecraft atmosphere into the vacuum of space wearing an autonomous pressurized suit. Requires maximum cardiovascular stability and continuous physiological monitoring.
 
-### Flight Surgeon (Cirujano de Vuelo)
-Médico especialista en medicina aeroespacial asignado por el Centro de Control de Misión (JSC en Houston) responsable de la salud, seguridad médica y aptitud psicofisiológica de la tripulación antes, durante y después del vuelo.
+### Flight Surgeon
+Aerospace medicine specialist physician assigned by Mission Control Center (JSC in Houston) responsible for crew health, medical safety, and psychophysiological fitness before, during, and after flight.
 
 ### Inspiration4 (SpaceX / OSD-574)
-Primera misión espacial tripulada con una tripulación enteramente civil (septiembre de 2021). Voló a $585\text{ km}$ de altitud (más alto que la ISS). Sus datos fisiológicos, genómicos y microbiómicos constituyen el estudio **NASA OSDR OSD-574**, fuente de los 4 sujetos de referencia de ASTHA (`C001` a `C004`).
+First orbital spaceflight with an all-civilian crew (September 2021), flying at $585\text{ km}$ altitude (higher than the ISS). Its physiological, genomic, and microbiome datasets comprise **NASA OSDR OSD-574**, the source of ASTHA's 4 reference subjects (`C001` through `C004`).
 
 ### IVA (Intravehicular Activity)
-Actividad intravehicular. Trabajo y vida de la tripulación en el interior del volumen presurizado y climatizado de la nave espacial o estación.
+Crew work and habitation inside the pressurized, climate-controlled volume of a spacecraft or space station.
 
 ### MET (Mission Elapsed Time)
-Tiempo transcurrido de misión. Sistema de referencia temporal estándar de la NASA que inicia su cuenta en $000:00:00$ en el instante exacto del despegue (*Ignition/Liftoff*), prescindiendo de las zonas horarias terrestres.
+Standard NASA time reference system that starts counting at $000:00:00$ at the exact instant of liftoff (*Ignition/Liftoff*), independent of Earth time zones.
 
-### No MEDEVAC Scenario (Sin Evacuación Médica)
-Restricción operacional insoslayable de misiones interplanetarias hacia Marte. A millones de kilómetros de distancia, un aborto de misión hacia la Tierra toma entre 6 y 9 meses por las leyes de la mecánica orbital, exigiendo que todo diagnóstico y tratamiento de soporte vital se resuelva íntegramente a bordo.
+### No MEDEVAC Scenario
+Unavoidable operational constraint of interplanetary missions to Mars. Millions of kilometers from Earth, a return abort takes 6 to 9 months under orbital mechanics laws, requiring all diagnostics and life-support treatments to be resolved entirely onboard.
 
-### RTT (Round-Trip Time / Latencia de Ida y Vuelta)
-Tiempo total que tarda una señal de radio que viaja a la velocidad de la luz ($300,000\text{ km/s}$) en viajar desde la nave espacial hasta la Tierra y regresar con una respuesta. En la órbita de Marte varía entre **6 minutos (mínima aproximación)** y **44 minutos (máxima distancia)**.
+### RTT (Round-Trip Time)
+Total time required for a radio signal traveling at the speed of light ($300,000\text{ km/s}$) to travel from the spacecraft to Earth and return with a response. Along the Mars trajectory, RTT ranges from **6 minutes (closest approach)** to **44 minutes (maximum separation)**.
 
 ---
 
-## 5. Acrónimos, Estándares y Organizaciones Reguladoras
+## 5. Acronyms, Standards, and Regulatory Organizations
 
-| Acrónimo | Nombre Completo en Inglés | Descripción Institucional |
+| Acronym | Full Name | Institutional Description |
 | :--- | :--- | :--- |
-| **AES-256** | Advanced Encryption Standard 256-bit | Estándar de cifrado simétrico de bloque militar y aeroespacial utilizado para blindar los expedientes médicos en reposo. |
-| **BDD** | Behavior-Driven Development | Metodología de desarrollo guiado por el comportamiento que formula criterios en lenguaje natural estructurado (Dado / Cuando / Entonces). |
-| **BLE** | Bluetooth Low Energy | Protocolo de radiofrecuencia de ultra-bajo consumo a 2.4 GHz utilizado para transmitir bioseñales desde la SmartShirt al nodo ASTHA. |
-| **CCSDS** | Consultative Committee for Space Data Systems | Organización internacional que define los estándares mandatorios de comunicaciones, paquetes y telemetría espacial (ej. DTN). |
-| **CMO** | Crew Medical Officer | Oficial Médico de la Tripulación. Astronauta con entrenamiento clínico intensivo de emergencia responsable de la salud del equipo. |
-| **CSA / ASC** | Canadian Space Agency / Agence Spatiale Canadienne | Agencia Espacial Canadiense. Desarrolladora de la indumentaria Bio-Monitor (SmartShirt) y del espectrómetro de neutrones CANS. |
-| **ESA** | European Space Agency | Agencia Espacial Europea. Desarrolladora del módulo científico Columbus y de protocolos de investigación cardiovascular en microgravedad. |
-| **HRP** | Human Research Program | Programa de Investigación Humana de la NASA dedicado al estudio, cuantificación y mitigación de los riesgos para la salud de los astronautas. |
-| **IEEE** | Institute of Electrical and Electronics Engineers | Instituto técnico global co-creador de estándares de requisitos como ISO/IEC/IEEE 29148. |
-| **ISO** | International Organization for Standardization | Organización internacional que emite estándares de calidad, seguridad y desarrollo de sistemas informáticos. |
-| **JAXA** | Japan Aerospace Exploration Agency | Agencia de Exploración Aeroespacial de Japón. |
-| **JSC** | Lyndon B. Johnson Space Center | Centro Espacial Johnson de la NASA en Houston, Texas. Sede del control de misión y de la dirección médica de vuelos tripulados. |
-| **NASA** | National Aeronautics and Space Administration | Agencia espacial civil del gobierno de los Estados Unidos. |
-| **NASA-STD-3001** | Space Flight Human-System Standard | Norma técnica mandatoria de la NASA que define los requisitos de salud médica de la tripulación (Vol 1) y factores humanos de habitabilidad (Vol 2). |
-| **NPR 7150.2** | NASA Software Engineering Requirements | Directriz de ingeniería de software de la NASA que categoriza y audita los sistemas según su criticidad de seguridad y misión. |
-| **NPR 8705.2C** | Human-Rating Requirements for Space Systems | Requisitos formales de certificación de vuelo que un sistema debe satisfacer para poder albergar y sostener vidas humanas en el espacio. |
-| **OSDR** | Open Science Data Repository | Repositorio de Ciencia Abierta de la NASA (antiguo GeneLab) que aloja datos genómicos, proteómicos y clínicos de vuelos espaciales. |
-| **RTM** | Requirements Traceability Matrix | Matriz de Trazabilidad de Requisitos. Documento que audita la correlación bidireccional entre necesidades, diseño, código y verificación. |
-| **SRS** | Software Requirements Specification | Especificación de Requisitos de Software formalizada según el estándar internacional ISO/IEC/IEEE 29148. |
-| **UML** | Unified Modeling Language | Lenguaje gráfico estandarizado para especificar, visualizar, construir y documentar artefactos de sistemas de software orientados a objetos. |
-| **V&V** | Verification and Validation | Proceso de ingeniería que certifica que el software cumple las especificaciones técnicas (*Verification*) y satisface el objetivo médico de vuelo (*Validation*). |
-| **WCAG 2.1** | Web Content Accessibility Guidelines | Pautas de accesibilidad para contenido web que regulan el contraste cromático, fuentes legibles y diseño accesible para personas con daltonismo. |
+| **AES-256** | Advanced Encryption Standard 256-bit | Military- and aerospace-grade symmetric block cipher standard used to protect medical records at rest. |
+| **BDD** | Behavior-Driven Development | Software development methodology that specifies acceptance criteria in structured natural language (Given / When / Then). |
+| **BLE** | Bluetooth Low Energy | Ultra-low-power 2.4 GHz RF protocol used to stream biosignals from the SmartShirt to the ASTHA node. |
+| **CCSDS** | Consultative Committee for Space Data Systems | International organization defining mandatory standards for space communications, packets, and telemetry (e.g., DTN). |
+| **CMO** | Crew Medical Officer | Astronaut with intensive emergency clinical training responsible for onboard crew health. |
+| **CSA / ASC** | Canadian Space Agency / Agence Spatiale Canadienne | Canadian Space Agency. Developer of the Bio-Monitor (SmartShirt) wearable and the CANS neutron spectrometer. |
+| **ESA** | European Space Agency | Developer of the Columbus science module and microgravity cardiovascular research protocols. |
+| **HRP** | Human Research Program | NASA program dedicated to studying, quantifying, and mitigating health risks to astronauts. |
+| **IEEE** | Institute of Electrical and Electronics Engineers | Global technical institute and co-author of requirements engineering standards such as ISO/IEC/IEEE 29148. |
+| **ISO** | International Organization for Standardization | International body issuing quality, safety, and software engineering standards. |
+| **JAXA** | Japan Aerospace Exploration Agency | National aerospace and space exploration agency of Japan. |
+| **JSC** | Lyndon B. Johnson Space Center | NASA center in Houston, Texas; headquarters for Mission Control and human spaceflight medical operations. |
+| **NASA** | National Aeronautics and Space Administration | Civil space agency of the United States government. |
+| **NASA-STD-3001** | Space Flight Human-System Standard | Mandatory NASA technical standard defining crew health requirements (Vol 1) and habitability human factors (Vol 2). |
+| **NPR 7150.2** | NASA Software Engineering Requirements | NASA directive that classifies and audits software systems based on safety and mission criticality. |
+| **NPR 8705.2C** | Human-Rating Requirements for Space Systems | Formal flight certification requirements that a system must satisfy to safely house and sustain human life in space. |
+| **OSDR** | Open Science Data Repository | NASA Open Science Data Repository (formerly GeneLab) hosting spaceflight genomic, proteomic, and clinical datasets. |
+| **RTM** | Requirements Traceability Matrix | Engineering audit document linking requirements, design, implementation, and verification bidirectionally. |
+| **SRS** | Software Requirements Specification | Formal specification of software requirements compliant with international standard ISO/IEC/IEEE 29148. |
+| **UML** | Unified Modeling Language | Standardized graphical language for specifying, visualizing, constructing, and documenting object-oriented software systems. |
+| **V&V** | Verification and Validation | Engineering process certifying that software meets technical specifications (*Verification*) and fulfills its medical flight purpose (*Validation*). |
+| **WCAG 2.1** | Web Content Accessibility Guidelines | Accessibility standard governing color contrast, readable typography, and colorblind-safe interface design. |
 
 ---
 
-*Glosario formal generado para el repositorio oficial del proyecto ASTHA en el NASA Space Apps Challenge.*
+*Formal glossary generated for the official ASTHA project repository at the NASA Space Apps Challenge.*

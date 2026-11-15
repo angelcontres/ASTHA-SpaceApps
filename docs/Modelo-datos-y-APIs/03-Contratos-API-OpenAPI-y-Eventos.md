@@ -1,50 +1,50 @@
-# 🔌 Diseño de APIs y Contratos de Comunicación — ASTHA
+# 🔌 API Design & Communication Contracts — ASTHA
 ### Autonomous Space Telemetry & Health Analytics | NASA Space Apps Challenge 2026
-**Especificación Formal:** [openapi.yaml](openapi.yaml) (OpenAPI 3.1.0) · **ADRs:** [002](../SDD/08-Architecture-decisions.md#adr-002), [005](../SDD/08-Architecture-decisions.md#adr-005), [007](../SDD/08-Architecture-decisions.md#adr-007), [008](../SDD/08-Architecture-decisions.md#adr-008), [009](../SDD/08-Architecture-decisions.md#adr-009), [010](../SDD/08-Architecture-decisions.md#adr-010), [014](../SDD/08-Architecture-decisions.md#adr-014)
+**Formal Specification:** [openapi.yaml](openapi.yaml) (OpenAPI 3.1.0) · **ADRs:** [002](../SDD/08-Architecture-decisions.md#adr-002), [005](../SDD/08-Architecture-decisions.md#adr-005), [007](../SDD/08-Architecture-decisions.md#adr-007), [008](../SDD/08-Architecture-decisions.md#adr-008), [009](../SDD/08-Architecture-decisions.md#adr-009), [010](../SDD/08-Architecture-decisions.md#adr-010), [014](../SDD/08-Architecture-decisions.md#adr-014)
 
 ---
 
-## 1. Mapa de Fronteras e Interfaces del Sistema
+## 1. System Boundary & Interface Map
 
-Conforme a **[ADR-002](../SDD/08-Architecture-decisions.md#adr-002)** y **[ADR-008](../SDD/08-Architecture-decisions.md#adr-008)**, ASTHA no consume ninguna API en la nube. Todas las interfaces de red operan dentro de la **LAN aislada de la nave (`https://astha.local`)** o mediante contratos locales en memoria (`postMessage` / archivo firmado):
+In accordance with **[ADR-002](../SDD/08-Architecture-decisions.md#adr-002)** and **[ADR-008](../SDD/08-Architecture-decisions.md#adr-008)**, ASTHA consumes zero cloud APIs. All network interfaces operate within the **spacecraft's isolated LAN (`https://astha.local`)** or through in-memory local contracts (`postMessage` / signed file):
 
 ```mermaid
 flowchart LR
-    UI["Crew PWA UI (Svelte 5)"] <-->|"1. Contratos postMessage<br>(< 50ms Triage, ADR-005)"| Workers["Clinical & Data Workers"]
+    UI["Crew PWA UI (Svelte 5)"] <-->|"1. postMessage Contracts<br>(< 50ms Triage, ADR-005)"| Workers["Clinical & Data Workers"]
     Workers <==>|"2. OpenAPI REST / WSS TLS 1.3<br>(https://astha.local, ADR-008)"| Hub["ASTHA Sync Hub (Rust)"]
-    Hub -->|"3. Solo Semáforo + ECLSS<br>(GET /habitat/status, ADR-014)"| Cabin["Pantallas de Cabina"]
-    Sensors["Adaptador Sensores Futuro (SRS §5.2)"] -->|"4. Contrato JSON Ingesta<br>(POST /ingest/telemetry)"| Workers
-    Workers -.->|"5. Archivo JSON Firmado Ed25519<br>(Entrega externa al DTN, ADR-010)"| DSN["Router DTN Nave -> Houston"]
+    Hub -->|"3. Traffic Light + ECLSS Only<br>(GET /habitat/status, ADR-014)"| Cabin["Cabin Displays"]
+    Sensors["Future Sensor Adapter (SRS §5.2)"] -->|"4. JSON Ingestion Contract<br>(POST /ingest/telemetry)"| Workers
+    Workers -.->|"5. Ed25519-Signed JSON File<br>(External handoff to DTN, ADR-010)"| DSN["Spacecraft DTN Router -> Houston"]
 ```
 
 ---
 
-## 2. API REST & WebSocket del Sync Hub (`https://astha.local:8443/api/v1`)
+## 2. Sync Hub REST & WebSocket API (`https://astha.local:8443/api/v1`)
 
-La especificación completa importable en Swagger/OpenAPI se encuentra en **[openapi.yaml](openapi.yaml)**.
+The complete specification importable into Swagger/OpenAPI is located in **[openapi.yaml](openapi.yaml)**.
 
-### 2.1 Resumen de Endpoints (LAN Cerrada TLS 1.3 con CA Interna `ADR-007`)
+### 2.1 Endpoint Summary (Closed LAN TLS 1.3 with Internal CA `ADR-007`)
 
-| Método | Ruta | Propósito | Seguridad y Privacidad (`ADR-012` / `ADR-014`) | Trazabilidad |
+| Method | Path | Purpose | Security & Privacy (`ADR-012` / `ADR-014`) | Traceability |
 | :--- | :--- | :--- | :--- | :--- |
-| **`GET`** | `/health` | Comprobar disponibilidad del Sync Hub, versión del bundle PWA y secuencia del Op-Log | Certificado CA interna de la nave (`ADR-007`) | `RNF-NET-03` |
-| **`POST`** | `/sync/handshake` | Intercambiar `VersionVector` del dispositivo y validar firma `Ed25519` | Dispositivo previamente inscrito en Tierra (`ADR-020`) | `RNF-NET-02`, `ADR-009` |
-| **`GET`** | `/sync/deltas` | Obtener lista de sobres `EncryptedEnvelope` faltantes desde un vector dado | **Zero-Knowledge:** el Hub solo sirve ciphertext AES-GCM (`ADR-006`) | `ADR-008`, `ADR-009` |
-| **`POST`** | `/sync/deltas` | Enviar nuevos sobres cifrados generados en modo desconectado al Op-Log | Verificación de firma `Ed25519` y hash `SHA-256` por registro | `RNF-SEC-03`, `RNF-SEC-04` |
-| **`GET`** | `/habitat/status` | Consultar telemetría ambiental (`ppCO2`, `O2`, radiación) y semáforo global por tripulante | **Sin valores clínicos privados** (cumple Privacy Act / HIPAA `ADR-014`) | `RF-DSH-04`, `ADR-014` |
-| **`POST`** | `/ingest/telemetry` | Contrato de adaptador futuro para recibir tramas JSON de sensores físicos (Astroskin / ECLSS) | Validación estricta de límites (`RF-ING-05`: marca dudosos sin descartar) | `SRS §5.2`, `RF-ING-01..02` |
+| **`GET`** | `/health` | Check Sync Hub availability, PWA bundle version, and Op-Log sequence | Spacecraft internal CA certificate (`ADR-007`) | `RNF-NET-03` |
+| **`POST`** | `/sync/handshake` | Exchange device `VersionVector` and validate `Ed25519` signature | Device pre-enrolled on Earth (`ADR-020`) | `RNF-NET-02`, `ADR-009` |
+| **`GET`** | `/sync/deltas` | Retrieve list of missing `EncryptedEnvelope` envelopes from a given vector | **Zero-Knowledge:** Hub only serves AES-GCM ciphertext (`ADR-006`) | `ADR-008`, `ADR-009` |
+| **`POST`** | `/sync/deltas` | Submit new encrypted envelopes generated offline to the Op-Log | Per-record `Ed25519` signature and `SHA-256` hash verification | `RNF-SEC-03`, `RNF-SEC-04` |
+| **`GET`** | `/habitat/status` | Query environmental telemetry (`ppCO2`, `O2`, radiation) and global traffic light per crew member | **No private clinical values** (Privacy Act / HIPAA compliant `ADR-014`) | `RF-DSH-04`, `ADR-014` |
+| **`POST`** | `/ingest/telemetry` | Future adapter contract for receiving JSON frames from physical sensors (Astroskin / ECLSS) | Strict boundary validation (`RF-ING-05`: flags suspect values without discarding) | `SRS §5.2`, `RF-ING-01..02` |
 
-### 2.2 Canal en Tiempo Real WebSocket (`wss://astha.local:8443/ws/sync`)
-* **Keep-Alive pasivo (`RNF-POW-01`):** El Hub envía *ping frames* a nivel de protocolo WebSocket para mantener el canal sin despertar JS en los dispositivos clientes.
-* **Mensajes transmitidos:**
-  1. `DELTA_PUSH`: Difusión inmediata de un nuevo `EncryptedEnvelope` firmado entre tabletas y consola del CMO.
-  2. `ALARM_ESCALATION` (**`ADR-013`**): Replicación de alarma crítica no reconocida tras **2 minutos** hacia la consola del CMO y tras **5 minutos** hacia las pantallas públicas de cabina (solo semáforo global `ADR-014`).
+### 2.2 Real-Time WebSocket Channel (`wss://astha.local:8443/ws/sync`)
+* **Passive Keep-Alive (`RNF-POW-01`):** The Hub sends WebSocket protocol-level *ping frames* to maintain the channel without waking JS on client devices.
+* **Transmitted Messages:**
+  1. `DELTA_PUSH`: Immediate broadcast of a newly signed `EncryptedEnvelope` across tablets and the CMO console.
+  2. `ALARM_ESCALATION` (**`ADR-013`**): Replication of an unacknowledged critical alarm after **2 minutes** to the CMO console and after **5 minutes** to public cabin displays (global traffic light only `ADR-014`).
 
 ---
 
-## 3. Contratos Internos entre Web Workers (`postMessage`, `ADR-005`)
+## 3. Internal Contracts Between Web Workers (`postMessage`, `ADR-005`)
 
-Dado que el `Clinical Engine Worker` tiene prohibido por arquitectura usar `fetch` o `WebSocket`, la comunicación interna sigue este contrato de mensajes tipados en TypeScript:
+Because the `Clinical Engine Worker` is architecturally prohibited from using `fetch` or `WebSocket`, internal communication follows this TypeScript-typed message contract:
 
 ### 3.1 UI / Data Worker $\to$ `Clinical Engine Worker`
 
@@ -62,7 +62,7 @@ Dado que el `Clinical Engine Worker` tiene prohibido por arquitectura usar `fetc
 }
 ```
 
-### 3.2 `Clinical Engine Worker` $\to$ UI Svelte 5 (`< 50 ms`, `RNF-PER-01`)
+### 3.2 `Clinical Engine Worker` $\to$ Svelte 5 UI (`< 50 ms`, `RNF-PER-01`)
 
 ```json
 {
@@ -80,10 +80,10 @@ Dado que el `Clinical Engine Worker` tiene prohibido por arquitectura usar `fetc
       "countermeasure": {
         "protocolId": "PROTO-CO2-HEADACHE",
         "steps": [
-          "1. Verificar flujo de ventilación en compartimento actual.",
-          "2. Inspeccionar indicador de cartucho LiOH / depurador CDRA.",
-          "3. Trasladar al tripulante a módulo con ppCO2 < 2.0 mmHg.",
-          "4. Repetir medición de SpO2 y cefalea tras 15 minutos."
+          "1. Verify ventilation flow in current compartment.",
+          "2. Inspect LiOH cartridge indicator / CDRA scrubber.",
+          "3. Relocate crew member to a module with ppCO2 < 2.0 mmHg.",
+          "4. Repeat SpO2 and headache assessment after 15 minutes."
         ]
       }
     }
@@ -96,8 +96,8 @@ Dado que el `Clinical Engine Worker` tiene prohibido por arquitectura usar `fetc
 
 ---
 
-## 4. Contrato de Exportación Firmada para Tierra (`ADR-010`, `RNF-NET-04`)
+## 4. Signed Export Contract for Earth Downlink (`ADR-010`, `RNF-NET-04`)
 
-ASTHA finaliza la cadena de red generando localmente un archivo descargable `astha_export_signed.json` que el CMO entrega al router/transpondedor DTN externo de la nave:
-* **Endpoint de previsualización/validación local:** Definido en `openapi.yaml` bajo el esquema `SignedDsnExport`.
-* **Integridad y privacidad:** Incluye `ed25519Signature` del dispositivo del CMO y flag `isAnonymized: true` si la exportación se destina a análisis estadístico no clínico (`ADR-012`).
+ASTHA concludes its network chain by locally generating a downloadable `astha_export_signed.json` file that the CMO hands off to the spacecraft's external DTN router/transponder:
+* **Local preview/validation endpoint:** Defined in `openapi.yaml` under the `SignedDsnExport` schema.
+* **Integrity & privacy:** Includes `ed25519Signature` from the CMO's device and the `isAnonymized: true` flag if the export is intended for non-clinical statistical analysis (`ADR-012`).

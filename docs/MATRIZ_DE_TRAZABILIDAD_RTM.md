@@ -1,47 +1,47 @@
-# 🧭 Matriz de Trazabilidad de Requisitos (RTM - Requirements Traceability Matrix)
+# 🧭 Requirements Traceability Matrix (RTM)
 ### ASTHA — Autonomous Deep-Space Health Guardian & CDSS
-**Estándares Mandatorios:** NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2) | ISO/IEC/IEEE 29148:2018 | NASA-STD-8739.8 (SDD) | NASA-STD-3001 Vol 1 & 2
+**Mandatory Standards:** NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2) | ISO/IEC/IEEE 29148:2018 | NASA-STD-8739.8 (SDD) | NASA-STD-3001 Vol 1 & 2
 
 ---
 
-## 🎯 1. Propósito y Enfoque de Trazabilidad Bidireccional
+## 🎯 1. Purpose and Bidirectional Traceability Approach
 
-En proyectos aeroespaciales y de soporte de vida de la NASA, la **Trazabilidad Bidireccional (Forward & Backward Traceability)** es un requisito de certificación mandatorio (*Human-Rating Certification NPR 8705.2C*). Garantiza dos principios fundamentales:
+In NASA aerospace and life-support projects, **Bidirectional Traceability (Forward & Backward Traceability)** is a mandatory certification requirement (*Human-Rating Certification NPR 8705.2C*). It enforces two fundamental principles:
 
-1. **Trazabilidad Hacia Adelante (Forward Traceability):** Cada peligro espacial identificado en el marco **NASA R.I.D.G.E.** y cada necesidad médica en el viaje a Marte tiene una traducción directa en requisitos, casos de uso, código fuente implementado y procedimientos de prueba. No existen requisitos huérfanos.
-2. **Trazabilidad Hacia Atrás (Backward Traceability):** Cada función, botón y línea de código en la aplicación táctica (`index.html`) responde estrictamente a un requisito documentado y justificado por la normativa de vuelo espacial. No existe código superfluo (*Zero Gold-Plating*).
+1. **Forward Traceability:** Every space hazard identified in the **NASA R.I.D.G.E.** framework and every medical need on a Mars transit has a direct mapping to requirements, use cases, implemented source code, and test procedures. There are no orphan requirements.
+2. **Backward Traceability:** Every feature, button, and line of code in the tactical application (`index.html`) strictly corresponds to a documented requirement justified by spaceflight standards. There is no superfluous code (*Zero Gold-Plating*).
 
 ---
 
-## 🔄 2. Cadena de Trazabilidad del Sistema (Traceability Flow)
+## 🔄 2. System Traceability Chain (Traceability Flow)
 
 ```mermaid
 flowchart TD
-    subgraph Dominio["1. Dominio y Riesgos Espaciales"]
-        R1["NASA R.I.D.G.E. Framework<br/>(Radiation, SANS, CO2, Aislamiento, Gravedad)"]
+    subgraph Dominio["1. Domain & Space Hazards"]
+        R1["NASA R.I.D.G.E. Framework<br/>(Radiation, SANS, CO2, Isolation, Gravity)"]
     end
 
-    subgraph Especificacion["2. Especificación Formal de Requisitos"]
-        SRS_F["Requisitos Funcionales SRS (RF-ING, RF-EVA, RF-DER, RF-GUI, RF-ANA, RF-DSH, RF-OFF)"]
-        SRS_NF["Requisitos No Funcionales SRS (RNF-POW, RNF-USA, RNF-SEC, RNF-NET)"]
+    subgraph Especificacion["2. Formal Requirements Specification"]
+        SRS_F["SRS Functional Requirements (RF-ING, RF-EVA, RF-DER, RF-GUI, RF-ANA, RF-DSH, RF-OFF)"]
+        SRS_NF["SRS Non-Functional Requirements (RNF-POW, RNF-USA, RNF-SEC, RNF-NET)"]
     end
 
-    subgraph DisenoAgil["3. Diseño Operacional y Arquitectura SDD"]
-        CU["12 Casos de Uso Formales (CU-01 a CU-12)<br/>UML 2.5"]
-        HU["20 Historias de Usuario (HU-01 a HU-20)<br/>BDD Gherkin"]
-        SDD["Colección Modular SDD (IEEE 1016 / NASA-STD-8739.8)<br/>docs/SDD/ (01 a 07: Clases, Secuencia, Componentes, Despliegue)"]
+    subgraph DisenoAgil["3. Operational Design & SDD Architecture"]
+        CU["12 Formal Use Cases (CU-01 to CU-12)<br/>UML 2.5"]
+        HU["20 User Stories (HU-01 to HU-20)<br/>BDD Gherkin"]
+        SDD["Modular SDD Collection (IEEE 1016 / NASA-STD-8739.8)<br/>docs/SDD/ (01 to 07: Classes, Sequence, Components, Deployment)"]
     end
 
-    subgraph Implementacion["4. Implementación en Código (Edge Prototype)"]
-        CODE1["index.html: Motor de Bioseñales & Telemetría (telemetryDataset / Inspiration4)"]
-        CODE2["index.html: Mapa Anatómico Táctico Interactivo (selectOrgan / SVG Hotspots)"]
-        CODE3["index.html: Simulador de Crisis en Vivo (injectCrisis: SPE, CO2, SANS)"]
-        CODE4["index.html: NASA OSDR API Explorer v2 (openOsdrModal / 116 Estudios Humanos)"]
+    subgraph Implementacion["4. Code Implementation (Edge Prototype)"]
+        CODE1["index.html: Biosignals & Telemetry Engine (telemetryDataset / Inspiration4)"]
+        CODE2["index.html: Interactive Tactical Anatomical Map (selectOrgan / SVG Hotspots)"]
+        CODE3["index.html: Live Crisis Simulator (injectCrisis: SPE, CO2, SANS)"]
+        CODE4["index.html: NASA OSDR API Explorer v2 (openOsdrModal / 116 Human Studies)"]
     end
 
-    subgraph Validacion["5. Verificación y Aceptación (NASA V&V)"]
-        AC["13 Criterios de Aceptación (AC-CLIN y AC-TECH)<br/>Métodos NASA: I / A / D / T"]
-        PASS["100% CONFORME / PASS (Compliance Matrix)"]
+    subgraph Validacion["5. Verification & Acceptance (NASA V&V)"]
+        AC["13 Acceptance Criteria (AC-CLIN & AC-TECH)<br/>NASA Methods: I / A / D / T"]
+        PASS["100% COMPLIANT / PASS (Compliance Matrix)"]
     end
 
     R1 --> SRS_F
@@ -67,107 +67,107 @@ flowchart TD
 
 ---
 
-## 📑 3. Matriz Maestra de Trazabilidad End-to-End (RTM)
+## 📑 3. Master End-to-End Traceability Matrix (RTM)
 
-A continuación se detalla el mapeo cruzado completo entre **Requisitos SRS**, **Casos de Uso (CU)**, **Historias de Usuario (HU)**, **Criterios de Aceptación (AC)**, **Componentes de Código (`index.html`)** y los **Estándares y Datasets Oficiales de la NASA**:
+Below is the complete cross-mapping across **SRS Requirements**, **Use Cases (CU)**, **User Stories (HU)**, **Acceptance Criteria (AC)**, **Code Components (`index.html`)**, and **Official NASA Standards and Datasets**:
 
-### 3.1. Módulo de Ingesta, Telemetría y Bioseñales
+### 3.1. Ingestion, Telemetry, and Biosignals Module
 
-| ID Requisito | Descripción del Requisito | Caso de Uso (CU) | Historia de Usuario (HU) | Criterio de Aceptación (AC) | Método NASA | Implementación en Código (`index.html`) | Estándar / Dataset NASA | Estado |
+| Requirement ID | Requirement Description | Use Case (CU) | User Story (HU) | Acceptance Criterion (AC) | NASA Method | Code Implementation (`index.html`) | NASA Standard / Dataset | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- | :---: |
-| **RF-ING-01** | Ingesta de bioseñales continua a 1 Hz desde SmartShirt | `CU-01` | `HU-01` | `AC-CLIN-01` | **T** | `telemetryDataset`, `toggleLiveStream()` (L389-435, L671-692) | CSA Bio-Monitor / Astroskin | **CONFORME** |
-| **RF-ING-02** | Ingesta de telemetría ambiental (CO₂, radiación CANS) | `CU-02` | `HU-03` | `AC-CLIN-04`, `AC-CLIN-05` | **T** | `top-radiation`, `top-co2`, `badge-radiation` (L89-96, L504-505) | NASA-STD-3001 Vol 2 / CSA CANS | **CONFORME** |
-| **RF-ING-03** | Registro manual rápido de síntomas por tripulante | `CU-03` | `HU-04` | `AC-CLIN-06` | **D** | `selectOrgan('general')`, `info-organ-box` (L193-210, L566-592) | Human Factors / ISO 9241-11 | **CONFORME** |
-| **RF-ING-04** | Ingesta de datasets oficiales de referencia NASA OSDR | `CU-01` | `HU-18` | `AC-CLIN-01` | **I** | `telemetryDataset` Inspiration4 `OSD-574` (L389-435, `data/nasa_real_human_telemetry.json`) | NASA OSDR OSD-574 / GLDS-566 | **CONFORME** |
-| **RF-ING-05** | Validación y descarte de valores físicamente imposibles | `CU-01` | `HU-01` | `AC-CLIN-01` | **T** | `initChart()` con `suggestedMin: 50, suggestedMax: 160` (L482-494) | NASA-STD-3001 Vol 1 Limits | **CONFORME** |
+| **RF-ING-01** | Continuous biosignal ingestion at 1 Hz from SmartShirt | `CU-01` | `HU-01` | `AC-CLIN-01` | **T** | `telemetryDataset`, `toggleLiveStream()` (L389-435, L671-692) | CSA Bio-Monitor / Astroskin | **COMPLIANT** |
+| **RF-ING-02** | Environmental telemetry ingestion (CO₂, CANS radiation) | `CU-02` | `HU-03` | `AC-CLIN-04`, `AC-CLIN-05` | **T** | `top-radiation`, `top-co2`, `badge-radiation` (L89-96, L504-505) | NASA-STD-3001 Vol 2 / CSA CANS | **COMPLIANT** |
+| **RF-ING-03** | Rapid manual symptom entry per crew member | `CU-03` | `HU-04` | `AC-CLIN-06` | **D** | `selectOrgan('general')`, `info-organ-box` (L193-210, L566-592) | Human Factors / ISO 9241-11 | **COMPLIANT** |
+| **RF-ING-04** | Ingestion of official NASA OSDR reference datasets | `CU-01` | `HU-18` | `AC-CLIN-01` | **I** | `telemetryDataset` Inspiration4 `OSD-574` (L389-435, `data/nasa_real_human_telemetry.json`) | NASA OSDR OSD-574 / GLDS-566 | **COMPLIANT** |
+| **RF-ING-05** | Validation and flagging/discarding of physically impossible values | `CU-01` | `HU-01` | `AC-CLIN-01` | **T** | `initChart()` with `suggestedMin: 50, suggestedMax: 160` (L482-494) | NASA-STD-3001 Vol 1 Limits | **COMPLIANT** |
 
 ---
 
-### 3.2. Módulo de Evaluación Clínica y Reglas Fisiológicas
+### 3.2. Clinical Evaluation and Physiological Rules Module
 
-| ID Requisito | Descripción del Requisito | Caso de Uso (CU) | Historia de Usuario (HU) | Criterio de Aceptación (AC) | Método NASA | Implementación en Código (`index.html`) | Estándar / Dataset NASA | Estado |
+| Requirement ID | Requirement Description | Use Case (CU) | User Story (HU) | Acceptance Criterion (AC) | NASA Method | Code Implementation (`index.html`) | NASA Standard / Dataset | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- | :---: |
-| **RF-EVA-01** | Clasificación en Nominal, Precaución y Crítico según NASA | `CU-05` | `HU-01`, `HU-06` | `AC-CLIN-01` | **T** | `updateUI()` lógica de umbrales sistólicos $\ge 140$ (L515-532) | NASA-STD-3001 Vol 1 Sec 4.2 | **CONFORME** |
-| **RF-EVA-02** | Estado global del tripulante = peor estado de sus indicadores | `CU-04` | `HU-08` | `AC-CLIN-01` | **T** | `updateUI()` y botón de estado tripulante (L500-532) | Medical Operations NASA | **CONFORME** |
-| **RF-EVA-03** | Mapeo de hallazgos a sistemas de órganos (neuro-ocular, etc.) | `CU-04` | `HU-05` | `AC-CLIN-07` | **D** | `selectOrgan()`: eyes, heart, kidneys, bones (L566-592) | NASA Human Body Organ Triage | **CONFORME** |
-| **RF-EVA-04** | Reglas de correlación ambiental-fisiológica (CO₂ + cefalea / SPE) | `CU-02` | `HU-03`, `HU-10` | `AC-CLIN-04`, `AC-CLIN-05` | **A, T** | `injectCrisis('SPE')`, `injectCrisis('CO2')` (L595-635) | NASA Flight Rule / ECLSS SPELs | **CONFORME** |
-| **RF-EVA-05** | Detección de privación de sueño sostenida ($< 5.5\text{ h}$, $\ge 2\text{ d}$) | `CU-01` | `HU-02` | `AC-CLIN-01` | **T** | Lógica de fatiga en `telemetryDataset` (L390-435) | NASA HRP Fatigue Countermeasures | **CONFORME** |
-| **RF-EVA-06** | Explicabilidad clínica de alertas (causa, valor y umbral) | `CU-05` | `HU-06` | `AC-CLIN-03` | **I** | `action-title`, `action-desc` dinámicos (L321-326, L599-601) | Explainable AI in Medicine (XAI) | **CONFORME** |
-| **RF-EVA-07** | Evaluación autónoma sin paquetes de red enviados | `CU-01` | `HU-13` | `AC-TECH-03` | **T** | `updateUI()` ejecuta 100% cliente sin llamadas fetch (L499-550) | Mars Zero-Ping Constraints | **CONFORME** |
+| **RF-EVA-01** | Classification into Nominal, Caution, and Critical per NASA | `CU-05` | `HU-01`, `HU-06` | `AC-CLIN-01` | **T** | `updateUI()` systolic threshold logic $\ge 140$ (L515-532) | NASA-STD-3001 Vol 1 Sec 4.2 | **COMPLIANT** |
+| **RF-EVA-02** | Global crew status = worst status among their indicators | `CU-04` | `HU-08` | `AC-CLIN-01` | **T** | `updateUI()` and crew status button (L500-532) | Medical Operations NASA | **COMPLIANT** |
+| **RF-EVA-03** | Mapping findings to organ systems (neuro-ocular, etc.) | `CU-04` | `HU-05` | `AC-CLIN-07` | **D** | `selectOrgan()`: eyes, heart, kidneys, bones (L566-592) | NASA Human Body Organ Triage | **COMPLIANT** |
+| **RF-EVA-04** | Environmental-physiological correlation rules (CO₂ + headache / SPE) | `CU-02` | `HU-03`, `HU-10` | `AC-CLIN-04`, `AC-CLIN-05` | **A, T** | `injectCrisis('SPE')`, `injectCrisis('CO2')` (L595-635) | NASA Flight Rule / ECLSS SPELs | **COMPLIANT** |
+| **RF-EVA-05** | Detection of sustained sleep deprivation ($< 5.5\text{ h}$, $\ge 2\text{ d}$) | `CU-01` | `HU-02` | `AC-CLIN-01` | **T** | Fatigue logic in `telemetryDataset` (L390-435) | NASA HRP Fatigue Countermeasures | **COMPLIANT** |
+| **RF-EVA-06** | Clinical explainability of alerts (cause, value, and threshold) | `CU-05` | `HU-06` | `AC-CLIN-03` | **I** | Dynamic `action-title`, `action-desc` (L321-326, L599-601) | Explainable AI in Medicine (XAI) | **COMPLIANT** |
+| **RF-EVA-07** | Autonomous evaluation with zero network packets sent | `CU-01` | `HU-13` | `AC-TECH-03` | **T** | `updateUI()` executes 100% client-side with no fetch calls (L499-550) | Mars Zero-Ping Constraints | **COMPLIANT** |
 
 ---
 
-### 3.3. Módulo de Detección de Deriva Fisiológica (Z-Score Modificado)
+### 3.3. Physiological Drift Detection Module (Modified Z-Score)
 
-| ID Requisito | Descripción del Requisito | Caso de Uso (CU) | Historia de Usuario (HU) | Criterio de Aceptación (AC) | Método NASA | Implementación en Código (`index.html`) | Estándar / Dataset NASA | Estado |
+| Requirement ID | Requirement Description | Use Case (CU) | User Story (HU) | Acceptance Criterion (AC) | NASA Method | Code Implementation (`index.html`) | NASA Standard / Dataset | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- | :---: |
-| **RF-DER-01** | Regresión lineal y proyección a 7 días sobre ventana móvil | `CU-06` | `HU-07` | `AC-CLIN-02` | **A** | `initChart()` cálculo de series de tendencia histórica (L442-496) | Hoaglin & Iglewicz (1993) | **CONFORME** |
-| **RF-DER-02** | Alerta predictiva antes del cruce de umbral absoluto | `CU-06` | `HU-07` | `AC-CLIN-02` | **A, T** | `status-bp`, proyección en `C003` fase FD-01 a FD-02 (L418-420) | Predictive Clinical Decision Support | **CONFORME** |
-| **RF-DER-03** | Comparación contra línea base pre-vuelo (`L-44`) | `CU-06` | `HU-07`, `HU-18` | `AC-CLIN-02` | **T** | `setPhaseIndex(0)` compara FD vs L-44 (L395, L406, L417, L428) | NASA Baseline Health Standards | **CONFORME** |
-| **RF-DER-04** | Detección de patrones combinados (sueño decreciente + PAS) | `CU-06` | `HU-02` | `AC-CLIN-02` | **T** | Dataset `C003`: caída de HRV a 19.5 ms con PAS 144 (L419) | Autonomic Deprivation Index | **CONFORME** |
+| **RF-DER-01** | Linear regression and 7-day projection over rolling window | `CU-06` | `HU-07` | `AC-CLIN-02` | **A** | `initChart()` historical trend series computation (L442-496) | Hoaglin & Iglewicz (1993) | **COMPLIANT** |
+| **RF-DER-02** | Predictive warning prior to absolute threshold crossing | `CU-06` | `HU-07` | `AC-CLIN-02` | **A, T** | `status-bp`, projection in `C003` phase FD-01 to FD-02 (L418-420) | Predictive Clinical Decision Support | **COMPLIANT** |
+| **RF-DER-03** | Comparison against pre-flight baseline (`L-44`) | `CU-06` | `HU-07`, `HU-18` | `AC-CLIN-02` | **T** | `setPhaseIndex(0)` compares FD vs L-44 (L395, L406, L417, L428) | NASA Baseline Health Standards | **COMPLIANT** |
+| **RF-DER-04** | Combined pattern detection (decreasing sleep + SBP) | `CU-06` | `HU-02` | `AC-CLIN-02` | **T** | Dataset `C003`: HRV drop to 19.5 ms with SBP 144 (L419) | Autonomic Deprivation Index | **COMPLIANT** |
 
 ---
 
-### 3.4. Módulo de Guía de Contramedidas y Procedimientos
+### 3.4. Countermeasures and Procedures Guide Module
 
-| ID Requisito | Descripción del Requisito | Caso de Uso (CU) | Historia de Usuario (HU) | Criterio de Aceptación (AC) | Método NASA | Implementación en Código (`index.html`) | Estándar / Dataset NASA | Estado |
+| Requirement ID | Requirement Description | Use Case (CU) | User Story (HU) | Acceptance Criterion (AC) | NASA Method | Code Implementation (`index.html`) | NASA Standard / Dataset | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- | :---: |
-| **RF-GUI-01** | Estructura en 3 bloques: qué ocurre, severidad y acciones | `CU-07` | `HU-09` | `AC-CLIN-06` | **I** | Bloques HTML en `checklist-container`, `badge-urgency` (L311-342) | NASA Flight Procedures Handbook | **CONFORME** |
-| **RF-GUI-02** | Pasos secuenciales y verificables con casillas (`checkbox`) | `CU-07` | `HU-09` | `AC-CLIN-06` | **D** | `checklist-container` con checkboxes interactivos (L328-341, L602-615) | Aviation Checklist Methodology | **CONFORME** |
-| **RF-GUI-03** | Restricción estricta a recursos disponibles en nave espacial | `CU-07` | `HU-09` | `AC-CLIN-06` | **I** | Acciones citan LBNP, Amsler, ARED, Storm Shelter, LiOH (L331-340) | Spacecraft Medical Inventory | **CONFORME** |
-| **RF-GUI-04** | Lenguaje no médico y comprensible para ingenieros/pilotos | `CU-07` | `HU-09` | `AC-CLIN-06` | **I** | Textos en español simple: "Colocar pantalones LBNP a -35 mmHg" | Human-Centered Design for Space | **CONFORME** |
-| **RF-GUI-05** | Preparación de informe médico asíncrono para Houston | `CU-11` | `HU-14` | `AC-TECH-05` | **T** | `data/nasa_real_human_telemetry.json` empaquetado estructurado | CCSDS DTN Bundle Protocol RFC 5050 | **CONFORME** |
+| **RF-GUI-01** | 3-block structure: what is happening, severity, and actions | `CU-07` | `HU-09` | `AC-CLIN-06` | **I** | HTML blocks in `checklist-container`, `badge-urgency` (L311-342) | NASA Flight Procedures Handbook | **COMPLIANT** |
+| **RF-GUI-02** | Sequential, verifiable steps with checkboxes (`checkbox`) | `CU-07` | `HU-09` | `AC-CLIN-06` | **D** | `checklist-container` with interactive checkboxes (L328-341, L602-615) | Aviation Checklist Methodology | **COMPLIANT** |
+| **RF-GUI-03** | Strict restriction to resources available aboard the spacecraft | `CU-07` | `HU-09` | `AC-CLIN-06` | **I** | Actions reference LBNP, Amsler, ARED, Storm Shelter, LiOH (L331-340) | Spacecraft Medical Inventory | **COMPLIANT** |
+| **RF-GUI-04** | Non-medical language intelligible to engineers/pilots | `CU-07` | `HU-09` | `AC-CLIN-06` | **I** | Plain-language text: "Apply LBNP suit at -35 mmHg" | Human-Centered Design for Space | **COMPLIANT** |
+| **RF-GUI-05** | Preparation of asynchronous medical report for Houston | `CU-11` | `HU-14` | `AC-TECH-05` | **T** | `data/nasa_real_human_telemetry.json` structured bundle | CCSDS DTN Bundle Protocol RFC 5050 | **COMPLIANT** |
 
 ---
 
-### 3.5. Módulo de Modelo Anatómico y Visualización Táctica
+### 3.5. Anatomical Model and Tactical Visualization Module
 
-| ID Requisito | Descripción del Requisito | Caso de Uso (CU) | Historia de Usuario (HU) | Criterio de Aceptación (AC) | Método NASA | Implementación en Código (`index.html`) | Estándar / Dataset NASA | Estado |
+| Requirement ID | Requirement Description | Use Case (CU) | User Story (HU) | Acceptance Criterion (AC) | NASA Method | Code Implementation (`index.html`) | NASA Standard / Dataset | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- | :---: |
-| **RF-ANA-01** | Modelo anatómico táctico interactivo con vista corporal | `CU-04` | `HU-05` | `AC-CLIN-07` | **D** | SVG interactivo `viewBox="0 0 200 380"` (L176-201) | Medical UI Ergonomics | **CONFORME** |
-| **RF-ANA-02** | Hotspots clicables: ojos/cabeza, tórax, riñones, huesos | `CU-04` | `HU-05` | `AC-CLIN-07` | **D** | `#organ-eyes`, `#organ-chest`, `#organ-lumbar`, `#organ-femur` (L178-200) | Organ System Architecture | **CONFORME** |
-| **RF-ANA-03** | Doble codificación: color + icono / pulso para daltonismo | `CU-04` | `HU-05` | `AC-CLIN-07` | **I** | Animación `.pulse-danger`, clases CSS y badges de texto (L36-42, L520-530) | WCAG 2.1 AAA / NASA Spaceflight | **CONFORME** |
-| **RF-ANA-04** | Al pulsar órgano, despliega estado, fisiopatología y guía | `CU-04` | `HU-05` | `AC-CLIN-07` | **D** | `selectOrgan(organ)` actualiza `info-organ-box` (L566-592) | Contextual Clinical Triage | **CONFORME** |
-| **RF-DSH-01** | Tarjetas de signos vitales con valores, unidades y semáforo | `CU-01` | `HU-01` | `AC-CLIN-01` | **I** | Tarjetas FC, PA, SpO2, HRV con rangos nominales impresos (L220-285) | Astronaut Medical Dashboard | **CONFORME** |
-| **RF-DSH-02** | Curva temporal interactiva con Chart.js | `CU-01` | `HU-01` | `AC-CLIN-01` | **D** | `telemetryChart` con curvas de PA sistólica y pulso (L305-307, L442-496) | Real-Time Telemetry Trends | **CONFORME** |
-| **RF-DSH-03** | Selector de los 4 tripulantes reales de Inspiration4 | `CU-04` | `HU-08`, `HU-18` | `AC-CLIN-01` | **D** | Botones de tripulante `btn-C001` a `btn-C004` (L116-145, L551-558) | Inspiration4 Crew Profiles | **CONFORME** |
-| **RF-DSH-04** | Barra de estado de hábitat (CANS radiación, ppCO₂ cabina) | `CU-02` | `HU-03` | `AC-CLIN-04` | **I** | `top-radiation`, `top-co2` en barra superior (L89-96) | Space Habitat Life Support | **CONFORME** |
+| **RF-ANA-01** | Interactive tactical anatomical model with body view | `CU-04` | `HU-05` | `AC-CLIN-07` | **D** | Interactive SVG `viewBox="0 0 200 380"` (L176-201) | Medical UI Ergonomics | **COMPLIANT** |
+| **RF-ANA-02** | Clickable hotspots: eyes/head, thorax, kidneys, bones | `CU-04` | `HU-05` | `AC-CLIN-07` | **D** | `#organ-eyes`, `#organ-chest`, `#organ-lumbar`, `#organ-femur` (L178-200) | Organ System Architecture | **COMPLIANT** |
+| **RF-ANA-03** | Dual coding: color + icon / pulse for color blindness | `CU-04` | `HU-05` | `AC-CLIN-07` | **I** | `.pulse-danger` animation, CSS classes, and text badges (L36-42, L520-530) | WCAG 2.1 AAA / NASA Spaceflight | **COMPLIANT** |
+| **RF-ANA-04** | Tapping organ displays status, pathophysiology, and guide | `CU-04` | `HU-05` | `AC-CLIN-07` | **D** | `selectOrgan(organ)` updates `info-organ-box` (L566-592) | Contextual Clinical Triage | **COMPLIANT** |
+| **RF-DSH-01** | Vital sign cards with values, units, and status indicator | `CU-01` | `HU-01` | `AC-CLIN-01` | **I** | HR, BP, SpO2, HRV cards with printed nominal ranges (L220-285) | Astronaut Medical Dashboard | **COMPLIANT** |
+| **RF-DSH-02** | Interactive time-series curve with Chart.js | `CU-01` | `HU-01` | `AC-CLIN-01` | **D** | `telemetryChart` with systolic BP and heart rate curves (L305-307, L442-496) | Real-Time Telemetry Trends | **COMPLIANT** |
+| **RF-DSH-03** | Selector for the 4 real Inspiration4 crew members | `CU-04` | `HU-08`, `HU-18` | `AC-CLIN-01` | **D** | Crew buttons `btn-C001` to `btn-C004` (L116-145, L551-558) | Inspiration4 Crew Profiles | **COMPLIANT** |
+| **RF-DSH-04** | Habitat status bar (CANS radiation, cabin ppCO₂) | `CU-02` | `HU-03` | `AC-CLIN-04` | **I** | `top-radiation`, `top-co2` in top status bar (L89-96) | Space Habitat Life Support | **COMPLIANT** |
 
 ---
 
-### 3.6. Módulo de Requisitos No Funcionales (RNF)
+### 3.6. Non-Functional Requirements Module (RNF)
 
-| ID Requisito | Descripción del Requisito | Caso de Uso (CU) | Historia de Usuario (HU) | Criterio de Aceptación (AC) | Método NASA | Implementación en Código (`index.html`) | Estándar / Restricción de Vuelo | Estado |
+| Requirement ID | Requirement Description | Use Case (CU) | User Story (HU) | Acceptance Criterion (AC) | NASA Method | Code Implementation (`index.html`) | Flight Standard / Constraint | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- | :---: |
-| **RNF-POW-01** | Consumo eléctrico sostenido en reposo $< 5\text{ W}$ | `CU-12` | `HU-20` | `AC-TECH-02` | **T** | Arquitectura DOM estática y liviana, sin frameworks pesados (L1-675) | Spacecraft Power Budget Rules | **CONFORME** |
-| **RNF-POW-02** | Carga de CPU sostenida $< 15\%$ de un solo núcleo | `CU-12` | `HU-20` | `AC-TECH-02` | **T** | Tasa de cálculo optimizada por eventos sin bucles infinitos `while(true)` | Thermal Dissipation in Vacuum | **CONFORME** |
-| **RNF-POW-03** | Modo de contingencia eléctrica a 0.2 fps en batería crítica | `CU-12` | `HU-20` | `AC-TECH-02` | **D, T** | Modo de bajo refresco controlado por temporizadores pasivos (L671-692) | Emergency Avionics Protocols | **CONFORME** |
-| **RNF-USA-01** | Lenguaje intuitivo sin jerga médica y checklists paso a paso | `CU-07` | `HU-09` | `AC-CLIN-06` | **I** | Textos verificados para tripulantes en condiciones de estrés y fatiga | Cognitive Load Reduction | **CONFORME** |
-| **RNF-USA-02** | Tiempo de respuesta táctil $< 100\text{ ms}$ al interactuar | `CU-04` | `HU-05` | `AC-TECH-01` | **T** | Funciones JavaScript nativas síncronas sin llamadas bloqueantes (L551-592) | ISO 9241-11 Usability | **CONFORME** |
-| **RNF-USA-03** | Accesibilidad WCAG 2.1 AAA: doble canal y alto contraste | `CU-04` | `HU-05` | `AC-CLIN-07` | **I** | Esquema táctico oscuro de alto contraste y animaciones pulsantes | Human-System Integration NASA | **CONFORME** |
-| **RNF-SEC-01** | Cifrado en reposo AES-256 de bases de datos médicas | `CU-10` | `HU-16` | `AC-TECH-06` | **T** | Estructura de almacenamiento desacoplada compatible con SQLCipher | Medical Privacy & HIPPA Space Act | **CONFORME** |
-| **RNF-SEC-04** | Detección y recuperación de bit-flips por radiación (SEU) | `CU-10` | `HU-16` | `AC-TECH-06` | **T** | Checksums CRC32 en paquetes y persistencia atómica local | NASA Single-Event Upset Avionics | **CONFORME** |
-| **RNF-NET-01** | Operación 100% Offline (Zero-Ping en trayecto a Marte) | `CU-01` | `HU-13` | `AC-TECH-03` | **T** | Código autónomo embebido; despliegue funcional en archivo local `index.html` | Mars Communication Constraints | **CONFORME** |
-| **RNF-NET-02** | Sincronización descentralizada P2P en malla sin servidor | `CU-10` | `HU-15` | `AC-TECH-04` | **T** | Esquema de reconciliación basado en tipos de datos CRDT | Distributed Edge Computing | **CONFORME** |
-| **RNF-NET-03** | Formato DTN Bundle Protocol (RFC 5050) para Houston | `CU-11` | `HU-14` | `AC-TECH-05` | **T** | Formato de telemetría estructurado en JSON comprimible (`data/`) | CCSDS Delay-Tolerant Networking | **CONFORME** |
+| **RNF-POW-01** | Sustained idle electrical power draw $< 5\text{ W}$ | `CU-12` | `HU-20` | `AC-TECH-02` | **T** | Static, lightweight DOM architecture without heavy frameworks (L1-675) | Spacecraft Power Budget Rules | **COMPLIANT** |
+| **RNF-POW-02** | Sustained CPU load $< 15\%$ of a single core | `CU-12` | `HU-20` | `AC-TECH-02` | **T** | Event-driven computation rate with no `while(true)` infinite loops | Thermal Dissipation in Vacuum | **COMPLIANT** |
+| **RNF-POW-03** | Low-power contingency mode at 0.2 fps on critical battery | `CU-12` | `HU-20` | `AC-TECH-02` | **D, T** | Low-refresh mode controlled by passive timers (L671-692) | Emergency Avionics Protocols | **COMPLIANT** |
+| **RNF-USA-01** | Intuitive language without medical jargon and step-by-step checklists | `CU-07` | `HU-09` | `AC-CLIN-06` | **I** | Copy verified for crew members under stress and fatigue | Cognitive Load Reduction | **COMPLIANT** |
+| **RNF-USA-02** | Touch response time $< 100\text{ ms}$ upon interaction | `CU-04` | `HU-05` | `AC-TECH-01` | **T** | Synchronous native JavaScript functions with no blocking calls (L551-592) | ISO 9241-11 Usability | **COMPLIANT** |
+| **RNF-USA-03** | WCAG 2.1 AAA accessibility: dual-channel and high contrast | `CU-04` | `HU-05` | `AC-CLIN-07` | **I** | High-contrast dark tactical scheme and pulsing animations | Human-System Integration NASA | **COMPLIANT** |
+| **RNF-SEC-01** | AES-256 encryption at rest for medical databases | `CU-10` | `HU-16` | `AC-TECH-06` | **T** | Decoupled storage structure compatible with SQLCipher | Medical Privacy & HIPPA Space Act | **COMPLIANT** |
+| **RNF-SEC-04** | Detection and recovery from radiation-induced bit-flips (SEU) | `CU-10` | `HU-16` | `AC-TECH-06` | **T** | CRC32 checksums on packets and atomic local persistence | NASA Single-Event Upset Avionics | **COMPLIANT** |
+| **RNF-NET-01** | 100% Offline operation (Zero-Ping on Mars transit) | `CU-01` | `HU-13` | `AC-TECH-03` | **T** | Embedded standalone code; functional deployment in local `index.html` | Mars Communication Constraints | **COMPLIANT** |
+| **RNF-NET-02** | Decentralized serverless P2P mesh synchronization | `CU-10` | `HU-15` | `AC-TECH-04` | **T** | Reconciliation scheme based on CRDT data types | Distributed Edge Computing | **COMPLIANT** |
+| **RNF-NET-03** | DTN Bundle Protocol format (RFC 5050) for Houston | `CU-11` | `HU-14` | `AC-TECH-05` | **T** | Structured telemetry format in compressible JSON (`data/`) | CCSDS Delay-Tolerant Networking | **COMPLIANT** |
 
 ---
 
-## 📈 4. Análisis Estadístico de Cobertura de Requisitos (Gap Analysis)
+## 📈 4. Statistical Requirements Coverage Analysis (Gap Analysis)
 
-| Métrica de Ingeniería de Requisitos | Valor Auditado | Meta de Vuelo NASA | Estado de Auditoría |
+| Requirements Engineering Metric | Audited Value | NASA Flight Target | Audit Status |
 | :--- | :---: | :---: | :---: |
-| **Total de Requisitos del SRS (RF + RNF)** | **31** | 31 | **100.0% Especificados** |
-| **Cobertura por Casos de Uso (CU)** | **31 / 31 (100%)** | 100% | **0 Requisitos Huérfanos** |
-| **Cobertura por Historias de Usuario (HU)** | **31 / 31 (100%)** | 100% | **0 Requisitos sin Valor de Usuario** |
-| **Cobertura por Criterios de Aceptación (AC)** | **31 / 31 (100%)** | 100% | **100% Verificables con Métodos I/A/D/T** |
-| **Componentes de Código Trazados en Prototipo** | **31 / 31 (100%)** | $\ge 90\%$ | **100% Implementados en `index.html`** |
-| **Funciones de Código sin Requisito Justificado** | **0 (Zero)** | 0 | **0% Gold-Plating (Código Eficiente)** |
+| **Total SRS Requirements (RF + RNF)** | **31** | 31 | **100.0% Specified** |
+| **Coverage by Use Cases (CU)** | **31 / 31 (100%)** | 100% | **0 Orphan Requirements** |
+| **Coverage by User Stories (HU)** | **31 / 31 (100%)** | 100% | **0 Requirements Without User Value** |
+| **Coverage by Acceptance Criteria (AC)** | **31 / 31 (100%)** | 100% | **100% Verifiable via I/A/D/T Methods** |
+| **Code Components Traced in Prototype** | **31 / 31 (100%)** | $\ge 90\%$ | **100% Implemented in `index.html`** |
+| **Code Features Without Justified Requirement** | **0 (Zero)** | 0 | **0% Gold-Plating (Lean Code)** |
 
 ---
 
-## 🏆 5. Certificación de Trazabilidad y Veredicto de Vuelo
+## 🏆 5. Traceability Certification and Flight Verdict
 
-La presente Matriz de Trazabilidad demuestra que el software **ASTHA** cumple con las directrices de ingeniería de software de la NASA (**NPR 7150.2 Clase B: Non-Flight Human-Support Space Software**), cerrando de forma determinista la brecha entre el exposoma hostil del espacio profundo y la interfaz de usuario en manos de los astronautas.
+This Traceability Matrix demonstrates that the **ASTHA** software complies with NASA software engineering guidelines (**NPR 7150.2 Class B: Non-Flight Human-Support Space Software**), deterministically closing the gap between the hostile deep-space exposome and the user interface in the hands of the astronauts.
 
-* **Resultado Global de la Auditoría RTM:** **APROBADO — 100% CONFORME (PASS)**.
+* **Overall RTM Audit Result:** **APPROVED — 100% COMPLIANT (PASS)**.
