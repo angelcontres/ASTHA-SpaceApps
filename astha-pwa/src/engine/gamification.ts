@@ -1,5 +1,5 @@
 // RF-GAM-01..03: XP, rachas y medallas. Se ejecuta DESPUÉS de emitir el triage y nunca afecta a las alertas.
-import type { DailyMeasurement, Gamification } from './types';
+import type { DailyMeasurement, Gamification, GamificationCarry } from './types';
 
 export const GAM = {
   exerciseMin: 150,
@@ -8,7 +8,7 @@ export const GAM = {
   xpPerLevel: 500,
 };
 
-function dayXp(m: DailyMeasurement): number {
+export function dayXp(m: DailyMeasurement): number {
   let xp = 0;
   if ((m.exerciseMin ?? 0) >= GAM.exerciseMin) xp += GAM.xp.exercise;
   if ((m.waterL ?? 0) >= GAM.waterL) xp += GAM.xp.hydration;
@@ -16,8 +16,8 @@ function dayXp(m: DailyMeasurement): number {
   return xp;
 }
 
-export function scoreGamification(history: DailyMeasurement[], bonusXp = 0): Gamification {
-  let xp = bonusXp;
+export function scoreGamification(history: DailyMeasurement[], bonusXp = 0, carry?: GamificationCarry): Gamification {
+  let xp = bonusXp + (carry?.xp ?? 0);
   for (const m of history) xp += dayXp(m);
 
   // Racha: días consecutivos (hasta hoy) con ≥ 150 min de ejercicio.
@@ -29,6 +29,8 @@ export function scoreGamification(history: DailyMeasurement[], bonusXp = 0): Gam
     streak++;
     expected--;
   }
+  // La racha llega al hueco de la ventana de entrada: continúa con la racha arrastrada.
+  if (carry && streak > 0 && carry.streak > 0 && expected === carry.streakEndDay) streak += carry.streak;
   const today = history.at(-1);
   return {
     xp,
