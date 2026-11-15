@@ -6,6 +6,7 @@ import { resolveProtocol } from './countermeasures';
 import { baselineFor, combinedPattern, DRIFT, modifiedZ, trendFor, type Trend } from './drift';
 import { scoreGamification } from './gamification';
 import { aggregateRegions, mapIndicator, regionOfSystem } from './organMapper';
+import { SeriesMatrix } from './series';
 import { applySustained } from './sustained';
 import { validateValue } from './validator';
 import {
@@ -85,11 +86,13 @@ export function evaluate(input: EvaluationInput): Assessment {
     }
   };
 
+  // Una sola matriz Float32 por evaluación: los detectores de deriva leen columnas sin copiar (issue #5).
+  const series = SeriesMatrix.from(history);
   for (const id of CREW_INDICATORS) {
-    const trend = DRIFT.indicators.includes(id) && today ? trendFor(id, history) : null;
+    const trend = DRIFT.indicators.includes(id) && today ? trendFor(id, series) : null;
     trends[id] = trend;
     let z: number | null = null;
-    const base = DRIFT.indicators.includes(id) ? baselineFor(id, history) : null;
+    const base = DRIFT.indicators.includes(id) ? baselineFor(id, series) : null;
     const raw = today?.[id];
     if (base && typeof raw === 'number') z = modifiedZ(raw, base);
     pushIndicator(id, raw, trend, z);
