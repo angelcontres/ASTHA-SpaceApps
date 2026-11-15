@@ -99,6 +99,18 @@
       Importar historial firmado (.json)
       <input type="file" accept="application/json,.json" class="sr-only" onchange={importFile} />
     </label>
+    {#if bridge.data.enrollment}
+      <details class="enroll">
+        <summary class="label">Sync Hub enrollment record (ADR-020)</summary>
+        {#if bridge.data.enrollment.alg !== 'Ed25519'}
+          <p class="err small">This browser signs with {bridge.data.enrollment.alg}; the Sync Hub accepts Ed25519 devices only.</p>
+        {/if}
+        <pre class="num">{JSON.stringify({ deviceId: bridge.data.enrollment.deviceId, publicJwk: bridge.data.enrollment.publicJwk })}</pre>
+        <button type="button" class="btn" onclick={() => navigator.clipboard?.writeText(JSON.stringify({ deviceId: bridge.data.enrollment!.deviceId, publicJwk: bridge.data.enrollment!.publicJwk }))}>
+          Copy for devices.json
+        </button>
+      </details>
+    {/if}
     <button type="button" class="btn" disabled={bridge.activeRole !== 'cmo'} onclick={() => bridge.loadReferenceDataset()}>
       Load reference dataset (OSD-574-calibrated, 90 days)
     </button>
@@ -140,4 +152,7 @@
   .detail { flex: 1 1 100%; color: var(--text-muted); font-size: 0.9375rem; }
   @media (max-width: 1023px) { .sim { grid-template-columns: 1fr; } }
   .small { font-size: 0.875rem; }
+  .enroll pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.8125rem; margin: 8px 0; }
+  .enroll summary { cursor: pointer; min-height: var(--touch); display: flex; align-items: center; }
+  .err { color: var(--alert-red-text); }
 </style>

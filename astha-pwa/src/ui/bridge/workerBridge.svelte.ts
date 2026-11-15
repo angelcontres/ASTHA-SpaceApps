@@ -32,7 +32,7 @@ export interface HabitatTelemetry {
 const EMPTY_STATE: DataState = {
   ready: false, provisioning: false, session: null, crew: [], selectedCrew: '', day: 0, maxDay: 180, playing: false,
   activeScenarios: [], symptoms: {}, acks: [], checks: {}, overrides: [], prefs: { ...DEFAULT_PREFS }, xp: {},
-  syncStatus: 'disabled', quarantinedCount: 0, lockedCount: 0, recoveredCount: 0, nodeId: '',
+  syncStatus: 'disabled', quarantinedCount: 0, lockedCount: 0, recoveredCount: 0, nodeId: '', enrollment: null,
 };
 
 const HABITAT_SET = new Set<string>(HABITAT_INDICATORS);

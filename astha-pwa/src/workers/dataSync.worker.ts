@@ -6,7 +6,7 @@
 // Sin polling: todo responde a mensajes; el único temporizador es el del reloj simulado en reproducción.
 import { CATALOG, resolveProtocol } from '../engine/countermeasures';
 import type { Alert, Assessment } from '../engine/types';
-import { CrdtState, deltaFor, HybridClock, vvOf, type Op, type OpBody } from '../storage/crdt';
+import { CrdtState, deltaFor, encodeHlc, HybridClock, vvOf, type Op, type OpBody } from '../storage/crdt';
 import {
   generateDeviceIdentity, provisionKeyring, sign, unlockKeyring, WrongPinError,
   type DeviceIdentity, type Keyring,
@@ -18,7 +18,7 @@ import { completedProtocols, type CheckEvent } from '../engine/gamification';
 import { compactInput } from '../engine/inputWindow';
 import { IntegrityGuard, sealEnvelope } from '../storage/integrity';
 import { Ledger, type LedgerType } from '../storage/ledger';
-import { SyncClient } from '../storage/syncClient';
+import { SyncClient, type CabinGlobalStatus } from '../storage/syncClient';
 import {
   buildView, generateDataset, manualEntry, resetOp, scenarioOps, SimClock, SYNTHETIC, symptomToggle,
   type TelemetryView,
@@ -196,8 +196,48 @@ function evaluateNow(): void {
   postState();
 }
 
+// ---------------- public cabin snapshot for the Sync Hub (ADR-014) ----------------
+const criticalSince = new Map<string, number>();
+let lastCabinKey = '';
+const CABIN_ESCALATION_MS = 5 * 60_000; // ADR-013: cabin displays escalate after 5 min unacknowledged
+
+/** Habitat values and per-crew traffic lights only: never individual biomarkers, organs or diagnoses. */
+function publishCabinStatus(items: Assessment[]): void {
+  if (!sync || !clock || !lastView) return;
+  const h = lastView.habitat.find((x) => x.day === sim.day);
+  if (!h) return;
+  const nowMs = Date.now();
+  const acks = new Set<string>();
+  for (const op of crdt.ops.values()) if (op.body.t === 'ack' && op.body.day === sim.day) acks.add(op.body.alertId);
+  const live = new Set<string>();
+  for (const a of items) for (const al of a.alerts) {
+    if (al.status !== 'critical') continue;
+    live.add(al.id);
+    if (!criticalSince.has(al.id)) criticalSince.set(al.id, nowMs);
+  }
+  for (const id of [...criticalSince.keys()]) if (!live.has(id)) criticalSince.delete(id);
+  const status: CabinGlobalStatus = {
+    updatedAtHlc: encodeHlc(clock.peek()),
+    habitat: { missionDay: sim.day, ppCo2Mmhg: h.ppco2, cabinPressureKpa: h.pressure, o2Percent: h.o2, radiationUSvH: h.radiation },
+    crewTrafficLights: items
+      .filter((a) => a.global !== 'none' && CREW.some((c) => c.id === a.crewId))
+      .map((a) => ({
+        crewId: a.crewId,
+        globalStatus: a.global.toUpperCase() as CabinGlobalStatus['crewTrafficLights'][number]['globalStatus'],
+        hasUnacknowledgedCritical5Min: a.alerts.some(
+          (al) => al.status === 'critical' && !acks.has(al.id) && nowMs - (criticalSince.get(al.id) ?? nowMs) >= CABIN_ESCALATION_MS,
+        ),
+      })),
+  };
+  const key = JSON.stringify({ ...status, updatedAtHlc: '' });
+  if (key === lastCabinKey) return; // only on change
+  lastCabinKey = key;
+  sync.publishCabinStatus(status);
+}
+
 function onClinicalResult(msg: ClinicalToData): void {
   lastAssessments = msg.items;
+  publishCabinStatus(msg.items);
   if (!session) return;
   const now = new Map<string, Alert>();
   for (const a of msg.items) for (const al of a.alerts) now.set(al.id, al);
@@ -277,6 +317,8 @@ function buildState(): DataState {
     lockedCount,
     recoveredCount,
     nodeId: device?.nodeId ?? '',
+    // Record to enroll this device on the Sync Hub (devices.json, ADR-020). The hub verifies Ed25519 only.
+    enrollment: device ? { deviceId: device.nodeId, alg: device.alg, publicJwk: device.publicJwk } : null,
   };
 }
 

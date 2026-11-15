@@ -27,10 +27,21 @@ export interface HandshakeMessage {
 }
 export interface DeltaPushMessage { type: 'DELTA_PUSH'; envelopes: Envelope[]; ledger?: LedgerRecord[] }
 export interface ReplicaRequestMessage { type: 'REPLICA_REQUEST'; ids: string[] }
+/**
+ * Public cabin snapshot for `GET /habitat/status` (openapi.yaml CabinGlobalStatus, ADR-014). Extension of the
+ * contract: the zero-knowledge hub cannot derive it from encrypted envelopes, so an authenticated device
+ * publishes it. Habitat values and per-crew traffic lights only; the hub rejects any other field.
+ */
+export interface CabinGlobalStatus {
+  updatedAtHlc: string;
+  habitat: { missionDay: number; ppCo2Mmhg: number; cabinPressureKpa: number; o2Percent: number; radiationUSvH: number };
+  crewTrafficLights: { crewId: string; globalStatus: 'NOMINAL' | 'CAUTION' | 'CRITICAL'; hasUnacknowledgedCritical5Min: boolean }[];
+}
+export interface CabinStatusMessage { type: 'CABIN_STATUS'; status: CabinGlobalStatus }
 /** ADR-013 escalation relayed by the hub (2 min → CMO console, 5 min → cabin displays). */
 export interface AlarmEscalationMessage { type: 'ALARM_ESCALATION'; alertId: string; crewId: string; level: 1 | 2 }
 
-export type SyncMessage = HandshakeMessage | DeltaPushMessage | ReplicaRequestMessage | AlarmEscalationMessage;
+export type SyncMessage = HandshakeMessage | DeltaPushMessage | ReplicaRequestMessage | AlarmEscalationMessage | CabinStatusMessage;
 
 export interface WebSocketLike {
   readyState: number;
@@ -94,6 +105,7 @@ export class SyncClient {
   private readonly outbox = new Map<string, Envelope>();
   private outboxLedger: LedgerRecord[] = [];
   private readonly pendingReplicas = new Set<string>();
+  private cabinStatus: CabinGlobalStatus | null = null;
   private _status: SyncStatus;
   private readonly o: Required<Omit<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl' | 'signHandshake' | 'onAlarmEscalation'>> &
     Pick<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl' | 'signHandshake' | 'onAlarmEscalation'>;
@@ -161,6 +173,12 @@ export class SyncClient {
     this.outboxLedger.push(...ledger);
     while (this.outbox.size > this.o.maxOutbox) this.outbox.delete(this.outbox.keys().next().value!);
     if (this.outboxLedger.length > this.o.maxOutbox) this.outboxLedger = this.outboxLedger.slice(-this.o.maxOutbox);
+  }
+
+  /** Publishes the public cabin snapshot; re-sent automatically after every reconnection. */
+  publishCabinStatus(status: CabinGlobalStatus): void {
+    this.cabinStatus = status;
+    if (this.synced) this.send({ type: 'CABIN_STATUS', status });
   }
 
   /** Requests from the hub a replica of envelopes quarantined after an SEU (RNF-SEC-03). */
@@ -235,6 +253,7 @@ export class SyncClient {
     this.outbox.clear();
     this.outboxLedger = [];
     this.synced = true;
+    if (this.cabinStatus) this.send({ type: 'CABIN_STATUS', status: this.cabinStatus });
   }
 
   private send(msg: SyncMessage): void {
