@@ -6,12 +6,13 @@
 // Sin polling: todo responde a mensajes; el único temporizador es el del reloj simulado en reproducción.
 import { CATALOG, resolveProtocol } from '../engine/countermeasures';
 import type { Alert, Assessment } from '../engine/types';
-import { CrdtState, deltaFor, HybridClock, type Op, type OpBody } from '../storage/crdt';
+import { CrdtState, deltaFor, HybridClock, vvOf, type Op, type OpBody } from '../storage/crdt';
 import {
-  generateDeviceIdentity, provisionKeyring, unlockKeyring, WrongPinError,
+  generateDeviceIdentity, provisionKeyring, sign, unlockKeyring, WrongPinError,
   type DeviceIdentity, type Keyring,
 } from '../storage/crypto';
-import { buildPayload, fileName, parseImport, serialize, signExport } from '../storage/exportBuilder';
+import { buildPayload, packageForDsn, parseImport, signExport } from '../storage/exportBuilder';
+import { adaptIngest, adaptReferenceDataset, type ReferenceDataset } from '../storage/ingestAdapter';
 import { AsthaDb, type Envelope, type LedgerRecord } from '../storage/idb';
 import { completedProtocols, type CheckEvent } from '../engine/gamification';
 import { compactInput } from '../engine/inputWindow';
@@ -430,6 +431,35 @@ async function handle(msg: UiToData): Promise<void> {
       return postState();
     case 'export':
       return exportNow(msg.kind, !!msg.anonymize, reqId);
+    case 'loadReference': {
+      if (!session) return;
+      if (crdt.lww.get('dataset.reference') === true) return notice('info', 'reference-loaded', 'The reference dataset is already loaded.', reqId);
+      // Lazy chunk: the 77 KB snapshot is only fetched from the local bundle when requested (zero network).
+      const { default: ref } = await import('../data/reference_telemetry_90d.json');
+      const imp = adaptReferenceDataset(ref as ReferenceDataset, CREW.map((c) => c.id));
+      let n = 0;
+      for (const op of imp.measurements) {
+        if (!canWrite(op.crewId)) continue;
+        await persist(op, op.crewId);
+        n++;
+      }
+      for (const op of imp.habitat) await persist(op, 'hab');
+      await persist({ t: 'lww', key: 'dataset.reference', value: true }, 'hab');
+      await log('import', null, `Reference dataset (OSD-574-calibrated, 90 d): ${n} measurements, ${imp.habitat.length} habitat days, ${imp.suspect} suspect values`);
+      notice('info', 'reference-loaded', `Reference dataset loaded: ${n} measurements over 90 days.`, reqId);
+      return scheduleEval(reqId);
+    }
+    case 'ingest': {
+      if (!session) return;
+      const r = adaptIngest(msg.body, CREW.map((c) => c.id), SYNTHETIC.days);
+      if (!r.ok) return notice('error', 'bad-ingest', `Telemetry rejected: ${r.errors.join('; ')}`, reqId);
+      const target = r.ops.find((o) => o.t === 'measurement') as { crewId: string } | undefined;
+      if (target && !canWrite(target.crewId)) return notice('error', 'forbidden', 'No access to this crew member.', reqId);
+      for (const op of r.ops) await persist(op, op.t === 'habitat' ? 'hab' : keyRefFor((op as { crewId?: string }).crewId));
+      await log('import', target?.crewId ?? null, `Ingest: ${r.ops.length} ops${r.suspect.length ? `, suspect ${r.suspect.join(', ')}` : ''}`);
+      if (r.suspect.length) notice('info', 'suspect', `Values flagged as suspect: ${r.suspect.join(', ')}`, reqId);
+      return scheduleEval(reqId);
+    }
     case 'import': {
       if (!session) return;
       const payload = await parseImport(msg.text);
@@ -490,8 +520,9 @@ async function exportNow(kind: 'history' | 'summary', anonymize: boolean, reqId?
     fsMessages,
     anonymize,
   });
-  const doc = await signExport(payload, device);
-  post({ type: 'exported', fileName: fileName(payload), text: serialize(doc) });
+  const doc = await signExport(payload, device, await ledger.tip());
+  const pkg = await packageForDsn(doc);
+  post({ type: 'exported', fileName: pkg.fileName, text: pkg.text, gz: pkg.gz });
   await log('export', null, `Exportación ${kind} firmada (${doc.payloadSha256.slice(0, 12)}…)`);
   notice('info', 'exported', 'Paquete firmado listo para el enlace con Tierra.', reqId);
 }
@@ -520,8 +551,10 @@ async function boot(): Promise<void> {
     });
     sync = new SyncClient({
       nodeId: device.nodeId,
-      getVersionVector: () => crdt.vv,
+      // VV of every stored envelope, including ones this session cannot decrypt (RBAC): they are relayed too.
+      getVersionVector: () => vvOf(envCache.values()),
       getDelta: (remote) => deltaFor(envCache.values(), remote),
+      signHandshake: (bytes) => sign(device!, bytes),
       onEnvelopes: (envs, recs) => serial(() => applyRemote(envs, recs)),
       onStatus: () => postState(),
     });

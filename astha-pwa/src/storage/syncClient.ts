@@ -1,18 +1,36 @@
-// Cliente de sincronización opcional con el Sync Hub (RNF-NET-01..03, ADR-007, ADR-008).
-//  - WebSocket nativo a wss://astha.local (LAN de la nave; cero tráfico WAN).
-//  - Al conectar envía su VersionVector y recibe solo lo que le falta; después, push por evento.
-//  - Reconexión por eventos (online, visibilitychange, acción del usuario) más UN reintento con backoff
-//    exponencial (tope 5 min) que se suspende con la pestaña oculta. Sin polling.
-//  - Si no hay Hub, el nodo sigue autónomo y en silencio: ningún error se propaga.
-import type { VersionVector } from './crdt';
+// Sync Hub client (RNF-NET-01..03, ADR-007, ADR-008, ADR-009).
+// Contract: docs/Modelo-datos-y-APIs/03-Contratos-API-OpenAPI-y-Eventos.md §2 and openapi.yaml.
+//  - Native WebSocket to wss://astha.local:8443/ws/sync (spacecraft LAN only; zero WAN traffic).
+//  - HANDSHAKE: deviceId + VersionVector (HLC strings) + timestampUtc, signed with the device Ed25519 key.
+//  - The hub answers with its own HANDSHAKE; the client then sends every envelope the hub lacks (DELTA_PUSH,
+//    ascending HLC) and only afterwards releases live pushes.
+//  - Offline buffer: envelopes created while disconnected or mid-handshake wait in an outbox. Sending them
+//    before the backlog could make a peer's VersionVector jump past events it never received, so the outbox
+//    is flushed strictly after the delta exchange.
+//  - Passive, event-driven reconnection (online, visibilitychange, user action) plus ONE exponential-backoff
+//    retry (capped at 5 min) that pauses while the tab is hidden. No polling.
+//  - Without a hub the node stays autonomous and silent: no error ever propagates.
+import { canonicalJson, utf8 } from './crypto';
+import { vvFromWire, vvToWire, type VersionVector, type WireVersionVector } from './crdt';
 import type { Envelope, LedgerRecord } from './idb';
 
 export type SyncStatus = 'disabled' | 'offline' | 'connecting' | 'online';
 
-export type SyncMessage =
-  | { type: 'hello'; node: string; vv: VersionVector }
-  | { type: 'ops'; envelopes: Envelope[]; ledger?: LedgerRecord[] }
-  | { type: 'replica-request'; ids: string[] };
+export const DEFAULT_SYNC_URL = 'wss://astha.local:8443/ws/sync';
+
+export interface HandshakeMessage {
+  type: 'HANDSHAKE';
+  deviceId: string;
+  versionVector: WireVersionVector;
+  timestampUtc: string;
+  ed25519Signature: string;
+}
+export interface DeltaPushMessage { type: 'DELTA_PUSH'; envelopes: Envelope[]; ledger?: LedgerRecord[] }
+export interface ReplicaRequestMessage { type: 'REPLICA_REQUEST'; ids: string[] }
+/** ADR-013 escalation relayed by the hub (2 min → CMO console, 5 min → cabin displays). */
+export interface AlarmEscalationMessage { type: 'ALARM_ESCALATION'; alertId: string; crewId: string; level: 1 | 2 }
+
+export type SyncMessage = HandshakeMessage | DeltaPushMessage | ReplicaRequestMessage | AlarmEscalationMessage;
 
 export interface WebSocketLike {
   readyState: number;
@@ -33,17 +51,24 @@ export interface SyncTimers {
 export interface SyncClientOptions {
   nodeId: string;
   url?: string;
-  /** Por defecto solo se activa si la app se sirve desde el propio Hub (*.local). */
+  /** By default only enabled when the app is served from the hub itself (*.local). */
   enabled?: boolean;
+  /** VersionVector of the envelopes stored on this device (including ones it cannot decrypt). */
   getVersionVector: () => VersionVector;
-  /** Sobres que le faltan a un par con el VV dado. */
+  /** Envelopes a peer with the given VV is missing. */
   getDelta?: (remote: VersionVector) => Envelope[];
+  /** Signs the handshake bytes with the device key (base64). Unsigned handshakes are sent if omitted. */
+  signHandshake?: (bytes: Uint8Array<ArrayBuffer>) => Promise<string>;
   onEnvelopes: (envs: Envelope[], ledger: LedgerRecord[]) => void | Promise<void>;
+  onAlarmEscalation?: (msg: AlarmEscalationMessage) => void;
   onStatus?: (s: SyncStatus) => void;
   WebSocketImpl?: WebSocketCtor;
   timers?: SyncTimers;
   baseDelayMs?: number;
   maxDelayMs?: number;
+  /** Outbox cap: beyond it the oldest entries are dropped (they still travel in the next delta). */
+  maxOutbox?: number;
+  now?: () => Date;
 }
 
 const OPEN = 1;
@@ -53,20 +78,29 @@ export function hubEnabledByDefault(): boolean {
   return host.endsWith('.local');
 }
 
+/** Bytes covered by the handshake signature (everything except the signature itself). */
+export function handshakeBytes(m: Omit<HandshakeMessage, 'ed25519Signature' | 'type'>): Uint8Array<ArrayBuffer> {
+  return utf8(canonicalJson({ deviceId: m.deviceId, versionVector: m.versionVector, timestampUtc: m.timestampUtc }));
+}
+
 export class SyncClient {
   private ws: WebSocketLike | null = null;
   private retry: unknown = null;
   private attempt = 0;
   private visible = true;
   private stopped = true;
-  private pendingReplicas = new Set<string>();
+  /** true once the delta backlog has been sent on the current connection. */
+  private synced = false;
+  private readonly outbox = new Map<string, Envelope>();
+  private outboxLedger: LedgerRecord[] = [];
+  private readonly pendingReplicas = new Set<string>();
   private _status: SyncStatus;
-  private readonly o: Required<Omit<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl'>> &
-    Pick<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl'>;
+  private readonly o: Required<Omit<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl' | 'signHandshake' | 'onAlarmEscalation'>> &
+    Pick<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl' | 'signHandshake' | 'onAlarmEscalation'>;
 
   constructor(opts: SyncClientOptions) {
     this.o = {
-      url: 'wss://astha.local/sync',
+      url: DEFAULT_SYNC_URL,
       enabled: hubEnabledByDefault(),
       timers: {
         set: (fn, ms) => setTimeout(fn, ms),
@@ -74,6 +108,8 @@ export class SyncClient {
       },
       baseDelayMs: 2_000,
       maxDelayMs: 5 * 60_000,
+      maxOutbox: 5_000,
+      now: () => new Date(),
       WebSocketImpl: (globalThis as { WebSocket?: WebSocketCtor }).WebSocket,
       ...opts,
     };
@@ -81,6 +117,8 @@ export class SyncClient {
   }
 
   get status(): SyncStatus { return this._status; }
+  /** Envelopes waiting for the next delta exchange (offline buffer). */
+  get outboxSize(): number { return this.outbox.size; }
 
   start(): void {
     if (!this.o.enabled || !this.o.WebSocketImpl) return this.setStatus('disabled');
@@ -93,11 +131,12 @@ export class SyncClient {
     this.clearRetry();
     const ws = this.ws;
     this.ws = null;
-    try { ws?.close(); } catch { /* silencio */ }
+    this.synced = false;
+    try { ws?.close(); } catch { /* silent */ }
     this.setStatus(this.o.enabled ? 'offline' : 'disabled');
   }
 
-  /** Evento `online` reenviado por la UI: reconecta de inmediato. */
+  /** `online` event forwarded by the UI: reconnect immediately. */
   notifyOnline(): void {
     if (this.stopped || this.ws) return;
     this.attempt = 0;
@@ -105,25 +144,32 @@ export class SyncClient {
     this.connect();
   }
 
-  /** `visibilitychange`: con la pestaña oculta no se programan reintentos. */
+  /** `visibilitychange`: no retries are scheduled while the tab is hidden. */
   setVisible(visible: boolean): void {
     this.visible = visible;
     if (!visible) return this.clearRetry();
     if (!this.stopped && !this.ws) { this.clearRetry(); this.connect(); }
   }
 
-  /** Push por evento de sobres nuevos. Sin conexión no hace nada: se enviarán por delta al reconectar. */
+  /** Event-driven push of new envelopes. Buffered until the delta exchange has completed. */
   push(envelopes: Envelope[], ledger: LedgerRecord[] = []): void {
-    this.send({ type: 'ops', envelopes, ledger });
+    if (this.synced && this.ws?.readyState === OPEN) {
+      this.send({ type: 'DELTA_PUSH', envelopes, ledger });
+      return;
+    }
+    for (const e of envelopes) this.outbox.set(e.id, e);
+    this.outboxLedger.push(...ledger);
+    while (this.outbox.size > this.o.maxOutbox) this.outbox.delete(this.outbox.keys().next().value!);
+    if (this.outboxLedger.length > this.o.maxOutbox) this.outboxLedger = this.outboxLedger.slice(-this.o.maxOutbox);
   }
 
-  /** Pide al Hub la réplica de sobres aislados por SEU (RNF-SEC-03). */
+  /** Requests from the hub a replica of envelopes quarantined after an SEU (RNF-SEC-03). */
   requestReplica(id: string): void {
     this.pendingReplicas.add(id);
     this.flushReplicas();
   }
 
-  // ---------------- interno ----------------
+  // ---------------- internals ----------------
 
   private connect(): void {
     if (this.stopped || this.ws || !this.o.WebSocketImpl) return;
@@ -135,18 +181,27 @@ export class SyncClient {
       return this.scheduleRetry();
     }
     this.ws = ws;
+    this.synced = false;
     ws.onopen = () => {
       this.attempt = 0;
       this.setStatus('online');
-      this.send({ type: 'hello', node: this.o.nodeId, vv: this.o.getVersionVector() });
-      this.flushReplicas();
+      void this.sendHandshake(ws);
     };
     ws.onmessage = (ev) => void this.handle(ev.data);
-    ws.onerror = () => { /* el cierre posterior gestiona el reintento */ };
+    ws.onerror = () => { /* the following close event schedules the retry */ };
     ws.onclose = () => {
-      if (this.ws === ws) this.ws = null;
+      if (this.ws === ws) { this.ws = null; this.synced = false; }
       if (!this.stopped) this.scheduleRetry();
     };
+  }
+
+  private async sendHandshake(ws: WebSocketLike): Promise<void> {
+    const base = { deviceId: this.o.nodeId, versionVector: vvToWire(this.o.getVersionVector()), timestampUtc: this.o.now().toISOString() };
+    let ed25519Signature = '';
+    try { ed25519Signature = (await this.o.signHandshake?.(handshakeBytes(base))) ?? ''; } catch { /* unsigned */ }
+    if (this.ws !== ws) return; // the connection changed while signing
+    this.send({ type: 'HANDSHAKE', ...base, ed25519Signature });
+    this.flushReplicas();
   }
 
   private async handle(data: unknown): Promise<void> {
@@ -154,27 +209,41 @@ export class SyncClient {
     try {
       msg = JSON.parse(String(data)) as SyncMessage;
     } catch {
-      return; // mensaje ilegible: se ignora
+      return; // unreadable message: ignored
     }
     try {
-      if (msg.type === 'ops') {
-        for (const e of msg.envelopes) this.pendingReplicas.delete(e.id);
+      if (msg.type === 'DELTA_PUSH') {
+        for (const e of msg.envelopes ?? []) this.pendingReplicas.delete(e.id);
         await this.o.onEnvelopes(msg.envelopes ?? [], msg.ledger ?? []);
-      } else if (msg.type === 'hello' && this.o.getDelta) {
-        this.send({ type: 'ops', envelopes: this.o.getDelta(msg.vv) });
+      } else if (msg.type === 'HANDSHAKE') {
+        this.afterHandshake(vvFromWire(msg.versionVector));
+      } else if (msg.type === 'ALARM_ESCALATION') {
+        this.o.onAlarmEscalation?.(msg);
       }
     } catch {
-      /* un sobre remoto inválido nunca bloquea el nodo; la verificación lo aísla */
+      /* an invalid remote envelope never blocks the node; integrity checks quarantine it */
     }
+  }
+
+  /** Sends the backlog the hub lacks, then releases the outbox (in that order). */
+  private afterHandshake(hubVV: VersionVector): void {
+    const delta = this.o.getDelta?.(hubVV) ?? [];
+    const sent = new Set(delta.map((e) => e.id));
+    if (delta.length) this.send({ type: 'DELTA_PUSH', envelopes: delta });
+    const rest = [...this.outbox.values()].filter((e) => !sent.has(e.id));
+    if (rest.length || this.outboxLedger.length) this.send({ type: 'DELTA_PUSH', envelopes: rest, ledger: this.outboxLedger });
+    this.outbox.clear();
+    this.outboxLedger = [];
+    this.synced = true;
   }
 
   private send(msg: SyncMessage): void {
     if (this.ws?.readyState !== OPEN) return;
-    try { this.ws.send(JSON.stringify(msg)); } catch { /* silencio */ }
+    try { this.ws.send(JSON.stringify(msg)); } catch { /* silent */ }
   }
 
   private flushReplicas(): void {
-    if (this.pendingReplicas.size) this.send({ type: 'replica-request', ids: [...this.pendingReplicas] });
+    if (this.pendingReplicas.size) this.send({ type: 'REPLICA_REQUEST', ids: [...this.pendingReplicas] });
   }
 
   private scheduleRetry(): void {
@@ -199,7 +268,7 @@ export class SyncClient {
     this.o.onStatus?.(s);
   }
 
-  /** Solo para pruebas: retardo del próximo reintento. */
+  /** Test-only: delay of the next retry. */
   nextDelayMs(): number {
     return Math.min(this.o.maxDelayMs, this.o.baseDelayMs * 2 ** this.attempt);
   }

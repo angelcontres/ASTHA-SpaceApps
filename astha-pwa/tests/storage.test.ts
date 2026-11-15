@@ -520,7 +520,7 @@ describe('Export Builder (RF-ING-06, RF-REG-02, RNF-NET-04)', () => {
       measurements: generateDataset().measurements.C001.slice(0, 3), habitat: [], ledger: [], fsMessages: {},
       now: new Date('2026-11-15T00:00:00Z'),
     });
-    const doc = await signExport(payload, device);
+    const doc = await signExport(payload, device, '0'.repeat(64));
     expect(doc.signature.alg).toBe('Ed25519');
     expect(await verifyExport(doc)).toBe(true);
     expect(await parseImport(serialize(doc))).toEqual(payload);
@@ -580,17 +580,20 @@ describe('Sync Client (RNF-NET-01..03)', () => {
     expect(client.status).toBe('disabled');
   });
 
-  it('saluda con su VersionVector y aplica los deltas recibidos', async () => {
+  it('sends a signed HANDSHAKE with its VersionVector as HLC strings and applies DELTA_PUSH', async () => {
     const { client, received } = make();
     client.start();
     const ws = FakeWs.instances[0];
-    expect(ws.url).toBe('wss://astha.local/sync');
+    expect(ws.url).toBe('wss://astha.local:8443/ws/sync');
     ws.open();
-    expect(JSON.parse(ws.sent[0])).toEqual({ type: 'hello', node: 'nodeA', vv: { nodeA: 5 } });
-    ws.onmessage!({ data: JSON.stringify({ type: 'ops', envelopes: [{ id: 'x' }] }) });
+    await Promise.resolve(); await Promise.resolve();
+    const hs = JSON.parse(ws.sent[0]);
+    expect(hs).toMatchObject({ type: 'HANDSHAKE', deviceId: 'nodeA', versionVector: { nodeA: '000000000000000:005:nodeA' } });
+    expect(Date.parse(hs.timestampUtc)).not.toBeNaN();
+    ws.onmessage!({ data: JSON.stringify({ type: 'DELTA_PUSH', envelopes: [{ id: 'x' }] }) });
     await Promise.resolve();
     expect(received.map((e) => e.id)).toEqual(['x']);
-    ws.onmessage!({ data: 'basura' }); // no lanza
+    ws.onmessage!({ data: 'garbage' }); // does not throw
   });
 
   it('un único reintento con backoff exponencial (tope 5 min), suspendido si está oculta', () => {
@@ -615,13 +618,14 @@ describe('Sync Client (RNF-NET-01..03)', () => {
     expect(pending).toHaveLength(0);
   });
 
-  it('pide réplica por id de un sobre aislado', () => {
+  it('pide réplica por id de un sobre aislado', async () => {
     const { client } = make();
     client.start();
     client.requestReplica('abc');
     const ws = FakeWs.instances[0];
     ws.open();
-    expect(ws.sent.map((s) => JSON.parse(s).type)).toEqual(['hello', 'replica-request']);
+    await Promise.resolve(); await Promise.resolve();
+    expect(ws.sent.map((s) => JSON.parse(s).type)).toEqual(['HANDSHAKE', 'REPLICA_REQUEST']);
   });
 });
 

@@ -49,7 +49,7 @@ export class WorkerBridge {
   ledgerEntries = $state.raw<DecryptedEntry[]>([]);
   ledgerChain = $state.raw<ChainCheck | null>(null);
   notices = $state.raw<Notice[]>([]);
-  lastExport = $state.raw<{ fileName: string; text: string } | null>(null);
+  lastExport = $state.raw<{ fileName: string; text: string; gz: Uint8Array | null } | null>(null);
   /** Motor (worker) y ciclo completo acción → Assessment en la UI (RNF-PER-01). */
   engineMs = $state<number | null>(null);
   cycleMs = $state<number | null>(null);
@@ -217,7 +217,7 @@ export class WorkerBridge {
         this.ledgerEntries = msg.entries;
         if (msg.chain) this.ledgerChain = msg.chain;
         break;
-      case 'exported': this.lastExport = { fileName: msg.fileName, text: msg.text }; break;
+      case 'exported': this.lastExport = { fileName: msg.fileName, text: msg.text, gz: msg.gz }; break;
       case 'notice':
         if (msg.reqId !== undefined) this.sentAt.delete(msg.reqId);
         this.pushNotice(msg.level, msg.code, msg.message);
@@ -270,6 +270,7 @@ export class WorkerBridge {
   setPref(key: PrefKey, value: boolean) { this.send({ type: 'setPref', key, value }); }
   exportData(kind: 'history' | 'summary', anonymize = false) { this.send({ type: 'export', kind, anonymize }); }
   importData(text: string) { this.send({ type: 'import', text }, true); }
+  loadReferenceDataset() { this.send({ type: 'loadReference' }, true); }
   injectBitFlip(both = false) { this.send({ type: 'injectBitFlip', both }, true); }
   verifyLedger() { this.send({ type: 'verifyLedger' }); }
 
@@ -277,7 +278,9 @@ export class WorkerBridge {
   downloadExport(): void {
     const exp = this.lastExport;
     if (!exp) return;
-    const url = URL.createObjectURL(new Blob([exp.text], { type: 'application/json' }));
+    // DSN package: gzip-compressed signed JSON when available (AC-TECH-05), plain signed JSON otherwise.
+    const blob = exp.gz ? new Blob([exp.gz as Uint8Array<ArrayBuffer>], { type: 'application/gzip' }) : new Blob([exp.text], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = exp.fileName;

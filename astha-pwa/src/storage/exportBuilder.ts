@@ -29,10 +29,28 @@ export interface ExportPayload {
   ledger: { hlc: string; type: string; crewId: string | null; detail: string | null }[];
 }
 
+/** Contract version of the outer package (openapi.yaml → SignedDsnExport). */
+export const DSN_SCHEMA_VERSION = 'astha-dsn-v1.0';
+export const MISSION_ID = 'DST-1-MARS-TRANSIT';
+
+/**
+ * Signed package for the DTN router (openapi.yaml `SignedDsnExport`, ADR-010, RNF-NET-04, AC-TECH-05).
+ * The signature covers the canonical JSON of every field except `ed25519Signature` itself, so header fields
+ * (anonymization flag, signer, audit-chain tip) cannot be altered without invalidating it.
+ * If the browser lacks Ed25519, the device signs with ECDSA P-256 and `signature.alg` says so (ADR-006).
+ */
 export interface SignedExport {
+  exportSchemaVersion: typeof DSN_SCHEMA_VERSION;
+  generatedAtUtc: string;
+  missionId: string;
+  isAnonymized: boolean;
+  signerDeviceId: string;
+  /** SHA-256 of the newest entry of the signer's append-only audit chain (RNF-SEC-04). */
+  auditChainTipSha256: string;
   payload: ExportPayload;
   payloadSha256: string;
-  signature: { alg: SignAlg; nodeId: string; publicJwk: JsonWebKey; value: string };
+  signature: { alg: SignAlg; publicJwk: JsonWebKey };
+  ed25519Signature: string;
 }
 
 export interface ExportInput {
@@ -80,32 +98,56 @@ export function buildPayload(i: ExportInput): ExportPayload {
   };
 }
 
-export async function signExport(payload: ExportPayload, device: DeviceIdentity): Promise<SignedExport> {
-  const bytes = utf8(canonicalJson(payload));
-  return {
-    payload,
-    payloadSha256: await sha256(bytes),
-    signature: { alg: device.alg, nodeId: device.nodeId, publicJwk: device.publicJwk, value: await sign(device, bytes) },
-  };
+function signedPart(doc: Omit<SignedExport, 'ed25519Signature'>): Uint8Array<ArrayBuffer> {
+  const { exportSchemaVersion, generatedAtUtc, missionId, isAnonymized, signerDeviceId, auditChainTipSha256, payload, payloadSha256, signature } = doc;
+  return utf8(canonicalJson({ exportSchemaVersion, generatedAtUtc, missionId, isAnonymized, signerDeviceId, auditChainTipSha256, payload, payloadSha256, signature }));
 }
 
+export async function signExport(payload: ExportPayload, device: DeviceIdentity, auditChainTipSha256: string): Promise<SignedExport> {
+  const unsigned: Omit<SignedExport, 'ed25519Signature'> = {
+    exportSchemaVersion: DSN_SCHEMA_VERSION,
+    generatedAtUtc: payload.generatedAt,
+    missionId: MISSION_ID,
+    isAnonymized: payload.anonymized,
+    signerDeviceId: device.nodeId,
+    auditChainTipSha256,
+    payload,
+    payloadSha256: await sha256(utf8(canonicalJson(payload))),
+    signature: { alg: device.alg, publicJwk: device.publicJwk },
+  };
+  return { ...unsigned, ed25519Signature: await sign(device, signedPart(unsigned)) };
+}
+
+/** Verifies schema, payload digest, header consistency and signature. `trusted` pins the signer's public key. */
 export async function verifyExport(doc: SignedExport, trusted?: JsonWebKey): Promise<boolean> {
-  if (doc?.payload?.schema !== EXPORT_SCHEMA) return false;
-  const bytes = utf8(canonicalJson(doc.payload));
-  if ((await sha256(bytes)) !== doc.payloadSha256) return false;
-  const key = trusted ?? doc.signature.publicJwk;
-  return verify(doc.signature.alg, key, bytes, doc.signature.value);
+  try {
+    if (doc?.exportSchemaVersion !== DSN_SCHEMA_VERSION || doc.payload?.schema !== EXPORT_SCHEMA) return false;
+    if (!/^[a-f0-9]{64}$/.test(doc.auditChainTipSha256)) return false;
+    if (doc.isAnonymized !== doc.payload.anonymized || doc.generatedAtUtc !== doc.payload.generatedAt) return false;
+    if ((await sha256(utf8(canonicalJson(doc.payload)))) !== doc.payloadSha256) return false;
+    return await verify(doc.signature.alg, trusted ?? doc.signature.publicJwk, signedPart(doc), doc.ed25519Signature);
+  } catch {
+    return false;
+  }
 }
 
 export function serialize(doc: SignedExport): string {
   return JSON.stringify(doc, null, 2);
 }
 
-/** gzip opcional con CompressionStream nativo. Devuelve null si el entorno no lo soporta. */
+/** gzip with the native CompressionStream (AC-TECH-05). Returns null where it is unsupported. */
 export async function compress(text: string): Promise<Uint8Array | null> {
   if (typeof CompressionStream === 'undefined') return null;
   const stream = new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));
   return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+/** File handed to the DTN router: gzip-compressed signed JSON, or plain JSON where compression is unavailable. */
+export async function packageForDsn(doc: SignedExport): Promise<{ fileName: string; text: string; gz: Uint8Array | null }> {
+  const text = serialize(doc);
+  const gz = await compress(text);
+  const name = fileName(doc.payload);
+  return { fileName: gz ? `${name}.gz` : name, text, gz };
 }
 
 export function fileName(p: ExportPayload): string {

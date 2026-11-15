@@ -40,6 +40,10 @@ export type UiToData = Req &
     | { type: 'setPref'; key: PrefKey; value: boolean }
     | { type: 'export'; kind: 'history' | 'summary'; anonymize?: boolean }
     | { type: 'import'; text: string }
+    /** Bundled 90-day reference telemetry, loaded offline as an alternative source (issue #7). */
+    | { type: 'loadReference' }
+    /** `POST /ingest/telemetry` body from a future sensor adapter (openapi.yaml, SRS §5.2). */
+    | { type: 'ingest'; body: unknown }
     | { type: 'injectBitFlip'; both?: boolean }
     | { type: 'verifyLedger' }
     | { type: 'visibility'; visible: boolean }
@@ -84,7 +88,8 @@ export type DataToUi =
   | { type: 'state'; state: DataState }
   | { type: 'series'; crewId: string; measurements: DailyMeasurement[]; habitat: HabitatRecord[] }
   | { type: 'ledger'; entries: DecryptedEntry[]; chain: ChainCheck | null }
-  | { type: 'exported'; fileName: string; text: string }
+  /** gz: gzip-compressed package for the DTN router (null where CompressionStream is unavailable). */
+  | { type: 'exported'; fileName: string; text: string; gz: Uint8Array | null }
   | { type: 'notice'; level: 'info' | 'error'; code: string; message: string; reqId?: number };
 
 // ---------------- Data ⇄ Clinical (MessageChannel) ----------------
