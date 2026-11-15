@@ -73,6 +73,16 @@
   --pulse: none;
 }
 :root[data-survival] *, :root[data-survival] *::before { transition: none !important; animation: none !important; }
+/* Batería crítica (AC-TECH-02 §3): atenuación del 30 % con una capa fija que no intercepta toques. No se baja al
+   20 % literal porque el texto dejaría de ser legible (de ~15:1 a < 2:1); con 70 % el texto principal mantiene ≥ 7:1. */
+:root[data-lowpower]::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  background: rgb(0 0 0 / 0.3);
+}
 
 *,
 *::before,

@@ -166,6 +166,6 @@ The space habitat environment monitors 6 critical parameters correlated with ast
 5. **Relative Humidity ($RH\%$):** $45.0\%$. Nominal range: $25\% - 75\%$.
 6. **CANS Radiation Dosimetry (CSA):** Real-time dose rate ($28.4 - 32.8\ \mu\text{Sv/h}$). Storm Shelter evacuation threshold: $> 100\ \mu\text{Sv/h}$.
 
-### 6.3. Minimalist Zen Mode and Survival Mode (`< 5W`, `ADR-019`)
+### 6.3. Minimalist Zen Mode and Survival Mode (`< 350 mW`, `ADR-019`)
 * **Zen Mode:** When enabled, hides decorative borders, highlights only critical figures in oversized typography, and widens spacing for distraction-free distance reading.
-* **Survival Mode (`< 5W`):** Triggered when battery drops to $\le 15\%$ or via manual backup toggle (`ADR-019`); disables Three.js and `uPlot`, enforces pure `#000000` background with zero animations or pulses, and retains tabular vital-sign and ECLSS readouts.
+* **Survival Mode (`< 350 mW`, RNF-POW-02):** Triggered when battery drops to $\le 15\%$ or via manual backup toggle (`ADR-019`); disables Three.js and `uPlot`, enforces pure `#000000` background with zero animations or pulses, and retains tabular vital-sign and ECLSS readouts.

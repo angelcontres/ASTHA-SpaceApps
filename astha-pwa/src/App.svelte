@@ -6,6 +6,7 @@
   import AlarmManager from './ui/components/AlarmManager.svelte';
   import CrewBar from './ui/components/CrewBar.svelte';
   import HabitatStrip from './ui/components/HabitatStrip.svelte';
+  import { power } from './ui/bridge/power.svelte';
   import { bridge } from './ui/bridge/workerBridge.svelte';
   import { ui, type Tab } from './ui/bridge/uiState.svelte';
   import BiomedicalView from './ui/views/BiomedicalView.svelte';
@@ -17,11 +18,14 @@
 
   onMount(() => {
     bridge.start();
-    return () => bridge.stop();
+    const stopPower = power.start();
+    return () => { stopPower(); bridge.stop(); };
   });
 
   const prefs = $derived(bridge.data.prefs);
   const unlocked = $derived(!!bridge.data.session);
+  // Supervivencia efectiva: manual (Comandante) o automática por batería crítica (AC-TECH-02 §3, ADR-019 enmendado).
+  const survival = $derived(prefs.survival || power.low);
 
   // Modos visuales como atributos de <html>: los tokens CSS hacen el resto (también en canvas).
   $effect(() => {
@@ -29,7 +33,8 @@
     root.toggleAttribute('data-red', prefs.redMode);
     root.toggleAttribute('data-contrast', prefs.highContrast);
     root.toggleAttribute('data-large', prefs.largeText);
-    root.toggleAttribute('data-survival', prefs.survival);
+    root.toggleAttribute('data-survival', survival);
+    root.toggleAttribute('data-lowpower', power.low);
   });
 
   // Al bloquear se vuelve al estado inicial de navegación.
@@ -67,9 +72,17 @@
 {#if !unlocked}
   <LockScreen />
 {:else}
-  <HabitatStrip onemergency={emergency} onsettings={() => (ui.settingsOpen = !ui.settingsOpen)} zen={prefs.zen} survival={prefs.survival} red={prefs.redMode} />
+  <HabitatStrip onemergency={emergency} onsettings={() => (ui.settingsOpen = !ui.settingsOpen)} zen={prefs.zen} {survival} red={prefs.redMode} />
   <AlarmManager />
   {#if !prefs.zen}<CrewBar />{/if}
+
+  {#if power.low}
+    <p class="lowpower st caution" role="status">
+      <span class="sym" aria-hidden="true"></span>
+      Batería crítica{power.level !== null && !power.simulated ? ` (${Math.round(power.level * 100)} %)` : ' (señal simulada)'}: modo supervivencia automático.
+      Pantalla atenuada, telemetría cada 5 s; triage y alarmas siguen al instante.
+    </p>
+  {/if}
 
   {#if ui.settingsOpen}
     <section class="settings panel" aria-labelledby="set-h">
@@ -83,7 +96,7 @@
         <button type="button" class="btn" aria-pressed={prefs.zen} onclick={() => bridge.setPref('zen', !prefs.zen)}>Modo Zen</button>
         <button type="button" class="btn" onclick={() => (ui.settingsOpen = false)}>Cerrar</button>
       </div>
-      {#if bridge.activeRole !== 'commander'}<p class="muted small">El modo supervivencia solo lo activa el Comandante (ADR-019).</p>{/if}
+      {#if bridge.activeRole !== 'commander'}<p class="muted small">El modo supervivencia manual solo lo activa el Comandante (ADR-019). Con batería crítica se activa solo.</p>{/if}
     </section>
   {/if}
 
@@ -97,11 +110,11 @@
 
   <main class="content">
     {#if prefs.zen || ui.tab === 'bio'}
-      <BiomedicalView zen={prefs.zen} survival={prefs.survival} />
+      <BiomedicalView zen={prefs.zen} {survival} />
     {:else if ui.tab === 'env'}
-      <EnvironmentView survival={prefs.survival} />
+      <EnvironmentView {survival} />
     {:else if ui.tab === 'triage'}
-      <TriageView survival={prefs.survival} />
+      <TriageView {survival} />
     {:else}
       <SimulatorView />
     {/if}
@@ -114,6 +127,7 @@
         <button type="button" class="btn" onclick={() => bridge.injectScenario(id)}>! {id} · {scen(id).label}</button>
       {/each}
       <button type="button" class="btn primary" onclick={() => bridge.reset()}>✓ Resetear nominal</button>
+      <span class="label provenance">Datos sintéticos de demostración · no son telemetría medida por NASA</span>
     </footer>
   {/if}
 
@@ -134,6 +148,8 @@
   .tab[aria-current='page'] { border-color: var(--accent); }
   .content { padding: 16px; max-width: 1600px; margin: 0 auto; }
   .settings { margin: 12px 16px 0; }
+  .lowpower { margin: 12px 16px 0; padding: 10px 14px; border: var(--st-bw) solid var(--st); border-radius: var(--radius); }
+  .lowpower .sym { color: var(--st-text); }
   .simbar {
     position: sticky;
     bottom: 0;
@@ -145,6 +161,7 @@
     background: var(--space-900);
     border-top: 1px solid var(--border);
   }
+  .provenance { align-self: center; margin-left: auto; }
   .notices { position: fixed; right: 16px; bottom: 88px; z-index: 120; display: flex; flex-direction: column; gap: 8px; max-width: min(420px, calc(100vw - 32px)); }
   .notice { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 14px; background: var(--space-800); border: 1px solid var(--border-strong); border-radius: var(--radius); }
   .notice span { flex: 1; }

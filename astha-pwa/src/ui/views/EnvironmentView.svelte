@@ -1,6 +1,7 @@
 <script lang="ts">
   // Pestaña 2 · Entorno ECLSS y dosimetría CANS (RF-DSH-04, COMP-03B): 6 parámetros con semáforo, tendencia y
   // alertas ambientales activas.
+  import { accumulatedDose, CAREER_LIMIT_MSV, SPE_EVENT_LIMIT_MSV } from '../../engine/dose';
   import type { HabitatIndicator } from '../../engine/types';
   import IndicatorCard from '../components/IndicatorCard.svelte';
   import TrendChart from '../components/TrendChart.svelte';
@@ -14,6 +15,7 @@
   const days = $derived(hab.map((h) => h.day));
   const values = $derived(hab.map((h) => (h[ui.envIndicator as HabitatIndicator] ?? null) as number | null));
   const current = $derived(bridge.habitatTelemetry.indicators.find((i) => i.id === ui.envIndicator));
+  const dose = $derived(accumulatedDose(hab));
   const envAlerts = $derived(bridge.activeAlerts.filter((a) => (a.organ === 'respiratory_env' || a.organ === 'radiation') && !a.overridden));
 </script>
 
@@ -25,6 +27,26 @@
         <IndicatorCard indicator={ind} variant="habitat" active={ui.envIndicator === ind.id} onopen={() => (ui.envIndicator = ind.id)} />
       {/each}
     </div>
+  </section>
+
+  <!-- Dosis acumulada (AC-CLIN-05, CU-08): integral de la tasa CANS; dosis del módulo, no individual. -->
+  <section class="panel" aria-labelledby="dose-h">
+    <h2 id="dose-h" class="label">Dosis de radiación acumulada · módulo</h2>
+    <dl class="dose num">
+      <div class="st {dose.careerFraction >= 1 ? 'critical' : dose.careerFraction >= 0.8 ? 'caution' : 'nominal'}">
+        <dt class="label">Misión</dt>
+        <dd><span class="sym" aria-hidden="true"></span> {fmt(dose.missionMsv, 1)} <small class="unit">mSv · {fmt(dose.careerFraction * 100, 0)} % del límite de carrera ({CAREER_LIMIT_MSV} mSv)</small></dd>
+      </div>
+      <div>
+        <dt class="label">Último día</dt>
+        <dd>{fmt(dose.lastDayMsv, 2)} <small class="unit">mSv</small></dd>
+      </div>
+      <div class="st {dose.speDays ? (dose.speFraction >= 1 ? 'critical' : 'caution') : 'nominal'}">
+        <dt class="label">Evento SPE en curso</dt>
+        <dd><span class="sym" aria-hidden="true"></span> {#if dose.speDays}{fmt(dose.speEventMsv, 1)} <small class="unit">mSv en {dose.speDays} d · límite {SPE_EVENT_LIMIT_MSV} mSv</small>{:else}Sin evento{/if}</dd>
+      </div>
+    </dl>
+    <p class="muted small">Integra la tasa de dosis equivalente (µSv/h) día a día. Es la dosis del módulo: la individual depende del blindaje, la posición y el dosímetro.</p>
   </section>
 
   <section class="panel" aria-labelledby="envt-h">
@@ -70,6 +92,10 @@
   .alert .sym { color: var(--st-text); }
   .st.critical .txt { color: var(--alert-red-text); }
   .st.nominal .sym { color: var(--alert-green); }
+  .dose { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--gap); margin: 8px 0; }
+  .dose dd { margin: 4px 0 0; font-size: 1.25rem; font-weight: 700; }
+  .dose .st .sym { color: var(--st-text); }
+  .small { font-size: 0.875rem; }
   .tab { width: 100%; border-collapse: collapse; }
   .tab th, .tab td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
 </style>

@@ -30,7 +30,7 @@ flowchart LR
     T4["Tab 4: Crisis Simulator<br/>COMP-06 (SPE / CO2 / SANS / ARED)"]
     VISTA_B["View B: Code Red SPE<br/>(Full-Screen High-Contrast)<br/>Checklist <= 4 steps + Escalation (ADR-013/017)"]
     ZEN["Minimalist Zen Mode<br/>(Essential Vitals Only)"]
-    SURV["Survival Mode < 5W<br/>(E-Ink / Low-Power OLED · ADR-019)"]
+    SURV["Survival Mode < 350 mW<br/>(E-Ink / Low-Power OLED · ADR-019)"]
 
     LOCK -->|"PIN / NFC (< 1.5s)"| VISTA_A
     VISTA_A --> T1
@@ -56,7 +56,7 @@ Faithfully modeled after [`wireframe.html`](../../wireframe.html) (components `C
 |           Quick-Status: pO2 21.2 kPa | ppCO2 0.35 kPa | Rad 0.42 mSv/d | LAN Latency 12 ms | Sync OK|
 +=======================================================================================================+
 | [COMP-01] CREW SELECTOR & MISSION TIMELINE (12-col Grid · h: 72px)                                    |
-| [C01 Jared Isaacman OK] [C02 Hayley Arceneaux WARN] [C03 Dr. Sian Proctor OK] [C04 C. Sembroski OK]   |
+| [C01 Rachel Calloway OK] [C02 Lauren Pierce WARN] [C03 Dr. Marcus Dalton OK] [C04 H. Sutton OK]   |
 | Artemis/Mars-Sim Mission: [ L-44 ][ L-15 ][ FD-01 ][ FD-15* ][ FD-30 ][ R+1 ] · Gap >= 12px · 48x48px |
 +===================================+===================================================================+
 | [COMP-02] INTERACTIVE ANATOMY     | [COMP-03] BIOMEDICAL MONITORING (2x2 Grid · 4 cards)                |
@@ -113,10 +113,10 @@ Directly implements the `crisis` view from [`wireframe.html`](../../wireframe.ht
 +---------------------------------------------------+---------------------------------------------------+
 | IMMEDIATE PROTOCOL (MAX 4 STEPS · ADR-017)        | SHELTER STATUS BY CREW MEMBER (ADR-013)           |
 |                                                   |                                                   |
-| [ ] 1. RELOCATE CREW TO SHIELDED MODULE           |  C01 Jared Isaacman     [✕ UNCONFIRMED]           |
-|        (Water bags / Polyethylene > 20 g/cm2)     |  C02 Hayley Arceneaux   [✓ IN SPE SHELTER]        |
-|                                                   |  C03 Dr. Sian Proctor   [✓ IN SPE SHELTER]        |
-| [ ] 2. SUSPEND EVA ACTIVITIES & SEAL HATCHES      |  C04 Chris Sembroski    [▲ IN TRANSIT]            |
+| [ ] 1. RELOCATE CREW TO SHIELDED MODULE           |  C01 Rachel Calloway     [✕ UNCONFIRMED]           |
+|        (Water bags / Polyethylene > 20 g/cm2)     |  C02 Lauren Pierce   [✓ IN SPE SHELTER]        |
+|                                                   |  C03 Dr. Marcus Dalton   [✓ IN SPE SHELTER]        |
+| [ ] 2. SUSPEND EVA ACTIVITIES & SEAL HATCHES      |  C04 Hannah Sutton    [▲ IN TRANSIT]            |
 |                                                   |                                                   |
 | [ ] 3. VERIFY PERSONAL & CABIN DOSIMETERS         | AUTOMATIC ESCALATION (ADR-013):                   |
 |                                                   |  [0-10s] Local 960Hz Tone -> [2m] CMO Alert ->    |

@@ -139,6 +139,7 @@
 
   <footer class="label foot">
     Pantalla lista en {readyMs != null ? `${fmt(readyMs, 0)} ms` : '…'} (presupuesto 1500 ms, RNF-PER-02) · nodo {bridge.data.nodeId || '—'}
+    <br />Datos sintéticos de demostración: no son telemetría medida por NASA.
   </footer>
 </main>
 

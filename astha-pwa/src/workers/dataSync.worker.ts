@@ -56,6 +56,7 @@ let ready = false;
 let selectedCrew = CREW[0].id;
 let quarantinedCount = 0;
 let lockedCount = 0;
+let recoveredCount = 0;
 let lastView: TelemetryView | null = null;
 let lastAssessments: Assessment[] = [];
 let prevAlertIds = new Set<string>();
@@ -91,15 +92,15 @@ function canWrite(crewId: string): boolean {
   return !!session && currentKeys().has(keyRefFor(crewId));
 }
 
-const authorKeys = (author: string) =>
-  device && author === device.nodeId ? { alg: device.alg, publicJwk: device.publicJwk } : null;
+const authorKeys = (autor: string) =>
+  device && autor === device.nodeId ? { alg: device.alg, publicJwk: device.publicJwk } : null;
 
 /** Cifra, firma, guarda en IndexedDB, aplica al CRDT y empuja al Hub. */
 async function persist(body: OpBody, keyRef: string): Promise<Op | null> {
   const key = currentKeys().get(keyRef);
-  if (!db || !device || !clock || !key) return null;
+  if (!db || !guard || !device || !clock || !key) return null;
   const { envelope, op } = await sealEnvelope(body, clock.tick(), keyRef, key, device);
-  await db.addEnvelope(envelope);
+  await guard.store(envelope); // G-Set + réplica, con verificación tras escritura (RNF-SEC-03)
   envCache.set(envelope.id, envelope);
   crdt.apply(op);
   sync?.push([envelope]);
@@ -125,6 +126,7 @@ async function reload(): Promise<void> {
     clock?.receive(op.hlc);
   }
   lockedCount = report.locked;
+  recoveredCount += report.recovered.length;
   quarantinedCount = (await db.allQuarantine()).length;
   envCache.clear();
   for (const e of await db.allEnvelopes()) envCache.set(e.id, e);
@@ -257,6 +259,7 @@ function buildState(): DataState {
     syncStatus: sync?.status ?? 'disabled',
     quarantinedCount,
     lockedCount,
+    recoveredCount,
     nodeId: device?.nodeId ?? '',
   };
 }
@@ -412,9 +415,15 @@ async function handle(msg: UiToData): Promise<void> {
       const candidates = [...envCache.keys()];
       if (!candidates.length) return notice('info', 'no-data', 'No hay registros persistidos que corromper todavía.', reqId);
       const id = candidates[Math.floor(Math.random() * candidates.length)];
-      await db.injectBitFlip('envelopes', id, 'ct', Math.floor(Math.random() * 64));
-      await reload(); // la verificación SHA-256 lo aísla y lo registra
-      notice('info', 'seu', `Bit invertido en el registro ${id.slice(0, 10)}…: aislado en cuarentena.`, reqId);
+      const field = Math.random() < 0.5 ? 'ct' : 'iv';
+      const bit = Math.floor(Math.random() * 96);
+      await db.injectBitFlip('envelopes', id, field, bit);
+      if (msg.both) await db.injectBitFlip('replica', id, field, bit);
+      const before = recoveredCount;
+      await reload(); // la verificación SHA-256 lo detecta: lo restaura desde la réplica o lo aísla
+      notice('info', 'seu', recoveredCount > before
+        ? `Bit ${bit} invertido en ${field} de ${id.slice(0, 8)}…: detectado y restaurado desde la réplica local.`
+        : `Bit ${bit} invertido en ${field} de ${id.slice(0, 8)}… y en su réplica: aislado en cuarentena, réplica pedida al Hub.`, reqId);
       return scheduleEval(reqId);
     }
     case 'verifyLedger':
@@ -461,16 +470,17 @@ async function boot(): Promise<void> {
     notice('error', 'no-idb', 'IndexedDB no disponible: modo sin persistencia.');
   }
   if (db) {
-    device = (await db.getMeta<DeviceIdentity>('device')) ?? null;
+    device = (await db.getVault<DeviceIdentity>('device')) ?? null;
     if (!device) {
       device = await generateDeviceIdentity();
-      await db.putMeta('device', device);
+      await db.putVault('device', device);
     }
     clock = new HybridClock(device.nodeId);
     ledger = new Ledger(db, device, clock);
     guard = new IntegrityGuard(db, authorKeys, {
       onQuarantine: (id, reason) => void serial(() => log('quarantine', null, `${id.slice(0, 12)}… aislado: ${reason}`)),
       onReplicaRequest: (id) => sync?.requestReplica(id),
+      onRecovered: (id, reason) => void serial(() => log('quarantine', null, `${id.slice(0, 8)}… restaurado desde réplica local: ${reason}`)),
     });
     sync = new SyncClient({
       nodeId: device.nodeId,
@@ -479,12 +489,12 @@ async function boot(): Promise<void> {
       onEnvelopes: (envs, recs) => serial(() => applyRemote(envs, recs)),
       onStatus: () => postState(),
     });
-    ring = (await db.getMeta<Keyring>('keyring')) ?? null;
+    ring = (await db.getVault<Keyring>('keyring')) ?? null;
     if (ring) await reload();
     else {
       // Aprovisionamiento de demostración (sustituye a ADR-020). Se hace después de pintar la pantalla de bloqueo.
       provisioning = provisionKeyring(CREW.map((c) => ({ personId: c.id, pin: c.pin })), CMO_ID).then(async (r) => {
-        await db!.putMeta('keyring', r);
+        await db!.putVault('keyring', r);
         ring = r;
         provisioning = null;
         postState();

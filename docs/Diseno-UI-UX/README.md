@@ -19,7 +19,7 @@ All visual and ergonomic decisions are strictly aligned with the **SRS (§4.2 `R
 | [**README.md**](README.md) | Master index, interactive prototype links, and standards alignment table | `NASA-STD-3001 Vol 2`, `MIL-STD-1472H` |
 | [**01-Wireframes-y-Arquitectura-de-Pantalla.md**](01-Wireframes-y-Arquitectura-de-Pantalla.md) | Structural wireframes based on `wireframe.html`: 12-Col Grid (`COMP-00` to `COMP-06`), Code Red View, Lock Screen (`< 1.5s`), and Cabin Displays | `ADR-014`, `ADR-015`, `RNF-USA-02`, `RF-DSH-01..04` |
 | [**02-Guia-de-Estilo-y-Design-System.md**](02-Guia-de-Estilo-y-Design-System.md) | OLED/Blueprint color tokens, WCAG AAA contrast (`#fca5a5`), 630 nm Red Spectral Mode, Dual Coding, system font stacks, $\ge 48\text{ px}$ touch targets / $12\text{ px}$ gap, and 960 Hz audio | `ADR-003`, `ADR-018`, `RNF-USA-01`, `RNF-USA-03`, `RNF-USA-04` |
-| [**03-Mockups-y-Especificacion-de-Componentes.md**](03-Mockups-y-Especificacion-de-Componentes.md) | High-fidelity mockups (Tactical Dashboard, On-Demand 3D Triage + Accordion, $\le 4$-step Guide, Modals, Zen Mode, and `< 5W` Survival Mode) with full state & accessibility matrix | `ADR-004`, `ADR-013`, `ADR-017`, `ADR-019`, `C4-03` |
+| [**03-Mockups-y-Especificacion-de-Componentes.md**](03-Mockups-y-Especificacion-de-Componentes.md) | High-fidelity mockups (Tactical Dashboard, On-Demand 3D Triage + Accordion, $\le 4$-step Guide, Modals, Zen Mode, and `< 350 mW` Survival Mode) with full state & accessibility matrix | `ADR-004`, `ADR-013`, `ADR-017`, `ADR-019`, `C4-03` |
 
 ---
 

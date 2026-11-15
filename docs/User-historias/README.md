@@ -16,12 +16,12 @@ Because a Mars mission faces one-way electromagnetic signal latency of up to **2
 
 | Persona / Role | Scenario Representative | Operational Profile and Clinical Needs |
 | :--- | :--- | :--- |
-| **Mission Astronaut (Non-Physician)** | Dr. Sian Proctor / Chris Sembroski | Flight Scientist/Engineer. High cognitive workload in microgravity. Requires an unambiguous interface, immediate visual readouts, and step-by-step checklists without complex medical jargon. |
-| **Crew Medical Officer (CMO)** | Dr. Hayley Arceneaux | Crewmember trained in advanced life support. Requires a fleet-wide overview of the entire crew, AI-assisted differential diagnoses, and countermeasure adherence tracking (ARED, LBNP). |
-| **Mission Commander** | Jared Isaacman | Responsible for operational safety. Needs immediate awareness if a crewmember enters a critical or incapacitating condition that could jeopardize spacecraft operations. |
+| **Mission Astronaut (Non-Physician)** | Dr. Marcus Dalton / Hannah Sutton | Flight Scientist/Engineer. High cognitive workload in microgravity. Requires an unambiguous interface, immediate visual readouts, and step-by-step checklists without complex medical jargon. |
+| **Crew Medical Officer (CMO)** | Dra. Lauren Pierce | Crewmember trained in advanced life support. Requires a fleet-wide overview of the entire crew, AI-assisted differential diagnoses, and countermeasure adherence tracking (ARED, LBNP). |
+| **Mission Commander** | Rachel Calloway | Responsible for operational safety. Needs immediate awareness if a crewmember enters a critical or incapacitating condition that could jeopardize spacecraft operations. |
 | **Ground Flight Surgeon** | Medical Director at Houston (JSC) | Aerospace medicine specialist. Operates 100% asynchronously. Needs aggregated telemetry bundles, event audit trails, and clinical rationale for onboard countermeasures applied. |
 | **Habitat Systems Engineer (ECLSS)** | Life Support Operator | Monitors correlations between cabin environmental variables ($CO_2$ pockets, depressurization, neutron flux from solar particle events [SPE]) and human physiology. |
-| **Embedded Software / Cybersecurity Engineer** | Flight Hardware Developer | Oversees Edge computing performance, power draw (< 5W idle), P2P mesh synchronization, and radiation fault tolerance (SEU). |
+| **Embedded Software / Cybersecurity Engineer** | Flight Hardware Developer | Oversees Edge computing performance, power draw (< 350 mW), P2P mesh synchronization, and radiation fault tolerance (SEU). |
 
 ---
 
@@ -75,7 +75,7 @@ The stories are modularized into 5 thematic documents within this folder:
 | **HU-17** | Official NASA OSDR API Explorer | Researcher | **Could Have** | RF-OFF-03 | NASA OSDR API v2 |
 | **HU-18** | Calibration with Inspiration4 Mission (OSD-574) | CMO | **Must Have** | RF-ING-04 | NASA OSDR OSD-574 Dataset |
 | **HU-19** | Crisis Scenario Injection (Simulator) | Crew | **Should Have** | RF-DSH-02 | NASA Astronaut Simulation Training |
-| **HU-20** | Ultra-Low Power Profile (< 5W) | Software Eng. | **Must Have** | RNF-POW-01..04 | Spacecraft Power Budget Rules |
+| **HU-20** | Ultra-Low Power Profile (< 350 mW) | Software Eng. | **Must Have** | RNF-POW-01..04 | Spacecraft Power Budget Rules |
 
 ---
 

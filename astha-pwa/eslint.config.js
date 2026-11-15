@@ -6,7 +6,14 @@ import svelteConfig from './svelte.config.js';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'node_modules/**', 'public/sw.js'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'data/**',
+      'docs/**',
+      'wireframe.html',
+      'public/sw.js',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
