@@ -8,6 +8,11 @@ COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
 COPY . .
+# VITE_ASTHA_HUB=1 enables the same-origin Sync Hub client (served behind Caddy); the mission secret makes every
+# device derive the same crew keys (ADR-020 stand-in). Both are baked in at build time.
+ARG VITE_ASTHA_HUB=0
+ARG VITE_ASTHA_MISSION_SECRET=
+ENV VITE_ASTHA_HUB=${VITE_ASTHA_HUB} VITE_ASTHA_MISSION_SECRET=${VITE_ASTHA_MISSION_SECRET}
 # Runs vite build AND scripts/check-bundle-budget.mjs (enforces <= 5.0 MB, zero-CDN, stamped sw.js)
 RUN npm run build
 

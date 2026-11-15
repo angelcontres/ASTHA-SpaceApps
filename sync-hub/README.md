@@ -25,8 +25,12 @@ cd ../astha-pwa && ASTHA_HUB_BIN=../sync-hub/target/debug/astha-sync-hub npx vit
 astha-sync-hub --enrollment devices.json \
                --tls-cert astha.local.crt --tls-key astha.local.key \
                --static-dir ../astha-pwa/dist \
-               [--bind 0.0.0.0:8443] [--data-dir ./hub-data] [--segment-records 10000] [--no-mdns] [--no-fsync]
+               [--bind 0.0.0.0:8443] [--data-dir ./hub-data] [--segment-records 10000] [--auto-enroll] [--no-mdns] [--no-fsync]
+astha-sync-hub enroll '<record JSON>' [devices.json]     # add a device; a running hub reloads the file
+astha-sync-hub healthcheck [127.0.0.1:8443]             # container health probe (plain HTTP)
 ```
+
+Every flag can also be set from the environment, which is how the container is configured: `ASTHA_HUB_BIND`, `ASTHA_HUB_DATA_DIR`, `ASTHA_HUB_ENROLLMENT`, `ASTHA_HUB_STATIC_DIR`, `ASTHA_HUB_TLS_CERT`, `ASTHA_HUB_TLS_KEY`, `ASTHA_HUB_SEGMENT_RECORDS`, and the booleans `ASTHA_HUB_HTTP`, `ASTHA_HUB_AUTO_ENROLL`, `ASTHA_HUB_NO_MDNS`, `ASTHA_HUB_NO_FSYNC`.
 
 `--insecure-http` serves plain HTTP. Use it for local development only: the PWA treats `localhost` as a secure context, but `astha.local` must be HTTPS.
 
@@ -43,7 +47,7 @@ openssl x509 -req -in astha.local.csr -CA ca.crt -CAkey ca.key -CAcreateserial -
 
 ### Device enrollment (ADR-020)
 
-`devices.json` lists the Ed25519 public keys of the enrolled tablets and consoles:
+`devices.json` lists the Ed25519 public keys of the enrolled tablets and consoles. The hub creates it empty if it is missing, and re-reads it whenever it changes:
 
 ```json
 [{ "deviceId": "8a541e2411e7", "publicJwk": { "kty": "OKP", "crv": "Ed25519", "x": "…" } }]
@@ -55,16 +59,50 @@ The PWA shows each device's record in **Simulator → Sync Hub enrollment record
 
 ```bash
 cd astha-pwa && npm run build:hub      # build mode `hub`: enables the sync client on localhost
-cd ../sync-hub && echo "[]" > devices.json
-cargo run -- --insecure-http --no-mdns --bind 127.0.0.1:8443 --enrollment devices.json --static-dir ../astha-pwa/dist
+cd ../sync-hub
+cargo run -- --insecure-http --no-mdns --bind 127.0.0.1:8443 --static-dir ../astha-pwa/dist --auto-enroll
 ```
 
 1. Open `http://localhost:8443` in **two browser profiles**. Each profile has its own IndexedDB, so it acts as a separate tablet. Avoid incognito windows: they lose the device identity when closed.
-2. In each profile, unlock with a demo PIN, then copy **Simulator → Sync Hub enrollment record** into the `devices.json` array.
-3. Restart the hub and reload both tabs. The Simulator shows **Sync Hub: online**, and records entered on one tablet appear on the other.
-4. Try stopping the hub, writing on both tablets and starting it again: they converge without losing anything. A profile missing from `devices.json` is refused (WebSocket close `4401`).
+2. Unlock with a demo PIN (1001–1004). With `--auto-enroll` each profile enrols itself on its first handshake, proving possession of its key, and the header shows **Sync OK**.
+3. Data entered on one tablet appears on the other. All devices derive the same crew keys from the mission secret, so synced records are readable everywhere.
+4. Stop the hub (Ctrl+C), write on both tablets, and start it again: they converge without losing anything.
 
-The relay URL is always the page's own origin (`ws://localhost:8443/ws/sync` here, `wss://astha.local:8443/ws/sync` aboard). In a normal `npm run build` the client only turns on when the app is served from a `*.local` host.
+**Without `--auto-enroll`** (closer to flight), the hub creates an empty `devices.json`. Copy each profile's record from **Simulator → Integrity → Sync Hub enrollment record**, then add it with `cargo run -- enroll '<record>'` or paste it into the JSON array. The running hub reloads the file on the next handshake, so no restart is needed. Until then the header shows **Not enrolled**: the device is refused, retries with exponential backoff, and never flashes "online".
+
+The relay URL is always the page's own origin (`ws://localhost:8443/ws/sync` here, `wss://astha.local:8443/ws/sync` aboard, `wss://<domain>/ws/sync` behind Caddy). A normal `npm run build` only turns the client on for `*.local` hosts.
+
+### Sync status shown in the PWA header
+
+| Label | Meaning |
+| --- | --- |
+| Autonomous | Sync disabled for this build/host; the tablet works fully offline |
+| Connecting | Socket opening or handshake in progress |
+| Sync OK | The hub verified the signed handshake and the delta exchange completed |
+| No Hub | Hub unreachable; retries with exponential backoff (2 s → 5 min), paused while the tab is hidden |
+| Not enrolled | The hub refused this device (close code 4401); enrol it as above |
+
+## Production (Docker Compose + Caddy)
+
+`docker-compose.yml` runs the hub as `astha-hub` (profile `tls`, next to Caddy). Its settings:
+
+- **Image:** distroless and non-root, ~28 MB, read-only filesystem, 64 MB memory limit, graceful stop on SIGTERM.
+- **Network:** reachable only through Caddy. Caddy routes `/ws/sync` and `/api/v1/*` to the hub and everything else to the PWA, so the PWA and the relay share one origin and one TLS certificate.
+- **Storage:** Op-Log in the `hub_data` volume, enrollment file in `hub_config`.
+
+```bash
+ASTHA_DOMAIN=localhost docker compose --profile tls up -d --build    # local stack: https://localhost (Caddy local CA)
+docker exec astha-hub astha-sync-hub enroll '<record>'             # enrol a device (hot-reloaded)
+docker exec astha-hub astha-sync-hub healthcheck && echo healthy
+```
+
+CD (`.github/workflows/cd.yml`) publishes `ghcr.io/<repo>-hub` next to the PWA image. It builds the PWA with `VITE_ASTHA_HUB=1` and deploys both. Repository settings:
+
+| Setting | Kind | Purpose |
+| --- | --- | --- |
+| `ASTHA_DOMAIN` | variable | Enables Caddy, and with it HTTPS and the hub. Without a domain the PWA is served over plain HTTP, where browsers disable WebCrypto, so sync stays off |
+| `ASTHA_MISSION_SECRET` | secret | Shared mission secret from which every device derives the same crew keys (ADR-020 stand-in). It is compiled into the PWA bundle, so it protects demo data only; a real crew provisions keys out of band |
+| `ASTHA_HUB_AUTO_ENROLL` | variable | `true` for a public demo (any device that proves its key may sync); leave `false` for real crews and enrol with `docker exec … enroll` |
 
 ## API (`openapi.yaml`, base `/api/v1`)
 
@@ -80,7 +118,7 @@ The relay URL is always the page's own origin (`ws://localhost:8443/ws/sync` her
 
 | Message | Direction | Behaviour |
 | --- | --- | --- |
-| `HANDSHAKE` | both | The client signs `{deviceId, versionVector, timestampUtc}`. The hub answers with the envelopes the client lacks (`DELTA_PUSH`), then its own `HANDSHAKE`, so the client sends what the hub lacks. An invalid handshake closes the socket with code `4401` |
+| `HANDSHAKE` | both | The client signs `{deviceId, versionVector, timestampUtc}` and may attach its `publicJwk`, used only in `--auto-enroll` mode. The hub answers with the envelopes the client lacks (`DELTA_PUSH`), then its own `HANDSHAKE`, so the client sends what the hub lacks. An invalid handshake closes the socket with code `4401`, and the hub logs the reason once per device per minute |
 | `DELTA_PUSH` | both | Verified, appended and relayed to every other authenticated socket in arrival order |
 | `REPLICA_REQUEST` | client → hub | Returns the requested envelopes (local SEU recovery, RNF-SEC-03) |
 | `ALARM_ESCALATION` | both | Relayed (ADR-013) |
