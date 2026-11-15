@@ -35,7 +35,7 @@
       (trendWord ? `, tendencia ${trendWord}` : '') +
       `, nominal ${indicator.nominalRange}` +
       (drift ? `, precaución en ${drift} días` : '') +
-      (indicator.dubious ? ', dato dudoso' : ''),
+      (indicator.isSuspect ? ', dato dudoso' : ''),
   );
 </script>
 
@@ -47,7 +47,7 @@
     </span>
     <span class="main">
       <span class="value st-value">{valueText}</span>
-      {#if indicator.dubious || second?.dubious}<span class="dubious" title="Fuera del rango fisiológico posible">?</span>{/if}
+      {#if indicator.isSuspect || second?.isSuspect}<span class="suspect" title="Fuera del rango fisiológico posible">?</span>{/if}
       <span class="unit">{indicator.unit}</span>
       {#if arrow}<span class="arrow" aria-hidden="true">{arrow}</span>{/if}
     </span>
@@ -91,7 +91,7 @@
   .st-value { color: var(--text); }
   .ind.critical .st-value { color: var(--alert-red-text); }
   .arrow { font: 700 1.25rem var(--font-num); color: var(--text-muted); }
-  .dubious { font-weight: 800; color: var(--alert-yellow); }
+  .suspect { font-weight: 800; color: var(--alert-yellow); }
   .range { display: block; }
   .chip {
     align-self: flex-start;

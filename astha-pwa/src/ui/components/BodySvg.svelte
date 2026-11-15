@@ -25,7 +25,7 @@
     general: { x: 13, y: 40, short: 'General' },
   };
   const fill = (id: RegionId) => `url(#fill-${regions[id]?.status ?? 'none'})`;
-  const sym = (r: RegionState | undefined) => (r?.dubious ? '?' : '');
+  const sym = (r: RegionState | undefined) => (r?.isSuspect ? '?' : '');
 </script>
 
 <div class="body" class:compact role="group" aria-label={label || `Silueta anatómica, vista ${view === 'front' ? 'frontal' : 'posterior'}`}>
@@ -83,7 +83,7 @@
         class:selected={selected === id}
         style="left:{SPOT[id].x}%; top:{SPOT[id].y}%"
         aria-pressed={selected === id}
-        aria-label="{REGION_LABEL[id]}, {STATUS_LABEL[r?.status ?? 'none']}, {r?.alertCount ?? 0} alertas{r?.dubious ? ', dato dudoso' : ''}"
+        aria-label="{REGION_LABEL[id]}, {STATUS_LABEL[r?.status ?? 'none']}, {r?.alertCount ?? 0} alertas{r?.isSuspect ? ', dato dudoso' : ''}"
         onclick={() => onselect?.(id)}
       >
         <span class="sym" aria-hidden="true">{sym(r)}</span>

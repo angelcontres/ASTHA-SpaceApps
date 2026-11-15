@@ -118,23 +118,24 @@ export function generateDataset(c: SyntheticConfig = SYNTHETIC): Dataset {
 export interface ManualEntryResult {
   body: OpBody;
   /** Campos marcados como dudosos (RF-ING-05). Se guardan igualmente. */
-  dubious: string[];
+  /** Campos marcados con isSuspect (fuera del rango plausible, RF-ING-05): se guardan igualmente. */
+  suspect: string[];
   rejected: string[];
 }
 
 /** RF-ING-01: valida las 9 variables. Tipos inválidos se rechazan; valores imposibles se marcan, no se descartan. */
 export function manualEntry(crewId: string, day: number, fields: Partial<Record<CrewIndicator, unknown>>): ManualEntryResult {
   const clean: Record<string, number> = {};
-  const dubious: string[] = [];
+  const suspect: string[] = [];
   const rejected: string[] = [];
   for (const [k, raw] of Object.entries(fields)) {
     if (!(MANUAL_FIELDS as readonly string[]).includes(k) && k !== 'urineCa') { rejected.push(k); continue; }
     const v = validateValue(k as CrewIndicator, raw);
     if (v.value === null) { rejected.push(k); continue; }
     clean[k] = v.value;
-    if (v.dubious) dubious.push(k);
+    if (v.isSuspect) suspect.push(k);
   }
-  return { body: { t: 'measurement', crewId, day, fields: clean, source: 'manual' }, dubious, rejected };
+  return { body: { t: 'measurement', crewId, day, fields: clean, source: 'manual' }, suspect, rejected };
 }
 
 /** RF-ING-04: un toque por síntoma. Activar y desactivar son eventos distintos (append-only). */

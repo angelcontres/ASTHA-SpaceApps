@@ -22,7 +22,7 @@ function fmt(v: number, decimals: number): string {
 }
 
 function emptyRegions(): Record<RegionId, RegionState> {
-  return Object.fromEntries(REGION_IDS.map((r) => [r, { status: 'none', alertCount: 0, dubious: false }])) as Record<
+  return Object.fromEntries(REGION_IDS.map((r) => [r, { status: 'none', alertCount: 0, isSuspect: false }])) as Record<
     RegionId,
     RegionState
   >;
@@ -54,14 +54,14 @@ export function evaluate(input: EvaluationInput): Assessment {
       status = c.status;
       band = c.band;
       if (!HABITAT_SET.has(id)) {
-        const s = applySustained(id as CrewIndicator, c.status, history);
+        const s = applySustained(id as CrewIndicator, c.status, history, undefined, input.carry?.sustained[id as CrewIndicator]);
         if (s) { status = s.status; sustainedDays = s.days; sustainedConfirmed = s.confirmed; }
       }
     }
     indicators.push({
       id, label: def.label, short: def.short, value: v.value, unit: def.unit, decimals: def.decimals,
       status, nominalRange: nominalRange(id), slope: trend?.slope ?? null,
-      daysToCaution: trend?.daysToCaution ?? null, z, dubious: v.dubious,
+      daysToCaution: trend?.daysToCaution ?? null, z, isSuspect: v.isSuspect,
     });
 
     // Alerta por umbral (RF-EVA-01) o sostenida (RF-EVA-05), con explicación (RF-EVA-06).
@@ -72,7 +72,7 @@ export function evaluate(input: EvaluationInput): Assessment {
       const valueTxt = `${fmt(v.value, def.decimals)} ${def.unit}`;
       let explanation = `${def.label}: ${valueTxt}, en ${STATUS_ES[status]} (umbral ${bandText(band, def.unit)}).`;
       if (sustainedDays > 0) explanation += ` Sostenido ${sustainedDays} día(s).`;
-      if (v.dubious) explanation += ' Dato dudoso: fuera del rango fisiológico posible.';
+      if (v.isSuspect) explanation += ' Dato dudoso: fuera del rango fisiológico posible.';
       alerts.push({
         id: habitatLevel ? `HAB:${ruleId}` : `${crewId}:${ruleId}`,
         crewId: habitatLevel ? 'HAB' : crewId,
@@ -80,7 +80,7 @@ export function evaluate(input: EvaluationInput): Assessment {
         urgency: status === 'critical' ? 'high' : 'routine',
         kind: sustainedConfirmed ? 'sustained' : 'threshold',
         values: { [id]: v.value }, threshold: bandText(band, def.unit),
-        explanation, countermeasureId: `CM-IND-${id}`, dubious: v.dubious, day,
+        explanation, countermeasureId: `CM-IND-${id}`, isSuspect: v.isSuspect, day,
       });
     }
   };
@@ -118,7 +118,7 @@ export function evaluate(input: EvaluationInput): Assessment {
       ruleId: r.id, organ: r.organ, region: regionOfSystem(r.organ), status: r.status, urgency: r.urgency,
       kind: 'correlation', values: hit.values, threshold: hit.threshold,
       explanation: `${r.summary}. Valores: ${valuesTxt}. Condición: ${hit.threshold}.`,
-      countermeasureId: r.countermeasureId, dubious: false, day,
+      countermeasureId: r.countermeasureId, isSuspect: false, day,
     });
   }
 
@@ -133,7 +133,7 @@ export function evaluate(input: EvaluationInput): Assessment {
         values: { [ind.id]: ind.value!, pendiente: Number((ind.slope ?? 0).toFixed(3)) },
         threshold: `sale de ${ind.nominalRange}`,
         explanation: `${ind.label}: tendencia de 7 días ${(ind.slope ?? 0) > 0 ? 'ascendente' : 'descendente'}; llegará a precaución en ${ind.daysToCaution} día(s).`,
-        countermeasureId: DRIFT.countermeasures['D-01'], dubious: ind.dubious, day,
+        countermeasureId: DRIFT.countermeasures['D-01'], isSuspect: ind.isSuspect, day,
       });
     } else if (ind.z !== null && Math.abs(ind.z) >= DRIFT.zThreshold) {
       alerts.push({
@@ -142,7 +142,7 @@ export function evaluate(input: EvaluationInput): Assessment {
         values: { [ind.id]: ind.value!, zMod: Number(ind.z.toFixed(2)) },
         threshold: `|M| ≥ ${String(DRIFT.zThreshold).replace('.', ',')}`,
         explanation: `${ind.label}: ${fmt(ind.value!, ind.decimals)} ${ind.unit} se aleja de tu línea base de los días 1-14 (Z modificado ${fmt(ind.z, 1)}).`,
-        countermeasureId: DRIFT.countermeasures['D-02'], dubious: ind.dubious, day,
+        countermeasureId: DRIFT.countermeasures['D-02'], isSuspect: ind.isSuspect, day,
       });
     }
   }
@@ -153,7 +153,7 @@ export function evaluate(input: EvaluationInput): Assessment {
       values: { sueño: Number(trends.sleep!.slope.toFixed(3)), pad: Number(trends.dbp!.slope.toFixed(3)) },
       threshold: 'pendiente sueño < 0 y PAD > 0 (7 días)',
       explanation: `Patrón combinado: el sueño baja ${fmt(Math.abs(trends.sleep!.slope * 7), 1)} h/semana y la diastólica sube ${fmt(trends.dbp!.slope * 7, 1)} mmHg/semana.`,
-      countermeasureId: DRIFT.countermeasures['D-03'], dubious: false, day,
+      countermeasureId: DRIFT.countermeasures['D-03'], isSuspect: false, day,
     });
   }
 
@@ -170,7 +170,7 @@ export function evaluate(input: EvaluationInput): Assessment {
     return { crewId, day, global, statusOnly: true, regions: emptyRegions(), indicators: habitatOnly, alerts: [], gamification: null, latencyMs };
   }
   // Gamificación después del triage: no cuenta en la latencia ni modifica alertas (RF-GAM-03).
-  const gamification = scoreGamification(history, input.bonusXp ?? 0);
+  const gamification = scoreGamification(history, input.bonusXp ?? 0, input.carry?.gamification);
   return { crewId, day, global, statusOnly: false, regions, indicators, alerts: resolved, gamification, latencyMs };
 }
 

@@ -13,6 +13,7 @@ import {
 } from '../storage/crypto';
 import { buildPayload, fileName, parseImport, serialize, signExport } from '../storage/exportBuilder';
 import { AsthaDb, type Envelope, type LedgerRecord } from '../storage/idb';
+import { compactInput } from '../engine/inputWindow';
 import { IntegrityGuard, sealEnvelope } from '../storage/integrity';
 import { Ledger, type LedgerType } from '../storage/ledger';
 import { SyncClient } from '../storage/syncClient';
@@ -158,7 +159,8 @@ function evaluateNow(): void {
     const req: DataToClinical = {
       type: 'evaluate',
       reqId: pendingReqId || reqSeq++,
-      inputs: CREW.map((c) => ({
+      // Ventana de entrada: solo lo que el motor usa, con arrastre exacto del resto (serialización < 1 ms).
+      inputs: CREW.map((c) => compactInput({
         crewId: c.id,
         day: view.day,
         measurements: view.measurements[c.id] ?? [],
@@ -383,7 +385,7 @@ async function handle(msg: UiToData): Promise<void> {
       await persist(r.body, msg.crewId);
       if (firstToday) await persist({ t: 'pn', key: `xp:${msg.crewId}`, delta: 20 }, msg.crewId); // RF-GAM-01
       await log('measurement', msg.crewId, `Registro manual: ${Object.entries(r.body.t === 'measurement' ? r.body.fields : {}).map(([k, v]) => `${k}=${v}`).join(', ')}`);
-      if (r.dubious.length) notice('info', 'dubious', `Datos marcados como dudosos: ${r.dubious.join(', ')}`, reqId);
+      if (r.suspect.length) notice('info', 'suspect', `Datos marcados como dudosos: ${r.suspect.join(', ')}`, reqId);
       return scheduleEval(reqId);
     }
     case 'symptom':

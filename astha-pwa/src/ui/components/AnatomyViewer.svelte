@@ -67,18 +67,26 @@
     untrack(() => avatar?.animateTo(target, draw));
   });
 
-  // Arrastre para girar: frames solo mientras hay contacto, sin inercia.
+  // Arrastre para girar: frames solo mientras hay contacto, sin inercia. Un toque sin arrastre sobre el cuerpo
+  // selecciona la región tocada (raycast); los toques sobre un hotspot los gestiona el propio botón.
+  const DRAG_THRESHOLD_PX = 6;
+  let pointerId: number | null = null;
+  let startX = 0;
   let lastX = 0;
   let pending = false;
   let deltaYaw = 0;
   function down(e: PointerEvent) {
-    if (!avatar) return;
-    dragging = true;
-    lastX = e.clientX;
+    if (!avatar || (e.target as Element).closest('.hotspot')) return;
+    pointerId = e.pointerId;
+    startX = lastX = e.clientX;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }
   function move(e: PointerEvent) {
-    if (!dragging || !avatar) return;
+    if (e.pointerId !== pointerId || !avatar) return;
+    if (!dragging) {
+      if (Math.abs(e.clientX - startX) < DRAG_THRESHOLD_PX) return; // aún es un toque
+      dragging = true;
+    }
     deltaYaw += (e.clientX - lastX) * 0.012;
     lastX = e.clientX;
     if (pending) return;
@@ -91,7 +99,16 @@
       draw();
     });
   }
-  function up() { dragging = false; }
+  function up(e: PointerEvent) {
+    if (e.pointerId !== pointerId) return;
+    const tap = !dragging && e.type === 'pointerup';
+    pointerId = null;
+    dragging = false;
+    if (tap && avatar) {
+      const id = avatar.pick(e.clientX, e.clientY);
+      if (id) onselect?.(id);
+    }
+  }
 
   function keydown(e: KeyboardEvent) {
     if (e.key === 'v' || e.key === 'V') view = view === 'front' ? 'back' : 'front';
@@ -142,7 +159,7 @@
               onfocus={() => { if (a.hidden) view = view === 'front' ? 'back' : 'front'; }}
               onclick={() => onselect?.(id)}
             >
-              <span class="sym" aria-hidden="true">{r?.dubious ? '?' : ''}</span>
+              <span class="sym" aria-hidden="true">{r?.isSuspect ? '?' : ''}</span>
             </button>
           {/each}
         {/if}
@@ -155,7 +172,8 @@
   .viewer { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
   .note { font-size: 0.8125rem; }
   .stage { position: relative; min-height: 420px; }
-  .scene { position: absolute; inset: 0; touch-action: none; cursor: grab; }
+  .scene { position: absolute; inset: 0; touch-action: none; cursor: pointer; }
+  .scene:active { cursor: grabbing; }
   .scene.hidden { visibility: hidden; }
   canvas { width: 100%; height: 100%; display: block; }
   .crisis :global(.region:not([data-status='critical'])) { opacity: 0.4; }

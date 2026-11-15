@@ -456,7 +456,7 @@ describe('Telemetry Sources (RF-ING-01..05, RF-SIM-01..05)', () => {
   it('entrada manual: marca dudosos sin descartar y rechaza tipos inválidos', () => {
     const r = manualEntry('C001', 120, { hr: 300, sbp: 118, mood: 'x' as unknown as number });
     expect(r.body).toMatchObject({ fields: { hr: 300, sbp: 118 }, source: 'manual' });
-    expect(r.dubious).toEqual(['hr']);
+    expect(r.suspect).toEqual(['hr']);
     expect(r.rejected).toEqual(['mood']);
   });
 

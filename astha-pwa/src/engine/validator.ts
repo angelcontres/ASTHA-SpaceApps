@@ -1,4 +1,5 @@
-// RF-ING-05: valida rangos fisiológicamente posibles y marca flags.dubious SIN descartar.
+// RangeValidator (SDD-02, issue #4) · RF-ING-05: valida rangos plausibles (Diccionario de Datos §2) y marca
+// isSuspect=true SIN descartar el registro.
 import thresholds from '../data/thresholds.json';
 import type { IndicatorId } from './types';
 
@@ -8,7 +9,7 @@ type Plausible = Record<string, { plausible: number[] }>;
 export interface ValidatedValue {
   id: IndicatorId;
   value: number | null;
-  dubious: boolean;
+  isSuspect: boolean;
   reason?: string;
 }
 
@@ -19,13 +20,13 @@ export function validateValue(
   table: Plausible = thresholds.indicators as Plausible,
 ): ValidatedValue {
   if (typeof raw !== 'number' || !Number.isFinite(raw)) {
-    return { id, value: null, dubious: false, reason: 'sin dato' };
+    return { id, value: null, isSuspect: false, reason: 'sin dato' };
   }
   const [min, max] = table[id]?.plausible ?? [-Infinity, Infinity];
   if (raw < min || raw > max) {
-    return { id, value: raw, dubious: true, reason: `fuera del rango posible ${min}–${max}` };
+    return { id, value: raw, isSuspect: true, reason: `fuera del rango posible ${min}–${max}` };
   }
-  return { id, value: raw, dubious: false };
+  return { id, value: raw, isSuspect: false };
 }
 
 export function validateRecord<T extends object>(
