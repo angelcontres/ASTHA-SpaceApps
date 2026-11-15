@@ -2598,49 +2598,7 @@
       const matSpine = new THREE.MeshBasicMaterial({ color: 0x9fc5f8 });
       const matLaser = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65, side: THREE.DoubleSide });
 
-      // =====================================================================
-            // =====================================================================
-      // 0. RETRO NASA THERMAL WIREFRAME GLOBE (MATCHING VINTAGE SHIRT GRAPHIC)
-      // =====================================================================
-      retroGlobeGroup = new THREE.Group();
-      retroGlobeGroup.position.set(3.2, 0.8, -4.2);
-
-      // Outer wireframe sphere in warm yellow
-      const globeWireGeo = new THREE.SphereGeometry(2.4, 24, 18);
-      const globeWireMat = new THREE.MeshBasicMaterial({
-        color: 0xfacc15,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.32
-      });
-      const globeWireMesh = new THREE.Mesh(globeWireGeo, globeWireMat);
-      retroGlobeGroup.add(globeWireMesh);
-
-      // Inner thermal heatmap atmosphere (magenta/pink gradient glow)
-      const globeInnerGeo = new THREE.SphereGeometry(2.36, 32, 24);
-      const globeInnerMat = new THREE.MeshBasicMaterial({
-        color: 0xdb3b68,
-        transparent: true,
-        opacity: 0.18
-      });
-      const globeInnerMesh = new THREE.Mesh(globeInnerGeo, globeInnerMat);
-      retroGlobeGroup.add(globeInnerMesh);
-
-      // Equatorial & Tropic Latitudinal Accent Rings (Orange & Gold)
-      const eqRingGeo = new THREE.RingGeometry(2.42, 2.47, 48);
-      const eqRingMat = new THREE.MeshBasicMaterial({ color: 0xf97316, side: THREE.DoubleSide, transparent: true, opacity: 0.45 });
-      const eqRing = new THREE.Mesh(eqRingGeo, eqRingMat);
-      eqRing.rotation.x = Math.PI / 2.3;
-      retroGlobeGroup.add(eqRing);
-
-      const tropicRingGeo = new THREE.RingGeometry(2.0, 2.04, 36);
-      const tropicRingMat = new THREE.MeshBasicMaterial({ color: 0xffd500, side: THREE.DoubleSide, transparent: true, opacity: 0.35 });
-      const tropicRing = new THREE.Mesh(tropicRingGeo, tropicRingMat);
-      tropicRing.rotation.x = Math.PI / 2.3;
-      tropicRing.position.y = 1.0;
-      retroGlobeGroup.add(tropicRing);
-
-      scene3d.add(retroGlobeGroup);
+      // (Thermal background sphere removed for clean biometric focus)
 
       // 1. CYBERNETIC TURNTABLE PLATFORM
       // =====================================================================
@@ -3003,11 +2961,7 @@
       astronautGroup.rotation.y += (targetAngleY - astronautGroup.rotation.y) * 0.08;
 
       // Vertical Laser Medical Scanner Loop
-      // Rotate Retro Thermal Globe matching shirt graphic
-      if (retroGlobeGroup) {
-        retroGlobeGroup.rotation.y += 0.0022;
-        retroGlobeGroup.rotation.x += 0.0008;
-      }
+      // (Thermal background sphere animation removed)
 
       if (laserScanRing) {
         const scanY = Math.sin(Date.now() * 0.002) * 3.2 + 0.2;
