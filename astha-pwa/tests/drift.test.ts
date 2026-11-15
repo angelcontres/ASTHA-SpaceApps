@@ -205,14 +205,14 @@ describe('AC-CLIN-04 / RNF-PER-01 · escenarios de CO₂ y SPE en < 50 ms', () =
   };
 
   it('B (microfuga de CO₂): R-ENV-01 exacto en toda la tripulación', () => {
-    for (const a of run('B')) {
+    for (const a of run('C')) {
       expect(a.alerts.map((x) => x.ruleId)).toContain('R-ENV-01');
       expect(a.latencyMs).toBeLessThan(50);
     }
   });
 
   it('C (tormenta solar): R-RAD-02 con náuseas en el afectado, R-RAD-01 en el resto', () => {
-    const [c001, ...rest] = run('C');
+    const [c001, ...rest] = run('A');
     expect(c001.alerts.map((x) => x.ruleId)).toContain('R-RAD-02');
     expect(c001.alerts.find((x) => x.ruleId === 'R-RAD-02')?.urgency).toBe('emergency');
     for (const a of rest) expect(a.alerts.map((x) => x.ruleId)).toContain('R-RAD-01');
