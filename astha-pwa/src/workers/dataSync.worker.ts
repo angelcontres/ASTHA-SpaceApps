@@ -8,7 +8,7 @@ import { CATALOG, resolveProtocol } from '../engine/countermeasures';
 import type { Alert, Assessment } from '../engine/types';
 import { CrdtState, deltaFor, encodeHlc, HybridClock, vvOf, type Op, type OpBody } from '../storage/crdt';
 import {
-  generateDeviceIdentity, provisionKeyring, sign, unlockKeyring, WrongPinError,
+  generateDeviceIdentity, MISSION_PROVISIONING, provisionKeyring, sign, unlockKeyring, WrongPinError,
   type DeviceIdentity, type Keyring,
 } from '../storage/crypto';
 import { buildPayload, packageForDsn, parseImport, signExport } from '../storage/exportBuilder';
@@ -37,6 +37,11 @@ const post = (m: DataToUi) => scope.postMessage(m);
 
 // ---------------- estado del worker ----------------
 
+/**
+ * Shared mission secret for the demo ground provisioning (ADR-020 stand-in). Deployments set their own with
+ * VITE_ASTHA_MISSION_SECRET at build time; the default only protects synthetic demo data.
+ */
+const MISSION_SECRET = import.meta.env.VITE_ASTHA_MISSION_SECRET || 'astha-dst-1-demo-mission-secret';
 const CREW = SYNTHETIC.crew;
 const CMO_ID = CREW.find((c) => c.role === 'cmo')!.id;
 const dataset = generateDataset();
@@ -199,6 +204,7 @@ function evaluateNow(): void {
 // ---------------- public cabin snapshot for the Sync Hub (ADR-014) ----------------
 const criticalSince = new Map<string, number>();
 let lastCabinKey = '';
+let notifiedUnenrolled = false;
 const CABIN_ESCALATION_MS = 5 * 60_000; // ADR-013: cabin displays escalate after 5 min unacknowledged
 
 /** Habitat values and per-crew traffic lights only: never individual biomarkers, organs or diagnoses. */
@@ -601,14 +607,29 @@ async function boot(): Promise<void> {
       getVersionVector: () => vvOf(envCache.values()),
       getDelta: (remote) => deltaFor(envCache.values(), remote),
       signHandshake: (bytes) => sign(device!, bytes),
+      publicJwk: device.publicJwk,
       onEnvelopes: (envs, recs) => serial(() => applyRemote(envs, recs)),
-      onStatus: () => postState(),
+      onStatus: (s) => {
+        if (s === 'unauthorized' && !notifiedUnenrolled) {
+          notifiedUnenrolled = true;
+          notice('error', 'not-enrolled', 'Sync Hub refused this device: add its enrollment record (Simulator → Sync Hub enrollment record) to the hub devices.json.');
+        }
+        if (s === 'online') notifiedUnenrolled = false;
+        postState();
+      },
     });
     ring = (await db.getVault<Keyring>('keyring')) ?? null;
+    // Legacy keyrings held random, device-local keys: data synced from other devices was unreadable. They are
+    // re-provisioned from the shared mission secret (older local envelopes remain stored but locked).
+    if (ring && ring.provisioning !== MISSION_PROVISIONING) {
+      ring = null;
+      notice('info', 'reprovisioned', 'Device keys re-provisioned from the mission secret so synced data is readable on every device.');
+    }
     if (ring) await reload();
     else {
-      // Aprovisionamiento de demostración (sustituye a ADR-020). Se hace después de pintar la pantalla de bloqueo.
-      provisioning = provisionKeyring(CREW.map((c) => ({ personId: c.id, pin: c.pin })), CMO_ID).then(async (r) => {
+      // Demo ground provisioning (stands in for ADR-020): same crew keys on every device, wrapped per device with
+      // the crew PINs. Runs after the lock screen has painted.
+      provisioning = provisionKeyring(CREW.map((c) => ({ personId: c.id, pin: c.pin })), CMO_ID, undefined, MISSION_SECRET).then(async (r) => {
         await db!.putVault('keyring', r);
         ring = r;
         provisioning = null;

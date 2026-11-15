@@ -37,14 +37,15 @@ class Tablet {
   readonly envs = new Map<string, Envelope>();
   readonly clock: HybridClock;
   readonly client: SyncClient;
-  constructor(readonly device: DeviceIdentity, private readonly key: CryptoKey, url: string) {
+  constructor(readonly device: DeviceIdentity, private readonly key: CryptoKey, url: string, delays = { base: 100, max: 400 }) {
     this.clock = new HybridClock(device.nodeId);
     this.client = new SyncClient({
       nodeId: device.nodeId, url, enabled: true, WebSocketImpl: globalThis.WebSocket as unknown as WebSocketCtor,
-      baseDelayMs: 100, maxDelayMs: 400,
+      baseDelayMs: delays.base, maxDelayMs: delays.max,
       getVersionVector: () => vvOf(this.envs.values()),
       getDelta: (vv) => deltaFor(this.envs.values(), vv),
       signHandshake: (bytes) => sign(this.device, bytes),
+      publicJwk: device.publicJwk,
       onEnvelopes: (list) => { for (const e of list) this.envs.set(e.id, e); },
     });
   }
@@ -61,8 +62,8 @@ describe.skipIf(!BIN)('PWA SyncClient ↔ Rust Sync Hub (real binary)', () => {
   const procs: ChildProcess[] = [];
   afterAll(() => { for (const p of procs) p.kill('SIGKILL'); });
 
-  async function startHub(dataDir: string, enrollment: string, port: number): Promise<ChildProcess> {
-    const p = spawn(BIN!, ['--insecure-http', '--no-mdns', '--no-fsync', '--bind', `127.0.0.1:${port}`, '--data-dir', dataDir, '--enrollment', enrollment], { stdio: 'ignore' });
+  async function startHub(dataDir: string, enrollment: string, port: number, extra: string[] = []): Promise<ChildProcess> {
+    const p = spawn(BIN!, ['--insecure-http', '--no-mdns', '--no-fsync', '--bind', `127.0.0.1:${port}`, '--data-dir', dataDir, '--enrollment', enrollment, ...extra], { stdio: 'ignore' });
     procs.push(p);
     await until(async () => (await fetch(`http://127.0.0.1:${port}/api/v1/health`).catch(() => null))?.ok === true);
     return p;
@@ -127,5 +128,52 @@ describe.skipIf(!BIN)('PWA SyncClient ↔ Rust Sync Hub (real binary)', () => {
 
     a.client.stop();
     b.client.stop();
+  }, 20_000);
+
+  it('status semantics: an unenrolled device shows `unauthorized` (never a flapping `online`) and backs off; auto-enroll admits it', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'astha-hub-status-'));
+    const [known, stranger] = await Promise.all([generateDeviceIdentity(), generateDeviceIdentity()]);
+    const enrollment = join(dir, 'devices.json');
+    writeFileSync(enrollment, JSON.stringify([{ deviceId: known.nodeId, publicJwk: known.publicJwk }]));
+    const port = await freePort();
+    const hub = await startHub(join(dir, 'data'), enrollment, port);
+    const url = `ws://127.0.0.1:${port}/ws/sync`;
+    const key = await generateDataKey(false);
+
+    const track = (t: Tablet) => {
+      const seen: string[] = [];
+      const orig = (t.client as unknown as { o: { onStatus?: (s: string) => void } }).o;
+      orig.onStatus = (s) => seen.push(s);
+      return seen;
+    };
+    const k = new Tablet(known, key, url);
+    const x = new Tablet(stranger, key, url, { base: 2000, max: 300_000 }); // the app's real backoff
+    const ks = track(k);
+    const xs = track(x);
+    k.client.start();
+    x.client.start();
+    await new Promise((r) => setTimeout(r, 2600));
+    expect(ks).toEqual(['connecting', 'online']); // stable
+    expect(xs).not.toContain('online'); // no false "online" flashes
+    expect(xs.filter((s) => s === 'unauthorized').length).toBeGreaterThanOrEqual(1);
+    // Real backoff: attempts at ~0 s and ~2 s, then 4 s, 8 s… (the old client reconnected every 2 s forever).
+    expect(xs.filter((s) => s === 'connecting').length).toBe(2);
+    expect((x.client as unknown as { attempt: number }).attempt).toBeGreaterThanOrEqual(2);
+    x.client.stop();
+    k.client.stop();
+    hub.kill('SIGKILL');
+
+    // Same stranger against a hub in auto-enroll mode: admitted, stays online, persisted to devices.json.
+    const port2 = await freePort();
+    await startHub(join(dir, 'data2'), enrollment, port2, ['--auto-enroll']);
+    const x2 = new Tablet(stranger, key, `ws://127.0.0.1:${port2}/ws/sync`);
+    const xs2 = track(x2);
+    x2.client.start();
+    await until(() => x2.client.status === 'online');
+    await new Promise((r) => setTimeout(r, 500));
+    expect(xs2).toEqual(['connecting', 'online']);
+    const { readFileSync } = await import('node:fs');
+    expect(readFileSync(enrollment, 'utf8')).toContain(stranger.nodeId);
+    x2.client.stop();
   }, 20_000);
 });

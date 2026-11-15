@@ -14,7 +14,14 @@ import { canonicalJson, utf8 } from './crypto';
 import { vvFromWire, vvToWire, type VersionVector, type WireVersionVector } from './crdt';
 import type { Envelope, LedgerRecord } from './idb';
 
-export type SyncStatus = 'disabled' | 'offline' | 'connecting' | 'online';
+/**
+ * - `online` only once the hub has accepted the signed handshake (not merely when the socket opens).
+ * - `unauthorized`: the hub refused this device (close code 4401: not enrolled or invalid signature).
+ */
+export type SyncStatus = 'disabled' | 'offline' | 'connecting' | 'online' | 'unauthorized';
+
+/** WebSocket close code used by the hub to reject a handshake (mirrors HTTP 401). */
+export const CLOSE_UNAUTHORIZED = 4401;
 
 export const DEFAULT_SYNC_URL = 'wss://astha.local:8443/ws/sync';
 
@@ -24,6 +31,8 @@ export interface HandshakeMessage {
   versionVector: WireVersionVector;
   timestampUtc: string;
   ed25519Signature: string;
+  /** Public key, used only by hubs running in auto-enroll mode (extension; not covered by the signature). */
+  publicJwk?: JsonWebKey;
 }
 export interface DeltaPushMessage { type: 'DELTA_PUSH'; envelopes: Envelope[]; ledger?: LedgerRecord[] }
 export interface ReplicaRequestMessage { type: 'REPLICA_REQUEST'; ids: string[] }
@@ -70,6 +79,8 @@ export interface SyncClientOptions {
   getDelta?: (remote: VersionVector) => Envelope[];
   /** Signs the handshake bytes with the device key (base64). Unsigned handshakes are sent if omitted. */
   signHandshake?: (bytes: Uint8Array<ArrayBuffer>) => Promise<string>;
+  /** Device public key sent with the handshake so an auto-enroll hub can register this device. */
+  publicJwk?: JsonWebKey;
   onEnvelopes: (envs: Envelope[], ledger: LedgerRecord[]) => void | Promise<void>;
   onAlarmEscalation?: (msg: AlarmEscalationMessage) => void;
   onStatus?: (s: SyncStatus) => void;
@@ -116,8 +127,8 @@ export class SyncClient {
   private readonly pendingReplicas = new Set<string>();
   private cabinStatus: CabinGlobalStatus | null = null;
   private _status: SyncStatus;
-  private readonly o: Required<Omit<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl' | 'signHandshake' | 'onAlarmEscalation'>> &
-    Pick<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl' | 'signHandshake' | 'onAlarmEscalation'>;
+  private readonly o: Required<Omit<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl' | 'signHandshake' | 'onAlarmEscalation' | 'publicJwk'>> &
+    Pick<SyncClientOptions, 'getDelta' | 'onStatus' | 'WebSocketImpl' | 'signHandshake' | 'onAlarmEscalation' | 'publicJwk'>;
 
   constructor(opts: SyncClientOptions) {
     this.o = {
@@ -209,16 +220,15 @@ export class SyncClient {
     }
     this.ws = ws;
     this.synced = false;
-    ws.onopen = () => {
-      this.attempt = 0;
-      this.setStatus('online');
-      void this.sendHandshake(ws);
-    };
+    // The socket being open proves nothing: status turns `online` only when the hub answers the handshake, and
+    // the retry backoff is reset only then, so a refused device backs off instead of reconnecting every 2 s.
+    ws.onopen = () => void this.sendHandshake(ws);
     ws.onmessage = (ev) => void this.handle(ev.data);
     ws.onerror = () => { /* the following close event schedules the retry */ };
-    ws.onclose = () => {
+    ws.onclose = (ev) => {
       if (this.ws === ws) { this.ws = null; this.synced = false; }
-      if (!this.stopped) this.scheduleRetry();
+      const refused = (ev as { code?: number } | undefined)?.code === CLOSE_UNAUTHORIZED;
+      if (!this.stopped) this.scheduleRetry(refused ? 'unauthorized' : 'offline');
     };
   }
 
@@ -227,7 +237,7 @@ export class SyncClient {
     let ed25519Signature = '';
     try { ed25519Signature = (await this.o.signHandshake?.(handshakeBytes(base))) ?? ''; } catch { /* unsigned */ }
     if (this.ws !== ws) return; // the connection changed while signing
-    this.send({ type: 'HANDSHAKE', ...base, ed25519Signature });
+    this.send({ type: 'HANDSHAKE', ...base, ed25519Signature, ...(this.o.publicJwk ? { publicJwk: this.o.publicJwk } : {}) });
     this.flushReplicas();
   }
 
@@ -262,6 +272,8 @@ export class SyncClient {
     this.outbox.clear();
     this.outboxLedger = [];
     this.synced = true;
+    this.attempt = 0;
+    this.setStatus('online');
     if (this.cabinStatus) this.send({ type: 'CABIN_STATUS', status: this.cabinStatus });
   }
 
@@ -274,8 +286,8 @@ export class SyncClient {
     if (this.pendingReplicas.size) this.send({ type: 'REPLICA_REQUEST', ids: [...this.pendingReplicas] });
   }
 
-  private scheduleRetry(): void {
-    this.setStatus('offline');
+  private scheduleRetry(status: 'offline' | 'unauthorized' = 'offline'): void {
+    this.setStatus(status);
     if (this.stopped || !this.visible || this.retry !== null) return;
     const delay = Math.min(this.o.maxDelayMs, this.o.baseDelayMs * 2 ** this.attempt);
     this.attempt++;

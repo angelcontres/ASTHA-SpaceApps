@@ -60,7 +60,8 @@ struct EnrolledDevice {
 /// Devices enrolled before launch (ADR-020): deviceId → Ed25519 public key.
 #[derive(Default, Clone, Debug)]
 pub struct Registry {
-    devices: HashMap<String, VerifyingKey>,
+    /// deviceId → (verifying key, original JWK kept to persist the enrollment file).
+    devices: HashMap<String, (VerifyingKey, Value)>,
 }
 
 impl Registry {
@@ -103,8 +104,20 @@ impl Registry {
                 "{device_id}: does not match its key (expected {expected})"
             ));
         }
-        self.devices.insert(device_id.to_string(), key);
+        self.devices
+            .insert(device_id.to_string(), (key, jwk.clone()));
         Ok(())
+    }
+
+    /// Enrollment file content: entries sorted by deviceId (stable diffs).
+    pub fn to_json(&self) -> String {
+        let mut ids: Vec<&String> = self.devices.keys().collect();
+        ids.sort();
+        let list: Vec<Value> = ids
+            .into_iter()
+            .map(|id| json!({ "deviceId": id, "publicJwk": self.devices[id].1 }))
+            .collect();
+        serde_json::to_string_pretty(&list).expect("JSON values always serialise") + "\n"
     }
 
     pub fn contains(&self, device_id: &str) -> bool {
@@ -120,7 +133,7 @@ impl Registry {
     }
 
     fn verify(&self, device_id: &str, message: &[u8], sig_b64: &str) -> Result<(), Rejection> {
-        let key = self
+        let (key, _) = self
             .devices
             .get(device_id)
             .ok_or_else(|| Rejection::UnknownDevice(device_id.to_string()))?;
@@ -214,4 +227,20 @@ pub fn verify_handshake(reg: &Registry, body: &Value) -> Result<String, Rejectio
     );
     reg.verify(device_id, signed.as_bytes(), sig)?;
     Ok(device_id.to_string())
+}
+
+/// Adds one enrollment record (`{"deviceId", "publicJwk"}`, as shown by the PWA) to an enrollment file,
+/// validating the key and the deviceId binding. Writes atomically. Returns the device id.
+pub fn enroll_into_file(path: &Path, record: &str) -> Result<String, String> {
+    let rec: EnrolledDevice = serde_json::from_str(record).map_err(|e| format!("record: {e}"))?;
+    let mut reg = if path.exists() {
+        Registry::from_file(path)?
+    } else {
+        Registry::default()
+    };
+    reg.enroll(&rec.device_id, &rec.public_jwk)?;
+    let tmp = path.with_extension("json.tmp");
+    std::fs::write(&tmp, reg.to_json()).map_err(|e| format!("{}: {e}", tmp.display()))?;
+    std::fs::rename(&tmp, path).map_err(|e| format!("{}: {e}", path.display()))?;
+    Ok(rec.device_id)
 }

@@ -3,12 +3,13 @@
 
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, RwLock};
+use std::time::{Duration, Instant, SystemTime};
 
 use serde_json::{json, Value};
 use tokio::sync::broadcast;
 
-use crate::crypto::{verify_envelope, Registry, Rejection};
+use crate::crypto::{verify_envelope, verify_handshake, Registry, Rejection};
 use crate::hlc::{self, Hlc, VersionVector};
 use crate::oplog::{OpLog, DEFAULT_SEGMENT_RECORDS};
 
@@ -21,6 +22,11 @@ pub struct HubConfig {
     pub fsync: bool,
     /// SHA-256 of the app shell served to the Service Worker (`GET /health`).
     pub bundle_hash: String,
+    /// Enrollment file (ADR-020). Re-read automatically when it changes, so enrolling needs no restart.
+    pub enrollment_path: Option<PathBuf>,
+    /// Trust on first use: enroll an unknown device that proves possession of the key in its handshake
+    /// (`publicJwk` whose hash is its deviceId + valid signature). Development/demo only.
+    pub auto_enroll: bool,
 }
 
 impl HubConfig {
@@ -30,6 +36,8 @@ impl HubConfig {
             segment_records: DEFAULT_SEGMENT_RECORDS,
             fsync: true,
             bundle_hash: String::new(),
+            enrollment_path: None,
+            auto_enroll: false,
         }
     }
 }
@@ -74,7 +82,9 @@ impl AcceptReport {
 }
 
 pub struct Hub {
-    pub registry: Registry,
+    registry: RwLock<Registry>,
+    enrollment_mtime: Mutex<Option<SystemTime>>,
+    rejection_log: Mutex<HashMap<String, Instant>>,
     pub config: HubConfig,
     oplog: Mutex<OpLog>,
     index: Mutex<Index>,
@@ -116,8 +126,11 @@ impl Hub {
             eprintln!("[oplog] {d}");
         }
         let (relay, _) = broadcast::channel(1024);
+        let mtime = config.enrollment_path.as_deref().and_then(file_mtime);
         Ok(Arc::new(Hub {
-            registry,
+            registry: RwLock::new(registry),
+            enrollment_mtime: Mutex::new(mtime),
+            rejection_log: Mutex::new(HashMap::new()),
             config,
             oplog: Mutex::new(oplog),
             index: Mutex::new(index),
@@ -125,6 +138,107 @@ impl Hub {
             degraded: Mutex::new(degraded),
             relay,
         }))
+    }
+
+    pub fn registry_len(&self) -> usize {
+        self.registry.read().unwrap().len()
+    }
+
+    /// Is the device enrolled? Re-reads the enrollment file first if it changed on disk.
+    pub fn is_enrolled(&self, device_id: &str) -> bool {
+        if self.registry.read().unwrap().contains(device_id) {
+            return true;
+        }
+        self.reload_enrollment_if_changed() && self.registry.read().unwrap().contains(device_id)
+    }
+
+    /// Re-reads the enrollment file if its modification time changed. Returns true if it was reloaded.
+    pub fn reload_enrollment_if_changed(&self) -> bool {
+        let Some(path) = self.config.enrollment_path.as_deref() else {
+            return false;
+        };
+        let now = file_mtime(path);
+        let mut last = self.enrollment_mtime.lock().unwrap();
+        if now.is_none() || now == *last {
+            return false;
+        }
+        match Registry::from_file(path) {
+            Ok(reg) => {
+                eprintln!(
+                    "[enroll] reloaded {} ({} devices)",
+                    path.display(),
+                    reg.len()
+                );
+                *self.registry.write().unwrap() = reg;
+                *last = now;
+                true
+            }
+            Err(e) => {
+                eprintln!("[enroll] ignoring invalid enrollment file: {e}");
+                *last = now; // do not retry the same broken content on every handshake
+                false
+            }
+        }
+    }
+
+    /// Verifies a signed handshake (REST or WebSocket). Unknown devices trigger an enrollment-file reload and,
+    /// in auto-enroll mode, proof-of-possession enrollment. Rejections are logged (once per device per minute).
+    pub fn verify_handshake(&self, body: &Value) -> Result<String, Rejection> {
+        let first = verify_handshake(&self.registry.read().unwrap(), body);
+        let result = match first {
+            Err(Rejection::UnknownDevice(id)) => {
+                if self.reload_enrollment_if_changed() {
+                    verify_handshake(&self.registry.read().unwrap(), body)
+                } else if self.config.auto_enroll {
+                    self.auto_enroll(&id, body)
+                } else {
+                    Err(Rejection::UnknownDevice(id))
+                }
+            }
+            other => other,
+        };
+        if let Err(r) = &result {
+            let id = body
+                .get("deviceId")
+                .and_then(Value::as_str)
+                .unwrap_or("?")
+                .to_string();
+            self.log_rejection(&id, r);
+        }
+        result
+    }
+
+    fn auto_enroll(&self, device_id: &str, body: &Value) -> Result<String, Rejection> {
+        let unknown = || Rejection::UnknownDevice(device_id.to_string());
+        let jwk = body.get("publicJwk").ok_or_else(unknown)?;
+        let mut candidate = Registry::default();
+        candidate.enroll(device_id, jwk).map_err(|_| unknown())?; // key hash must equal the deviceId
+        verify_handshake(&candidate, body)?; // proof of possession of the private key
+        {
+            let mut reg = self.registry.write().unwrap();
+            reg.enroll(device_id, jwk).map_err(|_| unknown())?;
+            if let Some(path) = self.config.enrollment_path.as_deref() {
+                if let Err(e) = write_atomic(path, reg.to_json().as_bytes()) {
+                    eprintln!("[enroll] could not persist {}: {e}", path.display());
+                }
+                *self.enrollment_mtime.lock().unwrap() = file_mtime(path);
+            }
+        }
+        eprintln!("[enroll] auto-enrolled device {device_id}");
+        Ok(device_id.to_string())
+    }
+
+    fn log_rejection(&self, device_id: &str, r: &Rejection) {
+        let mut seen = self.rejection_log.lock().unwrap();
+        let now = Instant::now();
+        if seen
+            .get(device_id)
+            .is_some_and(|t| now.duration_since(*t) < Duration::from_secs(60))
+        {
+            return;
+        }
+        seen.insert(device_id.to_string(), now);
+        eprintln!("[handshake] rejected {device_id}: {}", r.reason());
     }
 
     /// Verifies and appends envelopes. Valid ones are accepted even if others in the batch are rejected.
@@ -138,7 +252,13 @@ impl Hub {
                 .and_then(Value::as_str)
                 .unwrap_or("")
                 .to_string();
-            match verify_envelope(&self.registry, env) {
+            let mut verdict = verify_envelope(&self.registry.read().unwrap(), env);
+            if matches!(verdict, Err(Rejection::UnknownDevice(_)))
+                && self.reload_enrollment_if_changed()
+            {
+                verdict = verify_envelope(&self.registry.read().unwrap(), env);
+            }
+            match verdict {
                 Err(r) => report.rejected.push((id, r)),
                 Ok(meta) if index.by_id.contains_key(&meta.id) => report.duplicates += 1,
                 Ok(meta) => match log.append(env) {
@@ -244,4 +364,15 @@ impl Hub {
             json: Arc::from(msg.to_string()),
         });
     }
+}
+
+fn file_mtime(path: &std::path::Path) -> Option<SystemTime> {
+    std::fs::metadata(path).and_then(|m| m.modified()).ok()
+}
+
+/// Writes via a temporary file + rename so a crash never leaves a half-written enrollment file.
+fn write_atomic(path: &std::path::Path, bytes: &[u8]) -> std::io::Result<()> {
+    let tmp = path.with_extension("json.tmp");
+    std::fs::write(&tmp, bytes)?;
+    std::fs::rename(tmp, path)
 }

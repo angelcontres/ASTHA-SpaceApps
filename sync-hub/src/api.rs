@@ -9,7 +9,7 @@ use axum::Json;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
-use crate::crypto::{verify_handshake, Rejection};
+use crate::crypto::Rejection;
 use crate::hlc::{self, Hlc};
 use crate::hub::{Hub, MDNS_HOST};
 
@@ -28,7 +28,7 @@ pub async fn health(State(hub): State<AppState>) -> Json<Value> {
         "bundleHashSha256": hub.config.bundle_hash,
         "oplogSequence": hub.tip_seq(),
         "mdnsHost": MDNS_HOST,
-        "enrolledDevices": hub.registry.len(),
+        "enrolledDevices": hub.registry_len(),
         "degradedReasons": degraded,
     }))
 }
@@ -36,7 +36,7 @@ pub async fn health(State(hub): State<AppState>) -> Json<Value> {
 /// `POST /sync/handshake`: 200 with the hub VersionVector and the ids the client lacks; 401 for an unknown
 /// device or an invalid Ed25519 signature.
 pub async fn handshake(State(hub): State<AppState>, Json(body): Json<Value>) -> Response {
-    match verify_handshake(&hub.registry, &body) {
+    match hub.verify_handshake(&body) {
         Ok(_) => {
             let client_vv = hlc::from_wire(body.get("versionVector").unwrap_or(&Value::Null));
             let missing: Vec<Value> = hub
@@ -84,7 +84,7 @@ pub struct DeltaPush {
 /// 401 if the submitting device, or an envelope author, is not enrolled. Valid envelopes in a mixed batch are
 /// still appended and relayed (append-only CRDT deltas are independent of each other).
 pub async fn post_deltas(State(hub): State<AppState>, Json(body): Json<DeltaPush>) -> Response {
-    if !hub.registry.contains(&body.device_id) {
+    if !hub.is_enrolled(&body.device_id) {
         return error(
             StatusCode::UNAUTHORIZED,
             format!("unknown device {}", body.device_id),

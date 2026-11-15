@@ -17,7 +17,6 @@ use tokio::sync::broadcast::error::RecvError;
 
 use crate::api::AppState;
 use crate::cabin;
-use crate::crypto::verify_handshake;
 use crate::hlc;
 
 static NEXT_CONN: AtomicU64 = AtomicU64::new(1);
@@ -76,7 +75,7 @@ enum Reply {
 fn handle(hub: &AppState, conn: u64, device: &mut Option<String>, msg: &Value) -> Vec<Reply> {
     let kind = msg.get("type").and_then(Value::as_str).unwrap_or("");
     if kind == "HANDSHAKE" {
-        return match verify_handshake(&hub.registry, msg) {
+        return match hub.verify_handshake(msg) {
             Ok(id) => {
                 *device = Some(id);
                 let client_vv = hlc::from_wire(msg.get("versionVector").unwrap_or(&Value::Null));
