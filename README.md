@@ -124,6 +124,11 @@ Nasa-Project/
 │   │   ├── 07-Matriz-de-Trazabilidad-SRS-a-SDD.md              # SDD-07: Trazabilidad 100% (42 RF + 19 RNF + 10 R-* + 3 D-*)
 │   │   └── 08-Architecture-decisions.md                          # SDD-08: Registro Consolidado de 20 ADRs (ADR-001..020)
 │   ├── c4/                                                     # Modelo de Arquitectura C4 (Contexto, Contenedores, Componentes, Despliegue)
+│   ├── Diseno-UI-UX/                                           # Diseño UI/UX Modular (Wireframes, Design System, Mockups)
+│   │   ├── README.md                                           # Índice normativo UI/UX (trazabilidad SRS, C4 y ADRs)
+│   │   ├── 01-Wireframes-y-Arquitectura-de-Pantalla.md         # Wireframes Vista A/B/C, grid 12 cols y breakpoints
+│   │   ├── 02-Guia-de-Estilo-y-Design-System.md                # Tokens WCAG AAA (#fca5a5), doble codificación 630nm y audio 960Hz
+│   │   └── 03-Mockups-y-Especificacion-de-Componentes.md       # Mockups Hi-Fi, componentes Svelte 5 y Modo Supervivencia <5W
 │   ├── Modelo-datos-y-APIs/                                    # Modelo de Datos (ERD, Diccionario) & Contratos OpenAPI 3.1.0
 │   │   ├── README.md                                           # Índice y principios de cifrado/CRDT/LAN
 │   │   ├── 01-Diagrama-Entidad-Relacion.md                     # Diagrama Entidad-Relación (ERD) e IndexedDB Object Stores

@@ -2,14 +2,17 @@
 ### ASTHA — NASA Space Apps Challenge 2026
 **Normas de Referencia:** NASA-STD-3001 Vol 2 (Human Factors & Habitation) | ISO 9241-11 (Usabilidad) | MIL-STD-1472H (Human Engineering)
 
+> [!NOTE]
+> **Suite Modular Oficial de Diseño UI/UX:** La especificación normativa completa (Wireframes Vista A/B/C, Design System WCAG AAA `#fca5a5` y Mockups/Componentes Svelte 5 + `uPlot`) se encuentra organizada en [**`docs/Diseno-UI-UX/README.md`**](./Diseno-UI-UX/README.md). Este documento se mantiene alineado como referencia ejecutiva rápida.
+
 ---
 
 ## 🎯 1. Filosofía de Diseño en Microgravedad y Espacio Profundo
 
 Diseñar una interfaz médica para un astronauta en tránsito a Marte exige descartar los paradigmas de diseño web convencionales. La cabina espacial impone restricciones físicas severas:
 
-1. **Estrés Cognitivo y Visión Alterada (SANS):** Debido al desplazamiento cefálico de fluidos, los astronautas experimentan fluctuaciones en la refracción ocular y visión borrosa transitoria. La interfaz requiere **fuentes de alta legibilidad (*monospace/sans-serif* pesadas)** y **contraste cromático $> 7:1$ (WCAG 2.1 AAA)**.
-2. **Manipulación con Dedos Enguantados y Microgravedad:** En gravedad cero los dedos flotan y la propiocepción motora fina disminuye. Todos los elementos clicables deben tener un área de activación táctil mínima de **$48 \times 48\text{ px}$** con una separación mínima de $8\text{ px}$ para evitar pulsaciones erróneas.
+1. **Estrés Cognitivo y Visión Alterada (SANS):** Debido al desplazamiento cefálico de fluidos, los astronautas experimentan fluctuaciones en la refracción ocular y visión borrosa transitoria. La interfaz requiere **fuentes nativas del sistema de alta legibilidad (`system-ui` / `ui-monospace` según `ADR-003`)** y **contraste cromático $> 7:1$ (WCAG 2.1 AAA)**.
+2. **Manipulación con Dedos Enguantados y Microgravedad:** En gravedad cero los dedos flotan y la propiocepción motora fina disminuye. Todos los elementos clicables deben tener un área de activación táctil mínima de **$48 \times 48\text{ px}$** con una separación mínima de **$12\text{ px}$** (`RNF-USA-01`) para evitar pulsaciones erróneas.
 3. **Consumo Eléctrico y Fatiga Visual:** Fondo negro espacial profundo (`#030712` / `#060913`) que apaga los píxeles en pantallas OLED, reduciendo el consumo de potencia a menos de 5W y protegiendo la adaptación a la oscuridad de la cabina.
 4. **Doble Codificación para Daltonismo:** Ninguna alerta puede basarse exclusivamente en el color. Todo semáforo médico combina **Color + Icono + Pulso Rítmico + Etiqueta Textual**.
 
@@ -29,7 +32,7 @@ La pantalla principal se estructura en una cuadrícula simétrica de 12 columnas
 │ 2. SELECTOR DE TRIPULACIÓN     │ 4. CUADRÍCULA DE TARJETAS DE SIGNOS VITALES (4 Cards)         │
 │ [C01 Jared] [C02 Hayley]       │ [FC: 98 bpm]  [PA: 144/92]  [SpO2: 95.8%]  [HRV: 19.5 ms]     │
 │ [C03 Sian ] [C04 Chris ]       ├───────────────────────────────┬───────────────────────────────┤
-│                                │ 5. CURVA HISTÓRICA CHART.JS   │ 6. PROTOCOLO DE CONTRAMEDIDA  │
+│                                │ 5. CURVA HISTÓRICA uPlot      │ 6. PROTOCOLO DE CONTRAMEDIDA  │
 │ [Línea de Tiempo: L-44 a R+1]  │ (7 Columnas de Ancho)         │ (5 Columnas de Ancho)         │
 │                                │ [Curva PA Sistólica (Cian) ]  │ [Título y Severidad Clínica]  │
 │ 3. MAPA ANATÓMICO TÁCTICO      │ [Curva Pulso Cardíaco (Rojo)] │ [Qué ocurre / Explicación ]  │
@@ -52,7 +55,7 @@ La pantalla principal se estructura en una cuadrícula simétrica de 12 columnas
 
 ```text
 +----------------------------------------------------------------------------------------------------+
-| [o] ASTROVITAL | NASA-STD-3001 | [x] EDGE OFFLINE   || Radiacion: 28.4 uSv/h | ppCO2: 2.1 mmHg     |
+| [o] ASTHA | NASA-STD-3001 | [x] EDGE OFFLINE        || Radiacion: 28.4 uSv/h | ppCO2: 2.1 mmHg     |
 +----------------------------------------------------------------------------------------------------+
 | CREW SELECTOR (OSD-574)            | VITALS GRID                                                   |
 | +----------------+---------------+ | +---------------+ +---------------+ +---------------+ +-------+ |
@@ -61,7 +64,7 @@ La pantalla principal se estructura en una cuadrícula simétrica de 12 columnas
 | +----------------+---------------+ | +---------------+ +---------------+ +---------------+ +-------+ |
 | | [C03] Sian P.* | [C04] Chris S | | *ALERTA: SANS CRITICAL (Pulsacion Roja 1.5s)                  |
 | | Piloto (SANS!) | Esp (Nominal) | |---------------------------------------------------------------|
-| +----------------+---------------+ | TELEMETRY CHART (Chart.js)    | CONTRAMEASURE CHECKLIST       |
+| +----------------+---------------+ | TELEMETRY CHART (uPlot Canvas)| CONTRAMEASURE CHECKLIST       |
 | TIMELINE: [L-44] [FD1] [FD2*] [FD3]| | mmHg                        | [!] ALTA PRIORIDAD: SANS      |
 |------------------------------------| | 160+     /--- PAS Sistolica | Cefalea y congestion ocular   |
 | ANATOMICAL TACTICAL BODY MAP       | | 140+====*======             | por microgravedad.            |
@@ -115,25 +118,26 @@ La pantalla principal se estructura en una cuadrícula simétrica de 12 columnas
 | **`cyan-400`** | `#38bdf8` | Acento nominal, curvas de presión | Longitud de onda cian de máxima agudeza foveal escotópica. |
 | **`alert-green`** | `#10b981` | Estado Nominal (NASA-STD-3001) | Señal de parámetros fisiológicos seguros y dentro de rango. |
 | **`alert-yellow`**| `#f59e0b` | Estado de Precaución / Deriva | Alerta temprana preventiva sin disparar alarma sonora. |
-| **`alert-red`** | `#ef4444` | Estado Crítico / Código Rojo | Pulsación lenta (1.5s) que exige intervención o contramedida. |
+| **`alert-red`** | `#ef4444` | Estado Crítico / Código Rojo (solo rellenos/bordes) | Pulsación lenta (1.5s) y bordes de alerta sin texto rojo sobre oscuro. |
+| **`alert-red-text`** | `#fca5a5` | Texto en alertas críticas (`ADR-018`) | Contraste **WCAG AAA (`10.61:1` sobre `#030712`)** para legibilidad bajo estrés SANS. |
 
 ### 4.2. Tipografía y Jerarquía
 
-* **Fuente de Datos y Bioseñales:** `JetBrains Mono` / `SF Mono` / `monospace`. Garantiza que las cifras numéricas no cambien de ancho al fluctuar (evitando saltos visuales en el pulso cardíaco).
-* **Fuente de Interfaz y Procedimientos:** `Inter` / `system-ui` / `sans-serif`. Máxima legibilidad a distancias de 1 metro en cabina.
+* **Fuente de Datos y Bioseñales:** `ui-monospace` / `"SF Mono"` / `monospace` (`ADR-003`, cero fuentes externas). Garantiza cifras `tabular-nums` sin saltos visuales en el pulso cardíaco.
+* **Fuente de Interfaz y Procedimientos:** `system-ui` / `sans-serif`. Máxima legibilidad nativa offline a distancias de 1 metro en cabina.
 
 ### 4.3. Zonas Táctiles y Controles de Vuelo (Touch Targets)
 
-* **Botones Primarios de Crisis:** Alto $48\text{ px}$, relleno lateral $16\text{ px}$, radio de curvatura $12\text{ px}$.
+* **Botones Primarios de Crisis:** Alto $48\text{ px}$, relleno lateral $16\text{ px}$, separación mínima (`gap`) de **$12\text{ px}$** (`RNF-USA-01`).
 * **Hotspots del Mapa Anatómico:** Área de captura táctil mínima de $48 \times 48\text{ px}$ con micro-animación de resplandor (*glow effect*) al pasar el cursor o posar el dedo.
-* **Casillas de Verificación de Checklists:** Caja táctil de $24 \times 24\text{ px}$ centrada en un contenedor acolchado de $44\text{ px}$ de altura para fácil pulsación.
+* **Casillas de Verificación de Checklists:** Caja táctil de $24 \times 24\text{ px}$ centrada en un contenedor acolchado de **$48\text{ px}$** de altura mínima (`RNF-USA-01`) para fácil pulsación.
 
 ---
 
 ## 📱 5. Prototipo Visual Interactivo de Wireframe
 
 Para visualizar y auditar las dimensiones, acotaciones y diseño interactivo del wireframe, se ha creado el archivo interactivo:
-👉 **[`wireframe.html`](file:///C:/Users/OMEN/Documents/Hackaton/Nasa-Project/wireframe.html)**
+👉 **[`wireframe.html`](../wireframe.html)**
 
 Este archivo permite a los evaluadores alternar en tiempo real entre:
 1. **Vista Wireframe Blueprint (Baja Fidelidad):** Líneas de acotación ortogonales, cuadrícula técnica espacial y medidas en píxeles.
@@ -162,6 +166,6 @@ El entorno de hábitat espacial supervisa 6 parámetros críticos correlacionado
 5. **Humedad Relativa ($RH\%$):** $45.0\%$. Rango nominal: $25\% - 75\%$.
 6. **Dosimetría de Radiación CANS (CSA):** Tasa de dosis en tiempo real ($28.4 - 32.8\ \mu\text{Sv/h}$). Límite de evacuación a Storm Shelter: $> 100\ \mu\text{Sv/h}$.
 
-### 6.3. Modo Zen Minimalista y Formato M (Recto)
+### 6.3. Modo Zen Minimalista y Modo Supervivencia (`< 5W`, `ADR-019`)
 * **Modo Zen:** Al activarse, oculta bordes decorativos, resalta exclusivamente las cifras críticas con tipografía sobredimensionada y amplía el espaciado para lectura a distancia sin distracciones.
-* **Formato M (Recto):** Aplica directiva de 90° ortogonal (`border-radius: 0px`) en toda la interfaz, emulando la estética de las pantallas de aviónica militar y espacial de Orion y Dragon.
+* **Modo Supervivencia (`< 5W`):** Cuando la batería baja de $\le 15\%$ o se activa respaldo manual (`ADR-019`), desactiva Three.js y `uPlot`, fija fondo `#000000` puro sin animaciones ni pulsos y conserva la lectura tabular de vitales y ECLSS.
