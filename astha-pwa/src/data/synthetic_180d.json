@@ -1,0 +1,206 @@
+{
+  "_source": "Parámetros del generador determinista del dataset sintético (SRS §2.3, RF-ING-03, ADR-016: 1 registro diario por tripulante). Se generan 180 días × 4 tripulantes en el Data Worker a partir de la semilla; no se empaqueta el dataset expandido (RNF-POW-04).",
+  "seed": 20261115,
+  "days": 180,
+  "startDay": 120,
+  "crew": [
+    {
+      "id": "C001",
+      "name": "Cmdte. Lía Ortega",
+      "role": "commander",
+      "pin": "1001",
+      "baseline": {
+        "hr": 64,
+        "hrv": 52,
+        "sbp": 116,
+        "dbp": 74,
+        "spo2": 98,
+        "glucose": 88,
+        "temp": 36.7,
+        "sleep": 7.6,
+        "mood": 8,
+        "urineCa": 190,
+        "exerciseMin": 160,
+        "waterL": 2.7
+      },
+      "drift": [
+        {
+          "indicator": "sbp",
+          "fromDay": 95,
+          "perDay": 0.17
+        }
+      ]
+    },
+    {
+      "id": "C002",
+      "name": "Dra. Nayra Quispe",
+      "role": "cmo",
+      "pin": "1002",
+      "baseline": {
+        "hr": 60,
+        "hrv": 58,
+        "sbp": 112,
+        "dbp": 70,
+        "spo2": 98,
+        "glucose": 85,
+        "temp": 36.6,
+        "sleep": 7.8,
+        "mood": 8,
+        "urineCa": 200,
+        "exerciseMin": 155,
+        "waterL": 2.8
+      },
+      "drift": []
+    },
+    {
+      "id": "C003",
+      "name": "Ing. Tomás Varga",
+      "role": "engineer",
+      "pin": "1003",
+      "baseline": {
+        "hr": 68,
+        "hrv": 46,
+        "sbp": 118,
+        "dbp": 76,
+        "spo2": 97,
+        "glucose": 92,
+        "temp": 36.8,
+        "sleep": 7.4,
+        "mood": 7.5,
+        "urineCa": 215,
+        "exerciseMin": 150,
+        "waterL": 2.5
+      },
+      "drift": [
+        {
+          "indicator": "sleep",
+          "fromDay": 105,
+          "perDay": -0.022
+        },
+        {
+          "indicator": "dbp",
+          "fromDay": 105,
+          "perDay": 0.12
+        }
+      ]
+    },
+    {
+      "id": "C004",
+      "name": "Esp. Aiko Mendel",
+      "role": "specialist",
+      "pin": "1004",
+      "baseline": {
+        "hr": 66,
+        "hrv": 50,
+        "sbp": 114,
+        "dbp": 72,
+        "spo2": 98,
+        "glucose": 90,
+        "temp": 36.7,
+        "sleep": 7.5,
+        "mood": 8,
+        "urineCa": 205,
+        "exerciseMin": 150,
+        "waterL": 2.6
+      },
+      "drift": [
+        {
+          "indicator": "hrv",
+          "fromDay": 115,
+          "perDay": -0.16
+        }
+      ]
+    }
+  ],
+  "noise": {
+    "hr": 2.5,
+    "hrv": 3,
+    "sbp": 2.5,
+    "dbp": 2,
+    "spo2": 0.6,
+    "glucose": 4,
+    "temp": 0.12,
+    "sleep": 0.25,
+    "mood": 0.6,
+    "urineCa": 8,
+    "exerciseMin": 15,
+    "waterL": 0.2
+  },
+  "boneLossPerDay": {
+    "urineCa": 0.2
+  },
+  "habitat": {
+    "baseline": {
+      "ppco2": 1.6,
+      "pressure": 101.3,
+      "o2": 20.9,
+      "radiation": 24,
+      "cabinTemp": 22.4,
+      "humidity": 46
+    },
+    "noise": {
+      "ppco2": 0.12,
+      "pressure": 0.25,
+      "o2": 0.15,
+      "radiation": 2.5,
+      "cabinTemp": 0.4,
+      "humidity": 3
+    }
+  },
+  "scenarios": {
+    "_note": "Letras según la petición del equipo (A SANS, B CO₂, C SPE, D sueño/HRV). El SRS §3.8 usa otro orden (A SPE, B SANS, C CO₂, D hipercalciuria); la hipercalciuria (RF-SIM-04) se conserva como E.",
+    "A": {
+      "label": "SANS agudo",
+      "req": "RF-SIM-02",
+      "measurement": {
+        "sbp": 144,
+        "dbp": 86
+      },
+      "symptoms": [
+        "blurred_vision",
+        "headache"
+      ]
+    },
+    "B": {
+      "label": "Microfuga de CO₂",
+      "req": "RF-SIM-03",
+      "habitat": {
+        "ppco2": 3.6
+      },
+      "measurement": {
+        "spo2": 92,
+        "hr": 92
+      },
+      "allCrew": true
+    },
+    "C": {
+      "label": "Tormenta solar (SPE)",
+      "req": "RF-SIM-01",
+      "habitat": {
+        "radiation": 185
+      },
+      "symptoms": [
+        "nausea"
+      ]
+    },
+    "D": {
+      "label": "Privación de sueño + HRV baja",
+      "req": "RF-EVA-05, R-COG-01",
+      "measurement": {
+        "sleep": 5.0,
+        "hrv": 18
+      },
+      "sustainedDays": 2
+    },
+    "E": {
+      "label": "Hipercalciuria / cálculo renal",
+      "req": "RF-SIM-04",
+      "measurement": {
+        "urineCa": 325
+      },
+      "symptoms": [
+        "back_pain"
+      ]
+    }
+  }
+}
