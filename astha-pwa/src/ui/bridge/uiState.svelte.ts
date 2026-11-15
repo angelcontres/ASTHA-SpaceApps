@@ -82,9 +82,21 @@ export const indLabel = (i: Pick<IndicatorState, 'id' | 'label'>): string =>
 export const scenarioLabel = (id: string, fallback: string): string =>
   SCENARIO_LABEL[id] ?? fallback;
 
-export const REGION_LABEL = Object.fromEntries(
-  Object.entries(organs.regions).map(([k, v]) => [k, v.label]),
-) as Record<RegionId, string>;
+export const REGION_LABEL: Record<RegionId, string> = {
+  head: 'Eyes & Head (SANS)',
+  chest: 'Thorax & Heart (HR)',
+  lumbar: 'Kidney & Lumbar (Ca)',
+  legs: 'Femur & Legs (ARED)',
+  general: 'Systemic & Blood',
+};
+
+export const REGION_HOTSPOT_SHORT: Record<RegionId, string> = {
+  head: 'Eyes/SANS',
+  chest: 'Thorax/HR',
+  lumbar: 'Kidney/Ca',
+  legs: 'Femur/ARED',
+  general: 'Systemic',
+};
 
 export const SYSTEM_LABEL = Object.fromEntries(
   Object.entries(organs.systems).map(([k, v]) => [k, v.label]),
