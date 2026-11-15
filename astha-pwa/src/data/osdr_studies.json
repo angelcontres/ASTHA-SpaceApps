@@ -1,0 +1,524 @@
+{
+ "_source": "Offline snapshot of data/nasa_osdr_api_human_studies.json enriched with data/nasa_osdr_enriched_human_studies.json. No network access at runtime.",
+ "count": 116,
+ "studies": [
+  {
+   "accession": "OSD-2",
+   "organism": "Homo sapiens",
+   "title": "Response of human lymphoblastoid cells to HZE (iron ions) or gamma-rays",
+   "mission": null,
+   "flightProgram": null,
+   "assays": [
+    "transcription profiling"
+   ]
+  },
+  {
+   "accession": "OSD-5",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-9",
+   "organism": "Homo sapiens",
+   "title": "Response of human lymphoblastoid cells to activated medium",
+   "mission": null,
+   "flightProgram": null,
+   "assays": [
+    "transcription profiling"
+   ]
+  },
+  {
+   "accession": "OSD-13",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-51",
+   "organism": "Homo sapiens",
+   "title": "Woman skeletal muscle transcriptome with bed rest and countermeasures.",
+   "mission": null,
+   "flightProgram": null,
+   "assays": []
+  },
+  {
+   "accession": "OSD-52",
+   "organism": "Homo sapiens",
+   "title": "Expression data from SPHINX (SPaceflight of Huvec: an INtegrated eXperiment)",
+   "mission": "Expedition 25",
+   "flightProgram": "International Space Station (ISS)",
+   "assays": [
+    "transcription profiling"
+   ]
+  },
+  {
+   "accession": "OSD-53",
+   "organism": "Homo sapiens",
+   "title": "Spaceflight Modulates Gene Expression in Astronauts",
+   "mission": null,
+   "flightProgram": null,
+   "assays": [
+    "transcription profiling"
+   ]
+  },
+  {
+   "accession": "OSD-54",
+   "organism": "Homo sapiens",
+   "title": "Immune responses to the in vitro LPS assault engineered in the spaceflight multi-omics study",
+   "mission": "STS-135",
+   "flightProgram": "Space Transportation System (STS)",
+   "assays": [
+    "transcription profiling"
+   ]
+  },
+  {
+   "accession": "OSD-55",
+   "organism": "Homo sapiens",
+   "title": "microRNA expression profiles in human peripheral blood lymphocytes cultured in modeled microgravity",
+   "mission": null,
+   "flightProgram": null,
+   "assays": [
+    "transcription profiling"
+   ]
+  },
+  {
+   "accession": "OSD-56",
+   "organism": "Homo sapiens",
+   "title": "Gene expression profiling of human peripheral blood lymphocytes cultured in modeled microgravity",
+   "mission": null,
+   "flightProgram": null,
+   "assays": [
+    "transcription profiling"
+   ]
+  },
+  {
+   "accession": "OSD-71",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-73",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-78",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-86",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-91",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-92",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-114",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-115",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-118",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-124",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-125",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-127",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-128",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-129",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-130",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-140",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-149",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-151",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-152",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-154",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-155",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-157",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-172",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-174",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-175",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-176",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-178",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-182",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-183",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-188",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-189",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-195",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-198",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-258",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-283",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-285",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-297",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-315",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-316",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-317",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-323",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-331",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-344",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-353",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-354",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-359",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-363",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-364",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-367",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-368",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-369",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-370",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-410",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-431",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-481",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-483",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-484",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-516",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-530",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-539",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-540",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-542",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-546",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-569",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-570",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-571",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-574",
+   "organism": "Homo sapiens",
+   "title": "SpaceX Inspiration4 Deltoid Skin and Microbiome Data: Spatial Transcriptomics (NanoString GeoMx), Metageomics, and Metatranscriptomics",
+   "mission": "SpaceX Inspiration4",
+   "flightProgram": null,
+   "assays": [
+    "Metagenomic sequencing",
+    "transcription profiling",
+    "metatranscriptome sequencing assay"
+   ]
+  },
+  {
+   "accession": "OSD-575",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-577",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-635",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-656",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-684",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-687",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-689",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-781",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-783",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-784",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-787",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-811",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-812",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-815",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-816",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-817",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-818",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-832",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-833",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-834",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-863",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-867",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-871",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-936",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-937",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-940",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-942",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-946",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-990",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-992",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-993",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-998",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-999",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-1000",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-1005",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-1008",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-1012",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-1014",
+   "organism": "Homo sapiens"
+  },
+  {
+   "accession": "OSD-1015",
+   "organism": "Homo sapiens"
+  }
+ ]
+}

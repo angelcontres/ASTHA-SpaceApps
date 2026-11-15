@@ -173,7 +173,7 @@ export function evaluate(input: EvaluationInput): Assessment {
     return { crewId, day, global, statusOnly: true, regions: emptyRegions(), indicators: habitatOnly, alerts: [], gamification: null, latencyMs };
   }
   // Gamificación después del triage: no cuenta en la latencia ni modifica alertas (RF-GAM-03).
-  const gamification = scoreGamification(history, input.bonusXp ?? 0, input.carry?.gamification);
+  const gamification = scoreGamification(history, input.bonusXp ?? 0, input.carry?.gamification, input.protocolsCompleted);
   return { crewId, day, global, statusOnly: false, regions, indicators, alerts: resolved, gamification, latencyMs };
 }
 

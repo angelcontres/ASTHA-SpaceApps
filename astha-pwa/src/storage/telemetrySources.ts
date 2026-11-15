@@ -45,8 +45,9 @@ export interface SyntheticConfig {
 }
 
 export const SYNTHETIC = cfg as unknown as SyntheticConfig;
-export type ScenarioId = 'A' | 'B' | 'C' | 'D' | 'E';
-export const SCENARIO_IDS: ScenarioId[] = ['A', 'B', 'C', 'D', 'E'];
+/** Letras del SRS §3.8: A SPE, B SANS, C CO₂, D hipercalciuria; E y F son extras (ver synthetic_180d.json). */
+export type ScenarioId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
+export const SCENARIO_IDS: ScenarioId[] = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 export function scenario(id: ScenarioId, c: SyntheticConfig = SYNTHETIC): ScenarioDef {
   return c.scenarios[id] as ScenarioDef;
@@ -209,7 +210,7 @@ export function buildView(ds: Dataset, ops: Op[], day: number): TelemetryView {
       }
       Object.assign(row, b.fields);
       if (b.source === 'manual') row.manual = true;
-    } else if (b.t === 'habitat' && b.day <= day && live(op)) {
+    } else if (b.t === 'habitat' && b.day <= day && (b.source !== 'sim' || live(op))) {
       const h = habitat.find((x) => x.day === b.day);
       if (h) Object.assign(h, b.fields);
     } else if (b.t === 'symptom' && b.day === day && (b.source !== 'sim' || live(op))) {

@@ -82,6 +82,41 @@ export function vvMerge(a: VersionVector, b: VersionVector): VersionVector {
   return out;
 }
 
+/** VersionVector of a set of stored items (envelopes), whether or not this device can decrypt them. */
+export function vvOf(items: Iterable<{ hlc: string }>): VersionVector {
+  const vv: VersionVector = {};
+  for (const it of items) vvObserve(vv, decodeHlc(it.hlc));
+  return vv;
+}
+
+/** Wire format of `VersionVector` in openapi.yaml: node → HLC string "ms:cnt:node" (ADR-009). */
+export type WireVersionVector = Record<string, string>;
+
+const WIRE_HLC = /^\d+:\d+:[a-zA-Z0-9-]+$/;
+
+/** Internal packed VV → contract VV (one HLC string per device). */
+export function vvToWire(vv: VersionVector): WireVersionVector {
+  const out: WireVersionVector = {};
+  for (const [nodeId, packed] of Object.entries(vv)) {
+    if (!Number.isFinite(packed) || packed < 0) continue;
+    out[nodeId] = encodeHlc({ wallMs: Math.floor(packed / 1000), counter: packed % 1000, nodeId });
+  }
+  return out;
+}
+
+/** Contract VV → internal packed VV. Malformed or mismatched entries are ignored (never trusted). */
+export function vvFromWire(wire: unknown): VersionVector {
+  const out: VersionVector = {};
+  if (!wire || typeof wire !== 'object') return out;
+  for (const [nodeId, value] of Object.entries(wire as Record<string, unknown>)) {
+    if (typeof value !== 'string' || !WIRE_HLC.test(value)) continue;
+    const h = decodeHlc(value);
+    if (h.nodeId !== nodeId || h.counter > COUNTER_MAX) continue;
+    out[nodeId] = packHlc(h);
+  }
+  return out;
+}
+
 /** ¿El remoto (con su VV) ya tiene este evento? */
 export function vvHas(vv: VersionVector, h: Hlc): boolean {
   return (vv[h.nodeId] ?? -1) >= packHlc(h);
@@ -91,7 +126,9 @@ export function vvHas(vv: VersionVector, h: Hlc): boolean {
 export function deltaFor<T extends { hlc: string }>(items: Iterable<T>, remote: VersionVector): T[] {
   const out: T[] = [];
   for (const it of items) if (!vvHas(remote, decodeHlc(it.hlc))) out.push(it);
-  return out;
+  // Ascending HLC: a peer that stops mid-stream only ever has a prefix of each author's events, so its VV
+  // (max HLC seen per author) never claims events it is missing.
+  return out.sort((a, b) => compareHlc(decodeHlc(a.hlc), decodeHlc(b.hlc)));
 }
 
 // ---------------- G-Set ----------------
@@ -179,8 +216,8 @@ export class PNCounter {
 /** Cuerpo descifrado de un sobre. Todo lo clínico es inmutable (G-Set). */
 export type OpBody =
   | { t: 'measurement'; crewId: string; day: number; fields: Record<string, number>; source: 'manual' | 'sim' | 'import' }
-  | { t: 'symptom'; crewId: string; day: number; symptom: string; active: boolean; source: 'manual' | 'sim' }
-  | { t: 'habitat'; day: number; fields: Record<string, number>; source: 'sim' }
+  | { t: 'symptom'; crewId: string; day: number; symptom: string; active: boolean; source: 'manual' | 'sim' | 'import' }
+  | { t: 'habitat'; day: number; fields: Record<string, number>; source: 'sim' | 'import' }
   | { t: 'alert'; alertId: string; crewId: string; ruleId: string; status: string; day: number }
   | { t: 'ack'; alertId: string; crewId: string; day: number; by: string }
   | { t: 'check'; alertId: string; crewId: string; protocolId: string; stepId: string; checked: boolean; day: number; by: string }

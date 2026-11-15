@@ -1,5 +1,5 @@
 {
-  "_source": "RF-GUI-01..05, RNF-USA-05 con ADR-017 (máximo 4 pasos). Valores orientativos: deben validarse con personal médico antes de uso real (SRS §2.3). Pasos de CM-SANS-01, CM-RAD-01 y CM-ENV-01/02 alineados con AC-CLIN-03/04/05, CU-02, CU-08, CU-09 y HU-01.",
+  "_source": "RF-GUI-01..05, RNF-USA-05 con ADR-017 (máximo 4 pasos). Valores orientativos: deben validarse con personal médico antes de uso real (SRS §2.3). Pasos de CM-SANS-01, CM-RAD-01 y CM-ENV-01/02 alineados con AC-CLIN-03/04/05, CU-02, CU-08, CU-09 y HU-01. Alternativa CM-SANS-01-ALT por recurso no operativo según CU-07 FA-01. Glosario obligatorio (RF-GUI-04) y recursos prohibidos (AC-CLIN-06.3) validados por CounterResolver.",
   "maxSteps": 4,
   "inventory": {
     "ared": "ARED (ejercicio resistivo)",
@@ -13,7 +13,8 @@
     "cdra": "CDRA (removedor de CO₂)",
     "water": "Dispensador de agua potable",
     "dosimeters": "Dosímetros pasivos personales CANS",
-    "fans": "Ventiladores de circulación forzada"
+    "fans": "Ventiladores de circulación forzada",
+    "compression": "Bandas elásticas de compresión venosa (Botiquín Alfa)"
   },
   "protocols": {
     "CM-ENV-01": {
@@ -96,7 +97,10 @@
           "resource": null
         }
       ],
-      "fsMessage": "R-SANS-01: PAS antes/después de LBNP, Amsler al minuto 0 y 60 por ojo, ingesta de sodio y fecha de inicio de la visión borrosa."
+      "fsMessage": "R-SANS-01: PAS antes/después de LBNP, Amsler al minuto 0 y 60 por ojo, ingesta de sodio y fecha de inicio de la visión borrosa.",
+      "alternatives": {
+        "lbnp": "CM-SANS-01-ALT"
+      }
     },
     "CM-SANS-02": {
       "title": "Presión alta con poco sueño",
@@ -744,6 +748,64 @@
         }
       ],
       "fsMessage": "Serie de humedad relativa y acciones tomadas."
+    },
+    "CM-SANS-01-ALT": {
+      "title": "SANS sin LBNP: alternativa",
+      "what": "El LBNP no funciona. Sin gravedad, los líquidos suben a la cabeza y presionan el ojo (SANS). Elevar el torso y comprimir las piernas ayuda a bajarlos.",
+      "severity": "Crítica",
+      "timeToImpact": "días a semanas (daño visual)",
+      "steps": [
+        {
+          "id": "a1",
+          "text": "Eleva el torso 30° respecto al eje de la cabeza y mantén esa postura.",
+          "resource": null
+        },
+        {
+          "id": "a2",
+          "text": "Coloca las bandas elásticas de compresión venosa en ambos muslos.",
+          "resource": "compression"
+        },
+        {
+          "id": "a3",
+          "text": "Haz la prueba de la rejilla de Amsler en esta pantalla al minuto 0 y al minuto 60.",
+          "resource": "kit_alpha"
+        },
+        {
+          "id": "a4",
+          "text": "Limita el sodio de tu ración a menos de 2,0 g al día.",
+          "resource": null
+        }
+      ],
+      "fsMessage": "R-SANS-01 con LBNP no operativo: PAS antes/después, Amsler min 0 y 60, duración de la elevación de torso y compresión."
     }
-  }
+  },
+  "glossary": {
+    "CO₂": "dióxido de carbono, el gas que exhalamos",
+    "O₂": "oxígeno",
+    "SpO₂": "saturación de oxígeno en la sangre, medida con el pulsioxímetro",
+    "LBNP": "pantalón de presión negativa que baja los líquidos del cuerpo hacia las piernas",
+    "CDRA": "equipo que retira el CO₂ del aire de la cabina",
+    "LiOH": "cartucho de hidróxido de litio que absorbe CO₂ en emergencias",
+    "SANS": "síndrome neuro-ocular del vuelo espacial: presión de líquidos sobre el ojo",
+    "ARED": "máquina de ejercicio de fuerza que carga huesos y músculos",
+    "CMO": "oficial médico de la tripulación",
+    "PAS": "presión arterial sistólica, el número alto de la tensión",
+    "PAD": "presión arterial diastólica, el número bajo de la tensión",
+    "HRV": "variabilidad del ritmo cardiaco: cuánto cambia el tiempo entre latidos",
+    "FC": "frecuencia cardiaca, latidos por minuto",
+    "EVA": "actividad extravehicular, salida al exterior de la nave",
+    "CANS": "dosímetro de neutrones de la nave"
+  },
+  "forbidden": [
+    "resonancia",
+    "tomografía",
+    "intubación",
+    "intubar",
+    "hospital",
+    "quirófano",
+    "cirugía",
+    "evacuación a tierra",
+    "mri",
+    "ct scan"
+  ]
 }

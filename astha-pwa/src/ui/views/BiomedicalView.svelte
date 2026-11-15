@@ -188,7 +188,7 @@
               <!-- COMP-05 -->
               <section class="check" aria-label="Active countermeasure protocol">
                 {#if topAlert && topProtocol}
-                  <CountermeasureGuide protocol={topProtocol} alert={topAlert} oncheck={(s, c) => bridge.checkStep(topAlert, s, c)} />
+                  <CountermeasureGuide protocol={topProtocol} alert={topAlert} oncheck={(s, c, p) => bridge.checkStep(topAlert, s, c, p)} />
                 {:else}
                   <div class="panel st nominal"><span class="sym" aria-hidden="true"></span> No active emergency protocols. Maintain daily ARED, hydration, and sleep schedule.</div>
                 {/if}

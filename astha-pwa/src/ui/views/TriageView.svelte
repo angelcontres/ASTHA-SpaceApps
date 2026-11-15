@@ -7,6 +7,7 @@
   import AnatomyViewer from '../components/AnatomyViewer.svelte';
   import CountermeasureGuide from '../components/CountermeasureGuide.svelte';
   import IndicatorCard from '../components/IndicatorCard.svelte';
+  import OsdrStudies from '../components/OsdrStudies.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
   import { REGION_LABEL, regionOfIndicator, STATUS_LABEL, ui } from '../bridge/uiState.svelte';
 
@@ -74,7 +75,7 @@
 
       {#if open && protocol}
         <CountermeasureGuide {protocol} alert={open} variant={open.urgency === 'emergency' ? 'emergency' : 'inline'}
-          oncheck={(s, c) => bridge.checkStep(open, s, c)} />
+          oncheck={(s, c, p) => bridge.checkStep(open, s, c, p)} />
         <div class="row">
           {#if open.status === 'critical' && !open.acknowledged}
             <button type="button" class="btn danger" onclick={() => bridge.acknowledge(open)}>Reconocer alerta</button>
@@ -89,6 +90,8 @@
     </section>
   </div>
 {/if}
+
+<OsdrStudies />
 
 <style>
   .triage { display: grid; grid-template-columns: 5fr 7fr; gap: var(--gap); }
