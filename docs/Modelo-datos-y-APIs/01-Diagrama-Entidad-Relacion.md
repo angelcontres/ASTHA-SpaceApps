@@ -183,6 +183,8 @@ flowchart LR
         S3[("ObjectStore: pn_counters<br>Index: by_crew_node<br>Value: PN-Counter XP & streak")]
         S4[("ObjectStore: audit_chain<br>Index: by_seq (Auto-Increment)<br>Value: SHA-256 + Ed25519 Chain")]
         S5[("ObjectStore: key_vault<br>Value: PIN-wrapped symmetric keys")]
+        S6[("ObjectStore: envelopes_replica<br>Value: redundant copy of each envelope<br>(local SEU recovery, RNF-SEC-03)")]
+        S7[("ObjectStore: quarantine<br>Value: envelopes that failed SHA-256")]
     end
 
     subgraph Hub ["Optional Rust Sync Hub (ADR-008)"]
@@ -190,6 +192,8 @@ flowchart LR
     end
 
     L1 & L2 & L3 & L4 -->|"AES-GCM 256 (Crew Key ADR-012)"| S1
+    S1 -.->|"same transaction"| S6
+    S1 -.->|"failed SHA-256, no valid replica"| S7
     L5 -->|"SHA-256 + Ed25519 Chaining"| S4
     L6 -->|"AES-GCM 256 (Habitat Key ADR-014)"| S1
     S1 & S2 & S3 <==>|"CRDT Deltas via WSS TLS 1.3 (ADR-009)"| H1
@@ -200,7 +204,7 @@ flowchart LR
 ## 3. Referential Integrity Rules & Constraints
 
 1. **Clinical Immutability (`RNF-SEC-04`, `ADR-009`):** There are no `UPDATE` or `DELETE` operations on `DAILY_MEASUREMENT`, `SUBJECTIVE_SYMPTOM`, `CLINICAL_ALERT`, or `AUDIT_LEDGER_ENTRY`. Any correction or alert acknowledgment generates a new event stamped with its logical clock `hlc`.
-2. **Radiation Bit-Flip Protection (`RNF-SEC-03`):** Every `ENCRYPTED_ENVELOPE` recalculates and verifies `sha256_seu` prior to decryption. If verification fails, the corrupted envelope is quarantined and a clean replica is requested from the `Sync Hub` (`hub_oplog.jsonl`) or peers.
+2. **Radiation Bit-Flip Protection (`RNF-SEC-03`):** `sha256` covers the canonical form of `{id, hlc, autor, keyRef, iv, ct}` and `firma` signs that digest, so a single flipped bit in any field is detected deterministically. Each envelope is written together with a copy in `envelopes_replica` and re-read after the write (write-verify). On read, the digest and signature are checked before decryption. If verification fails and the local replica is valid, the replica is restored and the damaged copy is kept in `quarantine`. If no valid copy exists, the envelope is quarantined and a clean replica is requested from the `Sync Hub` (`hub_oplog.jsonl`) or peers. `LWW` preferences and `PN` counters live as encrypted CRDT operations inside `envelopes_gset` instead of plaintext stores.
 3. **RBAC Cryptographic Isolation (`RNF-SEC-02`, `ADR-012`):** Clinical data in `DAILY_MEASUREMENT` and `CLINICAL_ALERT` is encrypted with the crew member's exclusive `crewDataKey` (`KEY_VAULT`), wrapped with both their PIN and the CMO's PIN. The `Sync Hub` and `CABIN_GLOBAL_STATUS` (public bulkhead displays) **do not possess** `crewDataKey`.
 4. **Daily Cardinality (`ADR-016`):** Under nominal operational conditions, `DAILY_MEASUREMENT` maintains 1 consolidated record per `(crew_id, mission_day)` across 180 days ($4 \times 180 = 720$ baseline records), plus ad-hoc simulator injections (`RF-SIM-01..05`).
 5. **Step Limit (`ADR-017`):** Every record in `COUNTERMEASURE_PROTOCOL.steps_max_4` must satisfy `length(steps) <= 4`. Complex procedures use `chained_next_id` to link successive protocols.

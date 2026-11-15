@@ -67,12 +67,14 @@
   <section class="panel stack" aria-labelledby="int-h">
     <h2 id="int-h">Integridad y enlace con Tierra</h2>
     <dl class="metrics num">
+      <div><dt class="label">Restaurados desde réplica</dt><dd>{bridge.data.recoveredCount}</dd></div>
       <div><dt class="label">Registros en cuarentena</dt><dd>{bridge.quarantinedCount}</dd></div>
       <div><dt class="label">Sync Hub</dt><dd>{bridge.syncStatus}</dd></div>
       <div><dt class="label">Nodo</dt><dd>{bridge.data.nodeId}</dd></div>
     </dl>
     <div class="row">
       <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip()}>Inyectar SEU (bit-flip)</button>
+      <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip(true)}>SEU en sobre y réplica</button>
       <button type="button" class="btn" onclick={() => bridge.verifyLedger()}>Verificar cadena de bitácora</button>
     </div>
     {#if bridge.ledgerChain}

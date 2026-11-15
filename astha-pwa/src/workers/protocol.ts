@@ -39,7 +39,7 @@ export type UiToData = Req &
     | { type: 'setPref'; key: PrefKey; value: boolean }
     | { type: 'export'; kind: 'history' | 'summary'; anonymize?: boolean }
     | { type: 'import'; text: string }
-    | { type: 'injectBitFlip' }
+    | { type: 'injectBitFlip'; both?: boolean }
     | { type: 'verifyLedger' }
     | { type: 'visibility'; visible: boolean }
     | { type: 'online' }
@@ -74,6 +74,8 @@ export interface DataState {
   syncStatus: SyncStatus;
   quarantinedCount: number;
   lockedCount: number;
+  /** Sobres dañados restaurados desde la réplica local en esta sesión (RNF-SEC-03). */
+  recoveredCount: number;
   nodeId: string;
 }
 

@@ -8,8 +8,8 @@ import {
   type DeviceIdentity, type Keyring,
 } from '../src/storage/crypto';
 import { buildPayload, parseImport, serialize, signExport, verifyExport, compress } from '../src/storage/exportBuilder';
-import { AsthaDb, type Envelope } from '../src/storage/idb';
-import { IntegrityGuard, sealEnvelope } from '../src/storage/integrity';
+import { AsthaDb, flipBit, type Envelope } from '../src/storage/idb';
+import { checkEnvelope, IntegrityGuard, sealEnvelope, WriteVerifyError } from '../src/storage/integrity';
 import { Ledger } from '../src/storage/ledger';
 import { SyncClient, type WebSocketLike } from '../src/storage/syncClient';
 import {
@@ -103,8 +103,53 @@ describe('(1) RBAC criptográfico entre tripulantes y CMO (RNF-SEC-02, ADR-012)'
 });
 
 // ------------------------------------------------------------------ (2)
-describe('(2) Detección y cuarentena de bit-flip SEU por SHA-256 (RNF-SEC-03)', () => {
-  it('aísla el sobre corrupto, pide réplica y sigue leyendo el resto', async () => {
+describe('(2) Detección SEU por SHA-256, recuperación y cuarentena (RNF-SEC-03, AC-TECH-06)', () => {
+  const sbpOf = (ops: Op[]) => ops.map((o) => (o.body as { fields: { sbp: number } }).fields.sbp).sort();
+
+  it('crea los object stores del modelo físico (ER §2) en ASTHA_EDGE_DB', () => {
+    expect(db.storeNames().sort()).toEqual(['audit_chain', 'envelopes_gset', 'envelopes_replica', 'key_vault', 'quarantine']);
+  });
+
+  it('el sobre cumple el contrato EncryptedEnvelope de openapi.yaml', async () => {
+    const s = await unlockKeyring(ring, 'C001', '1001');
+    const e = await seal(meas('C001'), 'C001', s.keys);
+    expect(Object.keys(e).sort()).toEqual(['autor', 'ct', 'firma', 'hlc', 'id', 'iv', 'keyRef', 'sha256']);
+    expect(e.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    expect(e.hlc).toMatch(/^\d+:\d+:[a-zA-Z0-9-]+$/);
+    expect(e.autor).toBe(device.nodeId);
+    expect(e.sha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(atob(e.iv)).toHaveLength(12);
+  });
+
+  it('detecta el 100 % de los bit-flips posibles en iv y ct, de forma determinista', async () => {
+    const s = await unlockKeyring(ring, 'C001', '1001');
+    const { envelope } = await sealEnvelope(meas('C001'), new HybridClock(device.nodeId).tick(), 'C001', s.keys.get('C001')!, device);
+    const key = authorKeys(envelope.autor);
+    expect(await checkEnvelope(envelope, key)).toEqual({ ok: true });
+    let flips = 0;
+    for (const field of ['iv', 'ct'] as const) {
+      const bits = atob(envelope[field]).length * 8;
+      for (let bit = 0; bit < bits; bit++) {
+        const r = await checkEnvelope({ ...envelope, [field]: flipBit(envelope[field], field, bit) }, key);
+        expect(r.ok, `${field} bit ${bit}`).toBe(false);
+        flips++;
+      }
+    }
+    expect(flips).toBeGreaterThan(96 + 128); // todo el IV y al menos la etiqueta GCM
+  });
+
+  it('también detecta bit-flips en hlc, autor, keyRef, sha256 y firma', async () => {
+    const s = await unlockKeyring(ring, 'C001', '1001');
+    const { envelope } = await sealEnvelope(meas('C001'), new HybridClock(device.nodeId).tick(), 'C001', s.keys.get('C001')!, device);
+    const key = authorKeys(envelope.autor);
+    for (const field of ['id', 'hlc', 'autor', 'keyRef', 'sha256', 'firma'] as const) {
+      for (const bit of [0, 1, 6, 9, 17]) {
+        expect((await checkEnvelope({ ...envelope, [field]: flipBit(envelope[field], field, bit) }, key)).ok, `${field} bit ${bit}`).toBe(false);
+      }
+    }
+  });
+
+  it('un SEU en el sobre se restaura desde la réplica local y la copia dañada queda en cuarentena', async () => {
     const s = await unlockKeyring(ring, 'C001', '1001');
     const clock = new HybridClock(device.nodeId);
     const envs: Envelope[] = [];
@@ -112,45 +157,83 @@ describe('(2) Detección y cuarentena de bit-flip SEU por SHA-256 (RNF-SEC-03)',
 
     await db.injectBitFlip('envelopes', envs[1].id, 'ct', 13);
 
+    const recovered: string[] = [];
     const replicas: string[] = [];
-    const quarantined: string[] = [];
-    const guard = new IntegrityGuard(db, authorKeys, {
-      onReplicaRequest: (id) => replicas.push(id),
-      onQuarantine: (id) => quarantined.push(id),
-    });
+    const guard = new IntegrityGuard(db, authorKeys, { onRecovered: (id) => recovered.push(id), onReplicaRequest: (id) => replicas.push(id) });
     const report = await guard.readAll(s.keys);
 
-    expect(report.ops.map((o) => (o.body as { fields: { sbp: number } }).fields.sbp).sort()).toEqual([118, 120]);
+    expect(sbpOf(report.ops)).toEqual([118, 119, 120]);
+    expect(report.recovered).toEqual([{ id: envs[1].id, reason: expect.stringContaining('SHA-256') }]);
+    expect(report.quarantined).toEqual([]);
+    expect(recovered).toEqual([envs[1].id]);
+    expect(replicas).toEqual([]);
+    expect(await db.getEnvelope(envs[1].id)).toEqual(envs[1]); // byte a byte el original firmado
+    expect((await db.allQuarantine()).map((q) => q.reason)).toEqual([expect.stringContaining('recuperado')]);
+
+    const again = await guard.readAll(s.keys);
+    expect(again.recovered).toHaveLength(0);
+    expect(again.ops).toHaveLength(3);
+  });
+
+  it('una réplica dañada con primario sano se repara al leer', async () => {
+    const s = await unlockKeyring(ring, 'C001', '1001');
+    const e = await seal(meas('C001'), 'C001', s.keys);
+    await db.injectBitFlip('replica', e.id, 'iv', 5);
+    const report = await new IntegrityGuard(db, authorKeys).readAll(s.keys);
+    expect(report.ops).toHaveLength(1);
+    expect(await db.getReplica(e.id)).toEqual(e);
+  });
+
+  it('sin copia válida: aísla el sobre, pide réplica al Hub y sigue leyendo el resto', async () => {
+    const s = await unlockKeyring(ring, 'C001', '1001');
+    const clock = new HybridClock(device.nodeId);
+    const envs: Envelope[] = [];
+    for (const v of [118, 119, 120]) envs.push(await seal(meas('C001', v), 'C001', s.keys, clock));
+    await db.injectBitFlip('envelopes', envs[1].id, 'iv', 3);
+    await db.injectBitFlip('replica', envs[1].id, 'ct', 3);
+
+    const replicas: string[] = [];
+    const quarantined: string[] = [];
+    const guard = new IntegrityGuard(db, authorKeys, { onReplicaRequest: (id) => replicas.push(id), onQuarantine: (id) => quarantined.push(id) });
+    const report = await guard.readAll(s.keys);
+
+    expect(sbpOf(report.ops)).toEqual([118, 120]);
     expect(report.quarantined).toEqual([{ id: envs[1].id, reason: expect.stringContaining('SHA-256') }]);
     expect(replicas).toEqual([envs[1].id]);
     expect(quarantined).toEqual([envs[1].id]);
     expect(await db.getEnvelope(envs[1].id)).toBeUndefined();
-    expect((await db.allQuarantine()).map((q) => q.id)).toEqual([envs[1].id]);
+    expect(await db.getReplica(envs[1].id)).toBeUndefined();
 
-    // Segunda lectura: el estado derivado ya no incluye el registro corrupto y no hay nuevos aislamientos.
     const again = await guard.readAll(s.keys);
     expect(again.ops).toHaveLength(2);
     expect(again.quarantined).toHaveLength(0);
   });
 
-  it('también aísla si el bit cambia en el IV o en la firma (id/firma no coinciden)', async () => {
+  it('una firma dañada sin réplica válida se aísla', async () => {
     const s = await unlockKeyring(ring, 'C001', '1001');
-    const a = await seal(meas('C001', 121), 'C001', s.keys);
     const b = await seal(meas('C001', 122), 'C001', s.keys);
-    await db.injectBitFlip('envelopes', a.id, 'iv', 3);
-    await db.injectBitFlip('envelopes', b.id, 'sig', 40);
+    await db.injectBitFlip('envelopes', b.id, 'firma', 40);
+    await db.injectBitFlip('replica', b.id, 'firma', 41);
     const report = await new IntegrityGuard(db, authorKeys).readAll(s.keys);
     expect(report.ops).toHaveLength(0);
-    expect(report.quarantined.map((q) => q.reason).sort()).toEqual([
-      'firma del dispositivo inválida',
-      'id del sobre no coincide con su contenido',
-    ]);
+    expect(report.quarantined.map((q) => q.reason)).toEqual(['firma del dispositivo inválida']);
   });
 
-  it('no lanza aunque todos los sobres estén corruptos', async () => {
+  it('verifica tras escribir (write-verify)', async () => {
+    const s = await unlockKeyring(ring, 'C001', '1001');
+    const guard = new IntegrityGuard(db, authorKeys);
+    const { envelope } = await sealEnvelope(meas('C001'), new HybridClock(device.nodeId).tick(), 'C001', s.keys.get('C001')!, device);
+    expect(await guard.store(envelope)).toBe(true);
+    expect(await guard.store(envelope)).toBe(false); // G-Set idempotente
+    const { envelope: bad } = await sealEnvelope(meas('C001'), new HybridClock(device.nodeId).tick(), 'C001', s.keys.get('C001')!, device);
+    await expect(guard.store({ ...bad, ct: flipBit(bad.ct, 'ct', 2) })).rejects.toBeInstanceOf(WriteVerifyError);
+  });
+
+  it('no lanza aunque todos los sobres y réplicas estén corruptos', async () => {
     const s = await unlockKeyring(ring, 'C001', '1001');
     const e = await seal(meas('C001'), 'C001', s.keys);
     await db.injectBitFlip('envelopes', e.id, 'ct', 0);
+    await db.injectBitFlip('replica', e.id, 'ct', 1);
     await expect(new IntegrityGuard(db, authorKeys).readAll(s.keys)).resolves.toMatchObject({ ops: [] });
   });
 
@@ -159,6 +242,33 @@ describe('(2) Detección y cuarentena de bit-flip SEU por SHA-256 (RNF-SEC-03)',
     const e = await seal(meas('C001'), 'C001', s.keys);
     expect(await db.addEnvelope(e)).toBe(false);
     expect(await db.allEnvelopes()).toHaveLength(1);
+  });
+
+  it('RNF-SEC-01: ningún dato biométrico, nombre ni PIN en claro en IndexedDB', async () => {
+    const cmo = await unlockKeyring(ring, CMO, '1002');
+    const clock = new HybridClock(device.nodeId);
+    await seal({ t: 'measurement', crewId: 'C003', day: 141, fields: { hr: 97, sbp: 143, dbp: 91, spo2: 92.4, glucose: 131.7, sleep: 4.6 }, source: 'manual' }, 'C003', cmo.keys, clock);
+    await seal({ t: 'symptom', crewId: 'C003', day: 141, symptom: 'blurredVision', active: true, source: 'manual' }, 'C003', cmo.keys, clock);
+    const ledger = new Ledger(db, device, clock);
+    await ledger.append('measurement', 'C003', 'PAS 143 mmHg, SpO2 92.4 %', 'C003', cmo.keys.get('C003')!);
+    await db.putVault('keyring', ring);
+    await db.putVault('device', device);
+
+    const raw = JSON.stringify(await db.dump(), (_k, v) => (v instanceof CryptoKey ? '[CryptoKey]' : v));
+    // Agujas con comillas, puntos o espacios: no pueden aparecer por azar dentro de cadenas base64/hex.
+    // El tipo de evento de la bitácora ('measurement') es metadato no clínico (event_type del ER) y se permite.
+    const needles = ['92.4', '131.7', '4.6', '"sbp"', '"spo2"', '"glucose"', '"fields"', 'blurredVision', 'PAS 143', '"pin"', '"1002"',
+      ...SYNTHETIC.crew.map((c) => c.name)];
+    for (const needle of needles) {
+      expect(raw.includes(needle), needle).toBe(false);
+    }
+  });
+
+  it('RNF-SEC-01: el código fuente no usa localStorage ni sessionStorage', () => {
+    const files = Object.entries(import.meta.glob('../src/**/*.{ts,svelte}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>);
+    expect(files.length).toBeGreaterThan(20);
+    const offenders = files.filter(([, src]) => /\b(localStorage|sessionStorage)\s*[.[]/.test(src)).map(([f]) => f);
+    expect(offenders).toEqual([]);
   });
 });
 

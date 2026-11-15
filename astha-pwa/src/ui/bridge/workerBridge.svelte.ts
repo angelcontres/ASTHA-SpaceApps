@@ -30,7 +30,7 @@ export interface HabitatTelemetry {
 const EMPTY_STATE: DataState = {
   ready: false, provisioning: false, session: null, crew: [], selectedCrew: '', day: 0, maxDay: 180, playing: false,
   activeScenarios: [], symptoms: {}, acks: [], checks: {}, overrides: [], prefs: { ...DEFAULT_PREFS }, xp: {},
-  syncStatus: 'disabled', quarantinedCount: 0, lockedCount: 0, nodeId: '',
+  syncStatus: 'disabled', quarantinedCount: 0, lockedCount: 0, recoveredCount: 0, nodeId: '',
 };
 
 const HABITAT_SET = new Set<string>(HABITAT_INDICATORS);
@@ -240,7 +240,7 @@ export class WorkerBridge {
   setPref(key: PrefKey, value: boolean) { this.send({ type: 'setPref', key, value }); }
   exportData(kind: 'history' | 'summary', anonymize = false) { this.send({ type: 'export', kind, anonymize }); }
   importData(text: string) { this.send({ type: 'import', text }, true); }
-  injectBitFlip() { this.send({ type: 'injectBitFlip' }, true); }
+  injectBitFlip(both = false) { this.send({ type: 'injectBitFlip', both }, true); }
   verifyLedger() { this.send({ type: 'verifyLedger' }); }
 
   /** Descarga local del último paquete exportado (Blob, sin red). */
