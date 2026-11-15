@@ -66,9 +66,8 @@
   const CODE_RED = new Set(['R-RAD-01', 'R-RAD-02', 'R-ENV-01']);
 
   let audioOn = $state(false);
-  let stage = $state<Record<string, 1 | 2 | 3>>({});
+  const stage = $state<Record<string, 1 | 2 | 3>>({});
   // Temporizadores de escalada: estado interno que no se pinta, por eso no es reactivo.
-  // eslint-disable-next-line svelte/prefer-svelte-reactivity
   const timers = new Map<string, ReturnType<typeof setTimeout>[]>();
 
   const visible = $derived(bridge.activeAlerts.filter((a) => !a.overridden && a.status !== 'nominal'));
