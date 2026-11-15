@@ -56,6 +56,11 @@ export default tseslint.config(
         svelteConfig,
       },
     },
+    rules: {
+      // En Svelte 5 `let { ... } = $props()` es idiomático; svelte/prefer-const ignora runas.
+      'prefer-const': 'off',
+      'svelte/prefer-const': 'warn',
+    },
   },
   {
     files: ['scripts/**/*.mjs'],
