@@ -19,7 +19,8 @@ describe('ASTHA Architectural & Zero-WAN Invariants', () => {
 
     for (const filePath of engineFiles) {
       const source = fs.readFileSync(filePath, 'utf8');
-      expect(forbidden.test(source), `Forbidden API in ${path.basename(filePath)}`).toBe(false);
+      const codeOnly = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+      expect(forbidden.test(codeOnly), `Forbidden API in ${path.basename(filePath)}`).toBe(false);
     }
   });
 
