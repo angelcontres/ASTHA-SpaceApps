@@ -1,8 +1,9 @@
 <script lang="ts" module>
-  // Tono de alarma (RNF-USA-04, ISO 9703-2): 960 Hz intermitente 0,25 s / 0,25 s durante 10 s, programado en el
-  // reloj de audio (sin temporizadores JS). Al terminar, el AudioContext se suspende (0 CPU).
+  // Tono de advertencia no intrusivo (estilo aviso clínico aeronáutico): cadencia suave de dos notas
+  // cálidas (G4 392 Hz -> C5 523 Hz) con ataque progresivo y caída exponencial cada 2 s para alertar
+  // sin sobresaltar. Programado en el reloj de audio (0 CPU tras suspenderse).
   let ctx: AudioContext | null = null;
-  let current: OscillatorNode | null = null;
+  let activeOscs: OscillatorNode[] = [];
 
   export function unlockAudio(): void {
     try {
@@ -15,37 +16,57 @@
     return ctx !== null;
   }
 
-  export function playCritical(seconds = 10): boolean {
+  function scheduleNote(audioCtx: AudioContext, freq: number, start: number, peakGain: number, tailSec: number): OscillatorNode {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, start);
+    // Ataque gradual de 35 ms y caída suave tipo campana para evitar clics o sobresaltos.
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(peakGain, start + 0.035);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + tailSec);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(start);
+    osc.stop(start + tailSec + 0.02);
+    return osc;
+  }
+
+  export function playCritical(seconds = 8): boolean {
     if (!ctx) return false;
     stopTone();
     void ctx.resume();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 960;
-    const t = ctx.currentTime + 0.02;
-    gain.gain.setValueAtTime(0, t);
-    for (let i = 0; i < seconds * 2; i++) {
-      const on = t + i * 0.5;
-      // Envolvente suave (ataque/caída de 20 ms) para no producir clics.
-      gain.gain.linearRampToValueAtTime(0.5, on + 0.02);
-      gain.gain.setValueAtTime(0.5, on + 0.23);
-      gain.gain.linearRampToValueAtTime(0, on + 0.25);
+    const audioCtx = ctx;
+    const t = audioCtx.currentTime + 0.03;
+    const cycles = Math.max(1, Math.floor(seconds / 2));
+    const scheduled: OscillatorNode[] = [];
+
+    for (let i = 0; i < cycles; i++) {
+      const onset = t + i * 2.0;
+      scheduled.push(scheduleNote(audioCtx, 392.0, onset, 0.14, 0.55));
+      scheduled.push(scheduleNote(audioCtx, 523.25, onset + 0.22, 0.11, 0.72));
     }
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(t);
-    osc.stop(t + seconds);
-    osc.onended = () => {
-      if (current === osc) current = null;
-      if (!current) void ctx?.suspend();
-    };
-    current = osc;
+
+    const last = scheduled[scheduled.length - 1];
+    if (last) {
+      last.onended = () => {
+        if (activeOscs === scheduled) {
+          activeOscs = [];
+          void ctx?.suspend();
+        }
+      };
+    }
+    activeOscs = scheduled;
     return true;
   }
 
   export function stopTone(): void {
-    try { current?.stop(); } catch { /* ya detenido */ }
-    current = null;
+    const prev = activeOscs;
+    activeOscs = [];
+    for (const osc of prev) {
+      osc.onended = null;
+      try { osc.stop(); } catch { /* ya detenido */ }
+    }
+    if (ctx?.state === 'running') void ctx.suspend();
   }
 </script>
 
@@ -53,7 +74,7 @@
   // Alarm Manager (C4 §3.2, ADR-013, docs/Diseno-UI-UX/03 §2.4). Única capa con aria-live asertivo, por encima
   // de todo (gamificación incluida, RF-GAM-03).
   //  · Precaución: franja amarilla estática ▲, sin sonido.
-  //  · Crítico: franja roja con pulso de 1,5 s ✕ + tono de 960 Hz durante 10 s.
+  //  · Crítico: franja roja con pulso de 1,5 s ✕ + aviso acústico suave (392/523 Hz) durante 8 s.
   //  · Escalada sin reconocimiento: a los 2 min vuelve a sonar y se marca para el CMO; a los 5 min se difunde a
   //    cabina (Vista B). Son dos setTimeout por alerta, cancelados al reconocer: no hay polling.
   import { onMount } from 'svelte';

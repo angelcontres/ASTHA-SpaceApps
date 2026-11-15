@@ -13,7 +13,8 @@
 
   const me = $derived(bridge.data.crew.find((c) => c.id === bridge.unlockedCrewId));
   const global = $derived(bridge.currentAssessment?.global ?? 'none');
-  const hasAlert = $derived(bridge.activeAlerts.some((a) => !a.overridden && a.status !== 'nominal'));
+  const alertCount = $derived(bridge.activeAlerts.filter((a) => !a.overridden && a.status !== 'nominal').length);
+  const hasAlert = $derived(alertCount > 0);
   const syncLabel = {
     disabled: 'Autonomous',
     offline: 'No Hub',
@@ -88,11 +89,27 @@
     >
       <HudIcon name="settings" size={18} />
     </button>
-    <button type="button" class="btn icon" aria-label="Lock session" onclick={() => bridge.lock()}>
-      <HudIcon name="lock" size={18} />
+    <button
+      type="button"
+      class="btn icon lock-btn"
+      aria-label="Lock session and return to PIN screen"
+      title="Lock session / Exit"
+      onclick={() => bridge.lock()}
+    >
+      <HudIcon name="log-out" size={16} />
+      <span class="lock-txt">Exit</span>
     </button>
-    <button type="button" class="btn danger emergency" class:pulse={hasAlert} onclick={onemergency}>
+    <button
+      type="button"
+      class="btn danger emergency"
+      class:pulse={hasAlert}
+      class:peek-active={hasAlert}
+      aria-expanded={ui.emergencyOpen}
+      title="Open emergency alerts & records drawer"
+      onclick={onemergency}
+    >
       <HudIcon name="alert" size={16} /> EMERGENCY
+      {#if hasAlert}<span class="em-count num">{alertCount}</span>{/if}
     </button>
   </div>
 </header>
@@ -111,6 +128,7 @@
     background: color-mix(in srgb, var(--space-900) 94%, #0f2854);
     border-bottom: 1px solid var(--border-strong);
     box-shadow: 0 8px 24px rgb(2 8 23 / 0.55);
+    overflow-x: clip;
   }
   .brand { display: flex; align-items: center; gap: 12px; }
   .brand-row { display: flex; align-items: center; gap: 6px; }
@@ -133,8 +151,42 @@
   .eclss .sym { color: var(--st-text); }
   .meta { display: flex; flex-direction: column; gap: 2px; }
   .actions { display: flex; flex-wrap: wrap; gap: var(--gap); margin-left: auto; }
-  .emergency { font-weight: 800; letter-spacing: 0.04em; }
+  .emergency {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    animation: emergencyPeekRight 440ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transition: transform 180ms ease;
+  }
+  .emergency:hover { transform: translateX(-3px); }
+  .emergency.peek-active {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--alert-red) 55%, transparent), 0 6px 18px rgb(220 38 38 / 0.25);
+  }
+  .em-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--alert-red);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  @keyframes emergencyPeekRight {
+    0% { opacity: 0; transform: translateX(48px); }
+    70% { opacity: 1; transform: translateX(-3px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .emergency { animation: none; transition: none; }
+  }
+  .btn.icon.lock-btn { width: auto; padding: 0 12px; gap: 6px; font-weight: 600; }
   @media (max-width: 767px) {
     .actions .btn:not(.emergency):not(.icon) { display: none; }
+    .btn.icon.lock-btn { width: var(--touch); padding: 0; }
+    .lock-btn .lock-txt { display: none; }
   }
 </style>

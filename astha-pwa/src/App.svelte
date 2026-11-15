@@ -5,6 +5,7 @@
   import { SCENARIO_IDS, SYNTHETIC, type ScenarioDef } from './storage/telemetrySources';
   import AlarmManager from './ui/components/AlarmManager.svelte';
   import CrewBar from './ui/components/CrewBar.svelte';
+  import EmergencyDrawer from './ui/components/EmergencyDrawer.svelte';
   import HabitatStrip from './ui/components/HabitatStrip.svelte';
   import HudIcon from './ui/components/HudIcon.svelte';
   import { power } from './ui/bridge/power.svelte';
@@ -69,15 +70,9 @@
     ui.tab = TABS[next].id;
   }
 
-  /** Emergency button: opens highest-priority active protocol in 1 tap (RNF-USA-02). */
+  /** Emergency button: slides in right-edge emergency & records drawer in 1 tap (RNF-USA-02). */
   function emergency() {
-    const top = bridge.activeAlerts.find((a) => !a.overridden && a.status !== 'nominal');
-    if (top) {
-      ui.openProtocol(top.id, top.region);
-      if (top.urgency === 'emergency') ui.codeRedId = top.id;
-    } else {
-      ui.tab = 'triage';
-    }
+    ui.emergencyOpen = !ui.emergencyOpen;
   }
 
   const scen = (id: (typeof SCENARIO_IDS)[number]) => SYNTHETIC.scenarios[id] as ScenarioDef;
@@ -194,6 +189,7 @@
     </footer>
   {/if}
 
+  {#if ui.emergencyOpen}<EmergencyDrawer />{/if}
   {#if codeRed}<CodeRedView alert={codeRed} />{/if}
 {/if}
 

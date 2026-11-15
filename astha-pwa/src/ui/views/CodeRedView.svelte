@@ -38,7 +38,7 @@
     <span class="sym big" aria-hidden="true"></span>
     <h1 id="cr-title" class="alarm-title">CÓDIGO ROJO · {protocol?.title ?? alert.ruleId}</h1>
     <div class="row">
-      {#if !alert.acknowledged}<button type="button" class="btn danger" onclick={silence}>Silenciar 960 Hz</button>{/if}
+      {#if !alert.acknowledged}<button type="button" class="btn danger" onclick={silence}>Silenciar aviso</button>{/if}
       <button type="button" class="btn" onclick={close}>Cerrar vista</button>
     </div>
   </header>
@@ -70,7 +70,7 @@
       </ul>
       <h2 class="label">Escalada automática</h2>
       <ol class="esc">
-        <li class="on">0-10 s · tono local 960 Hz</li>
+        <li class="on">0-8 s · aviso acústico local suave</li>
         <li>2 min · consola del CMO</li>
         <li>5 min · difusión a cabina</li>
       </ol>
