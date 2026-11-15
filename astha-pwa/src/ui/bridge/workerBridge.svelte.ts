@@ -118,9 +118,15 @@ export class WorkerBridge {
 
     clinical.onmessage = (e: MessageEvent<ClinicalToUi>) => this.enqueue({ from: 'clinical', msg: e.data });
     data.onmessage = (e: MessageEvent<DataToUi>) => this.enqueue({ from: 'data', msg: e.data });
-    const onError = (e: ErrorEvent) => this.pushNotice('error', 'worker', `Worker error: ${e.message}`);
-    clinical.onerror = onError;
-    data.onerror = onError;
+    const onError = (workerName: string) => (e: ErrorEvent | Event) => {
+      const detail =
+        'message' in e && e.message
+          ? e.message
+          : `${workerName} module failed to load (if running locally, clear old Service Workers or press Ctrl+Shift+R)`;
+      this.pushNotice('error', 'worker', `Worker error: ${detail}`);
+    };
+    clinical.onerror = onError('astha-clinical');
+    data.onerror = onError('astha-data');
     this.dataWorker = data;
     this.clinicalWorker = clinical;
 

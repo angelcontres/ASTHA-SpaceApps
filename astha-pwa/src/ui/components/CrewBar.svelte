@@ -9,7 +9,7 @@
   const currentDay = $derived(Math.max(1, Math.min(bridge.data.maxDay || 180, bridge.data.day || 1)));
   const pct = $derived((currentDay / (bridge.data.maxDay || 180)) * 100);
   const preFlightMarks = ['L-44', 'L-15'];
-  const flightMarks = [1, 14, 30, 60, 90, 120, 150, 180];
+  const flightMarks = [1, 30, 60, 90, 120, 150, 180];
 
   function onScrub(ev: Event) {
     const val = Number((ev.currentTarget as HTMLInputElement).value);
@@ -30,8 +30,13 @@
         onclick={() => bridge.selectCrew(c.id)}
       >
         <span class="sym" aria-hidden="true"></span>
-        <span class="num">{c.id}</span>
-        <span class="name">{c.name.split(' ').slice(-1)[0]}</span>
+        <span class="member-info">
+          <span class="member-top">
+            <strong class="num">{c.id}</strong>
+            <span class="name">{c.name}</span>
+          </span>
+          <span class="member-role label">{ROLE_LABEL[c.role]} · {STATUS_LABEL[st]}</span>
+        </span>
       </button>
     {/each}
   </div>
@@ -77,17 +82,55 @@
 </nav>
 
 <style>
-  .crewbar { display: flex; flex-wrap: wrap; gap: var(--gap); align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--border); background: var(--space-950); }
-  .member { border-color: var(--st); }
-  .member .sym { color: var(--st-text); }
-  .member[aria-pressed='true'] { outline: 3px solid var(--accent); outline-offset: 2px; }
-  .name { font-weight: 500; }
-  .timeline { flex: 1 1 320px; min-width: 260px; display: flex; flex-direction: column; gap: 2px; }
+  .crewbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-strong);
+    background: color-mix(in srgb, var(--space-950) 92%, #0a1f44);
+  }
+  .crew { display: grid; grid-template-columns: repeat(4, minmax(155px, 1fr)); gap: 10px; flex: 2 1 640px; }
+  .member {
+    border: 1px solid var(--border-strong);
+    border-top: 3px solid var(--st);
+    background: var(--space-800);
+    height: auto;
+    min-height: var(--touch);
+    padding: 8px 12px;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .member .sym { color: var(--st-text); font-size: 1rem; }
+  .member[aria-pressed='true'] {
+    border-color: var(--accent);
+    border-top-color: var(--st);
+    outline: 2px solid color-mix(in srgb, var(--accent) 65%, transparent);
+    outline-offset: 1px;
+    background: color-mix(in srgb, var(--accent) 16%, var(--space-800));
+    box-shadow: 0 0 16px rgb(56 189 248 / 0.22);
+  }
+  .member-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .member-top { display: flex; align-items: baseline; gap: 6px; }
+  .name { font-weight: 600; font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .member-role { display: block; color: var(--text-muted); }
+  .timeline {
+    flex: 1 1 320px;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+    background: var(--space-900);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+  }
   .timeline-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .phase { color: var(--accent); }
   .scrubber { position: relative; height: var(--touch); display: flex; align-items: center; }
-  .track { position: relative; width: 100%; height: 8px; background: var(--space-800); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; pointer-events: none; }
-  .fill { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--accent) 55%, transparent); }
+  .track { position: relative; width: 100%; height: 8px; background: var(--space-800); border: 1px solid var(--border-strong); border-radius: 4px; overflow: hidden; pointer-events: none; }
+  .fill { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--accent) 75%, transparent); }
   .base { position: absolute; inset: 0 auto 0 0; border-right: 2px dashed var(--text-muted); }
   .range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; touch-action: manipulation; }
   .marks-row { display: flex; align-items: center; gap: 12px; }
@@ -97,5 +140,7 @@
   .marks span:first-child { translate: 0 0; }
   .marks span:last-child { translate: -100% 0; }
   .marks .now { color: var(--accent); }
+  :root[data-survival] .member[aria-pressed='true'] { box-shadow: none; }
+  @media (max-width: 1100px) { .crew { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 767px) { .name, .marks span:nth-child(even), .preflight { display: none; } }
 </style>

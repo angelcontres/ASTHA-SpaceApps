@@ -5,6 +5,7 @@
   import { power } from '../bridge/power.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
   import { fd, fmt } from '../bridge/uiState.svelte';
+  import HudIcon from '../components/HudIcon.svelte';
 
   let target = $state<string>('');
   $effect(() => { if (!target) target = bridge.data.selectedCrew; });
@@ -38,7 +39,7 @@
         </button>
       {/each}
     </div>
-    <button type="button" class="btn primary reset" onclick={() => bridge.reset()}>✓ Restablecer estado nominal</button>
+    <button type="button" class="btn primary reset" onclick={() => bridge.reset()}><HudIcon name="check" size={16} /> Restablecer estado nominal</button>
   </section>
 
   <section class="panel stack" aria-labelledby="clk-h">
@@ -48,9 +49,9 @@
       <button type="button" class="btn" onclick={() => bridge.advance(1)}>+1 día</button>
       <button type="button" class="btn" onclick={() => bridge.advance(7)}>+7 días</button>
       {#if bridge.data.playing}
-        <button type="button" class="btn primary" onclick={() => bridge.pause()}>❚❚ Pausar</button>
+        <button type="button" class="btn primary" onclick={() => bridge.pause()}><HudIcon name="pause" size={14} /> Pausar</button>
       {:else}
-        <button type="button" class="btn" onclick={() => bridge.play(3000)}>▶ Reproducir (1 día / 3 s)</button>
+        <button type="button" class="btn" onclick={() => bridge.play(3000)}><HudIcon name="play" size={14} /> Reproducir (1 día / 3 s)</button>
       {/if}
     </div>
     <label class="stack">
@@ -61,7 +62,7 @@
       <div><dt class="label">Motor (4 tripulantes)</dt><dd>{fmt(bridge.engineMs, 2)} ms</dd></div>
       <div><dt class="label">Peor triage individual</dt><dd>{fmt(maxLatency, 2)} ms</dd></div>
       <div><dt class="label">Ciclo acción → UI</dt><dd>{fmt(bridge.cycleMs, 1)} ms</dd></div>
-      <div><dt class="label">Presupuesto RNF-PER-01</dt><dd>&lt; 50 ms</dd></div>
+      <div><dt class="label">Presupuesto del motor</dt><dd>&lt; 50 ms</dd></div>
     </dl>
   </section>
 
@@ -92,7 +93,7 @@
       <button type="button" class="btn" onclick={() => bridge.exportData('summary')}>Resumen para Flight Surgeon</button>
       <button type="button" class="btn" onclick={() => bridge.exportData('history')}>Historial completo</button>
       {#if bridge.lastExport}
-        <button type="button" class="btn primary" onclick={() => bridge.downloadExport()}>⬇ {bridge.lastExport.fileName}</button>
+        <button type="button" class="btn primary" onclick={() => bridge.downloadExport()}><HudIcon name="download" size={16} /> {bridge.lastExport.fileName}</button>
       {/if}
     </div>
     <label class="btn file">
@@ -124,7 +125,13 @@
         <li>
           <span class="num unit">#{e.seq} · {new Date(Number(e.hlc.split(':')[0])).toLocaleTimeString()}</span>
           <strong>{e.type}</strong>{#if e.crewId} · {e.crewId}{/if}
-          <span class="detail">{e.detail ?? '🔒 cifrado (sin acceso)'}</span>
+          <span class="detail">
+            {#if e.detail}
+              {e.detail}
+            {:else}
+              <HudIcon name="lock" size={13} /> cifrado (sin acceso)
+            {/if}
+          </span>
         </li>
       {:else}
         <li class="muted">Sin entradas todavía.</li>

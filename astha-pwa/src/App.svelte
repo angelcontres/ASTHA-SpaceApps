@@ -5,7 +5,9 @@
   import { SCENARIO_IDS, SYNTHETIC, type ScenarioDef } from './storage/telemetrySources';
   import AlarmManager from './ui/components/AlarmManager.svelte';
   import CrewBar from './ui/components/CrewBar.svelte';
+  import EmergencyDrawer from './ui/components/EmergencyDrawer.svelte';
   import HabitatStrip from './ui/components/HabitatStrip.svelte';
+  import HudIcon from './ui/components/HudIcon.svelte';
   import { power } from './ui/bridge/power.svelte';
   import { scenarioLabel, ui, type Tab } from './ui/bridge/uiState.svelte';
   import { bridge } from './ui/bridge/workerBridge.svelte';
@@ -68,15 +70,9 @@
     ui.tab = TABS[next].id;
   }
 
-  /** Emergency button: opens highest-priority active protocol in 1 tap (RNF-USA-02). */
+  /** Emergency button: slides in right-edge emergency & records drawer in 1 tap (RNF-USA-02). */
   function emergency() {
-    const top = bridge.activeAlerts.find((a) => !a.overridden && a.status !== 'nominal');
-    if (top) {
-      ui.openProtocol(top.id, top.region);
-      if (top.urgency === 'emergency') ui.codeRedId = top.id;
-    } else {
-      ui.tab = 'triage';
-    }
+    ui.emergencyOpen = !ui.emergencyOpen;
   }
 
   const scen = (id: (typeof SCENARIO_IDS)[number]) => SYNTHETIC.scenarios[id] as ScenarioDef;
@@ -146,7 +142,7 @@
         <button type="button" class="btn" onclick={() => (ui.settingsOpen = false)}>Close</button>
       </div>
       {#if bridge.activeRole !== 'commander'}
-        <p class="muted small">Manual Survival Mode can only be toggled by the Commander (ADR-019); triggers automatically on critical battery.</p>
+        <p class="muted small">Manual Survival Mode can only be toggled by the Commander; triggers automatically on critical battery.</p>
       {/if}
     </section>
   {/if}
@@ -185,14 +181,15 @@
     <footer class="simbar" aria-label="Quick crisis simulator">
       {#each SCENARIO_IDS.slice(0, 4) as id (id)}
         <button type="button" class="btn" onclick={() => bridge.injectScenario(id)}>
-          ! {id} · {scenarioLabel(id, scen(id).label)}
+          <HudIcon name="alert" size={14} /> {id} · {scenarioLabel(id, scen(id).label)}
         </button>
       {/each}
-      <button type="button" class="btn primary" onclick={() => bridge.reset()}>✓ Reset Nominal</button>
+      <button type="button" class="btn primary" onclick={() => bridge.reset()}><HudIcon name="check" size={15} /> Reset Nominal</button>
       <span class="label provenance">Synthetic demo telemetry · not measured NASA flight data</span>
     </footer>
   {/if}
 
+  {#if ui.emergencyOpen}<EmergencyDrawer />{/if}
   {#if codeRed}<CodeRedView alert={codeRed} />{/if}
 {/if}
 
@@ -200,14 +197,34 @@
   {#each bridge.notices.filter((n) => n.code !== 'wrong-pin') as n (n.id)}
     <div class="notice {n.level}" role={n.level === 'error' ? 'alert' : 'status'}>
       <span>{n.message}</span>
-      <button type="button" class="btn icon" aria-label="Dismiss notice" onclick={() => bridge.dismissNotice(n.id)}>×</button>
+      <button type="button" class="btn icon" aria-label="Dismiss notice" onclick={() => bridge.dismissNotice(n.id)}>
+        <HudIcon name="x" size={16} />
+      </button>
     </div>
   {/each}
 </div>
 
 <style>
-  .tabs { display: flex; flex-wrap: wrap; gap: var(--gap); padding: 12px 16px 0; }
-  .tab[aria-current='page'] { border-color: var(--accent); }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+    margin: 12px 16px 0;
+    background: var(--space-900);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    width: fit-content;
+    max-width: calc(100% - 32px);
+  }
+  .tab { border-color: transparent; background: transparent; font-family: var(--font-num); letter-spacing: 0.03em; }
+  .tab[aria-current='page'] {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 18%, var(--space-800));
+    color: var(--accent);
+    box-shadow: 0 0 14px rgb(56 189 248 / 0.2);
+  }
+  :root[data-survival] .tab[aria-current='page'] { box-shadow: none; }
   .content { padding: 16px; max-width: 1600px; margin: 0 auto; }
   .settings { margin: 12px 16px 0; }
   .lowpower { margin: 12px 16px 0; padding: 10px 14px; border: var(--st-bw) solid var(--st); border-radius: var(--radius); }

@@ -84,9 +84,9 @@ describe('[UI-07] Design System WCAG 2.1 AAA & Ergonomics', () => {
     expect(tokensCss).toContain('--gap: 12px;');
     expect(tokensCss).toContain('min-width: var(--touch);');
     expect(tokensCss).toContain('min-height: var(--touch);');
-    expect(tokensCss).toContain("content: '✓';");
-    expect(tokensCss).toContain("content: '▲';");
-    expect(tokensCss).toContain("content: '✕';");
+    expect(tokensCss).toContain('.st.nominal .sym::before');
+    expect(tokensCss).toContain('.st.caution .sym::before');
+    expect(tokensCss).toContain('.st.critical .sym::before');
     expect(tokensCss).toContain('repeating-linear-gradient(135deg');
     expect(tokensCss).toContain('repeating-linear-gradient(0deg');
     expect(tokensCss).toContain('repeating-linear-gradient(90deg');
@@ -177,7 +177,8 @@ describe('[UI-07] COMP-00 HabitatStrip, COMP-01 CrewBar & English Shell', () => 
 
   it('implements COMP-00, COMP-01 L-44..R+1 timeline, and English progressive tabs', () => {
     const strip = read('src/ui/components/HabitatStrip.svelte');
-    expect(strip).toContain('✕ EMERGENCY');
+    expect(strip).toContain('<HudIcon name="alert"');
+    expect(strip).toContain('EMERGENCY');
     expect(strip).toContain('Survival');
     expect(strip).toContain('Red 630');
 

@@ -15,6 +15,7 @@ class UiState {
   envIndicator = $state<IndicatorId>('ppco2');
   view = $state<'front' | 'back'>('front');
   settingsOpen = $state(false);
+  emergencyOpen = $state(false);
   /** Local 630 nm night-mode toggle on the Lock Screen before authentication (ADR-014 read-only CRDT). */
   lockRedMode = $state(false);
   /** View B (full-screen Code Red) currently open for this alert ID. */
@@ -26,6 +27,7 @@ class UiState {
   openProtocol(alertId: string, region?: RegionId) {
     this.openAlertId = alertId;
     if (region) this.selectedRegion = region;
+    this.emergencyOpen = false;
     this.tab = 'triage';
   }
 }

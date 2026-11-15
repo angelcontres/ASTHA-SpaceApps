@@ -1,13 +1,14 @@
 <script lang="ts">
-  // Trend Chart (COMP-04, ADR-003): uPlot en canvas 2D con la serie de hasta 180 días, bandas de umbral
-  // (Nominal / Precaución / Crítico) y línea punteada de la línea base personal (días 1-14).
-  // Se redibuja solo cuando cambian los datos o el tamaño; al desmontar se llama a destroy().
+  // Trend Chart (COMP-04, ADR-003): uPlot 2D Canvas time-series chart across up to 180 flight days with
+  // NASA-STD-3001 threshold bands (Nominal / Caution / Critical), dashed pre-flight baseline (days 1-14),
+  // zero passive timers, and automatic visibilitychange suspension (RNF-POW-01).
   import { onMount } from 'svelte';
   import uPlot from 'uplot';
   import 'uplot/dist/uPlot.min.css';
   import { INDICATORS } from '../../engine/classifier';
   import { median } from '../../engine/drift';
   import type { IndicatorId } from '../../engine/types';
+  import { indLabel, indShort } from '../bridge/uiState.svelte';
 
   interface Props {
     indicator: IndicatorId;
@@ -15,12 +16,17 @@
     values: (number | null)[];
     height?: number;
   }
-  let { indicator, days, values, height = 220 }: Props = $props();
+  const { indicator, days, values, height = 220 }: Props = $props();
 
   let host = $state<HTMLDivElement>();
   let chart: uPlot | null = null;
+  let lastId: IndicatorId | null = null;
+  let pendingData: uPlot.AlignedData | null = null;
+  let pendingRebuild = false;
 
   const def = $derived(INDICATORS[indicator]);
+  const displayLabel = $derived(indLabel({ id: indicator, label: def.label }));
+  const displayShort = $derived(indShort({ id: indicator, short: def.short }));
   const baseline = $derived.by(() => {
     const xs = values.slice(0, 14).filter((v): v is number => v != null);
     return xs.length >= 7 ? median(xs) : null;
@@ -39,11 +45,15 @@
     return [lo - pad, hi + pad];
   }
 
-  /** Bandas de umbral pintadas bajo la serie (hook drawClear). */
+  /** Renders NASA-STD-3001 threshold bands and personal baseline beneath the active curve (drawClear hook). */
   function drawBands(u: uPlot) {
     const ctx = u.ctx;
     const { left, top, width, height: h } = u.bbox;
-    const color = { nominal: css('--alert-green', '#10b981'), caution: css('--alert-yellow', '#f59e0b'), critical: css('--alert-red', '#ef4444') };
+    const color = {
+      nominal: css('--alert-green', '#10b981'),
+      caution: css('--alert-yellow', '#f59e0b'),
+      critical: css('--alert-red', '#ef4444'),
+    };
     ctx.save();
     ctx.beginPath();
     ctx.rect(left, top, width, h);
@@ -60,7 +70,7 @@
       ctx.globalAlpha = 0.9;
       ctx.strokeStyle = css('--text-muted', '#a3acbd');
       ctx.setLineDash([6, 6]);
-      ctx.lineWidth = 1.5 * devicePixelRatio;
+      ctx.lineWidth = 1.5 * (globalThis.devicePixelRatio || 1);
       ctx.beginPath();
       ctx.moveTo(left, y);
       ctx.lineTo(left + width, y);
@@ -87,43 +97,65 @@
       ],
       series: [
         {},
-        { label: def.short, stroke: css('--accent', '#38bdf8'), width: 2, points: { show: false }, spanGaps: true },
+        { label: displayShort, stroke: css('--accent', '#38bdf8'), width: 2, points: { show: false }, spanGaps: true },
       ],
       hooks: { drawClear: [drawBands] },
     };
     chart = new uPlot(opts, [days, values], host);
+    lastId = indicator;
+    pendingData = null;
+    pendingRebuild = false;
+  }
+
+  function onVisibilityChange() {
+    if (document.hidden || !chart) return;
+    if (pendingRebuild) build();
+    else if (pendingData) {
+      chart.setData(pendingData);
+      pendingData = null;
+    }
   }
 
   onMount(() => {
     build();
     let w = host?.clientWidth ?? 0;
     const ro = new ResizeObserver(() => {
+      if (document.hidden) return;
       const nw = host?.clientWidth ?? 0;
-      if (chart && nw && nw !== w) { w = nw; chart.setSize({ width: nw, height }); }
+      if (chart && nw && nw !== w) {
+        w = nw;
+        chart.setSize({ width: nw, height });
+      }
     });
     if (host) ro.observe(host);
+    document.addEventListener('visibilitychange', onVisibilityChange);
     return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       ro.disconnect();
-      chart?.destroy(); // libera canvas y listeners (RNF-POW-03)
+      chart?.destroy();
       chart = null;
     };
   });
 
-  // Cambio de indicador → reconstruir (cambian bandas y escala); cambio de datos → setData.
-  let lastId: IndicatorId | null = null;
+  // Redraw strictly on indicator or data change (0 passive timers; defers while document.hidden).
   $effect(() => {
     const id = indicator;
     const d = [days, values] as uPlot.AlignedData;
     if (!chart) return;
-    if (id !== lastId) { lastId = id; build(); }
+    if (document.hidden) {
+      if (id !== lastId) pendingRebuild = true;
+      else pendingData = d;
+      return;
+    }
+    if (id !== lastId) build();
     else chart.setData(d);
   });
 </script>
 
-<figure class="chart" aria-label="Tendencia de {def.label} en {days.length} días, con bandas de umbral y línea base personal">
+<figure class="chart" aria-label="{displayLabel} trend over {days.length} mission days with NASA-STD-3001 threshold bands and personal baseline">
   <div bind:this={host} class="plot"></div>
   <figcaption class="unit">
-    {def.label} ({def.unit}) · bandas: verde nominal, amarillo precaución, rojo crítico · línea punteada: línea base días 1-14
+    {displayLabel} ({def.unit}) · bands: green nominal, yellow caution, red critical · dashed: days 1–14 baseline
   </figcaption>
 </figure>
 
