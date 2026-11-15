@@ -6,6 +6,7 @@
   import AlarmManager from './ui/components/AlarmManager.svelte';
   import CrewBar from './ui/components/CrewBar.svelte';
   import HabitatStrip from './ui/components/HabitatStrip.svelte';
+  import HudIcon from './ui/components/HudIcon.svelte';
   import { power } from './ui/bridge/power.svelte';
   import { scenarioLabel, ui, type Tab } from './ui/bridge/uiState.svelte';
   import { bridge } from './ui/bridge/workerBridge.svelte';
@@ -185,10 +186,10 @@
     <footer class="simbar" aria-label="Quick crisis simulator">
       {#each SCENARIO_IDS.slice(0, 4) as id (id)}
         <button type="button" class="btn" onclick={() => bridge.injectScenario(id)}>
-          ! {id} · {scenarioLabel(id, scen(id).label)}
+          <HudIcon name="alert" size={14} /> {id} · {scenarioLabel(id, scen(id).label)}
         </button>
       {/each}
-      <button type="button" class="btn primary" onclick={() => bridge.reset()}>✓ Reset Nominal</button>
+      <button type="button" class="btn primary" onclick={() => bridge.reset()}><HudIcon name="check" size={15} /> Reset Nominal</button>
       <span class="label provenance">Synthetic demo telemetry · not measured NASA flight data</span>
     </footer>
   {/if}
@@ -200,7 +201,9 @@
   {#each bridge.notices.filter((n) => n.code !== 'wrong-pin') as n (n.id)}
     <div class="notice {n.level}" role={n.level === 'error' ? 'alert' : 'status'}>
       <span>{n.message}</span>
-      <button type="button" class="btn icon" aria-label="Dismiss notice" onclick={() => bridge.dismissNotice(n.id)}>×</button>
+      <button type="button" class="btn icon" aria-label="Dismiss notice" onclick={() => bridge.dismissNotice(n.id)}>
+        <HudIcon name="x" size={16} />
+      </button>
     </div>
   {/each}
 </div>

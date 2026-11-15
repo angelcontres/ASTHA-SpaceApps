@@ -59,6 +59,7 @@
   import { onMount } from 'svelte';
   import { bridge, type ActiveAlert } from '../bridge/workerBridge.svelte';
   import { STATUS_LABEL, SYSTEM_LABEL, ui } from '../bridge/uiState.svelte';
+  import HudIcon from './HudIcon.svelte';
 
   const ESCALATE_CMO_MS = 2 * 60_000;
   const ESCALATE_CABIN_MS = 5 * 60_000;
@@ -143,7 +144,9 @@
           <button type="button" class="btn danger" onclick={() => ack(top)}>Reconocer y silenciar</button>
         {/if}
         {#if !audioOn}
-          <button type="button" class="btn" onclick={() => { unlockAudio(); audioOn = audioReady(); playCritical(1); }}>🔇 Activar sonido</button>
+          <button type="button" class="btn" onclick={() => { unlockAudio(); audioOn = audioReady(); playCritical(1); }}>
+            <HudIcon name="volume-off" size={16} /> Activar sonido
+          </button>
         {/if}
       </div>
     </div>

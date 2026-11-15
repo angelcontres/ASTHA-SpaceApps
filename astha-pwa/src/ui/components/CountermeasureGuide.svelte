@@ -8,6 +8,7 @@
   import type { Protocol } from '../../engine/types';
   import type { ActiveAlert } from '../bridge/workerBridge.svelte';
   import { STATUS_LABEL, SYSTEM_LABEL } from '../bridge/uiState.svelte';
+  import HudIcon from './HudIcon.svelte';
 
   interface Props {
     protocol: Protocol;
@@ -80,7 +81,7 @@
       {/each}
     </ol>
     {#if outOfOrder && !complete}<p class="muted small">Pasos marcados fuera de orden: revisa el paso resaltado.</p>{/if}
-    {#if complete}<p class="complete" role="status">✓ Protocolo completado y registrado en la bitácora</p>{/if}
+    {#if complete}<p class="complete" role="status"><HudIcon name="check" size={15} /> Protocolo completado y registrado en la bitácora</p>{/if}
     {#if complete && resolution?.chain.length}
       <p class="chain">Continúa con: <strong>{resolution.chain.map((p) => p.title).join(' → ')}</strong></p>
     {/if}

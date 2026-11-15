@@ -6,6 +6,7 @@
     fd, fmt, indLabel, indShort, ROLE_LABEL, STATUS_LABEL, ui,
   } from '../bridge/uiState.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
+  import HudIcon from './HudIcon.svelte';
 
   interface Props { onemergency: () => void; onsettings: () => void; zen: boolean; survival: boolean; red: boolean }
   const { onemergency, onsettings, zen, survival, red }: Props = $props();
@@ -85,11 +86,13 @@
       aria-expanded={ui.settingsOpen}
       onclick={onsettings}
     >
-      ⚙
+      <HudIcon name="settings" size={18} />
     </button>
-    <button type="button" class="btn icon" aria-label="Lock session" onclick={() => bridge.lock()}>🔒</button>
+    <button type="button" class="btn icon" aria-label="Lock session" onclick={() => bridge.lock()}>
+      <HudIcon name="lock" size={18} />
+    </button>
     <button type="button" class="btn danger emergency" class:pulse={hasAlert} onclick={onemergency}>
-      ✕ EMERGENCY
+      <HudIcon name="alert" size={16} /> EMERGENCY
     </button>
   </div>
 </header>

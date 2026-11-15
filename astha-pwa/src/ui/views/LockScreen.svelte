@@ -8,6 +8,7 @@
     fd, fmt, indLabel, indShort, ROLE_LABEL, STATUS_LABEL, ui,
   } from '../bridge/uiState.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
+  import HudIcon from '../components/HudIcon.svelte';
 
   interface NdefReadingEventLike {
     message?: { records?: Array<{ recordType?: string }> };
@@ -234,7 +235,7 @@
           {#each ['1', '2', '3', '4', '5', '6', '7', '8', '9'] as d (d)}
             <button type="button" class="btn key" onclick={() => key(d)}>{d}</button>
           {/each}
-          <button type="button" class="btn key" aria-label="Backspace" onclick={() => (pin = pin.slice(0, -1))}>⌫</button>
+          <button type="button" class="btn key" aria-label="Backspace" onclick={() => (pin = pin.slice(0, -1))}><HudIcon name="backspace" size={20} /></button>
           <button type="button" class="btn key" onclick={() => key('0')}>0</button>
           <button
             type="button"
@@ -257,7 +258,7 @@
           </button>
         </div>
         {#if nfcStatus}<p class="nfc-note num small" aria-live="polite">{nfcStatus}</p>{/if}
-        {#if error}<p class="err" role="alert">✕ {error.message}</p>{/if}
+        {#if error}<p class="err" role="alert"><HudIcon name="x" size={15} /> {error.message}</p>{/if}
         {#if bridge.data.provisioning}<p class="muted small">Provisioning device cryptographic keyring…</p>{/if}
         <p class="muted small">
           Demo PINs: 1001–1004 (C002 is CMO), keyboard 0–9/Enter, or NFC badge tap.

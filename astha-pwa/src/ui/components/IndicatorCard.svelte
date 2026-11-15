@@ -4,6 +4,7 @@
   import { INDICATORS } from '../../engine/classifier';
   import type { IndicatorState } from '../../engine/types';
   import { fmt, indLabel, STATUS_LABEL } from '../bridge/uiState.svelte';
+  import HudIcon from './HudIcon.svelte';
 
   interface Props {
     indicator: IndicatorState;
@@ -77,7 +78,11 @@
       <span class="value num st-value">{valueText}</span>
       {#if indicator.isSuspect || second?.isSuspect}<span class="suspect" title="Outside plausible physiological range">?</span>{/if}
       <span class="unit">{indicator.unit}</span>
-      {#if arrow}<span class="arrow" aria-hidden="true">{arrow}</span>{/if}
+      {#if arrow}
+        <span class="arrow" aria-hidden="true">
+          <HudIcon name={arrow === '↑' ? 'trending-up' : arrow === '↓' ? 'trending-down' : 'arrow-right'} size={15} />
+        </span>
+      {/if}
     </span>
     {#if variant !== 'zen'}
       {#if gauge}
@@ -117,7 +122,9 @@
     min-height: var(--touch);
     padding: 12px 14px;
     cursor: pointer;
+    transition: background-color 140ms ease;
   }
+  .hit:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); }
   .hit:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: var(--radius); }
   .head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
   .badge { font-size: 0.8125rem; font-weight: 700; color: var(--st-text); white-space: nowrap; }
