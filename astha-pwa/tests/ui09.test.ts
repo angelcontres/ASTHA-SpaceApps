@@ -141,7 +141,7 @@ describe('[UI-09] NASA HUD Visual Alignment within Zero-CDN & WCAG AAA Invariant
   const crewBar = read('src/ui/components/CrewBar.svelte');
 
   it('provides Blueprint grid, deep navy AAA surfaces, 4-color NASA spectrum stripe, NASA Worm logo, and HUD tags with Survival reset', () => {
-    expect(tokens).toContain('--space-950: #040915');
+    expect(tokens).toContain('--space-950: #061024');
     expect(tokens).toContain('.nasa-spectrum');
     expect(tokens).toContain('.hud-head');
     expect(tokens).toContain('.hud-tag');

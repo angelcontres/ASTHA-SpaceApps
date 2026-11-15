@@ -4,7 +4,7 @@
 
 :root {
   /* Surfaces — NASA Blueprint Deep Navy calibrated for WCAG 2.1 AAA (>= 7:1) */
-  --space-950: #040915; /* master OLED/Blueprint canvas */
+  --space-950: #061024; /* master OLED/Blueprint canvas */
   --space-900: #061024; /* tactical containers & sticky HUD bars */
   --space-800: #08142a; /* HUD cards & interactive surfaces */
   --blueprint-bg: #040915;
@@ -117,11 +117,11 @@ html, body {
   margin: 0;
   background-color: var(--space-950);
   background-image:
-    linear-gradient(to right, rgb(121 167 223 / 0.11) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(121 167 223 / 0.11) 1px, transparent 1px),
-    linear-gradient(to right, rgb(121 167 223 / 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(121 167 223 / 0.035) 1px, transparent 1px),
-    radial-gradient(circle 1100px at 50% 0%, rgb(28 68 130 / 0.36), rgb(13 34 68 / 0.16) 65%, transparent 82%);
+    linear-gradient(to right, rgb(121 167 223 / 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(121 167 223 / 0.16) 1px, transparent 1px),
+    linear-gradient(to right, rgb(121 167 223 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(121 167 223 / 0.05) 1px, transparent 1px),
+    radial-gradient(circle 1200px at 50% 0%, rgb(28 68 130 / 0.48), rgb(16 39 79 / 0.24) 65%, transparent 85%);
   background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 100% 100%;
   background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px, 0 0;
   color: var(--text);

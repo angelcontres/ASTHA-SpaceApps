@@ -9,7 +9,7 @@
   const currentDay = $derived(Math.max(1, Math.min(bridge.data.maxDay || 180, bridge.data.day || 1)));
   const pct = $derived((currentDay / (bridge.data.maxDay || 180)) * 100);
   const preFlightMarks = ['L-44', 'L-15'];
-  const flightMarks = [1, 14, 30, 60, 90, 120, 150, 180];
+  const flightMarks = [1, 30, 60, 90, 120, 150, 180];
 
   function onScrub(ev: Event) {
     const val = Number((ev.currentTarget as HTMLInputElement).value);
