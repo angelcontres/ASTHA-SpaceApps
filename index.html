@@ -567,78 +567,7 @@
             </p>
           </div>
 
-          <!-- REACTIVE 3D ORGAN DETAIL DRAWER (SLIDES IN ON DIRECT 3D CLICK) -->
-          <div id="organ-detail-drawer" class="absolute top-2 right-2 bottom-2 w-80 md:w-96 bg-[#122e5e]/95 border-2 border-[#facc15] backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl z-30 transition-all duration-300 transform translate-x-[110%] opacity-0 pointer-events-none">
-            <div>
-              <div class="flex items-center justify-between border-b border-[#2a5ba8]/70 pb-2 mb-3">
-                <div class="flex items-center space-x-2">
-                  <span class="text-xl" id="drawer-organ-icon">👁️</span>
-                  <div>
-                    <h4 class="font-bold text-sm text-white font-mono uppercase" id="drawer-organ-title">Ojos y Sistema Óptico</h4>
-                    <span class="text-[10px] text-slate-300 font-mono" id="drawer-organ-subtitle">Desplazamiento Cefálico de Fluidos</span>
-                  </div>
-                </div>
-                <button onclick="closeOrganDrawer()" class="text-slate-400 hover:text-white p-1 transition" title="Cerrar Panel">
-                  <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-              </div>
-
-              <div class="space-y-3 font-mono text-xs">
-                <div class="p-2.5 bg-[#0d2244] border border-[#2a5ba8]/60">
-                  <div class="flex items-center justify-between text-[11px] mb-1">
-                    <span class="text-slate-400">Estado Clínico:</span>
-                    <span class="px-2 py-0.5 font-bold" id="drawer-organ-status">DERIVA SANS</span>
-                  </div>
-                  <div class="flex items-center justify-between text-[11px] mb-1">
-                    <span class="text-slate-400">Escala de Dolor Físico:</span>
-                    <strong class="text-rose-300" id="drawer-pain-score">3 / 10</strong>
-                  </div>
-                  <div class="w-full bg-[#10274f] h-2 rounded overflow-hidden border border-[#2a5ba8]/40">
-                    <div id="drawer-pain-bar" class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 transition-all duration-300" style="width: 30%;"></div>
-                  </div>
-                </div>
-
-                <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60 space-y-1">
-                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Fisiopatología en Microgravedad:</span>
-                  <p class="text-[11px] text-slate-200 leading-snug" id="drawer-organ-mechanism">
-                    Migración cefálica de fluidos (+2L de sangre hacia la cabeza). Sobrepresión intracraneal y edema de papila transitorio.
-                  </p>
-                </div>
-
-                <div class="p-2.5 bg-[#0d2244] border border-[#2a5ba8]/60 space-y-2">
-                  <span class="text-[10px] text-emerald-400 uppercase font-bold flex items-center gap-1">
-                    <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
-                    <span>Indicaciones Clínicas de Intervención:</span>
-                  </span>
-                  <div class="space-y-1.5 text-[10px]" id="drawer-indications-list">
-                    <label class="flex items-start space-x-2 p-1.5 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
-                      <input type="checkbox" checked class="mt-0.5 text-emerald-500 rounded bg-[#0d2244] border-nasa-border">
-                      <span class="text-slate-200">1. Sesión de 45 min en dispositivo de vacío LBNP a -35 mmHg.</span>
-                    </label>
-                    <label class="flex items-start space-x-2 p-1.5 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
-                      <input type="checkbox" checked class="mt-0.5 text-emerald-500 rounded bg-[#0d2244] border-nasa-border">
-                      <span class="text-slate-200">2. Ingesta de 500 ml solución salina de rehidratación oral.</span>
-                    </label>
-                    <label class="flex items-start space-x-2 p-1.5 bg-[#122e5e] border border-nasa-border/60 cursor-pointer">
-                      <input type="checkbox" class="mt-0.5 text-emerald-500">
-                      <span class="text-slate-200">3. Reducir luminancia de pantallas de cabina y reposo 2h.</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-3 pt-2.5 border-t border-[#2a5ba8]/60 flex items-center space-x-2 font-mono text-xs">
-              <button onclick="applyDrawerTreatment()" class="flex-1 py-1.5 bg-[#facc15] text-[#0f2854] hover:bg-[#fde047] font-bold transition flex items-center justify-center gap-1 shadow-md">
-                <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                <span>Aplicar Tratamiento</span>
-              </button>
-              <button onclick="closeOrganDrawer()" class="px-3 py-1.5 bg-[#0d2244] hover:bg-[#16366f] text-slate-300 border border-[#2a5ba8]">
-                Cerrar
-              </button>
-            </div>
           </div>
-        </div>
 
         <!-- NEW STREAMLINED INTERACTIVE ANATOMY HOTSPOT BAR (4 GLOWING TACTILE PILLS) -->
         <div class="mt-3 space-y-1.5 font-mono">
@@ -682,7 +611,13 @@
               </div>
               <div class="text-[10px] text-slate-400 font-mono" id="current-phase-display">FD-02 (Día 2 en Órbita)</div>
             </div>
-            <span class="px-2 py-0.5 text-[10px] bg-rose-950 text-rose-300 border border-rose-800 font-mono font-bold animate-pulse" id="badge-urgency">ALERTA SANS</span>
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 text-[10px] bg-rose-950 text-rose-300 border border-rose-800 font-mono font-bold animate-pulse" id="badge-urgency">ALERTA SANS</span>
+              <button onclick="openBioPassportModal()" class="px-2.5 py-1 bg-[#163a75] hover:bg-[#1f50a2] border border-[#facc15]/60 text-[#fef08a] font-mono text-[10px] font-bold transition flex items-center gap-1 shadow-sm" title="Abrir Expediente Clínico Completo del Astronauta">
+                <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-[#facc15]"></i>
+                <span>Expediente</span>
+              </button>
+            </div>
           </div>
 
           <!-- 4 Core Vitals with Visual Normal Bars -->
@@ -959,6 +894,10 @@
             <div class="flex justify-between"><span>Lecho B:</span><span class="text-[#38bdf8] font-bold">Desorción al Vacío</span></div>
             <div class="flex justify-between"><span>Ciclo de Válvula:</span><span class="text-white">144 min restantes</span></div>
           </div>
+          <button onclick="openSubsystemModal('cdra')" class="w-full mt-2 py-1 bg-[#0d2244] hover:bg-[#163a75] border border-[#2a5ba8] hover:border-[#facc15] text-[#fef08a] text-[10px] font-bold transition flex items-center justify-center gap-1">
+            <i data-lucide="layers" class="w-3 h-3 text-[#facc15]"></i>
+            <span>Ver Esquema Técnico CDRA →</span>
+          </button>
         </div>
 
         <!-- Subsystem 2: OGS -->
@@ -975,6 +914,10 @@
             <div class="flex justify-between"><span>Presión Celda SPE:</span><span class="text-white">1.2 MPa</span></div>
             <div class="flex justify-between"><span>Venteo H₂ a Espacio:</span><span class="text-emerald-300 font-bold">Nominal Seguro</span></div>
           </div>
+          <button onclick="openSubsystemModal('ogs')" class="w-full mt-2 py-1 bg-[#0d2244] hover:bg-[#163a75] border border-[#2a5ba8] hover:border-[#38bdf8] text-[#38bdf8] text-[10px] font-bold transition flex items-center justify-center gap-1">
+            <i data-lucide="layers" class="w-3 h-3 text-[#38bdf8]"></i>
+            <span>Ver Esquema Técnico OGS →</span>
+          </button>
         </div>
 
         <!-- Subsystem 3: VCCS -->
@@ -991,6 +934,10 @@
             <div class="flex justify-between"><span>Filtro HEPA:</span><span class="text-white">99.97% Retención</span></div>
             <div class="flex justify-between"><span>Control de Contaminantes:</span><span class="text-emerald-300 font-bold">TCCS Activo</span></div>
           </div>
+          <button onclick="openSubsystemModal('vccs')" class="w-full mt-2 py-1 bg-[#0d2244] hover:bg-[#163a75] border border-[#2a5ba8] hover:border-[#10b981] text-emerald-300 text-[10px] font-bold transition flex items-center justify-center gap-1">
+            <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
+            <span>Ver Esquema Técnico VCCS →</span>
+          </button>
         </div>
 
         <!-- Subsystem 4: WRS -->
@@ -1007,6 +954,10 @@
             <div class="flex justify-between"><span>Ensamblaje UPA:</span><span class="text-white">En Ciclo</span></div>
             <div class="flex justify-between"><span>Calidad Microbiológica:</span><span class="text-emerald-300 font-bold">0 UFC / 100ml</span></div>
           </div>
+          <button onclick="openSubsystemModal('wrs')" class="w-full mt-2 py-1 bg-[#0d2244] hover:bg-[#163a75] border border-[#2a5ba8] hover:border-[#db3b68] text-rose-300 text-[10px] font-bold transition flex items-center justify-center gap-1">
+            <i data-lucide="layers" class="w-3 h-3 text-rose-400"></i>
+            <span>Ver Esquema Técnico WRS →</span>
+          </button>
         </div>
       </div>
 
@@ -1141,6 +1092,261 @@
   </div>
 
   
+  <!-- ========================================================================= -->
+  <!-- MODAL 1: VENTANA EMERGENTE DE INSPECCIÓN CLÍNICA Y TRIAGE 3D             -->
+  <!-- ========================================================================= -->
+  <div id="organ-detail-drawer" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="hud-card max-w-xl w-full border-2 border-[#facc15] bg-[#0d2244] shadow-[0_0_50px_rgba(250,204,21,0.35)] overflow-hidden transform transition-all duration-300 scale-95" id="organ-modal-card">
+      
+      <!-- Top Title Bar -->
+      <div class="px-5 py-3 border-b border-[#2a5ba8]/70 bg-[#122e5e] flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <span class="text-2xl" id="drawer-organ-icon">👁️</span>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h4 class="font-bold text-sm text-white font-mono uppercase" id="drawer-organ-title">Ojos y Sistema Óptico</h4>
+              <span class="px-2 py-0.5 text-[9px] bg-[#facc15] text-[#0f2854] font-mono font-bold uppercase">TRIAGE 3D</span>
+            </div>
+            <p class="text-[10px] text-slate-300 font-mono" id="drawer-organ-subtitle">Desplazamiento Cefálico de Fluidos</p>
+          </div>
+        </div>
+
+        <button onclick="closeOrganDrawer()" class="p-1.5 text-slate-400 hover:text-white hover:bg-rose-950/50 border border-transparent hover:border-rose-500/50 transition" title="Cerrar Ventana">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 4-Color Spectrum Stripe -->
+      <div class="nasa-spectrum-bar"></div>
+
+      <!-- Modal Body -->
+      <div class="p-5 space-y-4 font-mono text-xs">
+        <!-- Clinical Status & Pain Rating -->
+        <div class="p-3 bg-[#10274f] border border-[#2a5ba8]/70 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-300 font-bold">Estado Clínico del Órgano:</span>
+            <span class="px-2 py-0.5 font-bold text-xs" id="drawer-organ-status">DERIVA SANS</span>
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-300 font-bold">Escala de Dolor Físico Reportado:</span>
+            <strong class="text-rose-300 text-sm" id="drawer-pain-score">3 / 10</strong>
+          </div>
+          <div class="w-full bg-[#0d2244] h-2.5 rounded overflow-hidden border border-[#2a5ba8]/60">
+            <div id="drawer-pain-bar" class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 transition-all duration-300" style="width: 30%;"></div>
+          </div>
+        </div>
+
+        <!-- Microgravity Pathophysiology -->
+        <div class="p-3 bg-[#10274f] border border-[#2a5ba8]/70 space-y-1">
+          <span class="text-[10px] text-[#facc15] uppercase font-bold flex items-center gap-1">
+            <i data-lucide="microscope" class="w-3.5 h-3.5 text-[#facc15]"></i>
+            Fisiopatología en Microgravedad (NASA Human Research Program):
+          </span>
+          <p class="text-xs text-slate-200 leading-relaxed" id="drawer-organ-mechanism">
+            Migración cefálica de fluidos (+2L de sangre hacia la cabeza). Sobrepresión intracraneal y edema de papila transitorio.
+          </p>
+        </div>
+
+        <!-- Clinical Action Directives Checklist -->
+        <div class="p-3 bg-[#0d2244] border border-[#2a5ba8]/70 space-y-2">
+          <span class="text-[11px] text-emerald-400 uppercase font-bold flex items-center gap-1.5">
+            <i data-lucide="check-square" class="w-4 h-4 text-emerald-400"></i>
+            <span>Protocolo de Intervención Médica Recomendado:</span>
+          </span>
+          <div class="space-y-1.5 text-xs" id="drawer-indications-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3.5 border-t border-[#2a5ba8]/70 bg-[#10274f] flex items-center justify-between gap-3 font-mono text-xs">
+        <button onclick="closeOrganDrawer()" class="px-4 py-2 bg-[#0d2244] hover:bg-[#16366f] text-slate-300 border border-[#2a5ba8] font-bold transition">
+          Cerrar Ventana
+        </button>
+        <button onclick="applyDrawerTreatment()" class="px-5 py-2 bg-[#facc15] text-[#0f2854] hover:bg-[#fde047] font-bold transition flex items-center gap-1.5 shadow-lg text-xs">
+          <i data-lucide="check-check" class="w-4 h-4 text-[#0f2854]"></i>
+          <span>Ejecutar Tratamiento y Estabilizar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 2: VENTANA EMERGENTE DE EXPEDIENTE CLÍNICO Y BIO-PASAPORTE (NASA)  -->
+  <!-- ========================================================================= -->
+  <div id="bio-passport-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="hud-card max-w-2xl w-full border-2 border-[#2a5ba8] bg-[#0d2244] shadow-[0_0_60px_rgba(42,91,168,0.45)] overflow-hidden transform transition-all duration-300 scale-95" id="bio-passport-card">
+      <!-- Title Header -->
+      <div class="px-5 py-3 border-b border-[#2a5ba8]/70 bg-[#122e5e] flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-[#163a75] border-2 border-[#facc15] flex items-center justify-center text-[#facc15] font-bold text-sm shadow-md" id="passport-avatar-badge">
+            C03
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 class="font-bold text-sm text-white font-mono uppercase" id="passport-name">Dra. Sian Proctor</h3>
+              <span class="px-2 py-0.5 bg-[#facc15] text-[#0f2854] font-mono font-bold text-[9px] uppercase">EXPEDIENTE DE VUELO</span>
+            </div>
+            <p class="text-[10px] text-slate-300 font-mono" id="passport-callsign">Leo · Piloto de Misión · Inspiración4</p>
+          </div>
+        </div>
+
+        <button onclick="closeBioPassportModal()" class="p-1.5 text-slate-400 hover:text-white hover:bg-rose-950/50 border border-transparent hover:border-rose-500/50 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="nasa-spectrum-bar"></div>
+
+      <!-- Body -->
+      <div class="p-5 space-y-4 font-mono text-xs max-h-[75vh] overflow-y-auto custom-scrollbar">
+        <!-- Physical Baseline Stats -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+          <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60">
+            <span class="text-slate-400 text-[10px] block">Edad / Sangre</span>
+            <strong class="text-white text-xs" id="passport-age-blood">51 años · B+</strong>
+          </div>
+          <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60">
+            <span class="text-slate-400 text-[10px] block">Horas de Vuelo</span>
+            <strong class="text-white text-xs" id="passport-flighthours">Analog / Orbital</strong>
+          </div>
+          <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60">
+            <span class="text-slate-400 text-[10px] block">VO₂ Max</span>
+            <strong class="text-emerald-400 text-xs" id="passport-vo2max">44.5 ml/kg/min</strong>
+          </div>
+          <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60">
+            <span class="text-slate-400 text-[10px] block">Dosis Radiación Acum.</span>
+            <strong class="text-amber-400 text-xs" id="passport-rad">3.2 mSv</strong>
+          </div>
+        </div>
+
+        <!-- NASA OSDR Genomic Biomarkers (OSD-574 Data) -->
+        <div class="p-3.5 bg-[#10274f] border border-[#2a5ba8]/70 space-y-2">
+          <div class="flex items-center justify-between text-[11px] border-b border-[#2a5ba8]/50 pb-1.5">
+            <span class="text-[#facc15] font-bold flex items-center gap-1.5">
+              <i data-lucide="dna" class="w-4 h-4 text-[#facc15]"></i>
+              Biomarcadores Genómicos y Celulares (NASA OSDR OSD-574):
+            </span>
+            <span class="text-slate-400 text-[10px]">Secuenciación en Vuelo</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+            <div class="p-2 bg-[#0d2244] border border-[#2a5ba8]/50">
+              <span class="text-slate-400 block text-[10px]">Daño en cfDNA Libre Circulante:</span>
+              <strong class="text-amber-300" id="passport-cfdna">1.42x línea base terrestre</strong>
+            </div>
+            <div class="p-2 bg-[#0d2244] border border-[#2a5ba8]/50">
+              <span class="text-slate-400 block text-[10px]">Dinámica Telomérica:</span>
+              <strong class="text-emerald-300" id="passport-telomeres">+14% elongación orbital</strong>
+            </div>
+            <div class="p-2 bg-[#0d2244] border border-[#2a5ba8]/50">
+              <span class="text-slate-400 block text-[10px]">Copias ADN Mitocondrial:</span>
+              <strong class="text-rose-300" id="passport-mitodna">+22% estrés oxidativo</strong>
+            </div>
+            <div class="p-2 bg-[#0d2244] border border-[#2a5ba8]/50">
+              <span class="text-slate-400 block text-[10px]">Atrofia Muscular / Mineral Óseo:</span>
+              <strong class="text-slate-200">-1.8% masa magra (Control ARED)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medical Clearance Directive -->
+        <div class="p-3 bg-[#0d2244] border border-[#2a5ba8]/70 space-y-1">
+          <span class="text-slate-400 text-[10px] uppercase font-bold block">Dictamen de Cirujano de Vuelo (Flight Surgeon Clearance):</span>
+          <p class="text-xs font-bold text-[#facc15] leading-snug" id="passport-clearance">
+            MONITOREO ACTIVO SANS · SESIONES DE VACÍO LBNP REQUERIDAS CADA 24 HORAS
+          </p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-5 py-3 border-t border-[#2a5ba8]/70 bg-[#10274f] flex items-center justify-between font-mono text-xs">
+        <span class="text-slate-400 text-[10px]">NASA Johnson Space Center · Medical Bio-Record ID: BIO-OSD-574</span>
+        <button onclick="closeBioPassportModal()" class="px-4 py-1.5 bg-[#facc15] text-[#0f2854] font-bold hover:bg-[#fde047] transition">
+          Cerrar Expediente
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 3: VENTANA EMERGENTE DE ESQUEMA TÉCNICO DE SUBSISTEMAS ECLSS       -->
+  <!-- ========================================================================= -->
+  <div id="eclss-subsystem-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="hud-card max-w-2xl w-full border-2 border-[#38bdf8] bg-[#0d2244] shadow-[0_0_60px_rgba(56,189,248,0.4)] overflow-hidden transform transition-all duration-300 scale-95" id="eclss-subsystem-card">
+      <!-- Title Header -->
+      <div class="px-5 py-3 border-b border-[#2a5ba8]/70 bg-[#122e5e] flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-[#163a75] border-2 border-[#38bdf8] flex items-center justify-center text-[#38bdf8] shadow-md" id="subsystem-modal-icon">
+            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 class="font-bold text-sm text-white font-mono uppercase" id="subsystem-modal-title">CDRA — Remoción de Dióxido de Carbono</h3>
+              <span class="px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-500 font-mono font-bold text-[9px] uppercase" id="subsystem-modal-status">OPERACIONAL</span>
+            </div>
+            <p class="text-[10px] text-slate-300 font-mono" id="subsystem-modal-desc">Ingeniería de Soporte de Vida NASA-STD-3001 Vol 2</p>
+          </div>
+        </div>
+
+        <button onclick="closeSubsystemModal()" class="p-1.5 text-slate-400 hover:text-white hover:bg-rose-950/50 border border-transparent hover:border-rose-500/50 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="nasa-spectrum-bar"></div>
+
+      <!-- Body -->
+      <div class="p-5 space-y-4 font-mono text-xs max-h-[75vh] overflow-y-auto custom-scrollbar">
+        <!-- Flow Schematic Box -->
+        <div class="p-3.5 bg-[#10274f] border border-[#2a5ba8]/70 space-y-2">
+          <span class="text-[10px] text-[#38bdf8] uppercase font-bold flex items-center gap-1.5">
+            <i data-lucide="git-branch" class="w-4 h-4 text-[#38bdf8]"></i>
+            Esquema de Flujo Termodinámico y Mecánico:
+          </span>
+          <div class="p-3 bg-[#0d2244] border border-[#2a5ba8]/60 text-[11px] leading-relaxed text-slate-200" id="subsystem-modal-diagram">
+            Aire Cabina ➔ Desecante Sílica Gel ➔ Lecho Zeolita 5A (Adsorción CO₂) ➔ Válvula de 4 Vías ➔ Venteo al Vacío Exterior (10⁻³ Torr) ➔ Retorno de Aire Descarbonatado
+          </div>
+        </div>
+
+        <!-- Technical Telemetry Matrix -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="subsystem-modal-specs">
+          <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60">
+            <span class="text-slate-400 text-[10px] block">Eficiencia Actual</span>
+            <strong class="text-emerald-400 text-xs">99.2% de Captura</strong>
+          </div>
+          <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60">
+            <span class="text-slate-400 text-[10px] block">Tiempo de Ciclo</span>
+            <strong class="text-white text-xs">144 min restantes</strong>
+          </div>
+          <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60">
+            <span class="text-slate-400 text-[10px] block">Consumo Eléctrico</span>
+            <strong class="text-[#facc15] text-xs">420 Watts (Nominal)</strong>
+          </div>
+        </div>
+
+        <!-- Operating Directive -->
+        <div class="p-3 bg-[#0d2244] border border-[#2a5ba8]/70 space-y-1">
+          <span class="text-slate-400 text-[10px] uppercase font-bold block">Protocolo de Operación y Mantenimiento:</span>
+          <p class="text-xs text-slate-200 leading-snug" id="subsystem-modal-maintenance">
+            Inspección de actuadores neumáticos de válvula cada 90 días en órbita. Monitoreo continuo de temperatura de desorción (> 200°C) para evitar saturación de humedad en zeolita.
+          </p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-5 py-3 border-t border-[#2a5ba8]/70 bg-[#10274f] flex items-center justify-between font-mono text-xs">
+        <span class="text-slate-400 text-[10px]">ECLSS Telemetry Channel · NASA Marshall Space Flight Center</span>
+        <button onclick="closeSubsystemModal()" class="px-4 py-1.5 bg-[#38bdf8] text-[#0d2244] font-bold hover:bg-[#7dd3fc] transition">
+          Cerrar Esquema
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ========================================================================= -->
   <!-- NASA MASTER CAUTION & WARNING MODAL (POP-UP RETRO FLIGHT DECK)          -->
   <!-- ========================================================================= -->
@@ -1907,6 +2113,192 @@
       telemetryDataset[currentCrew].phases[currentPhaseIndex].o2 = 22.5;
       updateUI();
       if (habitatChartInstance) initHabitatViewChart();
+    }
+
+    
+    // =========================================================================
+    // MODAL POP-UPS: BIO-PASSPORT & ECLSS SUBSYSTEM SCHEMATICS
+    // =========================================================================
+    const crewBioPassports = {
+      "C001": {
+        name: "Jared Isaacman",
+        badge: "C01",
+        callsign: "Rook · Comandante de Misión · Inspiración4",
+        ageBlood: "38 años · O+",
+        flightHours: "6,200 hrs (Jet & Orbital)",
+        vo2max: "54.2 ml/kg/min",
+        rad: "2.4 mSv acum.",
+        cfdna: "1.08x línea base (Normal en vuelo)",
+        telomeres: "+12% elongación temporal en microgravedad",
+        mitodna: "Normal (Sin estrés oxidativo grave)",
+        clearance: "APTO NIVEL 1 · CIRUJANO DE VUELO AUTORIZADO PARA EVA Y TRÁNSITO"
+      },
+      "C002": {
+        name: "Hayley Arceneaux",
+        badge: "C02",
+        callsign: "Nova · Oficial Médico de Vuelo · Inspiración4",
+        ageBlood: "29 años · A+",
+        flightHours: "Orbital Inspiration4 Specialist",
+        vo2max: "46.8 ml/kg/min",
+        rad: "2.1 mSv acum.",
+        cfdna: "1.12x línea base (Respuesta fisiológica leve)",
+        telomeres: "+8% elongación orbital",
+        mitodna: "Estable (Sin disfunción celular)",
+        clearance: "APTO NIVEL 1 · CERTIFICADO PARA INTERVENCIONES MÉDICAS EN VUELO"
+      },
+      "C003": {
+        name: "Dra. Sian Proctor",
+        badge: "C03",
+        callsign: "Leo · Piloto de Misión · Inspiración4",
+        ageBlood: "51 años · B+",
+        flightHours: "Analog Mars / Orbital Pilot",
+        vo2max: "44.5 ml/kg/min",
+        rad: "3.2 mSv acum.",
+        cfdna: "1.42x línea base (Alerta moderada microgravedad)",
+        telomeres: "+14% elongación orbital",
+        mitodna: "+22% estrés oxidativo (Muestra OSD-574)",
+        clearance: "MONITOREO ACTIVO SANS · SESIONES DE VACÍO LBNP REQUERIDAS CADA 24H"
+      },
+      "C004": {
+        name: "Christopher Sembroski",
+        badge: "C04",
+        callsign: "Hanks · Especialista de Misión · Inspiración4",
+        ageBlood: "41 años · O+",
+        flightHours: "Aerospace Avionics Specialist",
+        vo2max: "48.6 ml/kg/min",
+        rad: "2.3 mSv acum.",
+        cfdna: "1.15x línea base (Normal en vuelo)",
+        telomeres: "+10% elongación",
+        mitodna: "Estable",
+        clearance: "APTO NIVEL 1 · OPERACIONES DE SISTEMAS HÁBITAT Y AVIONICA"
+      }
+    };
+
+    function openBioPassportModal() {
+      if (typeof playCockpitSound === 'function') playCockpitSound('blip');
+      const data = crewBioPassports[currentCrew] || crewBioPassports["C003"];
+
+      document.getElementById('passport-name').innerText = data.name;
+      document.getElementById('passport-avatar-badge').innerText = data.badge;
+      document.getElementById('passport-callsign').innerText = data.callsign;
+      document.getElementById('passport-age-blood').innerText = data.ageBlood;
+      document.getElementById('passport-flighthours').innerText = data.flightHours;
+      document.getElementById('passport-vo2max').innerText = data.vo2max;
+      document.getElementById('passport-rad').innerText = data.rad;
+      document.getElementById('passport-cfdna').innerText = data.cfdna;
+      document.getElementById('passport-telomeres').innerText = data.telomeres;
+      document.getElementById('passport-mitodna').innerText = data.mitodna;
+      document.getElementById('passport-clearance').innerText = data.clearance;
+
+      const m = document.getElementById('bio-passport-modal');
+      const c = document.getElementById('bio-passport-card');
+      if (m) {
+        m.classList.remove('hidden');
+        if (c) {
+          setTimeout(() => { c.classList.remove('scale-95'); c.classList.add('scale-100'); }, 10);
+        }
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeBioPassportModal() {
+      if (typeof playCockpitSound === 'function') playCockpitSound('blip');
+      const m = document.getElementById('bio-passport-modal');
+      const c = document.getElementById('bio-passport-card');
+      if (c) { c.classList.remove('scale-100'); c.classList.add('scale-95'); }
+      setTimeout(() => { if (m) m.classList.add('hidden'); }, 150);
+    }
+
+    const eclssSubsystemData = {
+      cdra: {
+        title: "CDRA — Remoción de Dióxido de Carbono",
+        icon: "refresh-cw",
+        status: "OPERACIONAL (100%)",
+        desc: "Ensamblaje regenerativo de lechos de Zeolita 5A para adsorción cíclica y desorción al vacío.",
+        diagram: "Aire Cabina ➔ Desecante Sílica Gel ➔ Lecho Zeolita 5A (Adsorción CO₂) ➔ Válvula de 4 Vías ➔ Venteo al Vacío Espacial (10⁻³ Torr) ➔ Retorno de Aire Descarbonatado a Cabina",
+        specs: [
+          { label: "Eficiencia de Captura", val: "99.2% Nominal" },
+          { label: "Ciclo de Desorción", val: "144 min restantes" },
+          { label: "Consumo Eléctrico", val: "420 Watts" }
+        ],
+        maintenance: "Inspección de actuadores neumáticos de válvula cada 90 días en órbita. Monitoreo térmico de desorción (> 200°C) para preservar lechos de zeolita."
+      },
+      ogs: {
+        title: "OGS — Generador de Oxígeno por Electrólisis",
+        icon: "zap",
+        status: "EFICIENCIA 100%",
+        desc: "Generación de oxígeno respirable mediante electrólisis de agua desionizada a alta presión.",
+        diagram: "Agua Desionizada (WRS) ➔ Bomba de Presurización (1.2 MPa) ➔ Pila Electrolítica de Membrana SPE ➔ Separador de Fases Líquido/Gas ➔ Inyección de O₂ a Cabina (2.42 kg/día) / Venteo de H₂ a Espacio Exterior",
+        specs: [
+          { label: "Tasa de Producción", val: "2.42 kg O₂ / día" },
+          { label: "Presión Celda SPE", val: "1.2 MPa" },
+          { label: "Pureza de Gas", val: "99.98% O₂ Grado Médico" }
+        ],
+        maintenance: "Calibración de sensores de hidrógeno disuelto. Sustitución de lechos de desionización cada 180 días de misión."
+      },
+      vccs: {
+        title: "VCCS — Clima y Ventilación Convectiva Forzada",
+        icon: "fan",
+        status: "FLUJO CONTINUO (0.15 m/s)",
+        desc: "Circulación forzada de aire para evitar bolsas de CO₂ estancadas en la cabeza del astronauta y filtración de partículas.",
+        diagram: "Rejillas de Succión de Cabina ➔ Filtros HEPA Microbiológicos (99.97% retención) ➔ Lechos de Carbón Activado TCCS ➔ Intercambiador de Calor Condensador ➔ Toberas Difusoras Direccionales a 0.15 m/s",
+        specs: [
+          { label: "Velocidad de Flujo", val: "0.15 m/s (NASA Spec)" },
+          { label: "Retención HEPA", val: "99.97% Partículas" },
+          { label: "Punto de Rocío", val: "10.5 °C" }
+        ],
+        maintenance: "Inspección de diferencial de presión en filtros HEPA. Limpieza de conductos de retorno cada 60 días."
+      },
+      wrs: {
+        title: "WRS — Recuperación y Purificación de Agua",
+        icon: "droplet",
+        status: "94.5% RECICLAJE ACTIVO",
+        desc: "Destilación por compresión de vapor (UPA) y desinfección catalítica para provisión continua de agua potable.",
+        diagram: "Recolección de Orina y Condensado Atmosférico ➔ Ensamblaje Procesador UPA (Centrífuga de Vacío) ➔ Reactor Catalítico de Alta Temperatura ➔ Filtros Iónicos Multicapa ➔ Tanque de Almacenamiento Potable (94.5%)",
+        specs: [
+          { label: "Eficiencia Global", val: "94.5% Reciclaje" },
+          { label: "Conductividad", val: "0.05 µS/cm (Potable)" },
+          { label: "Reserva de Tanque", val: "142 Litros" }
+        ],
+        maintenance: "Control microbiológico en línea mediante bioluminiscencia ATP. Reemplazo de columnas catalíticas al alcanzar 1,200 horas de servicio."
+      }
+    };
+
+    function openSubsystemModal(subId) {
+      if (typeof playCockpitSound === 'function') playCockpitSound('blip');
+      const data = eclssSubsystemData[subId] || eclssSubsystemData.cdra;
+
+      document.getElementById('subsystem-modal-title').innerText = data.title;
+      document.getElementById('subsystem-modal-status').innerText = data.status;
+      document.getElementById('subsystem-modal-desc').innerText = data.desc;
+      document.getElementById('subsystem-modal-diagram').innerText = data.diagram;
+      document.getElementById('subsystem-modal-maintenance').innerText = data.maintenance;
+
+      const specsBox = document.getElementById('subsystem-modal-specs');
+      specsBox.innerHTML = data.specs.map(s => `
+        <div class="p-2.5 bg-[#10274f] border border-[#2a5ba8]/60">
+          <span class="text-slate-400 text-[10px] block">${s.label}</span>
+          <strong class="text-white text-xs">${s.val}</strong>
+        </div>
+      `).join('');
+
+      const m = document.getElementById('eclss-subsystem-modal');
+      const c = document.getElementById('eclss-subsystem-card');
+      if (m) {
+        m.classList.remove('hidden');
+        if (c) {
+          setTimeout(() => { c.classList.remove('scale-95'); c.classList.add('scale-100'); }, 10);
+        }
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeSubsystemModal() {
+      if (typeof playCockpitSound === 'function') playCockpitSound('blip');
+      const m = document.getElementById('eclss-subsystem-modal');
+      const c = document.getElementById('eclss-subsystem-card');
+      if (c) { c.classList.remove('scale-100'); c.classList.add('scale-95'); }
+      setTimeout(() => { if (m) m.classList.add('hidden'); }, 150);
     }
 
     function selectAstronaut(id) {
