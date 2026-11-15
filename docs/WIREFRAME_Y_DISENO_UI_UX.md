@@ -5,9 +5,6 @@
 > [!NOTE]
 > **Official Modular UI/UX Design Suite:** The complete normative specification (View A/B/C Wireframes, WCAG AAA `#fca5a5` Design System, and Svelte 5 + `uPlot` Mockups/Components) is organized in [**`docs/Diseno-UI-UX/README.md`**](./Diseno-UI-UX/README.md). This document is maintained in alignment as a rapid executive reference.
 
-> [!NOTE]
-> **Suite Modular Oficial de Diseño UI/UX:** La especificación normativa completa (Wireframes Vista A/B/C, Design System WCAG AAA `#fca5a5` y Mockups/Componentes Svelte 5 + `uPlot`) se encuentra organizada en [**`docs/Diseno-UI-UX/README.md`**](./Diseno-UI-UX/README.md). Este documento se mantiene alineado como referencia ejecutiva rápida.
-
 ---
 
 ## 🎯 1. Design Philosophy in Microgravity and Deep Space
