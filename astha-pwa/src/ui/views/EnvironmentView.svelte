@@ -21,7 +21,10 @@
 
 <div class="env">
   <section aria-labelledby="env-h">
-    <h2 id="env-h" class="label">ECLSS Life Support &amp; CANS Dosimetry · {bridge.habitatTelemetry.day ? fd(bridge.habitatTelemetry.day) : ''}</h2>
+    <div class="hud-head">
+      <h2 id="env-h" class="label">ECLSS Life Support &amp; CANS Dosimetry · {bridge.habitatTelemetry.day ? fd(bridge.habitatTelemetry.day) : ''}</h2>
+      <span class="hud-tag">COMP-03B // ECLSS &amp; CANS</span>
+    </div>
     <div class="grid">
       {#each bridge.habitatTelemetry.indicators as ind (ind.id)}
         <IndicatorCard indicator={ind} variant="habitat" active={ui.envIndicator === ind.id} onopen={() => (ui.envIndicator = ind.id)} />

@@ -206,8 +206,26 @@
 </div>
 
 <style>
-  .tabs { display: flex; flex-wrap: wrap; gap: var(--gap); padding: 12px 16px 0; }
-  .tab[aria-current='page'] { border-color: var(--accent); }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+    margin: 12px 16px 0;
+    background: var(--space-900);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    width: fit-content;
+    max-width: calc(100% - 32px);
+  }
+  .tab { border-color: transparent; background: transparent; font-family: var(--font-num); letter-spacing: 0.03em; }
+  .tab[aria-current='page'] {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 18%, var(--space-800));
+    color: var(--accent);
+    box-shadow: 0 0 14px rgb(56 189 248 / 0.2);
+  }
+  :root[data-survival] .tab[aria-current='page'] { box-shadow: none; }
   .content { padding: 16px; max-width: 1600px; margin: 0 auto; }
   .settings { margin: 12px 16px 0; }
   .lowpower { margin: 12px 16px 0; padding: 10px 14px; border: var(--st-bw) solid var(--st); border-radius: var(--radius); }

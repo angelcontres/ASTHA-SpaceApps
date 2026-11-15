@@ -148,8 +148,10 @@
     margin-left: -2px;
     border-radius: 2px;
     background: var(--st);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--st) 70%, transparent);
   }
   :root[data-survival] .gauge { display: none; }
+  :root[data-survival] .gauge-ptr { box-shadow: none; }
   .range { display: block; }
   .chip {
     align-self: flex-start;

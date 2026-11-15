@@ -45,6 +45,10 @@
   <div class="cockpit">
     <!-- COMP-02 -->
     <section class="anatomy panel" aria-label="Anatomical viewer">
+      <div class="hud-head">
+        <span class="label">Anatomical Triage Scanner</span>
+        <span class="hud-tag">COMP-02 // HOLO-3D</span>
+      </div>
       <AnatomyViewer
         regions={a.regions}
         bind:view={ui.view}
@@ -57,7 +61,10 @@
     <div class="main">
       <!-- COMP-03 -->
       <section aria-labelledby="vit-h">
-        <h2 id="vit-h" class="label">Biomedical Vitals · {bridge.data.crew.find((c) => c.id === a.crewId)?.name}</h2>
+        <div class="hud-head">
+          <h2 id="vit-h" class="label">Biomedical Vitals · {bridge.data.crew.find((c) => c.id === a.crewId)?.name}</h2>
+          <span class="hud-tag">COMP-03 // NASA-STD-3001</span>
+        </div>
         <div class="vitals">
           {#each ['hr', 'sbp', 'spo2', 'hrv'] as id (id)}
             {@const ind = get(id as IndicatorId)}
@@ -82,7 +89,10 @@
 
       <!-- COMP-03B -->
       <section aria-labelledby="eclss-h">
-        <h2 id="eclss-h" class="label">ECLSS Habitat Telemetry · 6 Parameters</h2>
+        <div class="hud-head">
+          <h2 id="eclss-h" class="label">ECLSS Habitat Telemetry · 6 Parameters</h2>
+          <span class="hud-tag">COMP-03B // CABIN ECLSS</span>
+        </div>
         <div class="eclss">
           {#each bridge.habitatTelemetry.indicators as ind (ind.id)}
             <IndicatorCard indicator={ind} variant="habitat" onopen={() => { ui.envIndicator = ind.id; ui.tab = 'env'; }} />
@@ -93,7 +103,10 @@
       <div class="split">
         <!-- COMP-04 -->
         <section class="panel trend" aria-labelledby="trend-h">
-          <h2 id="trend-h" class="label">Trend · {activeTrend ? indLabel(activeTrend) : ''}</h2>
+          <div class="hud-head">
+            <h2 id="trend-h" class="label">Trend · {activeTrend ? indLabel(activeTrend) : ''}</h2>
+            <span class="hud-tag">COMP-04 // UPLOT 2D</span>
+          </div>
           {#if survival}
             <table class="tab num">
               <thead><tr><th>Flight Day</th><th>{activeTrend ? indShort(activeTrend) : ''} ({activeTrend?.unit ?? ''})</th></tr></thead>

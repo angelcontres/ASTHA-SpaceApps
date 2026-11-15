@@ -3,15 +3,15 @@
    so OLED, 630 nm spectral red, <5 W survival, and high-contrast modes propagate uniformly. */
 
 :root {
-  /* Surfaces */
-  --space-950: #030712; /* master OLED background */
-  --space-900: #060913; /* containers & sticky bars */
-  --space-800: #0c1222; /* active panels & vital cards */
+  /* Surfaces — NASA Blueprint Deep Navy calibrated for WCAG 2.1 AAA (>= 7:1) */
+  --space-950: #040915; /* master OLED/Blueprint canvas */
+  --space-900: #061024; /* tactical containers & sticky HUD bars */
+  --space-800: #08142a; /* HUD cards & interactive surfaces */
   --blueprint-bg: #040915;
   --blueprint-line: #79a7df;
   --blueprint-text: #9fc5f8;
-  --border: #141e36;
-  --border-strong: #24324f;
+  --border: #1b3664;
+  --border-strong: #2a5ba8;
 
   /* Normative aliases from Style Guide (02-Guia-de-Estilo-y-Design-System.md) */
   --color-space-950: var(--space-950);
@@ -87,6 +87,7 @@
   --space-900: #000000;
   --space-800: #000000;
   --border: #1f2937;
+  --border-strong: #374151;
   --text: #e2e8f0;
   --text-muted: #cbd5e1;
   --accent: #e2e8f0;
@@ -116,11 +117,11 @@ html, body {
   margin: 0;
   background-color: var(--space-950);
   background-image:
-    linear-gradient(to right, rgb(121 167 223 / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(121 167 223 / 0.06) 1px, transparent 1px),
-    linear-gradient(to right, rgb(121 167 223 / 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(121 167 223 / 0.025) 1px, transparent 1px),
-    radial-gradient(circle 900px at 50% 0%, rgb(28 68 130 / 0.22), transparent 72%);
+    linear-gradient(to right, rgb(121 167 223 / 0.11) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(121 167 223 / 0.11) 1px, transparent 1px),
+    linear-gradient(to right, rgb(121 167 223 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(121 167 223 / 0.035) 1px, transparent 1px),
+    radial-gradient(circle 1100px at 50% 0%, rgb(28 68 130 / 0.36), rgb(13 34 68 / 0.16) 65%, transparent 82%);
   background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px, 100% 100%;
   background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px, 0 0;
   color: var(--text);
@@ -191,27 +192,52 @@ button, input, select { font: inherit; color: inherit; }
 .panel {
   background-color: var(--space-900);
   background-image:
-    linear-gradient(to right, rgb(121 167 223 / 0.35), rgb(121 167 223 / 0.35)),
-    linear-gradient(to bottom, rgb(121 167 223 / 0.35), rgb(121 167 223 / 0.35)),
-    linear-gradient(to left, rgb(250 204 21 / 0.45), rgb(250 204 21 / 0.45)),
-    linear-gradient(to top, rgb(250 204 21 / 0.45), rgb(250 204 21 / 0.45));
+    linear-gradient(to right, rgb(56 189 248 / 0.72), rgb(56 189 248 / 0.72)),
+    linear-gradient(to bottom, rgb(56 189 248 / 0.72), rgb(56 189 248 / 0.72)),
+    linear-gradient(to left, rgb(121 167 223 / 0.72), rgb(121 167 223 / 0.72)),
+    linear-gradient(to top, rgb(121 167 223 / 0.72), rgb(121 167 223 / 0.72));
+  background-size: 12px 2px, 2px 12px, 12px 2px, 2px 12px;
+  background-position: 0 0, 0 0, 100% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: 0 8px 28px rgb(2 8 23 / 0.55), inset 0 1px 0 rgb(121 167 223 / 0.14);
+}
+.card {
+  background-color: var(--space-800);
+  background-image:
+    linear-gradient(to right, rgb(56 189 248 / 0.72), rgb(56 189 248 / 0.72)),
+    linear-gradient(to bottom, rgb(56 189 248 / 0.72), rgb(56 189 248 / 0.72)),
+    linear-gradient(to left, rgb(121 167 223 / 0.55), rgb(121 167 223 / 0.55)),
+    linear-gradient(to top, rgb(121 167 223 / 0.55), rgb(121 167 223 / 0.55));
   background-size: 10px 2px, 2px 10px, 10px 2px, 2px 10px;
   background-position: 0 0, 0 0, 100% 100%, 100% 100%;
   background-repeat: no-repeat;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
+  box-shadow: 0 6px 22px rgb(2 8 23 / 0.45), inset 0 1px 0 rgb(121 167 223 / 0.12);
 }
-.card {
-  background-color: var(--space-800);
-  background-image:
-    linear-gradient(to right, rgb(56 189 248 / 0.45), rgb(56 189 248 / 0.45)),
-    linear-gradient(to bottom, rgb(56 189 248 / 0.45), rgb(56 189 248 / 0.45));
-  background-size: 8px 2px, 2px 8px;
-  background-position: 0 0, 0 0;
-  background-repeat: no-repeat;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+
+.hud-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed color-mix(in srgb, var(--blueprint-line) 45%, transparent);
+}
+.hud-tag {
+  font: 700 0.6875rem/1.2 var(--font-num);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blueprint-text);
+  background: color-mix(in srgb, var(--border-strong) 35%, var(--space-900));
+  border: 1px solid color-mix(in srgb, var(--blueprint-line) 55%, transparent);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 /* ---------- Dual-Coded States: Color + Pattern + Symbol (RF-ANA-03, RNF-USA-04) ---------- */

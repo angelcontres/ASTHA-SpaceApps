@@ -140,8 +140,11 @@ describe('[UI-09] NASA HUD Visual Alignment within Zero-CDN & WCAG AAA Invariant
   const lock = read('src/ui/views/LockScreen.svelte');
   const crewBar = read('src/ui/components/CrewBar.svelte');
 
-  it('provides Blueprint grid, 4-color NASA spectrum stripe, and HUD brackets with pure OLED Survival reset', () => {
+  it('provides Blueprint grid, deep navy AAA surfaces, 4-color NASA spectrum stripe, NASA Worm logo, and HUD tags with Survival reset', () => {
+    expect(tokens).toContain('--space-950: #040915');
     expect(tokens).toContain('.nasa-spectrum');
+    expect(tokens).toContain('.hud-head');
+    expect(tokens).toContain('.hud-tag');
     expect(tokens).toContain(':root[data-survival]');
     expect(tokens).toContain('#000000');
     expect(tokens).toContain('--alert-red-text: #fca5a5');
@@ -149,8 +152,12 @@ describe('[UI-09] NASA HUD Visual Alignment within Zero-CDN & WCAG AAA Invariant
     expect(tokens).not.toMatch(/https?:\/\/(fonts\.googleapis|cdn\.tailwindcss|cdn\.jsdelivr|unpkg\.com)/i);
 
     expect(strip).toContain('OFFLINE EDGE');
+    expect(strip).toContain('ESTD 1958');
+    expect(strip).toContain('nasa-worm');
     expect(strip).toContain('nasa-spectrum');
+    expect(lock).toContain('nasa-worm');
     expect(lock).toContain('nasa-spectrum');
+    expect(read('src/ui/views/BiomedicalView.svelte')).toContain('COMP-02 // HOLO-3D');
     expect(crewBar).toContain('<span class="sym" aria-hidden="true"></span>');
     expect(crewBar).toContain('ROLE_LABEL');
     expect(crewBar).toContain('STATUS_LABEL');
