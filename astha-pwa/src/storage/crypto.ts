@@ -202,6 +202,31 @@ export interface Keyring {
    * semáforo global en la pantalla de bloqueo antes del PIN (ADR-014, ADR-015). Nunca descifra datos clínicos.
    */
   habDeviceKey: CryptoKey;
+  /**
+   * Origin of the data keys. 'mission-seed-v1': derived from the shared mission secret, identical on every
+   * device of the crew (stand-in for ADR-020 ground provisioning), so envelopes synced through the hub are
+   * readable on the other devices. Absent/'random': legacy per-device random keys.
+   */
+  provisioning?: 'mission-seed-v1' | 'random';
+}
+
+/** Current provisioning scheme of `provisionKeyring` when a mission secret is supplied. */
+export const MISSION_PROVISIONING = 'mission-seed-v1' as const;
+
+/**
+ * Deterministic AES-GCM-256 data key: HKDF-SHA-256(missionSecret, salt="astha-ground-provisioning-v1",
+ * info=label). Every device holding the same mission secret derives the same K_t / K_hab, while each device
+ * still wraps them under its own PIN-derived KEKs (ADR-012). Extractable only so it can be wrapped.
+ */
+export async function deriveMissionKey(missionSecret: string, label: string): Promise<CryptoKey> {
+  const base = await subtle.importKey('raw', utf8(missionSecret), 'HKDF', false, ['deriveKey']);
+  return subtle.deriveKey(
+    { name: 'HKDF', hash: 'SHA-256', salt: utf8('astha-ground-provisioning-v1'), info: utf8(label) },
+    base,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['encrypt', 'decrypt'],
+  );
 }
 
 /**
@@ -212,7 +237,10 @@ export async function provisionKeyring(
   crew: PersonCredential[],
   cmoId: string,
   iterations = PBKDF2_ITERATIONS,
+  /** Shared mission secret (ADR-020 stand-in). Without it, keys are random and device-local. */
+  missionSecret?: string,
 ): Promise<Keyring> {
+  const dataKey = (label: string) => (missionSecret ? deriveMissionKey(missionSecret, label) : generateDataKey(true));
   const keks = new Map<string, CryptoKey>();
   const salts: Record<string, string> = {};
   for (const p of crew) {
@@ -225,19 +253,19 @@ export async function provisionKeyring(
 
   const wrapped: Keyring['wrapped'] = {};
   for (const p of crew) {
-    const kt = await generateDataKey(true);
+    const kt = await dataKey(`K_t:${p.personId}`);
     wrapped[p.personId] = {
       [p.personId]: toB64(await wrapDataKey(kt, keks.get(p.personId)!)),
       [cmoId]: toB64(await wrapDataKey(kt, cmoKek)),
     };
   }
-  const khab = await generateDataKey(true);
+  const khab = await dataKey('K_hab');
   const habWrapped: Record<string, string> = {};
   for (const p of crew) habWrapped[p.personId] = toB64(await wrapDataKey(khab, keks.get(p.personId)!));
   const raw = await subtle.exportKey('raw', khab);
   const habDeviceKey = await subtle.importKey('raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
   new Uint8Array(raw).fill(0);
-  return { iterations, salts, wrapped, habWrapped, habDeviceKey };
+  return { iterations, salts, wrapped, habWrapped, habDeviceKey, provisioning: missionSecret ? MISSION_PROVISIONING : 'random' };
 }
 
 export interface UnlockedSession {
