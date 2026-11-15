@@ -53,13 +53,13 @@ Detailed criteria are structured across the following documents in this folder:
 | :--- | :--- | :---: | :--- | :--- |
 | **AC-CLIN-01** | Tri-State Biosignal Classification | **T** | 100% match with NASA-STD-3001 ranges | 0 false negatives in critical ranges |
 | **AC-CLIN-02** | Physiological Drift Detection | **A** | Median absolute deviation ($|M_i| \ge 2.5$) | Mathematical error $< 0.01\%$ |
-| **AC-CLIN-03** | SANS Protocol Activation | **D, T** | $\text{SBP} \ge 140\text{ mmHg}$ in microgravity | LBNP deployment in $< 100\text{ ms}$ |
-| **AC-CLIN-04** | Cabin $CO_2$ Correlation | **T** | Preventive trigger at $> 2.5\text{ mmHg}$ and critical at $> 3.0\text{ mmHg}$ | Temporal accuracy $\pm 1\text{ s}$ |
+| **AC-CLIN-03** | SANS Protocol Activation | **D, T** | $\text{SBP} \ge 140\text{ mmHg}$ or R-SANS-01 ($> 135$ + blurred vision) | LBNP deployment in $< 100\text{ ms}$ |
+| **AC-CLIN-04** | Cabin $CO_2$ Correlation | **T** | Caution at $2.0 - 3.0\text{ mmHg}$, critical at $> 3.0\text{ mmHg}$; rules R-ENV-01/02 (SRS §6.1–6.2) | Temporal accuracy $\pm 1\text{ s}$ |
 | **AC-CLIN-05** | Solar Particle Event (SPE) Alarm | **D** | CANS rate $> 100\ \mu\text{Sv/h}$ triggers Storm Shelter evacuation | Alarm latency $< 50\text{ ms}$ |
 | **AC-CLIN-06** | Non-Medical Checklist Usability | **D** | Maximum 4 actionable steps per procedure | Plain language without medical jargon |
 | **AC-CLIN-07** | Visual Accessibility and Color Blindness | **I** | Dual coding (color + shape/icon/pattern) | WCAG 2.1 AAA / NASA Ergonomics compliance |
 | **AC-TECH-01** | 100% Offline Autonomy (Zero-Ping) | **T** | Zero external network dependencies at runtime | 0 calls to cloud servers |
-| **AC-TECH-02** | Contingency Power Budget | **T** | Total idle power consumption $< 5\text{ W}$ | CPU usage $< 15\%$ of a single core |
+| **AC-TECH-02** | Contingency Power Budget | **T** | Software power draw $< 350\text{ mW}$ (RNF-POW-02) | Sustained CPU $\le 3.0\%$, no polling (RNF-POW-01) |
 | **AC-TECH-03** | User Interface Latency | **T** | Touch rendering time $< 100\text{ ms}$ | 60 fps in nominal mode / 0.2 fps in contingency |
 | **AC-TECH-04** | P2P Mesh Synchronization | **T** | CRDT reconciliation across cabin terminals $< 3\text{ s}$ | 0 data loss during network partition |
 | **AC-TECH-05** | DTN Bundling for Houston | **T** | SHA-256 signed RFC 5050 bundles for 44 min RTT | Minimum 30-day local queue retention |

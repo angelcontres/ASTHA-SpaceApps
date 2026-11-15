@@ -12,7 +12,7 @@ The high-fidelity design of **ASTHA** realizes the [`wireframe.html`](../../wire
 +---------------------------------------------------------------------------------------------------+
 |  [ASTHA]  FD-15 · ARTEMIS-MARS MISSION · pO2 21.2 kPa  ppCO2 0.35 kPa   [ZEN MODE] [SURVIVAL]     |
 +---------------------------------------------------------------------------------------------------+
-|  [● C01 Isaacman OK] [▲ C02 Arceneaux +SANS] [● C03 Proctor OK] [● C04 Sembroski OK] | Timeline   |
+|  [● C01 Calloway OK] [▲ C02 Pierce +SANS] [● C03 Dalton OK] [● C04 Sutton OK] | Timeline   |
 +----------------------------------+----------------------------------------------------------------+
 |  ANATOMICAL VIEWER (COMP-02)     |  BIOMEDICAL VITALS (COMP-03)                                   |
 |  Three.js On-Demand + 4 Hotspots |  +---------------------------+  +---------------------------+  |
@@ -95,7 +95,7 @@ Visual, acoustic, and escalation orchestrator for medical or environmental emerg
 | **Bio-Passport & DSN Export** | History selection in `COMP-01` | Longitudinal visualization from `L-44` to `R+1` and download of a cryptographically signed JSON package (**WebCrypto ECDSA P-256**) for Earth/DSN downlink. |
 | **NASA OSDR Explorer** | Tab 3 (*Anatomical Triage & CDSS*) | Local **SQLite WASM** query of pre-loaded offline analog studies with zero network dependency. |
 | **Minimalist Zen Mode** | Header `Zen Mode` button | Hides the simulator (`COMP-06`), detailed history, and progressive views, retaining only the active crew member's critical vitals in enlarged typography. |
-| **Survival Mode (`< 5W`, `ADR-019`)** | Battery $\le 15\%$ or manual activation | Shuts down WebGL (`Three.js`), disables `uPlot`, forces OLED `#000000` background, freezes CSS animations/pulses, and leaves static tabular vitals and ECLSS readouts targeting $< 5\text{ W}$ power draw. |
+| **Survival Mode (`< 350 mW`, `ADR-019`)** | Battery $\le 15\%$ or manual activation | Shuts down WebGL (`Three.js`), disables `uPlot`, forces OLED `#000000` background, freezes CSS animations/pulses, and leaves static tabular vitals and ECLSS readouts targeting $< 5\text{ W}$ power draw. |
 
 ---
 

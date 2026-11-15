@@ -80,9 +80,9 @@
 ### 🧪 Acceptance Criteria (Gherkin BDD):
 
 #### Scenario 1: Cross-correlation of headache and $CO_2$ overpressure
-* **Given** the cabin atmospheric sensor records an increase in $ppCO_2 > 2.5\text{ mmHg}$ ($> 3300\text{ ppm}$),
-* **When** an astronaut in that same module exhibits tachypnea ($\text{RR} > 20\text{ breaths/min}$) or reports a headache,
-* **Then** the system must classify the event as "Hypercapnia Risk from Cabin $CO_2$ Pocket",
+* **Given** the cabin atmospheric sensor records $ppCO_2 > 3.0\text{ mmHg}$ (Critical, SRS §6.1),
+* **When** an astronaut reports a headache (R-ENV-02) or exhibits $\text{SpO}_2 < 94\%$ (R-ENV-01),
+* **Then** the system must classify the event per SRS §6.2 and attribute the root cause to a cabin $CO_2$ pocket,
 * **And** the top-priority recommendation must be environmental ("Verify forced-circulation fans and switch CDRA scrubber bed") before prescribing analgesics.
 
 #### Scenario 2: CANS radiation spike from solar particles

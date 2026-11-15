@@ -48,9 +48,9 @@ The decisions justifying this model are recorded in the [ADR log](../SDD/08-Arch
 | RF-ING-04 | One-tap symptoms | NASA OSDR datasets |
 | RF-ING-05 | Flag dubious values **without discarding** | "Validation and **discarding**" |
 | RF-DER-03 | Baseline = first 14 days | Pre-flight baseline L-44 |
-| RNF-POW-01 | CPU ≤ 3 % | Power draw < 5 W |
-| RNF-POW-02 | < 350 mW, 16 h battery life | CPU < 15 % of one core |
-| RNF-POW-03 | RAM ≤ 150 MB | Contingency mode at 0.2 fps |
+| RNF-POW-01 | CPU ≤ 3 % | ✅ Resolved: RTM, V&V Matrix and AC-TECH-02 now use the SRS meaning |
+| RNF-POW-02 | < 350 mW, 16 h battery life | ✅ Resolved: RTM, V&V Matrix and AC-TECH-02 now use the SRS meaning |
+| RNF-POW-03 | RAM ≤ 150 MB | ✅ Resolved: the 0.2 fps contingency mode is traced to ADR-019, not to an SRS RNF |
 | RNF-USA-01 | Glove-friendly touch 48 px / 12 px | Jargon-free language |
 | RNF-USA-02 | 3-tap rule | Touch response < 100 ms |
 | RNF-SEC-04 | Append-only audit log | SEU bit-flips with CRC32 |
@@ -75,7 +75,7 @@ Applied rule: **if the repository contradicts the brief, the repository wins**, 
 | --- | --- | --- | --- |
 | 1 | Name "ASTHA" | ✅ Resolved in `286bb1f`: the repository now uses "ASTHA (Autonomous Space Telemetry & Health Analytics)". "AstroVital" remains only in the README GitHub Pages URLs (repository name) | "ASTHA" is used |
 | 2 | Svelte 5, SVG, uPlot; no Three.js, React, or CDN | `index.html` loads Three.js r128, Chart.js, Tailwind, and `lucide@latest` **from CDN**. SPEC §6 proposes React + Three.js + Recharts. Commits `8fbccd1` and `953c50d` (xEMU suit silhouette) reinforce the 3D astronaut | **The 3D avatar is retained** (team decision, 2026-11-15; SPEC §2 and §4.2). Three.js is permitted **only in the Anatomy Viewer**: locally bundled, on-demand rendering with no continuous loop, and SVG fallback (02 "WebGL / Three.js" and 03 Anatomy Viewer spec sheet). The rest follows the brief's stack. **The current prototype must change**: remove CDNs, continuous `requestAnimationFrame` loops (`animate3d`, `animateSparklines`), and auto-rotation |
-| 3 | Budgets: CPU ≤ 3 %, < 350 mW, 150 MB, 5 MB, 50 ms, 1.5 s | **Matches the SRS.** AC-TECH, the RTM, and the V&V Matrix use different figures: < 5 W, CPU < 15 %, 3.0 s startup, 60 fps and 0.2 fps in contingency | The SRS figures are used. AC-TECH and the RTM should be updated |
+| 3 | Budgets: CPU ≤ 3 %, < 350 mW, 150 MB, 5 MB, 50 ms, 1.5 s | **Matches the SRS.** ✅ Resolved (2026-11-15): AC-TECH-01/02, the RTM, and the V&V Matrix were aligned with the SRS (formerly < 5 W, CPU < 15 %, 3.0 s startup). The 0.2 fps contingency mode is ADR-019 | The SRS figures are used everywhere |
 | 4 | Optional star-topology Sync Hub over WebSocket | SRS RNF-NET-01 allows "local WebSockets". **CU-10, HU-15, and AC-TECH-04 require a serverless P2P mesh** (UDP Gossip, 802.11s, BLE mesh) | The Hub is retained because browsers have no access to UDP or BLE mesh, and WebRTC requires signaling (which would still be a server). The Hub is a single point of failure **only for convergence**, not for clinical function. If "no SPOF" is mandated, a second Hub replicating the op-log is trivial with CRDTs. **Requires decision** |
 | 5 | CRDT with Hybrid Logical Clock (HLC) | RNF-NET-02: "LWW with **vector** timestamps". CU-10 (folder): Lamport clocks | The HLC orders LWW entries and the version vector drives deltas (03 §3.3). Confirm |
 | 6 | DSN = signed JSON file, out-of-band / outside the system | SRS RNF-NET-04 agrees. **CU-11, HU-14, and AC-TECH-05** assign RFC 5050 DTN bundling, Brotli/Zstd, the 30-day queue, and response reception to ASTHA | Follows the SRS: DTN packaging is handled by the spacecraft router. CU-11 and AC-TECH-05 should be updated |

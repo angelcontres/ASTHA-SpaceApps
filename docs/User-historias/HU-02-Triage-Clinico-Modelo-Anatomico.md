@@ -108,15 +108,15 @@
 * **Official Sources:** NASA Medical Operations / Inspiration4 (Crew C001..C004)
 
 ### 📖 User Story:
-> **As a** Crew Medical Officer (Dr. Hayley Arceneaux) or Mission Commander,  
+> **As a** Crew Medical Officer (Dra. Lauren Pierce) or Mission Commander,  
 > **I want** to rapidly switch between the 4 mission astronauts (C001, C002, C003, C004) or view a consolidated summary of the entire crew,  
 > **So that** I can assess the health status of the entire team on a single console and prioritize care for the crewmember at highest clinical risk.
 
 ### 🧪 Acceptance Criteria (Gherkin BDD):
 
 #### Scenario 1: Immediate switching between crewmembers
-* **Given** the user is currently viewing Commander Jared Isaacman (C001),
-* **When** they press the crewmember button "Dr. Sian Proctor (C003)",
+* **Given** the user is currently viewing Commander Rachel Calloway (C001),
+* **When** they press the crewmember button "Dr. Marcus Dalton (C003)",
 * **Then** within 200 ms the interface must update the biosignal cards, anatomical map, Chart.js curves, and action plan corresponding to C003,
 * **And** visually highlight the active astronaut button with a bright cyan border.
 

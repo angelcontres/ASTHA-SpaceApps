@@ -29,7 +29,7 @@ Statuses: **Proposed** (draft for review) · **Accepted** · **Pending** (awaiti
 | [016](#adr-016) | Physiological telemetry with a single daily record | Accepted |
 | [017](#adr-017) | Countermeasure protocols capped at 4 steps | Accepted |
 | [018](#adr-018) | Text red separated from alarm red | Accepted |
-| [019](#adr-019) | Manually activated power survival mode | Accepted |
+| [019](#adr-019) | Power survival mode (manual and automatic on critical battery) | Accepted |
 | [020](#adr-020) | Pre-flight ground provisioning of devices | Accepted |
 
 ## Gap Backlog
@@ -452,7 +452,7 @@ Lighten alert-red to #f87171; keep #ef4444 with an AA exception; white text on a
 
 <a id="adr-019"></a>
 
-## ADR-019: Manually activated power survival mode
+## ADR-019: Power survival mode (manual and automatic on critical battery)
 
 **Status:** Accepted · **Date:** 2026-11-15 · **Requirements:** RNF-POW-01, RNF-POW-02 · CU-12, AC-TECH-02 §3
 
@@ -470,6 +470,19 @@ The Commander activates a "survival mode": no 3D avatar or charts, CSS-dimmed br
 
 ### Alternatives
 Out of scope; device Battery Status API; EPS signal via Hub from day one.
+
+### Amendment (2026-11-15): automatic activation on critical battery
+**Decision:** Survival mode also activates **automatically** on a critical battery signal, as AC-TECH-02 §3 and CU-12 require. Manual activation by the Commander remains available.
+- **Signal sources:** the device Battery Status API, read through `levelchange` / `chargingchange` events and never by polling; a simulated EPS signal from the Simulator tab, for browsers without that API and for demonstrations; and later, the EPS signal relayed by the Hub through the same entry point.
+- **Activation rule:** enter at ≤ 15 % while not charging; exit when charging or at ≥ 20 % (hysteresis).
+- **Effects:**
+  - No 3D avatar or uPlot (tabular readout) and no animations.
+  - Routine telemetry repaints at most once every 5 s (0.2 fps).
+  - New critical alerts and responses to user actions bypass the throttle.
+  - Detection and alarms stay 100 % active in the workers.
+  - The display dims by 30 %, not to the literal 20 % of AC-TECH-02, because 20 % CSS dimming would drop text contrast below 2:1 and break RNF-USA legibility.
+
+**Consequences:** works only where the browser exposes the battery (Chromium); elsewhere it depends on the simulated or relayed EPS signal. The automatic mode does not change the persisted Commander preference.
 
 ---
 

@@ -21,7 +21,7 @@ The system receives continuous physiological data packets at 1 Hz from the astro
 ### 2. Preconditions:
 1. The biomedical garment (SmartShirt) has its electrodes and plethysmographic bands in proper contact with the astronaut's torso.
 2. The ASTHA client node has its BLE interface active and paired with the MAC address of the sensor assigned to the crew member.
-3. The local persistence engine (SQLite / flash storage) has free space available ($> 50\text{ MB}$).
+3. The local persistence engine (encrypted IndexedDB, ADR-006) has free space available ($> 50\text{ MB}$).
 
 ### 3. Trigger:
 Periodic receipt of a BLE telemetry packet (1000 ms interval).
@@ -78,20 +78,20 @@ The system monitors carbon dioxide partial pressure ($ppCO_2$) and radiation dos
 2. The astronaut's physical location within the habitat modules (Habitation Node, Laboratory, Core Module) is known.
 
 ### 3. Trigger:
-$ppCO_2$ concentration exceeds $2.5\text{ mmHg}$ or the radiation dose rate exceeds $100\ \mu\text{Sv/h}$.
+$ppCO_2$ concentration reaches Caution ($\ge 2.0\text{ mmHg}$) or Critical ($> 3.0\text{ mmHg}$), or the radiation dose rate exceeds $100\ \mu\text{Sv/h}$ (SRS §6.1).
 
 ### 4. Main Flow of Events:
 1. The atmospheric sensor detects $ppCO_2 = 3.2\text{ mmHg}$ ($> 4200\text{ ppm}$) in the sleep quarters module.
 2. The ASTHA rule engine queries the biomedical status of astronauts located in that module.
-3. The system detects that the astronaut exhibits tachypnea ($\text{RR} = 22\text{ breaths/min}$) and a mild elevation in systolic blood pressure.
-4. The system rules out an idiopathic hypertensive crisis and classifies the event as: **"ECLSS Alert: $CO_2$ Toxicity / Hypercapnia Risk"**.
-5. The habitat top status bar enters a yellow visual warning state.
+3. The system detects that the astronaut's $\text{SpO}_2$ has dropped to $93\%$ ($< 94\%$) or that the astronaut reports a headache.
+4. The system rules out an idiopathic hypertensive crisis and classifies the event per SRS §6.2: **R-ENV-01** (Critical: leak or inadequate ventilation) or **R-ENV-02** (Critical: CO₂-induced intracranial hypertension).
+5. The habitat top status bar enters a red visual alert state (ppCO₂ $> 3.0\text{ mmHg}$ is Critical).
 6. The system generates a priority environmental countermeasure command: "Switch CDRA to forced cycle and activate circulation fans to dissipate stagnant air pocket".
 7. The affected astronaut and the Habitat Engineer are simultaneously notified on their respective terminals.
 
 ### 5. Alternative Flows:
 * **FA-01: Isolated trigger with no physiological alteration in the astronaut:**
-  1. If ambient telemetry rises while the astronaut maintains strictly nominal vitals ($\text{SpO}_2 \ge 98\%$, nominal $\text{RR}$), the system classifies the alert as "Early Environmental Warning" and does not disturb the crew member's rest, alerting only the Duty Officer.
+  1. If ambient telemetry rises while the astronaut maintains strictly nominal vitals ($\text{SpO}_2 \ge 96\%$, no headache), the system classifies the alert as "Early Environmental Warning" and does not disturb the crew member's rest, alerting only the Duty Officer.
 
 ### 6. Exception Flows:
 * **FE-01: Atmospheric sensor failure or lockup:**

@@ -16,7 +16,7 @@ flowchart TB
         AnatomyViewer["Anatomy Viewer<br>(On-Demand Three.js ADR-004 + SVG)"]
         CountermeasureUI["Countermeasure Guide<br>(3 Blocks, <= 4 Steps - ADR-017)"]
         AlarmManager["Alarm Manager & Audio<br>(800-1200 Hz, ADR-013 Escalation)"]
-        CrisisSimUI["Crisis Simulator & Survival Switch<br>(Scenarios A-D, <5W Mode ADR-019)"]
+        CrisisSimUI["Crisis Simulator & Survival Switch<br>(Scenarios A-D, < 350 mW Mode ADR-019)"]
     end
 
     subgraph Clinical_Worker ["2. Clinical Engine Worker (Pure TS Dedicated Web Worker - ADR-005)"]

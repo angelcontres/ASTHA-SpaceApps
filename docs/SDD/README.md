@@ -30,7 +30,7 @@ This directory constitutes the formal architectural and detailed design specific
 ```text
 docs/SDD/
 ├── README.md                                     # 📍 Master Index, Authority Rule, and ADR/C4 Map
-├── 01-Arquitectura-Global-del-Sistema.md         # 🏛️ Hexagonal, Event-Driven Web Workers, <5W/3% CPU Budgets
+├── 01-Arquitectura-Global-del-Sistema.md         # 🏛️ Hexagonal, Event-Driven Web Workers, < 350 mW/3% CPU Budgets
 ├── 02-Diagrama-de-Clases-UML.md                  # 🧬 SRS §5.1 Entities, AES-GCM Crypto Envelopes, CRDT & R-* Rules
 ├── 03-Diagramas-de-Secuencia-UML.md              # ⏱️ ADR-013 Alarm Escalation, On-Demand 3D, Signed JSON
 ├── 04-Diagrama-de-Componentes-UML.md             # 🧩 Svelte 5 + uPlot, Clinical Worker, Data/Sync Worker, Sync Hub

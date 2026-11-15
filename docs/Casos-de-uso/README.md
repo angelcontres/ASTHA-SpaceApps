@@ -64,8 +64,8 @@ classDiagram
 
 ### Actor Descriptions:
 1. **Mission Astronaut (Primary Actor):** Crew member without advanced medical training (e.g., pilot, geologist, propulsion engineer). Interacts with the software under stress, fatigue, or microgravity conditions.
-2. **Crew Medical Officer (CMO - Dr. Hayley Arceneaux):** Onboard health officer trained in advanced life support. Supervises group health and executes differential diagnostic procedures.
-3. **Mission Commander (Jared Isaacman):** Responsible for overall spacecraft safety and decision-making affecting the flight profile (e.g., EVA abort or evacuation to a shielded module).
+2. **Crew Medical Officer (CMO - Dra. Lauren Pierce):** Onboard health officer trained in advanced life support. Supervises group health and executes differential diagnostic procedures.
+3. **Mission Commander (Rachel Calloway):** Responsible for overall spacecraft safety and decision-making affecting the flight profile (e.g., EVA abort or evacuation to a shielded module).
 4. **Ground Flight Surgeon (Houston Flight Surgeon):** Specialist physician at JSC operating in **100% asynchronous** mode due to the 22-minute one-way light-time latency (44 min RTT).
 5. **Flight Biomedical Sensors (System Actor):** *Astroskin / Bio-Monitor* (CSA) smart garment and continuous patches transmitting telemetry packets at 1 Hz over Bluetooth Low Energy.
 6. **Spacecraft Environmental Sensors (System Actor):** CSA *CANS* neutron spectrometer and *ECLSS* atmospheric sensors measuring $ppCO_2$, cabin pressure, and radiation.
@@ -159,7 +159,7 @@ flowchart LR
 | **CU-09** | LBNP Suit Pressurization and Monitoring | CMO, Patient | HU-11 | RF-GUI-01, RF-GUI-02, RF-ANA-02 |
 | **CU-10** | P2P Mesh Synchronization Across Cabin Devices | Mesh Nodes, Software Eng. | HU-15, HU-16 | RNF-NET-02, RNF-NET-04, RNF-SEC-04 |
 | **CU-11** | Asynchronous DTN Bundling and Queuing for Houston | Edge System, Flight Surgeon | HU-14 | RF-GUI-05, RNF-NET-03, RNF-SEC-01 |
-| **CU-12** | Switching to Electrical Contingency Mode (< 5W) | Commander, EPS Bus | HU-20 | RNF-POW-01..04, RNF-POW-03 |
+| **CU-12** | Switching to Electrical Contingency Mode (< 350 mW) | Commander, EPS Bus | HU-20 | RNF-POW-01..04, RNF-POW-03 |
 
 ---
 
