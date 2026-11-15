@@ -5,7 +5,6 @@
   import { resolveProtocol } from '../../engine/countermeasures';
   import type { RegionId } from '../../engine/types';
   import AnatomyViewer from '../components/AnatomyViewer.svelte';
-  import BodySvg from '../components/BodySvg.svelte';
   import CountermeasureGuide from '../components/CountermeasureGuide.svelte';
   import IndicatorCard from '../components/IndicatorCard.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
@@ -37,14 +36,15 @@
   <p class="panel muted">Esperando la evaluación del tripulante…</p>
 {:else}
   <div class="triage">
-    <section class="panel body" aria-label="Avatar anatómico">
-      {#if survival}
-        <BodySvg regions={a.regions} view={ui.view} selected={region} onselect={select} />
-        <div class="row"><button type="button" class="btn" onclick={() => (ui.view = ui.view === 'front' ? 'back' : 'front')}>Girar vista</button></div>
-      {:else}
-        <AnatomyViewer regions={a.regions} bind:view={ui.view} selected={region} variant={open?.status === 'critical' ? 'crisis' : 'full'} onselect={select} />
-      {/if}
-      <p class="legend label">✓ Nominal · ▲ Precaución (rayado) · ✕ Crítico (retícula y pulso) · ? dato dudoso</p>
+    <section class="panel body" aria-label="Anatomical avatar">
+      <AnatomyViewer
+        regions={a.regions}
+        bind:view={ui.view}
+        selected={region}
+        variant={survival ? 'fallback' : open?.status === 'critical' ? 'crisis' : 'full'}
+        onselect={select}
+      />
+      <p class="legend label">✓ Nominal · ▲ Caution (striped) · ✕ Critical (grid + pulse) · ? suspect reading</p>
     </section>
 
     <section class="detail stack" aria-labelledby="reg-h">

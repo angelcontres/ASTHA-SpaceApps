@@ -43,12 +43,14 @@
 {:else}
   <div class="cockpit">
     <!-- COMP-02 -->
-    <section class="anatomy panel" aria-label="Visor anatómico">
-      {#if survival}
-        <BodySvg regions={a.regions} view={ui.view} selected={ui.selectedRegion} onselect={(r) => { ui.selectedRegion = r; ui.tab = 'triage'; }} />
-      {:else}
-        <AnatomyViewer regions={a.regions} bind:view={ui.view} selected={ui.selectedRegion} onselect={(r) => { ui.selectedRegion = r; ui.tab = 'triage'; }} />
-      {/if}
+    <section class="anatomy panel" aria-label="Anatomical viewer">
+      <AnatomyViewer
+        regions={a.regions}
+        bind:view={ui.view}
+        selected={ui.selectedRegion}
+        variant={survival ? 'fallback' : 'full'}
+        onselect={(r) => { ui.selectedRegion = r; ui.tab = 'triage'; }}
+      />
     </section>
 
     <div class="main">
