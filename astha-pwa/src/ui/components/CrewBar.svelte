@@ -53,6 +53,7 @@
         max={bridge.data.maxDay || 180}
         value={currentDay}
         aria-label="Mission flight day scrubber (FD-001 to FD-180)"
+        aria-valuetext="{fd(currentDay)} · {missionPhase(currentDay)}"
         oninput={onScrub}
       />
     </div>

@@ -105,6 +105,12 @@
     bridge.unlockBadge(person);
   }
 
+  function selectPerson(id: string) {
+    person = id;
+    nfcBusy = false;
+    nfcStatus = '';
+  }
+
   function onKeyDown(ev: KeyboardEvent) {
     if (cabin || bridge.data.provisioning) return;
     if (ev.key >= '0' && ev.key <= '9') {
@@ -113,11 +119,12 @@
     } else if (ev.key === 'Backspace') {
       ev.preventDefault();
       pin = pin.slice(0, -1);
-    } else if (ev.key === 'Enter' && pin) {
+    } else if (ev.key === 'Enter' && pin && !(ev.target instanceof HTMLButtonElement)) {
       ev.preventDefault();
       submit();
     } else if (ev.key === 'Escape') {
       pin = '';
+      nfcBusy = false;
       nfcStatus = '';
     }
   }
@@ -205,7 +212,7 @@
         <h2 id="pin-h" class="label">Rapid Clinical Unlock (&lt; 1.5 s · ADR-015)</h2>
         <div class="row people" role="group" aria-label="Select crew identity">
           {#each bridge.data.crew as c (c.id)}
-            <button type="button" class="btn" aria-pressed={person === c.id} onclick={() => (person = c.id)}>
+            <button type="button" class="btn" aria-pressed={person === c.id} onclick={() => selectPerson(c.id)}>
               {c.id}{c.role === 'cmo' ? ' · CMO' : ''}
             </button>
           {/each}
