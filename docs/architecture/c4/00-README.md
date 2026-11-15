@@ -9,6 +9,8 @@ Modelo C4 de la arquitectura **objetivo** de ASTHA: un dashboard de monitoreo de
 | 3 | [03-componentes.md](03-componentes.md) | Clinical Engine, Crew PWA (+ fichas de design system de 4 componentes UI), capa de datos/sync |
 | 4 | [04-despliegue.md](04-despliegue.md) | Tabletas, consola CMO, pantallas de cabina, Sync Hub opcional, LAN aislada |
 
+Las decisiones que justifican este modelo están en el [registro de ADR](../adr/README.md).
+
 ## 1. Fuentes y regla de autoridad
 
 - **Autoridad principal:** [SRS](../../SRS%20%E2%80%93%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md). Es el documento fechado, sigue ISO/IEC/IEEE 29148 y define los IDs `RF-*`, `RNF-*`, `R-*`, `D-*`, `AC-01..05` y `CU-01..09`.
@@ -32,7 +34,7 @@ Modelo C4 de la arquitectura **objetivo** de ASTHA: un dashboard de monitoreo de
 | RNF-PER-01 | Triage < 50 ms | Clinical Engine, `latencyMs` (03) |
 | RNF-PER-02 | Arranque < 1,5 s | SW y Svelte (02) · pregunta abierta sobre el PIN |
 | RNF-USA-04 | Alarmas redundantes 800-1200 Hz | Alarm Manager (03) |
-| RNF-USA-05 | 3 bloques, ≤ 7 pasos | Countermeasure Guide (03) |
+| RNF-USA-05 | 3 bloques, ≤ 7 pasos (ADR-017 lo baja a 4) | Countermeasure Guide (03) |
 | RNF-SEC-02 | RBAC local | Key Manager (RBAC criptográfico) y Role Guard (03) |
 | RNF-SEC-03 | SHA-256 por registro / SEU | Integrity Guard (03) · la RTM lo pone bajo RNF-SEC-04 |
 | RNF-NET-04 | JSON firmado para DSN | Export Builder (03) |
@@ -82,8 +84,8 @@ Regla aplicada: **si el repo contradice el encargo, gana el repo** y aquí queda
 | 9 | Fuentes del sistema | El WIREFRAME §4.2 nombra Inter y JetBrains Mono | Pilas del sistema; esas fuentes solo se usan si ya están instaladas |
 | 10 | — | Tokens del WIREFRAME: `alert-red #ef4444` da **5,35:1** sobre `#030712` y **4,96:1** sobre `#0c1222`. RNF-USA-03 exige ≥ 7:1 | Se propone `alert-red-text #fca5a5` (10,6:1) para texto y se mantiene `#ef4444` para rellenos (03 §3.2) |
 | 11 | — | WIREFRAME: separación táctil de 8 px y checkbox de 44 px. SRS RNF-USA-01: 12 px y 48 px | SRS |
-| 12 | — | AC-CLIN-06: ≤ 4 pasos. RNF-USA-05: ≤ 7 pasos | SRS (7). Confirmar |
-| 13 | — | SRS RF-DER-03: z clásico (media y desviación). SRS RNF-PER-01, README y AC-CLIN-02: Z-score modificado (MAD) | Se implementa RF-DER-03 y queda como pregunta abierta |
+| 12 | — | AC-CLIN-06: ≤ 4 pasos. RNF-USA-05: ≤ 7 pasos | 4 pasos, según [ADR-017](../adr/ADR-017-protocolos-4-pasos.md). Hay que actualizar RNF-USA-05 |
+| 13 | — | SRS RF-DER-03: z clásico (media y desviación). SRS RNF-PER-01, README y AC-CLIN-02: Z-score modificado (MAD) | Z modificado (MAD), según [ADR-011](../adr/ADR-011-deriva-z-modificado-mad.md). Hay que actualizar RF-DER-03 y D-02 |
 | 14 | — | SRS §5.1: "6 síntomas". RF-ING-04 enumera 5 | Se usan los 5 enumerados. Confirmar el sexto |
 | 15 | Bundle ≤ 5 MB | `data/nasa_official_telemetry/` pesa unos 24 MB | No puede entrar en el bundle: solo el dataset sintético (~273 KB) |
 | 16 | Cero red | El explorador OSDR (HU-17) consulta la API remota de NASA OSDR. `data/scopes.md` cita URLs de las API EDA y RadLab | Solo se admiten instantáneas JSON locales, empaquetadas en el bundle |
