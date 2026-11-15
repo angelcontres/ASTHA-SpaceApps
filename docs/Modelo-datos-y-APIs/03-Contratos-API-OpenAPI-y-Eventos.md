@@ -39,6 +39,11 @@ The complete specification importable into Swagger/OpenAPI is located in **[open
 * **Transmitted Messages:**
   1. `DELTA_PUSH`: Immediate broadcast of a newly signed `EncryptedEnvelope` across tablets and the CMO console.
   2. `ALARM_ESCALATION` (**`ADR-013`**): Replication of an unacknowledged critical alarm after **2 minutes** to the CMO console and after **5 minutes** to public cabin displays (global traffic light only `ADR-014`).
+* **Session rules (implemented in [`sync-hub/`](../../sync-hub/README.md)):**
+  1. `HANDSHAKE` first: `{deviceId, versionVector, timestampUtc, ed25519Signature}` signed over the canonical JSON of the first three fields with the enrolled device key (`ADR-020`). An invalid handshake closes the socket with code `4401`. The hub answers with the envelopes the client lacks (`DELTA_PUSH`, ascending HLC) and then its own `HANDSHAKE`, so the client sends what the hub lacks before any live push.
+  2. `REPLICA_REQUEST {ids}`: returns those envelopes (local SEU recovery, `RNF-SEC-03`).
+  3. **Extension** `CABIN_STATUS {status: CabinGlobalStatus}`: the zero-knowledge hub cannot derive `GET /habitat/status` from encrypted envelopes, so an authenticated device publishes the public snapshot. The hub applies a strict allow-list and rejects any extra field, so no clinical value reaches a public display (`ADR-014`).
+  4. **Extension** `REJECTED {rejections: [{id, reason}]}`: per-envelope rejection reasons (SHA-256 / Ed25519 / unknown device).
 
 ---
 
