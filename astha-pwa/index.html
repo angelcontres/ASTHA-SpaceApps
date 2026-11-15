@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,15 +9,15 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' ws://localhost:5173 ws://localhost:8443 wss://localhost:8443 wss://astha.local:8443; worker-src 'self';"
     />
-    <meta name="description" content="ASTHA · monitoreo biomédico autónomo offline para tripulaciones de espacio profundo" />
-    <title>ASTHA</title>
+    <meta name="description" content="ASTHA — Autonomous offline biomedical & ECLSS telemetry console for deep-space crews" />
+    <title>ASTHA · Crew Health Telemetry</title>
     <link rel="icon" type="image/svg+xml" href="./icon.svg" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <!-- Fondo OLED antes de cargar el CSS: sin destello blanco en el arranque (RNF-POW-02). -->
+    <!-- OLED zero-glare background before CSS loads: prevents startup white flash (RNF-POW-02). -->
     <style>html,body{background:#030712;color:#e5e7eb;margin:0}</style>
   </head>
   <body>
-    <!-- Filtro night-red-630 (RNF-USA-03): luminancia al canal rojo, verde y azul atenuados. -->
+    <!-- 630 nm Night Spectral Red filter (RNF-USA-03): maps luminance to red channel while attenuating green/blue. -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
       <filter id="night-red-630" color-interpolation-filters="sRGB">
         <feColorMatrix type="matrix" values="0.45 0.75 0.15 0 0  0.06 0.12 0.03 0 0  0.02 0.04 0.01 0 0  0 0 0 1 0" />

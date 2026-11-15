@@ -23,6 +23,7 @@ export type UiToData = Req &
   (
     | { type: 'connect' } // acompaña al MessagePort hacia el Clinical Worker
     | { type: 'unlock'; personId: string; pin: string }
+    | { type: 'unlockBadge'; personId: string }
     | { type: 'lock' }
     | { type: 'selectCrew'; crewId: string }
     | { type: 'setDay'; day: number }
