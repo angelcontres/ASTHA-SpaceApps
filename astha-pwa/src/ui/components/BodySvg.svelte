@@ -1,34 +1,34 @@
 <script lang="ts">
-  // Silueta SVG frontal/posterior (RF-ANA-01..03). Es el respaldo del avatar 3D y la variante `compact` de 96 px
-  // del resumen de tripulación (C4 §3.2). Cada región lleva color + patrón + símbolo; nunca solo color.
+  // Front/Back SVG silhouette (RF-ANA-01..03): interactive fallback for the 3D avatar and 96 px compact variant
+  // used in crew summary cards (C4 §3.2). Every region carries dual coding (color + SVG pattern + glyph).
   import { REGION_IDS, type RegionId, type RegionState } from '../../engine/types';
-  import { REGION_LABEL, STATUS_LABEL } from '../bridge/uiState.svelte';
+  import { REGION_HOTSPOT_SHORT, REGION_LABEL, STATUS_LABEL } from '../bridge/uiState.svelte';
 
   interface Props {
     regions: Record<RegionId, RegionState>;
     view?: 'front' | 'back';
     selected?: RegionId | null;
     compact?: boolean;
-    /** Oculta los hotspots HTML (los pone el visor 3D). */
+    /** Hides HTML overlay pins when rendered underneath the 3D hotspot layer. */
     hotspots?: boolean;
     onselect?: (id: RegionId) => void;
     label?: string;
   }
-  let { regions, view = 'front', selected = null, compact = false, hotspots = true, onselect, label = '' }: Props = $props();
+  const { regions, view = 'front', selected = null, compact = false, hotspots = true, onselect, label = '' }: Props = $props();
 
-  // Posición del hotspot (% del contenedor) por región.
-  const SPOT: Record<RegionId, { x: number; y: number; short: string }> = {
-    head: { x: 50, y: 10, short: 'Cabeza' },
-    chest: { x: 50, y: 30, short: 'Tórax' },
-    lumbar: { x: 50, y: 50, short: 'Lumbar' },
-    legs: { x: 50, y: 78, short: 'Piernas' },
-    general: { x: 13, y: 40, short: 'General' },
+  // Hotspot placement (% of SVG stage) per region with >= 12 px clearance.
+  const SPOT: Record<RegionId, { x: number; y: number }> = {
+    head: { x: 50, y: 10 },
+    chest: { x: 50, y: 31 },
+    lumbar: { x: 50, y: 52 },
+    legs: { x: 50, y: 78 },
+    general: { x: 14, y: 41 },
   };
   const fill = (id: RegionId) => `url(#fill-${regions[id]?.status ?? 'none'})`;
   const sym = (r: RegionState | undefined) => (r?.isSuspect ? '?' : '');
 </script>
 
-<div class="body" class:compact role="group" aria-label={label || `Silueta anatómica, vista ${view === 'front' ? 'frontal' : 'posterior'}`}>
+<div class="body" class:compact role="group" aria-label={label || `Anatomical silhouette, ${view} view`}>
   <svg viewBox="0 0 200 400" aria-hidden="true" focusable="false">
     <defs>
       <pattern id="pat-caution" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -83,11 +83,11 @@
         class:selected={selected === id}
         style="left:{SPOT[id].x}%; top:{SPOT[id].y}%"
         aria-pressed={selected === id}
-        aria-label="{REGION_LABEL[id]}, {STATUS_LABEL[r?.status ?? 'none']}, {r?.alertCount ?? 0} alertas{r?.isSuspect ? ', dato dudoso' : ''}"
+        aria-label="{REGION_LABEL[id]}, {STATUS_LABEL[r?.status ?? 'none']}, {r?.alertCount ?? 0} alerts{r?.isSuspect ? ', suspect reading' : ''}"
         onclick={() => onselect?.(id)}
       >
         <span class="sym" aria-hidden="true">{sym(r)}</span>
-        <span class="short">{SPOT[id].short}</span>
+        <span class="short">{REGION_HOTSPOT_SHORT[id]}</span>
       </button>
     {/each}
   {/if}
@@ -112,6 +112,7 @@
     padding: 0 10px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     border-radius: var(--radius-btn);
     border: var(--st-bw) solid var(--st);
@@ -125,6 +126,6 @@
   .hotspot:active { transform: scale(0.98); }
   .hotspot.selected { outline: 3px solid var(--accent); outline-offset: 2px; }
   .hotspot:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-  .short { font-size: 0.8125rem; }
+  .short { font-size: 0.8125rem; white-space: nowrap; }
   @media (max-width: 420px) { .short { display: none; } }
 </style>
