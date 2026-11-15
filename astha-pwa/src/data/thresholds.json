@@ -9,8 +9,8 @@
       "scope": "crew",
       "decimals": 0,
       "plausible": [
-        20,
-        250
+        25,
+        220
       ],
       "assumed": false,
       "bands": [
@@ -49,8 +49,8 @@
       "scope": "crew",
       "decimals": 0,
       "plausible": [
-        1,
-        300
+        5,
+        200
       ],
       "assumed": false,
       "bands": [
@@ -79,7 +79,7 @@
       "scope": "crew",
       "decimals": 0,
       "plausible": [
-        50,
+        60,
         260
       ],
       "assumed": false,
@@ -107,7 +107,7 @@
       "scope": "crew",
       "decimals": 0,
       "plausible": [
-        20,
+        35,
         160
       ],
       "assumed": true,
@@ -135,7 +135,7 @@
       "scope": "crew",
       "decimals": 0,
       "plausible": [
-        50,
+        65,
         100
       ],
       "assumed": false,
@@ -164,8 +164,8 @@
       "scope": "crew",
       "decimals": 0,
       "plausible": [
-        20,
-        600
+        30,
+        400
       ],
       "assumed": false,
       "bands": [
@@ -204,8 +204,8 @@
       "scope": "crew",
       "decimals": 1,
       "plausible": [
-        30,
-        44
+        34,
+        42
       ],
       "assumed": true,
       "bands": [
@@ -292,7 +292,7 @@
       "decimals": 0,
       "plausible": [
         0,
-        1500
+        1000
       ],
       "assumed": true,
       "bands": [
@@ -357,27 +357,31 @@
         {
           "status": "critical",
           "max": 95.0,
-          "maxExclusive": true
+          "maxExclusive": true,
+          "assumed": true
         },
         {
           "status": "caution",
           "min": 95.0,
-          "max": 98.5
+          "max": 97.8,
+          "assumed": true
         },
         {
           "status": "nominal",
-          "min": 98.6,
+          "min": 97.9,
           "max": 102.7
         },
         {
           "status": "caution",
           "min": 102.8,
-          "max": 104.0
+          "max": 104.0,
+          "assumed": true
         },
         {
           "status": "critical",
           "min": 104.0,
-          "minExclusive": true
+          "minExclusive": true,
+          "assumed": true
         }
       ]
     },
@@ -401,22 +405,19 @@
         {
           "status": "caution",
           "min": 18.0,
-          "max": 19.4
+          "max": 19.4,
+          "assumed": true
         },
         {
           "status": "nominal",
           "min": 19.5,
-          "max": 23.0
-        },
-        {
-          "status": "caution",
-          "min": 23.1,
           "max": 23.5
         },
         {
           "status": "critical",
           "min": 23.5,
-          "minExclusive": true
+          "minExclusive": true,
+          "assumed": true
         }
       ]
     },
@@ -527,5 +528,7 @@
         }
       ]
     }
-  }
+  },
+  "_plausibleSource": "Rangos plausibles de las variables de tripulación = docs/Modelo-datos-y-APIs/02-Diccionario-de-Datos.md §2 (RF-ING-05). Fuera de ellos el valor se marca isSuspect=true y se conserva.",
+  "_habitatNominalSource": "Nominal de O2 (19,5–23,5 %) y presión (97,9–102,7 kPa) = Diccionario de Datos §3; el SRS §6.1 no los define. Las bandas fuera del nominal son supuestas (assumed)."
 }
