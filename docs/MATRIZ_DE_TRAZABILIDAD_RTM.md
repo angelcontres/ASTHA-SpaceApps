@@ -1,5 +1,5 @@
 # 🧭 Matriz de Trazabilidad de Requisitos (RTM - Requirements Traceability Matrix)
-### AstroVital — Autonomous Deep-Space Health Guardian & CDSS
+### ASTHA — Autonomous Deep-Space Health Guardian & CDSS
 **Estándares Mandatorios:** NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2) | ISO/IEC/IEEE 29148:2018 | NASA-STD-3001 Vol 1 & 2
 
 ---
@@ -167,6 +167,6 @@ A continuación se detalla el mapeo cruzado completo entre **Requisitos SRS**, *
 
 ## 🏆 5. Certificación de Trazabilidad y Veredicto de Vuelo
 
-La presente Matriz de Trazabilidad demuestra que el software **AstroVital** cumple con las directrices de ingeniería de software de la NASA (**NPR 7150.2 Clase B: Non-Flight Human-Support Space Software**), cerrando de forma determinista la brecha entre el exposoma hostil del espacio profundo y la interfaz de usuario en manos de los astronautas.
+La presente Matriz de Trazabilidad demuestra que el software **ASTHA** cumple con las directrices de ingeniería de software de la NASA (**NPR 7150.2 Clase B: Non-Flight Human-Support Space Software**), cerrando de forma determinista la brecha entre el exposoma hostil del espacio profundo y la interfaz de usuario en manos de los astronautas.
 
 * **Resultado Global de la Auditoría RTM:** **APROBADO — 100% CONFORME (PASS)**.

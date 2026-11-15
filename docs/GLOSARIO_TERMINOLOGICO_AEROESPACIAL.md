@@ -1,5 +1,5 @@
 # 📚 Glosario Terminológico Aeroespacial, Biomédico y de Software
-### AstroVital — NASA Space Apps Challenge 2026
+### ASTHA — NASA Space Apps Challenge 2026
 **Normas de Referencia:** NASA-STD-3001 Vol 1 & 2 | NASA SP-2016-6105 | ISO/IEC/IEEE 29148:2018 | CCSDS Blue Books
 
 ---
@@ -175,7 +175,7 @@ Actividad extravehicular (paseo espacial). Operación donde el astronauta sale d
 Médico especialista en medicina aeroespacial asignado por el Centro de Control de Misión (JSC en Houston) responsable de la salud, seguridad médica y aptitud psicofisiológica de la tripulación antes, durante y después del vuelo.
 
 ### Inspiration4 (SpaceX / OSD-574)
-Primera misión espacial tripulada con una tripulación enteramente civil (septiembre de 2021). Voló a $585\text{ km}$ de altitud (más alto que la ISS). Sus datos fisiológicos, genómicos y microbiómicos constituyen el estudio **NASA OSDR OSD-574**, fuente de los 4 sujetos de referencia de AstroVital (`C001` a `C004`).
+Primera misión espacial tripulada con una tripulación enteramente civil (septiembre de 2021). Voló a $585\text{ km}$ de altitud (más alto que la ISS). Sus datos fisiológicos, genómicos y microbiómicos constituyen el estudio **NASA OSDR OSD-574**, fuente de los 4 sujetos de referencia de ASTHA (`C001` a `C004`).
 
 ### IVA (Intravehicular Activity)
 Actividad intravehicular. Trabajo y vida de la tripulación en el interior del volumen presurizado y climatizado de la nave espacial o estación.
@@ -197,7 +197,7 @@ Tiempo total que tarda una señal de radio que viaja a la velocidad de la luz ($
 | :--- | :--- | :--- |
 | **AES-256** | Advanced Encryption Standard 256-bit | Estándar de cifrado simétrico de bloque militar y aeroespacial utilizado para blindar los expedientes médicos en reposo. |
 | **BDD** | Behavior-Driven Development | Metodología de desarrollo guiado por el comportamiento que formula criterios en lenguaje natural estructurado (Dado / Cuando / Entonces). |
-| **BLE** | Bluetooth Low Energy | Protocolo de radiofrecuencia de ultra-bajo consumo a 2.4 GHz utilizado para transmitir bioseñales desde la SmartShirt al nodo AstroVital. |
+| **BLE** | Bluetooth Low Energy | Protocolo de radiofrecuencia de ultra-bajo consumo a 2.4 GHz utilizado para transmitir bioseñales desde la SmartShirt al nodo ASTHA. |
 | **CCSDS** | Consultative Committee for Space Data Systems | Organización internacional que define los estándares mandatorios de comunicaciones, paquetes y telemetría espacial (ej. DTN). |
 | **CMO** | Crew Medical Officer | Oficial Médico de la Tripulación. Astronauta con entrenamiento clínico intensivo de emergencia responsable de la salud del equipo. |
 | **CSA / ASC** | Canadian Space Agency / Agence Spatiale Canadienne | Agencia Espacial Canadiense. Desarrolladora de la indumentaria Bio-Monitor (SmartShirt) y del espectrómetro de neutrones CANS. |
@@ -220,4 +220,4 @@ Tiempo total que tarda una señal de radio que viaja a la velocidad de la luz ($
 
 ---
 
-*Glosario formal generado para el repositorio oficial del proyecto AstroVital en el NASA Space Apps Challenge.*
+*Glosario formal generado para el repositorio oficial del proyecto ASTHA en el NASA Space Apps Challenge.*

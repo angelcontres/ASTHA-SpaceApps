@@ -1,5 +1,5 @@
 # INFORME DE VALIDACIÓN CIENTÍFICA Y NORMATIVA DE LA NASA
-## Auditoría Cruzada del SRS "AstroVital" vs. Fuentes Oficiales NASA y CSA
+## Auditoría Cruzada del SRS "ASTHA" vs. Fuentes Oficiales NASA y CSA
 ### Documento de Certificación de Requisitos Técnicos y Médicos
 
 ---
@@ -57,6 +57,6 @@ El SRS restringe las contramedidas exclusivamente a los recursos reales certific
 ---
 
 ## 5. CONCLUSIÓN TÉCNICA PARA EL JURADO
-El SRS de **AstroVital** no solo está listo para programar: **está científicamente blindado**. 
+El SRS de **ASTHA** no solo está listo para programar: **está científicamente blindado**. 
 
 Cualquier mentor o evaluador del Bloque 1 (Pipelines de Datos), Bloque 2 (Herramientas Operativas), Bloque 3 (Simulación y Gamificación) o Bloque 4 (Pitch) que contraste tus umbrales encontrará concordancia exacta con los manuales técnicos **NASA-STD-3001** y la investigación de la **CSA**.

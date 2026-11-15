@@ -1,5 +1,5 @@
 # 🛡️ Criterios de Aceptación Técnicos y No Funcionales (AC-TECH)
-### AstroVital — NASA Space Apps Challenge 2026
+### ASTHA — NASA Space Apps Challenge 2026
 **Estándar Mandatorio:** NASA Software Safety Standard (NASA-STD-8719.13C) | CCSDS DTN | NPR 7150.2
 
 ---
@@ -40,7 +40,7 @@ El software **debe** operar dentro de los estrictos límites de potencia eléctr
 
 ### Criterios Específicos de Aceptación:
 1. **Consumo Eléctrico Máximo en Reposo:**
-   * El consumo de potencia del dispositivo cliente ejecutando AstroVital en modo de vigilancia nominal no debe superar los **$5.0\text{ Watts}$** medidos en el bus de alimentación DC.
+   * El consumo de potencia del dispositivo cliente ejecutando ASTHA en modo de vigilancia nominal no debe superar los **$5.0\text{ Watts}$** medidos en el bus de alimentación DC.
 2. **Carga Sostenida de CPU:**
    * El uso de CPU en estado estacionario (procesamiento de 4 flujos continuos a 1 Hz, evaluación de reglas y dibujo de curvas) no debe exceder del **$15.0\%$ de un solo núcleo de procesamiento**.
 3. **Modo de Contingencia en Batería de Emergencia:**

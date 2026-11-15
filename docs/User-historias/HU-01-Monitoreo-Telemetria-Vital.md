@@ -20,7 +20,7 @@
 ### 🧪 Criterios de Aceptación (Gherkin BDD):
 
 #### Escenario 1: Ingesta de datos biomédicos con valores en rango nominal
-* **Dado que** mi camiseta inteligente (SmartShirt Astroskin) está sincronizada por Bluetooth LE de baja energía con mi nodo local AstroVital,
+* **Dado que** mi camiseta inteligente (SmartShirt Astroskin) está sincronizada por Bluetooth LE de baja energía con mi nodo local ASTHA,
 * **Cuando** el sensor transmite una lectura de $\text{FC} = 68\text{ bpm}$, $\text{PA} = 118/76\text{ mmHg}$, $\text{SpO}_2 = 98.5\%$ y $\text{HRV} = 48\text{ ms}$,
 * **Entonces** las tarjetas de vitales deben mostrarse en color Verde (#10b981) con la etiqueta textual "Nominal",
 * **Y** la tasa de refresco en pantalla no debe exceder de 1 Hz para no consumir ciclos de CPU innecesarios.
@@ -52,7 +52,7 @@
 #### Escenario 1: Activación de alerta por privación de sueño sostenida
 * **Dado que** el registro de descanso de un astronauta marca menos de 5.5 horas de sueño por noche,
 * **Cuando** esta condición se repite durante 2 o más días consecutivos ($\text{Días} \ge 2$),
-* **Entonces** AstroVital debe elevar automáticamente el estado del tripulante a nivel **Precaución (Amarillo)**,
+* **Entonces** ASTHA debe elevar automáticamente el estado del tripulante a nivel **Precaución (Amarillo)**,
 * **Y** debe desplegar una notificación al CMO recomendando: "Suspender tareas de alto riesgo motor y administrar prueba psicomotora de vigilancia (PVT)".
 
 #### Escenario 2: Correlación con caída de HRV rMSSD

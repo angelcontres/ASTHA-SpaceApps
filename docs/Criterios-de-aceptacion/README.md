@@ -1,5 +1,5 @@
 # 🎯 Criterios de Aceptación y Marco de Verificación y Validación (V&V)
-### AstroVital — NASA Space Apps Challenge 2026
+### ASTHA — NASA Space Apps Challenge 2026
 **Marco Normativo:** NASA-STD-3001 Vol 1 & 2 | NPR 7150.2 (NASA Software Engineering) | ISO/IEC/IEEE 29148
 
 ---
@@ -8,7 +8,7 @@
 
 Para que un software de soporte a la decisión médica de vuelo espacial sea aceptado operacionalmente por la NASA y las agencias asociadas (CSA, ESA, JAXA), **no basta con definir requisitos teóricos**: cada requisito funcional y no funcional debe contar con **Criterios de Aceptación (Acceptance Criteria - AC)** verificables mediante métodos estandarizados y auditables.
 
-Este directorio formaliza los criterios de aceptación del sistema **AstroVital**, divididos en dos dominios complementarios:
+Este directorio formaliza los criterios de aceptación del sistema **ASTHA**, divididos en dos dominios complementarios:
 1. **Criterios Clínicos y Fisiológicos (AC-CLIN):** Garantizan que los algoritmos de detección, los umbrales de alerta médica y las contramedidas respetan estrictamente los límites biológicos humanos establecidos en `NASA-STD-3001` y el marco `NASA R.I.D.G.E.`.
 2. **Criterios Técnicos y No Funcionales (AC-TECH):** Garantizan que la arquitectura informática es capaz de operar en el entorno hostil del espacio profundo: **100% offline (Zero-Ping)**, con tolerancia a radiación cósmica (**SEU**), bajo consumo eléctrico (**$< 5\text{ W}$**) y con sincronización en malla P2P sin servidor central.
 
@@ -16,7 +16,7 @@ Este directorio formaliza los criterios de aceptación del sistema **AstroVital*
 
 ## 🔬 2. Métodos de Verificación Oficiales de la NASA (I / A / D / T)
 
-Cada criterio de aceptación en AstroVital está clasificado bajo uno de los cuatro métodos formales de verificación de la NASA (*NASA Systems Engineering Handbook*):
+Cada criterio de aceptación en ASTHA está clasificado bajo uno de los cuatro métodos formales de verificación de la NASA (*NASA Systems Engineering Handbook*):
 
 ```mermaid
 flowchart TD
@@ -67,4 +67,4 @@ Los criterios detallados se estructuran en los siguientes documentos dentro de e
 
 ---
 
-*Documento central de ingeniería de requisitos de AstroVital para la auditoría técnica de NASA Space Apps Challenge.*
+*Documento central de ingeniería de requisitos de ASTHA para la auditoría técnica de NASA Space Apps Challenge.*

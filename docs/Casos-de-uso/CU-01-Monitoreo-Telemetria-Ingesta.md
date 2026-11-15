@@ -20,7 +20,7 @@ El sistema recibe paquetes de datos fisiológicos continuos a 1 Hz desde la indu
 
 ### 2. Precondiciones:
 1. La prenda biomédica (SmartShirt) tiene los electrodos y bandas pletismográficas en contacto adecuado con el torso del astronauta.
-2. El nodo cliente de AstroVital tiene la interfaz BLE activa y emparejada con la dirección MAC del sensor asignado al tripulante.
+2. El nodo cliente de ASTHA tiene la interfaz BLE activa y emparejada con la dirección MAC del sensor asignado al tripulante.
 3. El motor de persistencia local (SQLite / almacenamiento flash) dispone de espacio libre ($> 50\text{ MB}$).
 
 ### 3. Disparador (Trigger):
@@ -28,7 +28,7 @@ Recepción periódica de un paquete de telemetría BLE (intervalo de 1000 ms).
 
 ### 4. Flujo Principal de Eventos:
 1. El sensor biomédico emite un paquete que contiene: Frecuencia Cardíaca (bpm), Presión Arterial estimada (mmHg), SpO₂ (%), Intervalos R-R (ms) y Acelerometría triaxial (g).
-2. El subsistema de comunicaciones de AstroVital recibe el paquete binario y calcula la suma de verificación CRC32 para descartar corrupción por ruido electromagnético.
+2. El subsistema de comunicaciones de ASTHA recibe el paquete binario y calcula la suma de verificación CRC32 para descartar corrupción por ruido electromagnético.
 3. El módulo de filtrado aplica un filtro pasa-banda digital y descarta artefactos de movimiento cuando la acelerometría indica actividad física vigorosa (ej. sesión en cinta ergométrica).
 4. El sistema calcula la métrica de variabilidad cardíaca en el dominio del tiempo ($\text{HRV rMSSD}$) sobre una ventana móvil de 5 minutos.
 5. El sistema compara los valores contra los umbrales fisiológicos de `NASA-STD-3001`.
@@ -82,7 +82,7 @@ La concentración de $ppCO_2$ supera los $2.5\text{ mmHg}$ o la tasa de radiaci�
 
 ### 4. Flujo Principal de Eventos:
 1. El sensor atmosférico detecta $ppCO_2 = 3.2\text{ mmHg}$ ($> 4200\text{ ppm}$) en el módulo de descanso.
-2. El motor de reglas de AstroVital consulta el estado biomédico de los astronautas ubicados en dicho módulo.
+2. El motor de reglas de ASTHA consulta el estado biomédico de los astronautas ubicados en dicho módulo.
 3. El sistema detecta que el astronauta presenta taquipnea ($\text{FR} = 22\text{ rpm}$) y una leve elevación de la presión arterial sistólica.
 4. El sistema descarta una crisis hipertensiva idiopática y clasifica el cuadro como: **"Alerta ECLSS: Riesgo de Intoxicación por $CO_2$ / Hipercapnia"**.
 5. La barra superior del hábitat entra en estado de advertencia visual amarilla.
@@ -118,7 +118,7 @@ La concentración de $ppCO_2$ supera los $2.5\text{ mmHg}$ o la tasa de radiaci�
 Permite a cualquier tripulante registrar síntomas cualitativos (visión borrosa, cefalea, náuseas, dolor lumbar o fatiga) en menos de 10 segundos mediante selectores táctiles gigantes aptos para dedos enguantados o condiciones de fatiga extrema.
 
 ### 2. Precondiciones:
-1. La aplicación AstroVital se encuentra abierta en la tableta del astronauta o en la pantalla de mamparo.
+1. La aplicación ASTHA se encuentra abierta en la tableta del astronauta o en la pantalla de mamparo.
 2. El astronauta ha seleccionado su identificador de tripulante (`C001` - `C004`).
 
 ### 3. Disparador (Trigger):

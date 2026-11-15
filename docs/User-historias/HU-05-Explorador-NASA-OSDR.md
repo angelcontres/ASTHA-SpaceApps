@@ -15,14 +15,14 @@
 ### 📖 Narrativa de Usuario:
 > **Como** Oficial Científico o Evaluador del Jurado de NASA Space Apps,  
 > **Quiero** acceder a un explorador interactivo embebido que muestre los 116 estudios espaciales oficiales de seres humanos (*Homo sapiens*) indexados desde la API de NASA OSDR,  
-> **Para** comprobar que los algoritmos clínicos de AstroVital están anclados en evidencia biológica real de vuelo espacial y no en suposiciones teóricas.
+> **Para** comprobar que los algoritmos clínicos de ASTHA están anclados en evidencia biológica real de vuelo espacial y no en suposiciones teóricas.
 
 ### 🧪 Criterios de Aceptación (Gherkin BDD):
 
 #### Escenario 1: Apertura del modal explorador y consulta de estudios
 * **Dado que** el usuario presiona el botón "NASA OSDR API (116 Estudios)" en la barra superior de la aplicación,
 * **Cuando** se abre el modal táctico,
-* **Entonces** debe listar los estudios clave con su identificador oficial (`OSD-574`, `OSD-715`, `OSD-53`, `OSD-2`, `OSD-51`), su título, su misión de origen y su correlación patológica con AstroVital.
+* **Entonces** debe listar los estudios clave con su identificador oficial (`OSD-574`, `OSD-715`, `OSD-53`, `OSD-2`, `OSD-51`), su título, su misión de origen y su correlación patológica con ASTHA.
 
 #### Escenario 2: Prueba de conectividad con endpoint oficial de NASA
 * **Dado que** el evaluador presiona el botón "Comprobar API NASA",
@@ -113,7 +113,7 @@
 
 #### Escenario 1: Conmutación a perfil de ultra-bajo consumo
 * **Dado que** el bus de potencia principal notifica caída a batería de reserva,
-* **Cuando** AstroVital recibe la señal de ahorro energético,
+* **Cuando** ASTHA recibe la señal de ahorro energético,
 * **Entonces** debe desactivar automáticamente las animaciones CSS pesadas, reducir la tasa de renderizado de gráficos a 1 frame cada 5 segundos y atenuar el brillo de pantalla,
 * **Y** mantener activo al 100% el motor de reglas de detección de parada cardíaca y anoxia.
 

@@ -4,7 +4,7 @@ Nov 14, 2026 · @angel
 
 ## 1. Introducción
 
-Este documento especifica los requisitos de **AstroVital**, un sistema autónomo de monitoreo biomédico y soporte a decisiones clínicas para tripulaciones en misiones más allá de la órbita baja, donde la latencia con la Tierra (3 a 22 minutos por sentido) impide la consulta en tiempo real. Sigue la estructura de ISO/IEC/IEEE 29148.
+Este documento especifica los requisitos de **ASTHA**, un sistema autónomo de monitoreo biomédico y soporte a decisiones clínicas para tripulaciones en misiones más allá de la órbita baja, donde la latencia con la Tierra (3 a 22 minutos por sentido) impide la consulta en tiempo real. Sigue la estructura de ISO/IEC/IEEE 29148.
 
 **Propósito.** Dar a un tripulante no especialista una herramienta que detecte deriva fisiológica, clasifique su gravedad y le indique contramedidas ejecutables con los recursos a bordo, sin ninguna conexión externa.
 
@@ -26,7 +26,7 @@ Este documento especifica los requisitos de **AstroVital**, un sistema autónomo
 
 ## 2. Descripción general
 
-AstroVital es un nodo local que correlaciona telemetría fisiológica (estilo Astroskin) con telemetría ambiental y de radiación (estilo ECLSS y CANS) para producir un estado de salud tripartito (Nominal, Precaución, Crítico) por tripulante y por sistema de órganos.
+ASTHA es un nodo local que correlaciona telemetría fisiológica (estilo Astroskin) con telemetría ambiental y de radiación (estilo ECLSS y CANS) para producir un estado de salud tripartito (Nominal, Precaución, Crítico) por tripulante y por sistema de órganos.
 
 ### 2.1 Actores
 
@@ -143,7 +143,7 @@ Prioridad según MoSCoW: **M** (debe), **S** (debería), **C** (podría). Cada r
 
 ## 4. Requisitos no funcionales (RNF)
 
-Esta sección define las restricciones de calidad, rendimiento, eficiencia energética, ergonomía espacial, seguridad criptográfica y comunicación multi-nodo que gobiernan a AstroVital bajo el estándar ISO/IEC/IEEE 29148 y NASA-STD-3001.
+Esta sección define las restricciones de calidad, rendimiento, eficiencia energética, ergonomía espacial, seguridad criptográfica y comunicación multi-nodo que gobiernan a ASTHA bajo el estándar ISO/IEC/IEEE 29148 y NASA-STD-3001.
 
 ### 4.1 Eficiencia energética, rendimiento y huella de recursos (Ultra-Low Power & Resource Footprint)
 

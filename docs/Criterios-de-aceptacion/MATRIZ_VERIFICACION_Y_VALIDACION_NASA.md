@@ -1,5 +1,5 @@
 # 📊 Matriz de Verificación y Validación (NASA V&V Compliance Matrix)
-### AstroVital — NASA Space Apps Challenge 2026
+### ASTHA — NASA Space Apps Challenge 2026
 **Norma de Auditoría:** NASA Systems Engineering Handbook (SP-2016-6105) | NASA-STD-3001 | ISO/IEC/IEEE 29148
 
 ---

@@ -1,5 +1,5 @@
 # 📐 Especificación de Wireframes, Ergonomía y Diseño UI/UX
-### AstroVital — NASA Space Apps Challenge 2026
+### ASTHA — NASA Space Apps Challenge 2026
 **Normas de Referencia:** NASA-STD-3001 Vol 2 (Human Factors & Habitation) | ISO 9241-11 (Usabilidad) | MIL-STD-1472H (Human Engineering)
 
 ---
@@ -22,7 +22,7 @@ La pantalla principal se estructura en una cuadrícula simétrica de 12 columnas
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ 1. BARRA SUPERIOR DE TELEMETRÍA DE CABINA (Sticky Top Bar - 56px)                              │
-│ [Logo AstroVital] [Badge NASA-STD-3001] [Badge Edge 100%] ... [Radiación CANS] [ppCO2 Cabina] │
+│ [Logo ASTHA] [Badge NASA-STD-3001] [Badge Edge 100%] ... [Radiación CANS] [ppCO2 Cabina] │
 ├────────────────────────────────┬───────────────────────────────────────────────────────────────┤
 │ COLUMNA IZQUIERDA (4 COLUMNAS) │ COLUMNA DERECHA (8 COLUMNAS)                                  │
 │                                │                                                               │
@@ -107,7 +107,7 @@ La pantalla principal se estructura en una cuadrícula simétrica de 12 columnas
 
 ### 4.1. Paleta Cromática Aeroespacial Táctica (Dark Tactical Scheme)
 
-| Token Semántico | Valor Hexadecimal | Uso Operacional en AstroVital | Razón Ergonómica |
+| Token Semántico | Valor Hexadecimal | Uso Operacional en ASTHA | Razón Ergonómica |
 | :--- | :---: | :--- | :--- |
 | **`space-950`** | `#030712` | Fondo absoluto de la aplicación | Apagado de píxeles en paneles OLED; consumo $< 5\text{ W}$. |
 | **`space-900`** | `#060913` | Fondo de viewport y contenedores | Contraste de profundidad sin deslumbramiento nocturno. |

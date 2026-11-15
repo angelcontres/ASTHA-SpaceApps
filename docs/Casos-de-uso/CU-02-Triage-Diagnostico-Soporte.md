@@ -19,7 +19,7 @@
 El usuario interactúa con la figura anatómica humana 2D/3D rendered en pantalla táctil. Al pulsar sobre cualquier región corporal (cabeza/ojos, tórax/corazón, abdomen/riñones, extremidades/huesos), el sistema realiza un triage visual instantáneo, desplegando el estado de salud, la fisiopatología en microgravedad y las bioseñales vinculadas.
 
 ### 2. Precondiciones:
-1. La aplicación AstroVital está en ejecución y mostrando el panel táctico principal.
+1. La aplicación ASTHA está en ejecución y mostrando el panel táctico principal.
 2. Los datos fisiológicos del tripulante seleccionado han sido procesados por el motor de evaluación.
 
 ### 3. Disparador (Trigger):
@@ -77,7 +77,7 @@ La Presión Arterial Sistólica alcanza o supera los $140\text{ mmHg}$ ($\text{P
 
 ### 4. Flujo Principal de Eventos:
 1. El sensor pletismográfico reporta una lectura de $\text{PA} = 144/92\text{ mmHg}$ en el tripulante `C003` (Dra. Sian Proctor).
-2. El motor de reglas de AstroVital verifica que el tripulante se encuentra en el día 2 de vuelo (FD-02), fase crítica de redistribución cefálica de sangre y líquido cefalorraquídeo.
+2. El motor de reglas de ASTHA verifica que el tripulante se encuentra en el día 2 de vuelo (FD-02), fase crítica de redistribución cefálica de sangre y líquido cefalorraquídeo.
 3. El sistema clasifica el evento con nivel de severidad **Crítico (Rojo)**.
 4. La tarjeta de Presión Arterial en pantalla entra en animación de pulso rojo intermitente con el texto "SANS CRITICAL".
 5. El hotspot de los ojos en el mapa anatómico pasa de cian a rojo (#ef4444).

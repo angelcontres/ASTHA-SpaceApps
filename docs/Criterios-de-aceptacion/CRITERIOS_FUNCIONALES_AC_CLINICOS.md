@@ -1,5 +1,5 @@
 # 🧬 Criterios de Aceptación Clínicos y Fisiológicos (AC-CLIN)
-### AstroVital — NASA Space Apps Challenge 2026
+### ASTHA — NASA Space Apps Challenge 2026
 **Estándar Mandatorio:** NASA-STD-3001 (Volume 1: Crew Health | Volume 2: Human Factors, Habitation, and Environment)
 
 ---

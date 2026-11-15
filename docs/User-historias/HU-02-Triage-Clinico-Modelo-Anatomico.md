@@ -93,7 +93,7 @@
 #### Escenario 2: Alerta predictiva antes del cruce de umbral absoluto
 * **Dado que** la presión arterial de un tripulante se encuentra actualmente en rango nominal ($122\text{ mmHg}$),
 * **Cuando** la proyección por regresión lineal a 7 días indica que superará los $135\text{ mmHg}$ si continúa la tendencia observada,
-* **Entonces** AstroVital debe emitir una **Alerta Precoz de Deriva**,
+* **Entonces** ASTHA debe emitir una **Alerta Precoz de Deriva**,
 * **Y** mostrar la justificación matemática: "Tendencia ascendente sostenida (+1.8 mmHg/día) cruzará el umbral de precaución en 4 días".
 
 ---

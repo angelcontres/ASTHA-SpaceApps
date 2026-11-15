@@ -1,4 +1,5 @@
-# 🚀 AstroVital: Autonomous Deep-Space Health Guardian & CDSS
+# 🚀 ASTHA: Autonomous Space Telemetry & Health Analytics
+### Autonomous Space Telemetry & Health Analytics | NASA Space Apps Challenge 2026
 ### NASA Space Apps Challenge | Create Health Monitoring Software for Astronauts on Space Missions
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg?style=for-the-badge&logo=github)](https://angelcontres.github.io/AstroVital-SpaceApps/)
@@ -34,7 +35,7 @@ En la Estación Espacial Internacional (LEO), cualquier descompensación médica
 
 ## 🧬 2. Fundamento Biomédico Espacial (NASA R.I.D.G.E. Framework)
 
-AstroVital correlaciona continuamente el exposoma espacial contra la fisiología humana:
+**ASTHA** (**Autonomous Space Telemetry & Health Analytics**) correlaciona continuamente el exposoma espacial contra la fisiología humana:
 
 1. **Radiation (Radiación Espacial):** Exposición a GCR y tormentas solares (SPE). Monitoreo de neutrones secundarios (~30% de la dosis biológica en cabina) calibrado con el espectrómetro **CANS** de la Agencia Espacial Canadiense (CSA).
 2. **Isolation & Confinement (Aislamiento):** Ruptura de ritmos circadianos y depresión autonómica detectada mediante Variabilidad de la Frecuencia Cardíaca (**HRV rMSSD**).
@@ -76,7 +77,7 @@ flowchart TD
 ```
 
 ### Algoritmo de Detección de Deriva (Modified Z-Score)
-Para evitar falsas alarmas derivadas de valores atípicos y heterogeneidad individual, AstroVital utiliza la Desviación Absoluta de la Mediana ($MAD$):
+Para evitar falsas alarmas derivadas de valores atípicos y heterogeneidad individual, ASTHA utiliza la Desviación Absoluta de la Mediana ($MAD$):
 
 $$M_i = \frac{0.6745 \cdot (x_i - \tilde{x})}{MAD}$$
 

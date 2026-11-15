@@ -1,4 +1,4 @@
-# 📋 Historias de Usuario del Sistema AstroVital (User Stories)
+# 📋 Historias de Usuario del Sistema ASTHA (User Stories)
 ### NASA Space Apps Challenge | Create Health Monitoring Software for Astronauts on Space Missions
 **Marco Normativo:** ISO/IEC/IEEE 29148 | NASA-STD-3001 Vol 1 & 2 | Human-Rating Requirements (NPR 8705.2C)
 
@@ -6,7 +6,7 @@
 
 ## 🎯 1. Propósito y Visión General
 
-Este documento y sus módulos asociados detallan las **Historias de Usuario (HU)** de **AstroVital**, el sistema autónomo de soporte a la decisión clínica (CDSS) para misiones tripuladas de espacio profundo (Tránsito Tierra-Marte).
+Este documento y sus módulos asociados detallan las **Historias de Usuario (HU)** de **ASTHA**, el sistema autónomo de soporte a la decisión clínica (CDSS) para misiones tripuladas de espacio profundo (Tránsito Tierra-Marte).
 
 Debido a que una misión a Marte enfrenta una latencia electromagnética de hasta **22 minutos por sentido (44 min ida y vuelta)** y no existe posibilidad de evacuación médica (*No MEDEVAC*), el software debe satisfacer las necesidades operacionales tanto de la tripulación en tránsito como del equipo de soporte en Tierra (Mission Control Center en Houston).
 
@@ -27,7 +27,7 @@ Debido a que una misión a Marte enfrenta una latencia electromagnética de hast
 
 ## ✅ 3. Definición de "Hecho" (Definition of Done - DoD Aeroespacial)
 
-Para que una Historia de Usuario se considere **DONE (Terminada)** en AstroVital, debe satisfacer los siguientes 6 criterios rigurosos:
+Para que una Historia de Usuario se considere **DONE (Terminada)** en ASTHA, debe satisfacer los siguientes 6 criterios rigurosos:
 
 1. **Cumplimiento de NASA-STD-3001:** Los umbrales de alerta médica y rangos nominales/críticos deben coincidir exactamente con los límites fisiológicos del estándar de la NASA.
 2. **Autonomía 100% Edge:** La funcionalidad debe ejecutarse localmente sin depender de ninguna llamada de red externa ni conexión a la nube.

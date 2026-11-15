@@ -1,4 +1,4 @@
-# 📐 Modelo y Catálogo de Casos de Uso del Sistema AstroVital
+# 📐 Modelo y Catálogo de Casos de Uso del Sistema ASTHA
 ### NASA Space Apps Challenge | Create Health Monitoring Software for Astronauts on Space Missions
 **Marco Normativo:** ISO/IEC/IEEE 29148 | UML 2.5 | NASA Systems Engineering Handbook (NASA/SP-2016-6105)
 
@@ -6,7 +6,7 @@
 
 ## 🎯 1. Propósito y Alcance del Modelo de Casos de Uso
 
-Este documento define la interacción operacional y sistémica entre los actores (humanos y automatizados) y el sistema **AstroVital** en misiones tripuladas de espacio profundo hacia Marte. 
+Este documento define la interacción operacional y sistémica entre los actores (humanos y automatizados) y el sistema **ASTHA** en misiones tripuladas de espacio profundo hacia Marte. 
 
 A diferencia de las Historias de Usuario (que expresan el valor de usuario y los criterios de aceptación ágiles), los **Casos de Uso (CU)** especifican formalmente:
 * Precondiciones y Postcondiciones del estado de la nave y de la tripulación.

@@ -16,7 +16,7 @@
 | **Historias Trazadas** | `HU-09`, `HU-12` |
 
 ### 1. Descripción Breve:
-Cuando se dispara cualquier evento médico o ambiental, AstroVital transforma la complejidad clínica en un checklist secuencial interactivo de un máximo de 4 pasos accionables. El tripulante marca cada casilla conforme completa la tarea, registrando el avance en tiempo real en la memoria de la nave.
+Cuando se dispara cualquier evento médico o ambiental, ASTHA transforma la complejidad clínica en un checklist secuencial interactivo de un máximo de 4 pasos accionables. El tripulante marca cada casilla conforme completa la tarea, registrando el avance en tiempo real en la memoria de la nave.
 
 ### 2. Precondiciones:
 1. Una regla de decisión clínica ha pasado a estado Precaución o Crítico, o el usuario ha seleccionado manualmente un protocolo de contramedida.
@@ -76,7 +76,7 @@ La tasa de dosis de radiación ionizante detectada por el CANS supera los $100\ 
 
 ### 4. Flujo Principal de Eventos:
 1. El dosímetro CANS detecta un flujo repentino de partículas solares alcanzando $184.2\ \mu\text{Sv/h}$.
-2. El sistema AstroVital evalúa la tasa de incremento ($dD/dt$) y clasifica el evento como **"Emergencia SPE: Tormenta Solar de Partículas de Alta Energía"**.
+2. El sistema ASTHA evalúa la tasa de incremento ($dD/dt$) y clasifica el evento como **"Emergencia SPE: Tormenta Solar de Partículas de Alta Energía"**.
 3. El sistema activa una alarma acústica táctica distintiva de tono alto intermitente.
 4. Todas las pantallas de la nave se transforman en modo de evacuación de alto contraste: fondo oscuro con bordes rojos pulsantes.
 5. El sistema despliega el procedimiento inmediato de 3 acciones prioritarias:
@@ -122,11 +122,11 @@ Guía al Oficial Médico y al astronauta en la colocación, sellado neumático, 
 Activación del protocolo SANS o indicación terapéutica por parte del Oficial Médico.
 
 ### 4. Flujo Principal de Eventos:
-1. El CMO abre el asistente interactivo "Protocolo LBNP" en AstroVital.
+1. El CMO abre el asistente interactivo "Protocolo LBNP" en ASTHA.
 2. El sistema guía la colocación del sello de neopreno en la cintura del paciente con verificación visual de ajuste hermético.
 3. El sistema inicia un temporizador de cuenta regresiva de 60 minutos calibrado a $-35\text{ mmHg}$.
 4. El CMO activa la bomba de succión manual/automática hasta que el manómetro digital marca $-35\text{ mmHg}$.
-5. Durante los 60 minutos de sesión, AstroVital muestrea la presión arterial y la frecuencia cardíaca cada 30 segundos.
+5. Durante los 60 minutos de sesión, ASTHA muestrea la presión arterial y la frecuencia cardíaca cada 30 segundos.
 6. A los 30 minutos, el sistema emite una señal suave solicitando al paciente confirmar: "¿Siente mareo, visión de túnel o náuseas?". El paciente pulsa "No, Nominal".
 7. Al cumplirse los 60 minutos, el sistema indica: "Finalizando sesión: Despresurizar gradualmente durante 2 minutos hasta $0\text{ mmHg}$".
 8. El sistema solicita realizar el examen visual post-contramedida con la Rejilla de Amsler en pantalla.

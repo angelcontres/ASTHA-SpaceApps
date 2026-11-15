@@ -9,7 +9,7 @@
 | Atributo | Detalle |
 | :--- | :--- |
 | **Identificador** | `CU-10` |
-| **Actor Primario** | Nodo Local AstroVital (Cliente Edge) |
+| **Actor Primario** | Nodo Local ASTHA (Cliente Edge) |
 | **Actores Secundarios** | Nodos Vecinos en Cabina / Ingeniero de Software |
 | **Nivel** | Nivel de Arquitectura / Sincronización Distribuida |
 | **Requisitos SRS** | `RNF-NET-02`, `RNF-NET-04`, `RNF-SEC-04` |
@@ -19,7 +19,7 @@
 Garantiza que cualquier modificación en el estado de salud, checklist completado o lectura de telemetría realizada en un dispositivo (ej. tableta en camarote) se propague y reconcilie de forma automática con las demás terminales de la nave mediante una red de malla ad-hoc sin depender de un servidor central.
 
 ### 2. Precondiciones:
-1. Al menos dos terminales de AstroVital están encendidas y con sus interfaces de radio local (Wi-Fi 802.11s o Bluetooth Mesh) habilitadas.
+1. Al menos dos terminales de ASTHA están encendidas y con sus interfaces de radio local (Wi-Fi 802.11s o Bluetooth Mesh) habilitadas.
 2. Cada nodo posee un par de claves criptográficas asimétricas locales para autenticar las transacciones.
 
 ### 3. Disparador (Trigger):
@@ -54,7 +54,7 @@ Conclusión de un checklist médico, cambio de estado clínico o conexión de un
 | Atributo | Detalle |
 | :--- | :--- |
 | **Identificador** | `CU-11` |
-| **Actor Primario** | Motor de Comunicaciones AstroVital |
+| **Actor Primario** | Motor de Comunicaciones ASTHA |
 | **Actores Secundarios** | Cirujano de Vuelo en Tierra (Houston Flight Surgeon) |
 | **Nivel** | Nivel de Comunicación Interplanetaria / Protocolo de Transporte |
 | **Requisitos SRS** | `RF-GUI-05`, `RNF-NET-03`, `RNF-SEC-01` |
@@ -82,7 +82,7 @@ Fin de ciclo diario (23:59 MET), disparo de una alerta clínica crítica o apert
 ### 5. Flujos Alternativos:
 * **FA-01: Recepción de mensaje de recomendación médica diferido desde Houston:**
   1. Tras 44 minutos (22 min ida + 22 min vuelta), el transpondedor recibe un bundle de respuesta firmado por el Cirujano de Vuelo en Tierra.
-  2. AstroVital valida la autenticidad del mensaje y despliega una notificación no intrusiva: "Mensaje Asíncrono del Flight Surgeon recibido; consultar sugerencias secundarias".
+  2. ASTHA valida la autenticidad del mensaje y despliega una notificación no intrusiva: "Mensaje Asíncrono del Flight Surgeon recibido; consultar sugerencias secundarias".
   3. El Oficial Médico revisa las sugerencias de Houston como apoyo consultivo, manteniendo la autonomía operativa de la nave.
 
 ### 6. Flujos de Excepción:
@@ -108,17 +108,17 @@ Fin de ciclo diario (23:59 MET), disparo de una alerta clínica crítica o apert
 | **Historias Trazadas** | `HU-20` |
 
 ### 1. Descripción Breve:
-Cuando la nave espacial sufre un fallo en la generación de energía (ej. rotura de paneles solares o desvío de potencia a maniobras de propulsión de emergencia) y entra en modo de baterías de respaldo, AstroVital reduce drásticamente su demanda eléctrica a menos de 5 Watts para garantizar la continuidad ininterrumpida del monitoreo vital durante días.
+Cuando la nave espacial sufre un fallo en la generación de energía (ej. rotura de paneles solares o desvío de potencia a maniobras de propulsión de emergencia) y entra en modo de baterías de respaldo, ASTHA reduce drásticamente su demanda eléctrica a menos de 5 Watts para garantizar la continuidad ininterrumpida del monitoreo vital durante días.
 
 ### 2. Precondiciones:
 1. El subsistema de potencia EPS emite la señal de contingencia "Bus de Batería Primaria Bajo / Nivel 2".
-2. AstroVital recibe la señal a través de la interfaz de gestión de energía del sistema operativo embebido.
+2. ASTHA recibe la señal a través de la interfaz de gestión de energía del sistema operativo embebido.
 
 ### 3. Disparador (Trigger):
 Recepción de evento de telemetría de bus de energía: $\text{PowerState} == \text{BATTERY\_CRITICAL}$.
 
 ### 4. Flujo Principal de Eventos:
-1. El núcleo de AstroVital intercepta el evento de emergencia eléctrica.
+1. El núcleo de ASTHA intercepta el evento de emergencia eléctrica.
 2. El sistema desactiva de inmediato todas las animaciones gráficas complejas, sombras CSS y transiciones fluidas.
 3. La tasa de refresco visual de la pantalla se reduce de 60 Hz a 0.2 Hz (1 actualización cada 5 segundos).
 4. El brillo de la pantalla táctil OLED se reduce al $20\%$ (aprovechando que los píxeles negros apagan los diodos orgánicos, reduciendo el consumo del panel en más del $65\%$).

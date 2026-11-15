@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AstroVital — Autonomous Deep-Space Health Guardian & ECLSS</title>
+  <title>ASTHA — Autonomous Space Telemetry & Health Analytics</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN for Aerospace Telemetry -->
@@ -159,16 +159,7 @@
       filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.9));
     }
 
-    /* ======================================================== */
-    /* MODO M / FORMATO M: CERO REDONDEADOS / BORDES RECTOS 90° */
-    /* ======================================================== */
-    body.modo-m * {
-      border-radius: 0px !important;
-    }
-    body.modo-m .hud-card {
-      border-radius: 0px !important;
-      border: 1px solid rgba(250, 204, 21, 0.5) !important;
-    }
+
 
     /* RANGE BAR STYLING */
     .range-track {
@@ -201,7 +192,7 @@
     }
   </style>
 </head>
-<body class="nasa-insane-grid text-slate-100 font-sans min-h-screen flex flex-col custom-scrollbar select-none modo-m">
+<body class="nasa-insane-grid text-slate-100 font-sans min-h-screen flex flex-col custom-scrollbar select-none">
 
   <!-- TOP APP BAR -->
   <header class="border-b border-[#2a5ba8]/80 bg-[#122e5e]/95 backdrop-blur-md px-6 py-2.5 sticky top-0 z-40 flex flex-wrap items-center justify-between gap-4 shadow-xl">
@@ -233,13 +224,13 @@
 
       <div>
         <div class="flex items-center space-x-2">
-          <span class="text-base font-bold tracking-wider text-white uppercase font-mono">ASTRO<span class="text-[#facc15]">VITAL</span></span>
+          <span class="text-base font-bold tracking-wider text-white uppercase font-mono">AST<span class="text-[#facc15]">HA</span></span>
           <span class="text-[9px] px-2 py-0.5 bg-[#facc15] text-[#0f2854] font-mono font-bold tracking-wider uppercase">ESTD 1958</span>
           <span class="text-[9px] px-2 py-0.5 bg-emerald-950/90 border border-emerald-400 text-emerald-300 font-mono flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> OFFLINE EDGE
           </span>
         </div>
-        <p class="text-[10px] text-slate-300 font-mono tracking-wide">NATIONAL AERONAUTICS AND SPACE ADMINISTRATION · BIO-GUARDIAN</p>
+        <p class="text-[10px] text-slate-300 font-mono tracking-wide">AUTONOMOUS SPACE TELEMETRY & HEALTH ANALYTICS · NASA BIO-GUARDIAN</p>
       </div>
     </div>
 
@@ -252,10 +243,7 @@
         <span>MASTER CAUTION</span>
       </button>
 
-      <button onclick="toggleModoM()" id="btn-modo-m" class="flex items-center space-x-1.5 px-3 py-1.5 border border-[#facc15] bg-[#122e5e] text-[#fef08a] font-bold transition shadow-sm hover:bg-[#183a74]" title="Alternar Formato M (Bordes Rectos a 90°)">
-        <i data-lucide="square" class="w-3.5 h-3.5 text-[#facc15]"></i>
-        <span id="modo-m-label">Formato M (Recto)</span>
-      </button>
+
 
       <!-- NASA OSDR API Modal Trigger -->
       <button onclick="openOsdrModal()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-[#10274f] border border-[#2a5ba8] text-white hover:bg-[#16366f] transition shadow-md">
@@ -1102,7 +1090,7 @@
         <div class="p-4 bg-[#10274f] border border-nasa-border/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
             <div class="text-xs font-bold text-nasa-pastel font-mono uppercase">Vínculo con Datos de Vuelo Real</div>
-            <div class="text-xs text-slate-300 mt-0.5">La telemetría de AstroVital está anclada directamente en los estudios biológicos y de vuelo humano de NASA OSDR.</div>
+            <div class="text-xs text-slate-300 mt-0.5">La telemetría de ASTHA está anclada directamente en los estudios biológicos y de vuelo humano de NASA OSDR.</div>
           </div>
           <button onclick="pingNasaApi()" id="btn-ping" class="px-3 py-1.5 bg-[#0b3d91] hover:bg-[#1a56b8] text-white font-mono text-xs font-bold transition flex items-center gap-1.5 border border-nasa-pastel/40">
             <i data-lucide="radio" class="w-3.5 h-3.5"></i>
@@ -3692,13 +3680,7 @@ function selectOrgan(organ) {
       switchTab('vitals');
     }
 
-    // 8. MODO M (FORMATO M) TOGGLE
-    function toggleModoM() {
-      document.body.classList.toggle('modo-m');
-      const isM = document.body.classList.contains('modo-m');
-      const label = document.getElementById('modo-m-label');
-      label.innerText = isM ? "Formato M (Recto)" : "Modo Suave";
-    }
+
 
     // 9. LIVE STREAMING (1 Hz)
     function toggleLiveStream() {
@@ -3754,7 +3736,7 @@ function selectOrgan(organ) {
           </div>
           <div class="text-[11px] text-slate-400 font-mono mb-1">Misión: <span class="text-slate-200">${s.mission}</span> · Ensayo: <span class="text-nasa-pastel-light">${s.assay}</span></div>
           <div class="text-[11px] text-emerald-300/90 bg-emerald-950/30 p-2 border border-emerald-900/40">
-            <strong>Impacto en AstroVital:</strong> ${s.correlation}
+            <strong>Impacto en ASTHA:</strong> ${s.correlation}
           </div>
         </div>
       `).join('');
@@ -3999,7 +3981,7 @@ function selectOrgan(organ) {
       const report = `================================================================================
 NASA DEEP-SPACE CDSS - MISSION MEDICAL TELEMETRY BUNDLE (DTN FORMAT)
 ================================================================================
-REGISTRO OFICIAL: AstroVital Health Guardian v3.2 · NASA-STD-3001 Compliance
+REGISTRO OFICIAL: ASTHA (Autonomous Space Telemetry & Health Analytics) v3.2 · NASA-STD-3001 Compliance
 TIMESTAMP UTC: ${nowUtc}
 TIEMPO TRANSCURRIDO (MET): +048:14:28:10 · NODO: Deep Space Transport (DST-1)
 DESTINATARIO: Johnson Space Center (Houston / BMed Flight Surgeon Desk)
