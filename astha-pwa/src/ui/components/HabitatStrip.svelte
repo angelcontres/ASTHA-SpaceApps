@@ -1,9 +1,11 @@
 <script lang="ts">
-  // Habitat Strip (COMP-00, C4 §3.2): cabecera fija con identidad, tripulante/rol, día de misión, los 6 parámetros
-  // ECLSS/CANS con semáforo, latencia/sync, modos (Zen, Supervivencia, Rojo) y el botón de EMERGENCIA, que abre
-  // el protocolo activo en 1 toque (RNF-USA-02).
+  // Habitat Strip (COMP-00, C4 §3.2): sticky top bar with ASTHA identity, active crew/role, flight day,
+  // 6 ECLSS/CANS telemetry indicators with dual coding, cycle latency & sync state, display modes,
+  // and 1-tap EMERGENCY trigger (RNF-USA-02).
+  import {
+    fd, fmt, indLabel, indShort, ROLE_LABEL, STATUS_LABEL, ui,
+  } from '../bridge/uiState.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
-  import { fd, fmt, ROLE_LABEL, STATUS_LABEL } from '../bridge/uiState.svelte';
 
   interface Props { onemergency: () => void; onsettings: () => void; zen: boolean; survival: boolean; red: boolean }
   let { onemergency, onsettings, zen, survival, red }: Props = $props();
@@ -11,15 +13,20 @@
   const me = $derived(bridge.data.crew.find((c) => c.id === bridge.unlockedCrewId));
   const global = $derived(bridge.currentAssessment?.global ?? 'none');
   const hasAlert = $derived(bridge.activeAlerts.some((a) => !a.overridden && a.status !== 'nominal'));
-  const syncLabel = { disabled: 'Autónomo', offline: 'Sin Hub', connecting: 'Conectando', online: 'Sync OK' } as const;
+  const syncLabel = {
+    disabled: 'Autonomous',
+    offline: 'No Hub',
+    connecting: 'Connecting',
+    online: 'Sync OK',
+  } as const;
 </script>
 
 <header class="strip">
   <div class="brand">
-    <img src="./icon.svg" alt="" width="28" height="28" class="logo-img" />
+    <img class="logo-img" src="./icon.svg" alt="" width="30" height="30" />
     <div>
       <strong>ASTHA</strong>
-      <span class="label">{fd(bridge.data.day)} · de {bridge.data.maxDay}</span>
+      <span class="label">{fd(bridge.data.day)} · of {bridge.data.maxDay}</span>
     </div>
   </div>
 
@@ -33,10 +40,10 @@
     </div>
   {/if}
 
-  <ul class="eclss" aria-label="Telemetría del hábitat">
+  <ul class="eclss" aria-label="Habitat ECLSS telemetry">
     {#each bridge.habitatTelemetry.indicators as i (i.id)}
-      <li class="st {i.status}" title="{i.label}: nominal {i.nominalRange}">
-        <span class="label">{i.short}</span>
+      <li class="st {i.status}" title="{indLabel(i)}: nominal {i.nominalRange}">
+        <span class="label">{indShort(i)}</span>
         <span class="num v">{fmt(i.value, i.decimals)}<small class="unit"> {i.unit}</small></span>
         <span class="sym" aria-label={STATUS_LABEL[i.status]}></span>
       </li>
@@ -44,7 +51,7 @@
   </ul>
 
   <div class="meta label" aria-live="off">
-    <span>Ciclo {bridge.cycleMs != null ? `${fmt(bridge.cycleMs, 1)} ms` : '—'}</span>
+    <span>Cycle {bridge.cycleMs != null ? `${fmt(bridge.cycleMs, 1)} ms` : '—'}</span>
     <span>{syncLabel[bridge.syncStatus]}</span>
   </div>
 
@@ -55,14 +62,26 @@
       class="btn"
       aria-pressed={survival}
       disabled={bridge.activeRole !== 'commander'}
-      title={bridge.activeRole === 'commander' ? 'Modo supervivencia energética (ADR-019)' : 'Solo el Comandante (ADR-019)'}
+      title={bridge.activeRole === 'commander' ? 'Power survival mode < 5 W (ADR-019)' : 'Commander only (ADR-019)'}
       onclick={() => bridge.setPref('survival', !survival)}
-    >Supervivencia</button>
-    <button type="button" class="btn" aria-pressed={red} onclick={() => bridge.setPref('redMode', !red)}>Rojo 630</button>
-    <button type="button" class="btn icon" aria-label="Ajustes" onclick={onsettings}>⚙</button>
-    <button type="button" class="btn icon" aria-label="Bloquear sesión" onclick={() => bridge.lock()}>🔒</button>
+    >
+      Survival
+    </button>
+    <button type="button" class="btn" aria-pressed={red} onclick={() => bridge.setPref('redMode', !red)}>
+      Red 630
+    </button>
+    <button
+      type="button"
+      class="btn icon"
+      aria-label="Display settings"
+      aria-expanded={ui.settingsOpen}
+      onclick={onsettings}
+    >
+      ⚙
+    </button>
+    <button type="button" class="btn icon" aria-label="Lock session" onclick={() => bridge.lock()}>🔒</button>
     <button type="button" class="btn danger emergency" class:pulse={hasAlert} onclick={onemergency}>
-      ✕ EMERGENCIA
+      ✕ EMERGENCY
     </button>
   </div>
 </header>
@@ -81,7 +100,7 @@
     border-bottom: 1px solid var(--border);
   }
   .brand { display: flex; align-items: center; gap: 10px; }
-  .logo-img { display: block; width: 28px; height: 28px; flex: 0 0 auto; }
+  .logo-img { display: block; width: 30px; height: 30px; flex: 0 0 auto; border-radius: 6px; }
   .brand strong { display: block; letter-spacing: 0.12em; }
   .who { display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-left: 3px solid var(--st); }
   .who .sym { color: var(--st-text); }

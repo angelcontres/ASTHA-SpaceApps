@@ -1,8 +1,8 @@
 {
   "name": "ASTHA · Autonomous Space Telemetry & Health Analytics",
   "short_name": "ASTHA",
-  "description": "Monitoreo biomédico y soporte a decisiones clínicas offline para tripulaciones de espacio profundo.",
-  "lang": "es",
+  "description": "Offline autonomous biomedical monitoring and clinical decision support for deep-space crews.",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

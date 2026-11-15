@@ -1,14 +1,14 @@
 <script lang="ts">
-  // App Shell (C4 §3.2): pantalla de bloqueo hasta el PIN; después cabecera COMP-00, selector COMP-01, alarmas,
-  // 4 pestañas (WIREFRAME §6.1), barra de simulador COMP-06 y Vista B (Código Rojo) por encima de todo.
+  // App Shell (C4 §3.2): View C Lock Screen until PIN/NFC unlock; then COMP-00 header, COMP-01 crew & timeline bar,
+  // AlarmManager, 4 progressive tabs (WIREFRAME §6.1), COMP-06 crisis simulator bar, and View B Code Red overlay.
   import { onMount } from 'svelte';
   import { SCENARIO_IDS, SYNTHETIC, type ScenarioDef } from './storage/telemetrySources';
   import AlarmManager from './ui/components/AlarmManager.svelte';
   import CrewBar from './ui/components/CrewBar.svelte';
   import HabitatStrip from './ui/components/HabitatStrip.svelte';
   import { power } from './ui/bridge/power.svelte';
+  import { scenarioLabel, ui, type Tab } from './ui/bridge/uiState.svelte';
   import { bridge } from './ui/bridge/workerBridge.svelte';
-  import { ui, type Tab } from './ui/bridge/uiState.svelte';
   import BiomedicalView from './ui/views/BiomedicalView.svelte';
   import CodeRedView from './ui/views/CodeRedView.svelte';
   import EnvironmentView from './ui/views/EnvironmentView.svelte';
@@ -24,34 +24,51 @@
 
   const prefs = $derived(bridge.data.prefs);
   const unlocked = $derived(!!bridge.data.session);
-  // Supervivencia efectiva: manual (Comandante) o automática por batería crítica (AC-TECH-02 §3, ADR-019 enmendado).
+  // Effective survival mode: manual (Commander) or automatic on critical battery (AC-TECH-02 §3, ADR-019).
   const survival = $derived(prefs.survival || power.low);
+  const effectiveRed = $derived(unlocked ? prefs.redMode : (prefs.redMode || ui.lockRedMode));
 
-  // Modos visuales como atributos de <html>: los tokens CSS hacen el resto (también en canvas).
+  // Apply visual modes as <html> attributes so CSS tokens and canvas renderers stay synchronized.
   $effect(() => {
     const root = document.documentElement;
-    root.toggleAttribute('data-red', prefs.redMode);
+    root.toggleAttribute('data-red', effectiveRed);
     root.toggleAttribute('data-contrast', prefs.highContrast);
     root.toggleAttribute('data-large', prefs.largeText);
     root.toggleAttribute('data-survival', survival);
     root.toggleAttribute('data-lowpower', power.low);
   });
 
-  // Al bloquear se vuelve al estado inicial de navegación.
+  // Reset navigation state when locking session.
   $effect(() => {
-    if (!unlocked) { ui.tab = 'bio'; ui.openAlertId = null; ui.codeRedId = null; ui.selectedRegion = null; }
+    if (!unlocked) {
+      ui.tab = 'bio';
+      ui.openAlertId = null;
+      ui.codeRedId = null;
+      ui.selectedRegion = null;
+    }
   });
 
-  const codeRed = $derived(ui.codeRedId ? bridge.activeAlerts.find((a) => a.id === ui.codeRedId && !a.overridden) ?? null : null);
+  const codeRed = $derived(
+    ui.codeRedId
+      ? bridge.activeAlerts.find((a) => a.id === ui.codeRedId && !a.overridden) ?? null
+      : null,
+  );
 
   const TABS: { id: Tab; label: string }[] = [
-    { id: 'bio', label: '1 · Biomédico' },
-    { id: 'env', label: '2 · Entorno ECLSS' },
-    { id: 'triage', label: '3 · Triage anatómico' },
-    { id: 'sim', label: '4 · Simulador' },
+    { id: 'bio', label: '1 · Biomedical' },
+    { id: 'env', label: '2 · ECLSS Environment' },
+    { id: 'triage', label: '3 · Anatomical Triage' },
+    { id: 'sim', label: '4 · Simulator' },
   ];
 
-  /** Botón de emergencia: abre el protocolo más grave en 1 toque (RNF-USA-02). */
+  function onTabKeyDown(ev: KeyboardEvent, idx: number) {
+    if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
+    ev.preventDefault();
+    const next = (idx + (ev.key === 'ArrowRight' ? 1 : -1) + TABS.length) % TABS.length;
+    ui.tab = TABS[next].id;
+  }
+
+  /** Emergency button: opens highest-priority active protocol in 1 tap (RNF-USA-02). */
   function emergency() {
     const top = bridge.activeAlerts.find((a) => !a.overridden && a.status !== 'nominal');
     if (top) {
@@ -66,44 +83,87 @@
 </script>
 
 <svelte:head>
-  <title>{unlocked ? `ASTHA · ${bridge.unlockedCrewId}` : 'ASTHA · Bloqueo'}</title>
+  <title>{unlocked ? `ASTHA · ${bridge.unlockedCrewId}` : 'ASTHA · Security Lock'}</title>
 </svelte:head>
 
 {#if !unlocked}
   <LockScreen />
 {:else}
-  <HabitatStrip onemergency={emergency} onsettings={() => (ui.settingsOpen = !ui.settingsOpen)} zen={prefs.zen} {survival} red={prefs.redMode} />
+  <HabitatStrip
+    onemergency={emergency}
+    onsettings={() => (ui.settingsOpen = !ui.settingsOpen)}
+    zen={prefs.zen}
+    {survival}
+    red={prefs.redMode}
+  />
   <AlarmManager />
   {#if !prefs.zen}<CrewBar />{/if}
 
   {#if power.low}
     <p class="lowpower st caution" role="status">
       <span class="sym" aria-hidden="true"></span>
-      Batería crítica{power.level !== null && !power.simulated ? ` (${Math.round(power.level * 100)} %)` : ' (señal simulada)'}: modo supervivencia automático.
-      Pantalla atenuada, telemetría cada 5 s; triage y alarmas siguen al instante.
+      Critical battery{power.level !== null && !power.simulated ? ` (${Math.round(power.level * 100)}%)` : ' (simulated signal)'}: automatic survival mode active.
+      Display dimmed, telemetry throttled to 5 s; clinical triage and alarms remain instant.
     </p>
   {/if}
 
   {#if ui.settingsOpen}
     <section class="settings panel" aria-labelledby="set-h">
-      <h2 id="set-h" class="label">Ajustes de pantalla</h2>
+      <h2 id="set-h" class="label">Display &amp; Power Mode Settings</h2>
       <div class="row">
-        <button type="button" class="btn" aria-pressed={!prefs.redMode && !prefs.survival} onclick={() => { bridge.setPref('redMode', false); if (prefs.survival && bridge.activeRole === 'commander') bridge.setPref('survival', false); }}>Estándar OLED</button>
-        <button type="button" class="btn" aria-pressed={prefs.redMode} onclick={() => bridge.setPref('redMode', !prefs.redMode)}>Espectral rojo 630 nm</button>
-        <button type="button" class="btn" aria-pressed={prefs.survival} disabled={bridge.activeRole !== 'commander'} onclick={() => bridge.setPref('survival', !prefs.survival)}>Supervivencia energética</button>
-        <button type="button" class="btn" aria-pressed={prefs.highContrast} onclick={() => bridge.setPref('highContrast', !prefs.highContrast)}>Alto contraste</button>
-        <button type="button" class="btn" aria-pressed={prefs.largeText} onclick={() => bridge.setPref('largeText', !prefs.largeText)}>Texto grande</button>
-        <button type="button" class="btn" aria-pressed={prefs.zen} onclick={() => bridge.setPref('zen', !prefs.zen)}>Modo Zen</button>
-        <button type="button" class="btn" onclick={() => (ui.settingsOpen = false)}>Cerrar</button>
+        <button
+          type="button"
+          class="btn"
+          aria-pressed={!prefs.redMode && !prefs.survival}
+          onclick={() => {
+            bridge.setPref('redMode', false);
+            if (prefs.survival && bridge.activeRole === 'commander') bridge.setPref('survival', false);
+          }}
+        >
+          Standard OLED
+        </button>
+        <button type="button" class="btn" aria-pressed={prefs.redMode} onclick={() => bridge.setPref('redMode', !prefs.redMode)}>
+          630 nm Red Spectral
+        </button>
+        <button
+          type="button"
+          class="btn"
+          aria-pressed={prefs.survival}
+          disabled={bridge.activeRole !== 'commander'}
+          onclick={() => bridge.setPref('survival', !prefs.survival)}
+        >
+          Survival Mode (&lt; 5 W)
+        </button>
+        <button type="button" class="btn" aria-pressed={prefs.highContrast} onclick={() => bridge.setPref('highContrast', !prefs.highContrast)}>
+          High Contrast
+        </button>
+        <button type="button" class="btn" aria-pressed={prefs.largeText} onclick={() => bridge.setPref('largeText', !prefs.largeText)}>
+          Large Text
+        </button>
+        <button type="button" class="btn" aria-pressed={prefs.zen} onclick={() => bridge.setPref('zen', !prefs.zen)}>
+          Zen Mode
+        </button>
+        <button type="button" class="btn" onclick={() => (ui.settingsOpen = false)}>Close</button>
       </div>
-      {#if bridge.activeRole !== 'commander'}<p class="muted small">El modo supervivencia manual solo lo activa el Comandante (ADR-019). Con batería crítica se activa solo.</p>{/if}
+      {#if bridge.activeRole !== 'commander'}
+        <p class="muted small">Manual Survival Mode can only be toggled by the Commander (ADR-019); triggers automatically on critical battery.</p>
+      {/if}
     </section>
   {/if}
 
   {#if !prefs.zen}
-    <nav class="tabs" aria-label="Vistas">
-      {#each TABS as t (t.id)}
-        <button type="button" class="btn tab" aria-current={ui.tab === t.id ? 'page' : undefined} aria-pressed={ui.tab === t.id} onclick={() => (ui.tab = t.id)}>{t.label}</button>
+    <nav class="tabs" aria-label="Primary operational views">
+      {#each TABS as t, idx (t.id)}
+        <button
+          type="button"
+          class="btn tab"
+          aria-current={ui.tab === t.id ? 'page' : undefined}
+          aria-pressed={ui.tab === t.id}
+          onclick={() => (ui.tab = t.id)}
+          onkeydown={(ev) => onTabKeyDown(ev, idx)}
+        >
+          {t.label}
+        </button>
       {/each}
     </nav>
   {/if}
@@ -121,13 +181,15 @@
   </main>
 
   {#if !prefs.zen}
-    <!-- COMP-06: barra de simulador de crisis -->
-    <footer class="simbar" aria-label="Simulador de crisis rápido">
+    <!-- COMP-06: quick crisis fault-injection bar -->
+    <footer class="simbar" aria-label="Quick crisis simulator">
       {#each SCENARIO_IDS.slice(0, 4) as id (id)}
-        <button type="button" class="btn" onclick={() => bridge.injectScenario(id)}>! {id} · {scen(id).label}</button>
+        <button type="button" class="btn" onclick={() => bridge.injectScenario(id)}>
+          ! {id} · {scenarioLabel(id, scen(id).label)}
+        </button>
       {/each}
-      <button type="button" class="btn primary" onclick={() => bridge.reset()}>✓ Resetear nominal</button>
-      <span class="label provenance">Datos sintéticos de demostración · no son telemetría medida por NASA</span>
+      <button type="button" class="btn primary" onclick={() => bridge.reset()}>✓ Reset Nominal</button>
+      <span class="label provenance">Synthetic demo telemetry · not measured NASA flight data</span>
     </footer>
   {/if}
 
@@ -138,7 +200,7 @@
   {#each bridge.notices.filter((n) => n.code !== 'wrong-pin') as n (n.id)}
     <div class="notice {n.level}" role={n.level === 'error' ? 'alert' : 'status'}>
       <span>{n.message}</span>
-      <button type="button" class="btn icon" aria-label="Cerrar aviso" onclick={() => bridge.dismissNotice(n.id)}>×</button>
+      <button type="button" class="btn icon" aria-label="Dismiss notice" onclick={() => bridge.dismissNotice(n.id)}>×</button>
     </div>
   {/each}
 </div>
