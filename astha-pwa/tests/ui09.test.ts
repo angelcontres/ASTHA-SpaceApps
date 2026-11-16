@@ -65,6 +65,8 @@ describe('[UI-09] COMP-03 IndicatorCard & COMP-03B Dual-Coded Chips', () => {
     expect(card).toContain('Drift: caution in');
     expect(card).toContain('Baseline deviation (Z');
     expect(card).toContain('.gauge');
+    expect(card).toContain('.gauge-fill');
+    expect(card).toContain('.ecg-trace');
     expect(card).toContain(':root[data-survival] .gauge');
 
     const { measurements, habitat } = buildDriftSeries();
@@ -93,6 +95,8 @@ describe('[UI-09] COMP-04 uPlot Canvas 2D TrendChart & Visibility Suspension', (
     expect(chart).toContain("import uPlot from 'uplot'");
     expect(chart).toContain("import 'uplot/dist/uPlot.min.css'");
     expect(chart).toContain('drawClear: [drawBands]');
+    expect(chart).toContain('draw: [drawEndpoint]');
+    expect(chart).toContain('chartSweep');
     expect(chart).toContain('days 1–14 baseline');
     expect(chart).toContain('indLabel({ id: indicator, label: def.label })');
     expect(chart).toContain('indShort({ id: indicator, short: def.short })');

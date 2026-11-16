@@ -23,6 +23,7 @@
   let lastId: IndicatorId | null = null;
   let pendingData: uPlot.AlignedData | null = null;
   let pendingRebuild = false;
+  let sweep = $state(false);
 
   const def = $derived(INDICATORS[indicator]);
   const displayLabel = $derived(indLabel({ id: indicator, label: def.label }));
@@ -79,6 +80,31 @@
     ctx.restore();
   }
 
+  /** Draws a glowing live endpoint beacon on the rightmost data sample. */
+  function drawEndpoint(u: uPlot) {
+    const xs = u.data[0];
+    const ys = u.data[1];
+    if (!xs?.length || !ys?.length) return;
+    let idx = ys.length - 1;
+    while (idx >= 0 && ys[idx] == null) idx -= 1;
+    if (idx < 0) return;
+    const xPos = u.valToPos(xs[idx], 'x', true);
+    const yPos = u.valToPos(ys[idx]!, 'y', true);
+    const dpr = globalThis.devicePixelRatio || 1;
+    const ctx = u.ctx;
+    ctx.save();
+    ctx.fillStyle = css('--accent', '#38bdf8');
+    ctx.globalAlpha = 0.25;
+    ctx.beginPath();
+    ctx.arc(xPos, yPos, 8 * dpr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(xPos, yPos, 3.5 * dpr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
   function build() {
     if (!host) return;
     chart?.destroy();
@@ -99,12 +125,14 @@
         {},
         { label: displayShort, stroke: css('--accent', '#38bdf8'), width: 2, points: { show: false }, spanGaps: true },
       ],
-      hooks: { drawClear: [drawBands] },
+      hooks: { drawClear: [drawBands], draw: [drawEndpoint] },
     };
     chart = new uPlot(opts, [days, values], host);
     lastId = indicator;
     pendingData = null;
     pendingRebuild = false;
+    sweep = false;
+    requestAnimationFrame(() => { sweep = true; });
   }
 
   function onVisibilityChange() {
@@ -153,7 +181,7 @@
 </script>
 
 <figure class="chart" aria-label="{displayLabel} trend over {days.length} mission days with NASA-STD-3001 threshold bands and personal baseline">
-  <div bind:this={host} class="plot"></div>
+  <div bind:this={host} class="plot" class:sweep></div>
   <figcaption class="unit">
     {displayLabel} ({def.unit}) · bands: green nominal, yellow caution, red critical · dashed: days 1–14 baseline
   </figcaption>
@@ -162,6 +190,14 @@
 <style>
   .chart { margin: 0; min-width: 0; }
   .plot { width: 100%; }
+  .plot.sweep { animation: chartSweep 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
   figcaption { margin-top: 6px; display: block; }
   .plot :global(.u-wrap) { background: transparent; }
+  @keyframes chartSweep {
+    from { clip-path: inset(0 100% 0 0); opacity: 0.45; }
+    to { clip-path: inset(0 0 0 0); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plot.sweep { animation: none; }
+  }
 </style>

@@ -168,11 +168,22 @@
   .nasa-worm { display: block; width: 68px; height: auto; flex: 0 0 auto; color: var(--text); }
   .brand strong { display: block; letter-spacing: 0.14em; font-family: var(--font-num); }
   .sub { display: block; color: var(--blueprint-text); }
-  .who { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--border); border-left: 3px solid var(--st); border-radius: var(--radius-btn); background: var(--space-800); }
+  .who {
+    display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+    border: 1px solid var(--border); border-left: 3px solid var(--st); border-radius: var(--radius-btn);
+    background: var(--space-800);
+    transition: border-color 280ms ease, background-color 280ms ease;
+  }
   .who .sym { color: var(--st-text); }
   .who .label { display: block; }
   .eclss { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 10px; flex: 1 1 380px; }
-  .eclss li { display: flex; align-items: baseline; gap: 6px; padding: 4px 10px; border: 1px solid var(--border); border-bottom: var(--st-bw) solid var(--st); border-radius: var(--radius-btn); background: var(--space-800); }
+  .eclss li {
+    display: flex; align-items: baseline; gap: 6px; padding: 4px 10px;
+    border: 1px solid var(--border); border-bottom: var(--st-bw) solid var(--st); border-radius: var(--radius-btn);
+    background: var(--space-800);
+    transition: border-color 280ms ease, background-color 280ms ease, transform 180ms ease;
+  }
+  .eclss li:hover { transform: translateY(-1px); }
   .eclss .v { font-weight: 700; }
   .eclss .sym { color: var(--st-text); }
   .meta { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }

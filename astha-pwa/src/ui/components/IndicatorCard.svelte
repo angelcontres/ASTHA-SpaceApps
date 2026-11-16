@@ -31,10 +31,53 @@
   );
   const zDrift = $derived(status === 'nominal' && indicator.z != null && Math.abs(indicator.z) >= 2.5);
 
+  // Smooth one-shot numerical tween on value updates (0 idle timers; skipped in Survival / reduced-motion).
+  let tweenVal = $state<number | null>(null);
+  let tweenSecond = $state<number | null>(null);
+  let flashKey = $state(0);
+  let primed = false;
+
+  $effect(() => {
+    const target = indicator.value;
+    const target2 = second?.value ?? null;
+    const disabled =
+      typeof window === 'undefined' ||
+      document.hidden ||
+      document.documentElement.hasAttribute('data-survival') ||
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!primed || disabled || target == null) {
+      primed = true;
+      tweenVal = target;
+      tweenSecond = target2;
+      return;
+    }
+    const start1 = tweenVal ?? target;
+    const start2 = tweenSecond ?? target2;
+    if (start1 === target && start2 === target2) return;
+    flashKey += 1;
+    const t0 = performance.now();
+    const DUR = 340;
+    let raf = 0;
+    const step = (now: number) => {
+      const k = Math.min(1, (now - t0) / DUR);
+      const ease = 1 - (1 - k) ** 3;
+      tweenVal = start1 + (target - start1) * ease;
+      if (start2 != null && target2 != null) tweenSecond = start2 + (target2 - start2) * ease;
+      else tweenSecond = target2;
+      if (k < 1) raf = requestAnimationFrame(step);
+      else {
+        tweenVal = target;
+        tweenSecond = target2;
+      }
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  });
+
   const valueText = $derived(
     second
-      ? `${fmt(indicator.value, indicator.decimals)}/${fmt(second.value, second.decimals)}`
-      : fmt(indicator.value, indicator.decimals),
+      ? `${fmt(tweenVal ?? indicator.value, indicator.decimals)}/${fmt(tweenSecond ?? second.value, second.decimals)}`
+      : fmt(tweenVal ?? indicator.value, indicator.decimals),
   );
 
   // Normalized gauge bar across NASA-STD-3001 threshold span + safe nominal band.
@@ -71,25 +114,38 @@
 <article class="card ind st {status} {variant}" class:active aria-label={aria}>
   <button type="button" class="hit" onclick={onopen} aria-label={aria} aria-pressed={active}>
     <span class="head">
-      <span class="label">{title}</span>
+      <span class="label">
+        {#if variant === 'vital' || variant === 'compound'}<span class="live-dot st {status}" aria-hidden="true"></span>{/if}
+        {title}
+      </span>
       <span class="badge"><span class="sym" aria-hidden="true"></span> {statusText}</span>
     </span>
-    <span class="main">
-      <span class="value num st-value">{valueText}</span>
-      {#if indicator.isSuspect || second?.isSuspect}<span class="suspect" title="Outside plausible physiological range">?</span>{/if}
-      <span class="unit">{indicator.unit}</span>
-      {#if arrow}
-        <span class="arrow" aria-hidden="true">
-          <HudIcon name={arrow === '↑' ? 'trending-up' : arrow === '↓' ? 'trending-down' : 'arrow-right'} size={15} />
-        </span>
-      {/if}
-    </span>
+    {#key flashKey}
+      <span class="main" class:val-flash={flashKey > 0}>
+        <span class="value num st-value">{valueText}</span>
+        {#if indicator.isSuspect || second?.isSuspect}<span class="suspect" title="Outside plausible physiological range">?</span>{/if}
+        <span class="unit">{indicator.unit}</span>
+        {#if arrow}
+          <span class="arrow" aria-hidden="true">
+            <HudIcon name={arrow === '↑' ? 'trending-up' : arrow === '↓' ? 'trending-down' : 'arrow-right'} size={15} />
+          </span>
+        {/if}
+      </span>
+    {/key}
     {#if variant !== 'zen'}
       {#if gauge}
         <span class="gauge" aria-hidden="true">
           <span class="gauge-safe" style="left:{gauge.safeLeft}%; width:{gauge.safeWidth}%"></span>
+          <span class="gauge-fill" style="width:{gauge.pointer}%"></span>
           <span class="gauge-ptr" style="left:{gauge.pointer}%"></span>
         </span>
+      {/if}
+      {#if variant === 'vital' && indicator.id === 'hr'}
+        <svg class="ecg-trace" viewBox="0 0 180 22" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            d="M0 12 L24 12 L30 9 L35 12 L42 12 L46 4 L51 20 L56 2 L61 16 L66 12 L76 12 L82 9 L88 12 L114 12 L120 9 L125 12 L132 12 L136 4 L141 20 L146 2 L151 16 L156 12 L180 12"
+          />
+        </svg>
       {/if}
       <span class="unit range">Nominal: {indicator.nominalRange}{second ? ` · ${second.nominalRange}` : ''}</span>
       {#if drift}
@@ -109,9 +165,54 @@
     outline: var(--st-bw) solid color-mix(in srgb, var(--st) 55%, transparent);
     outline-offset: -1px;
     min-width: 0;
+    transition: border-color 280ms ease, outline-color 280ms ease, background-color 280ms ease, transform 180ms ease;
   }
+  .ind:hover { transform: translateY(-1px); }
   .ind.critical { background: color-mix(in srgb, var(--alert-red) 12%, var(--space-800)); }
   .ind.active { outline: 3px solid var(--accent); }
+  .live-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 5px;
+    border-radius: 50%;
+    background: var(--st);
+    box-shadow: 0 0 6px var(--st);
+    vertical-align: 1px;
+    animation: liveBreath 1.6s ease-in-out infinite;
+  }
+  .val-flash { animation: valueFlash 460ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .ecg-trace {
+    width: 100%;
+    height: 18px;
+    margin: 2px 0;
+    fill: none;
+    stroke: var(--st);
+    stroke-width: 1.5;
+    opacity: 0.72;
+  }
+  .ecg-trace path {
+    stroke-dasharray: 220;
+    stroke-dashoffset: 0;
+    animation: ecgSweep 2.4s linear infinite;
+  }
+  @keyframes liveBreath {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.78); }
+  }
+  @keyframes valueFlash {
+    0% { transform: translateY(-2px); filter: brightness(1.35); }
+    100% { transform: translateY(0); filter: brightness(1); }
+  }
+  @keyframes ecgSweep {
+    0% { stroke-dashoffset: 220; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ind, .gauge-ptr, .gauge-fill { transition: none; }
+    .ind:hover { transform: none; }
+    .live-dot, .val-flash, .ecg-trace path { animation: none; }
+  }
   .hit {
     all: unset;
     box-sizing: border-box;
@@ -147,6 +248,15 @@
     bottom: 0;
     background: color-mix(in srgb, var(--alert-green) 35%, transparent);
   }
+  .gauge-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 3px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--st) 45%, transparent));
+    transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1), background-color 280ms ease;
+  }
   .gauge-ptr {
     position: absolute;
     top: -3px;
@@ -156,6 +266,7 @@
     border-radius: 2px;
     background: var(--st);
     box-shadow: 0 0 8px color-mix(in srgb, var(--st) 70%, transparent);
+    transition: left 420ms cubic-bezier(0.22, 1, 0.36, 1), background-color 280ms ease;
   }
   :root[data-survival] .gauge { display: none; }
   :root[data-survival] .gauge-ptr { box-shadow: none; }
