@@ -1,14 +1,21 @@
 {$ASTHA_DOMAIN} {
-	encode zstd gzip
-
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 		-Server
 	}
 
-	reverse_proxy astha-pwa:8080 {
-		health_uri /healthz
-		health_interval 15s
-		health_timeout 3s
+	# Sync Hub (zero-knowledge relay): WebSocket + REST, same origin as the PWA (ADR-007).
+	@hub path /ws/sync /api/v1/*
+	handle @hub {
+		reverse_proxy astha-hub:8443
+	}
+
+	handle {
+		encode zstd gzip
+		reverse_proxy astha-pwa:8080 {
+			health_uri /healthz
+			health_interval 15s
+			health_timeout 3s
+		}
 	}
 }

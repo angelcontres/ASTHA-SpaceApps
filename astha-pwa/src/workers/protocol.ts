@@ -82,6 +82,8 @@ export interface DataState {
   /** Sobres dañados restaurados desde la réplica local en esta sesión (RNF-SEC-03). */
   recoveredCount: number;
   nodeId: string;
+  /** Sync Hub enrollment record of this device (ADR-020). */
+  enrollment: { deviceId: string; alg: string; publicJwk: JsonWebKey } | null;
 }
 
 export type DataToUi =

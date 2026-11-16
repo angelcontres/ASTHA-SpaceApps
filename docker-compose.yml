@@ -4,6 +4,10 @@ services:
     build:
       context: ./astha-pwa
       dockerfile: Dockerfile
+      args:
+        # Same-origin sync client (wss://<domain>/ws/sync via Caddy) and the crew's shared mission secret.
+        VITE_ASTHA_HUB: ${ASTHA_ENABLE_HUB:-1}
+        VITE_ASTHA_MISSION_SECRET: ${ASTHA_MISSION_SECRET:-}
     container_name: astha-pwa
     restart: unless-stopped
     read_only: true
@@ -25,6 +29,39 @@ services:
         limits:
           memory: 128M
 
+  # Zero-knowledge Sync Hub (ADR-008): stores and relays encrypted envelopes; never holds keys. Reached only
+  # through Caddy (/ws/sync, /api/v1/*), which terminates TLS. Enroll devices with:
+  #   docker exec astha-hub astha-sync-hub enroll '<record from Simulator → Sync Hub enrollment record>'
+  astha-hub:
+    image: ${ASTHA_HUB_IMAGE:-ghcr.io/angelcontres/astha-spaceapps-hub:latest}
+    build:
+      context: ./sync-hub
+      dockerfile: Dockerfile
+    container_name: astha-hub
+    profiles: ["tls"]
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      # Demo convenience: admit any device that proves possession of its key. Keep false for real crews.
+      ASTHA_HUB_AUTO_ENROLL: ${ASTHA_HUB_AUTO_ENROLL:-false}
+    volumes:
+      - hub_data:/data
+      - hub_config:/config
+    expose:
+      - "8443"
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/astha-sync-hub", "healthcheck"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
   caddy:
     image: caddy:2.9-alpine
     container_name: astha-caddy
@@ -32,6 +69,8 @@ services:
     restart: unless-stopped
     depends_on:
       astha-pwa:
+        condition: service_healthy
+      astha-hub:
         condition: service_healthy
     ports:
       - "80:80"
@@ -51,3 +90,5 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  hub_data:
+  hub_config:

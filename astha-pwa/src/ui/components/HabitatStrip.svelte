@@ -20,6 +20,7 @@
     offline: 'No Hub',
     connecting: 'Connecting',
     online: 'Sync OK',
+    unauthorized: 'Not enrolled',
   } as const;
 </script>
 

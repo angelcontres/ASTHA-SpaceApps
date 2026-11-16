@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_ref: ${{ steps.publish.outputs.image_ref }}
+      hub_image_ref: ${{ steps.publish.outputs.hub_image_ref }}
     steps:
       - uses: actions/checkout@v4
 
@@ -39,6 +40,7 @@ jobs:
         run: |
           REPO_LOWER=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
           echo "image=ghcr.io/${REPO_LOWER}-pwa" >> "$GITHUB_OUTPUT"
+          echo "hub_image=ghcr.io/${REPO_LOWER}-hub" >> "$GITHUB_OUTPUT"
           echo "sha_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
@@ -69,14 +71,42 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # Same-origin Sync Hub client + shared crew keys (set the ASTHA_MISSION_SECRET repository secret).
+          build-args: |
+            VITE_ASTHA_HUB=1
+            VITE_ASTHA_MISSION_SECRET=${{ secrets.ASTHA_MISSION_SECRET }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Extract Sync Hub image metadata
+        id: hubmeta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.prep.outputs.hub_image }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=${{ steps.prep.outputs.sha_tag }}
+            type=semver,pattern={{version}}
+
+      - name: Build and push Sync Hub image to GHCR
+        uses: docker/build-push-action@v6
+        with:
+          context: ./sync-hub
+          file: ./sync-hub/Dockerfile
+          push: true
+          tags: ${{ steps.hubmeta.outputs.tags }}
+          labels: ${{ steps.hubmeta.outputs.labels }}
+          cache-from: type=gha,scope=hub
+          cache-to: type=gha,mode=max,scope=hub
 
       - name: Record immutable deployed tag
         id: publish
         run: |
           IMAGE_REF="${{ steps.prep.outputs.image }}:${{ steps.prep.outputs.sha_tag }}"
+          HUB_IMAGE_REF="${{ steps.prep.outputs.hub_image }}:${{ steps.prep.outputs.sha_tag }}"
           echo "image_ref=${IMAGE_REF}" >> "$GITHUB_OUTPUT"
+          echo "hub_image_ref=${HUB_IMAGE_REF}" >> "$GITHUB_OUTPUT"
+          echo "Published \`${HUB_IMAGE_REF}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "Published \`${IMAGE_REF}\`" >> "$GITHUB_STEP_SUMMARY"
 
   deploy-aws:
