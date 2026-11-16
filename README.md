@@ -84,6 +84,9 @@ $$M_i = \frac{0.6745 \cdot (x_i - \tilde{x})}{MAD}$$
 
 A value $|M_i| \ge 2.5$ triggers an early physiological drift warning before the astronaut experiences incapacitating symptoms.
 
+### Multi-Input Telemetry Ingestion Boundary
+All data sources—manual vitals (`9` variables + `5` one-tap symptoms), NASA OSDR 90-day reference telemetry (`adaptReferenceDataset`), Ed25519-signed mission JSON imports (`parseImport`), crisis simulator injections, and any external sensor/wearable/ECLSS bridge—converge on a unified schema validation and normalization pipeline (`astha-pwa/src/storage/ingestAdapter.ts` implementing `POST /ingest/telemetry` from [`openapi.yaml`](docs/Modelo-datos-y-APIs/openapi.yaml)). Every accepted reading passes through `validateValue()` (flagging implausible readings as `isSuspect` per `RF-ING-05` without discarding clinical data), is written as an immutable CRDT operation (`HLC`), encrypted with `AES-GCM-256`, signed with `Ed25519`, replicated across devices via the Rust Sync Hub, and evaluated by the isolated Clinical Engine Worker in under `50 ms`. See [`03-Contratos-API-OpenAPI-y-Eventos.md`](docs/Modelo-datos-y-APIs/03-Contratos-API-OpenAPI-y-Eventos.md#5-multi-input-data-capture--ingestion-boundary).
+
 ---
 
 ## 📁 4. Repository Structure and Documentation

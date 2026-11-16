@@ -106,3 +106,36 @@ Because the `Clinical Engine Worker` is architecturally prohibited from using `f
 ASTHA concludes its network chain by locally generating a downloadable `astha_export_signed.json` file that the CMO hands off to the spacecraft's external DTN router/transponder:
 * **Local preview/validation endpoint:** Defined in `openapi.yaml` under the `SignedDsnExport` schema.
 * **Integrity & privacy:** Includes `ed25519Signature` from the CMO's device and the `isAnonymized: true` flag if the export is intended for non-clinical statistical analysis (`ADR-012`).
+
+---
+
+## 5. Multi-Input Data Capture & Ingestion Boundary
+
+ASTHA decouples **where data comes from** (manual entry, wearable bio-suits, ECLSS buses, research datasets, or crisis simulations) from the **clinical evaluation core** (`astha-pwa/src/engine/`). Every input stream is normalized at the ingestion boundary into typed CRDT operations (`measurement`, `habitat`, `symptom`) before reaching IndexedDB encryption, Sync Hub replication, and triage evaluation.
+
+```mermaid
+flowchart LR
+    M["Manual Pad & One-Tap Symptoms<br>(manualEntry / symptom)"] --> N
+    E["External Sensors / Wearables / ECLSS Bridge<br>(POST /ingest/telemetry JSON -> worker 'ingest')"] --> A["adaptIngest() Schema & Field Mapper"]
+    R["NASA OSDR 90d Reference Dataset<br>(loadReference -> adaptReferenceDataset)"] --> V
+    S["Signed Mission JSON Import<br>(parseImport Ed25519 + SHA-256)"] --> N
+    SIM["Crisis Simulator A-F & 180d Generator<br>(telemetrySources.ts)"] --> N
+    A --> V["validateValue() Plausibility Check<br>(RF-ING-05: flag isSuspect, never discard)"]
+    V --> N["Data Worker: CRDT OpBody + HLC<br>AES-GCM-256 + Ed25519 + Dual Replica"]
+    N --> C["Clinical Engine Worker (< 50 ms)"]
+    N -.->|"Encrypted Delta Sync"| H["ASTHA Sync Hub (WSS / REST)"]
+```
+
+### 5.1 Supported Input Channels (Implemented)
+
+| Input Source | Entry Point | Validation & Mapping | Persistence & Sync |
+| :--- | :--- | :--- | :--- |
+| **Manual Crew Vitals & Symptoms** | UI `EntrySymptomPad.svelte` -> `workerBridge.manualEntry()` / `toggleSymptom()` | 9 crew fields (`hr`, `hrv`, `sbp`, `dbp`, `spo2`, `glucose`, `temp`, `sleep`, `mood`) via `validateValue()`; 5 subjective symptoms (`blurred_vision`, `headache`, `nausea`, `back_pain`, `orthostatic_dizziness`) | Encrypted CRDT op in IndexedDB + Sync Hub delta |
+| **External Telemetry Adapter (Any Sensor / Bridge)** | Worker `{ type: 'ingest', body }` matching OpenAPI `POST /ingest/telemetry` (`adaptIngest()`) | Strictly validates `crewId`, `measurement` (`hr`, `hrvRmssd`, `pas`, `pad`, `spo2`, `glucose`, `tempC`, `sleepHours`, `mood`, optional `urinaryCalciumMgDay`), `habitat` (`ppCo2Mmhg`, `cabinPressureKpa`, `o2Percent`, `radiationUSvH`), and optional `symptoms`; rejects invalid schema contracts without partial writes; flags out-of-range readings `isSuspect` (`RF-ING-05`) | Normalized into `measurement`, `habitat`, and `symptom` CRDT ops; encrypted, signed, and synced identically to manual entries |
+| **NASA OSDR 90-Day Reference Dataset** | Simulator (`loadReferenceDataset()`, CMO only) -> `adaptReferenceDataset()` | Maps bundled `reference_telemetry_90d.json` (`ASTRO-01..04`) onto `C001..C004` + daily habitat radiation mean through `validateValue()` | Encrypted CRDT ops tagged `dataset.reference` |
+| **Signed JSON Mission Package** | Simulator (`Import signed history (.json)` -> `parseImport()`) | Verifies `exportSchemaVersion`, `payloadSha256`, and `ed25519Signature` before accepting any measurement | Replayed as `measurement` ops (`source: 'import'`) per authorized `crewId` |
+| **Crisis Simulator & 180-Day Synthetic Baseline** | `generateDataset()` + `scenarioOps()` (`A`–`F` scenarios) | Deterministic PRNG baseline (180 days × 4 crew) plus discrete physiological/environmental crisis injections | Persisted as `sim` CRDT ops (resettable without mutating audit log history) |
+
+### 5.2 Integrating Any Hardware or External Data Feed
+
+Because ASTHA enforces `ADR-016` (daily physiological records) and runs offline inside the browser's hardened sandbox without direct Web Bluetooth / serial hardware drivers, connecting **any** new wearable, medical device, CSV/JSON exporter, or spacecraft ECLSS gateway only requires translating its readings into the `POST /ingest/telemetry` JSON contract defined in [`openapi.yaml`](openapi.yaml) and dispatching `{ type: 'ingest', body }` to the Data Worker (`astha-pwa/src/storage/ingestAdapter.ts`). No changes to clinical rules, CRDT storage, encryption, or Sync Hub replication are needed.
