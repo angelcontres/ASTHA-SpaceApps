@@ -17,7 +17,7 @@ This directory formalizes the **Data Model** (conceptual, logical, and physical 
 | [**README.md**](README.md) | Master index and persistence / contract architecture | `ADR-001`, `SRS §5` |
 | [**01-Diagrama-Entidad-Relacion.md**](01-Diagrama-Entidad-Relacion.md) | Logical Entity-Relationship Diagram (ERD) + physical Object Stores in IndexedDB + Rust Op-Log | `ADR-006`, `ADR-008`, `ADR-009`, `ADR-012`, `ADR-014`, `ADR-016` |
 | [**02-Diccionario-de-Datos.md**](02-Diccionario-de-Datos.md) | Complete dictionary of fields, types, nullability, NASA-STD-3001 thresholds, encryption, and CRDT semantics | `SRS §6.1`, `RF-ING-01..05`, `RNF-SEC-01..04`, `ADR-011`, `ADR-017` |
-| [**03-Contratos-API-OpenAPI-y-Eventos.md**](03-Contratos-API-OpenAPI-y-Eventos.md) | Sync Hub (`astha.local`) REST/HTTPS endpoints guide, CRDT delta WebSocket channel, signed DSN export contract, and `postMessage` events between Web Workers | `ADR-005`, `ADR-007`, `ADR-008`, `ADR-010`, `RNF-NET-01..04` |
+| [**03-Contratos-API-OpenAPI-y-Eventos.md**](03-Contratos-API-OpenAPI-y-Eventos.md) | Sync Hub (`astha.local`) REST/HTTPS endpoints guide, CRDT delta WebSocket channel, signed DSN export contract, `postMessage` Worker events, and multi-input ingestion boundary | `ADR-005`, `ADR-007`, `ADR-008`, `ADR-010`, `RNF-NET-01..04`, `RF-ING-01..05` |
 | [**openapi.yaml**](openapi.yaml) | Importable formal **OpenAPI 3.1.0** specification (LAN Sync Hub, Future Sensor Ingestion, and DSN Export) | OpenAPI 3.1.0, `ADR-008`, `ADR-010` |
 
 ---

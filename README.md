@@ -2,7 +2,7 @@
 ### Autonomous Space Telemetry & Health Analytics | NASA Space Apps Challenge 2026
 ### NASA Space Apps Challenge | Create Health Monitoring Software for Astronauts on Space Missions
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg?style=for-the-badge&logo=github)](https://angelcontres.github.io/AstroVital-SpaceApps/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen.svg?style=for-the-badge&logo=github)](https://angelcontres.github.io/ASTHA-SpaceApps/)
 [![NASA Space Apps](https://img.shields.io/badge/NASA%20Space%20Apps-2026%20Challenge-orange.svg)](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/?tab=resources)
 [![Standard](https://img.shields.io/badge/Standard-NASA--STD--3001%20Vol%201%20%26%202-blue.svg)](https://standards.nasa.gov/)
 [![Requirements](https://img.shields.io/badge/Requirements-ISO%2FIEC%2FIEEE%2029148-green.svg)](docs/SRS%20–%20Software%20de%20Monitoreo%20de%20Salud%20para%20Astronautas.md)
@@ -18,9 +18,10 @@
 
 ---
 
-> 🎮 **LIVE WEB DEMOS ON GITHUB PAGES:**  
-> * **👉 [Tactical Production Dashboard](https://angelcontres.github.io/AstroVital-SpaceApps/)** *(SPE storm simulator, CO₂ leak, SANS, interactive anatomical map, and NASA OSDR explorer)*  
-> * **📐 [Interactive Wireframe & Blueprint Prototype](https://angelcontres.github.io/AstroVital-SpaceApps/wireframe.html)** *(Cabin technical dimensions, glove-ready ergonomics $\ge 48\text{px}$, WCAG AAA accessibility, and view switcher)*
+> 🎮 **LIVE DEMOS & DEPLOYMENTS:**
+> * **🚀 Production PWA + Rust Sync Hub (Docker / Caddy):** Deployed via [`cd.yml`](.github/workflows/cd.yml) on self-hosted AWS EC2 (`astha-pwa` + `astha-hub` + `astha-caddy`)
+> * **👉 [Static Showcase on GitHub Pages](https://angelcontres.github.io/ASTHA-SpaceApps/)** *(SPE storm simulator, CO₂ leak, SANS, interactive anatomical map, and NASA OSDR explorer)*
+> * **📐 [Interactive Wireframe & Blueprint Prototype](https://angelcontres.github.io/ASTHA-SpaceApps/wireframe.html)** *(Cabin technical dimensions, glove-ready ergonomics $\ge 48\text{px}$, WCAG AAA accessibility, and view switcher)*
 
 ---
 
@@ -92,8 +93,33 @@ All data sources—manual vitals (`9` variables + `5` one-tap symptoms), NASA OS
 ## 📁 4. Repository Structure and Documentation
 
 ```text
-Nasa-Project/
+ASTHA-SpaceApps/
+├── .github/workflows/
+│   ├── ci.yml                                                  # PWA verify + Rust Sync Hub + hub e2e + Docker verify
+│   └── cd.yml                                                  # Publish GHCR images & auto-deploy on self-hosted AWS
+├── astha-pwa/                                                  # Offline-first Svelte 5 PWA (Vite, TypeScript, Web Workers)
+│   ├── src/
+│   │   ├── data/                                               # Bundled 90d reference dataset & OSDR human studies JSON
+│   │   ├── engine/                                             # Pure clinical engine (NASA-STD-3001, Z-score, RangeValidator)
+│   │   ├── storage/                                            # CRDT (HLC/G-Set), AES-GCM-256 + Ed25519, ingestAdapter, SyncClient
+│   │   ├── ui/                                                 # Svelte 5 cockpit (LockScreen, Anatomy 3D/SVG, EntryPad, Simulator)
+│   │   └── workers/                                            # Isolated clinical.worker.ts & dataSync.worker.ts
+│   ├── tests/                                                  # 17 Vitest suites (clinical rules, CRDT, crypto, UI, infra, hub e2e)
+│   ├── nginx/                                                  # Hardened static HTTP server config & /healthz
+│   ├── Dockerfile                                              # Multi-stage Vite build -> read-only nginxinc/nginx-unprivileged
+│   └── README.md
+├── sync-hub/                                                   # Zero-knowledge LAN Sync Hub in Rust (Axum, TLS 1.3, Ed25519)
+│   ├── src/                                                    # /api/v1/* REST, /ws/sync relay, disk Op-Log, mDNS, enrollment
+│   ├── Dockerfile                                              # Distroless non-root Rust binary container
+│   └── README.md
+├── deploy/
+│   ├── Caddyfile                                               # Reverse proxy (/ws/sync & /api/v1/* -> astha-hub; / -> astha-pwa)
+│   ├── server-bootstrap.sh                                     # Multi-distro Linux Docker/UFW host preparation
+│   └── .env.example
+├── docker-compose.yml                                          # Production stack (astha-pwa + --profile tls astha-hub & caddy)
+├── LOCAL_TEST_GUIDE.md                                         # Local PowerShell/Docker verification guide
 ├── docs/
+│   ├── CICD_DOCKER_DEPLOYMENT.md                               # Container architecture, CI/CD & AWS deployment runbook
 │   ├── User-historias/                                         # Catalog of 20 Aerospace BDD User Stories
 │   │   ├── README.md                                           # Epic map, archetypes (personas), and DoD
 │   │   ├── HU-01-Monitoreo-Telemetria-Vital.md                 # Epic 1: Continuous ingestion, sleep, and environmental data
@@ -136,7 +162,7 @@ Nasa-Project/
 │   │   ├── README.md                                           # Index and encryption/CRDT/LAN principles
 │   │   ├── 01-Diagrama-Entidad-Relacion.md                     # Entity-Relationship Diagram (ERD) and IndexedDB Object Stores
 │   │   ├── 02-Diccionario-de-Datos.md                          # Complete dictionary with NASA-STD-3001 thresholds
-│   │   ├── 03-Contratos-API-OpenAPI-y-Eventos.md               # REST/WSS (Sync Hub), Worker postMessage, and DSN Export guide
+│   │   ├── 03-Contratos-API-OpenAPI-y-Eventos.md               # REST/WSS (Sync Hub), Worker postMessage, Multi-Input Ingestion & DSN Export
 │   │   └── openapi.yaml                                        # Formal importable OpenAPI 3.1.0 specification
 │   ├── SDD – Software Design Description ASTHA.md                 # Complementary consolidated technical document
 │   ├── VALIDACION_FUENTES_OFICIALES_NASA.md                    # Cross-certification against NASA-STD-3001
@@ -147,7 +173,7 @@ Nasa-Project/
 │   ├── nasa_osdr_api_human_studies.json                        # 116 official human studies from NASA OSDR API
 │   ├── nasa_osdr_enriched_human_studies.json                   # 10 enriched studies (Inspiration4, SANS, etc.)
 │   └── nasa_official_telemetry/                                # Real ISS packets and ISA-Tab tables
-├── index.html                                                  # 100% offline interactive tactical dashboard
+├── index.html                                                  # Standalone HTML prototype (GitHub Pages showcase)
 ├── wireframe.html                                              # Interactive Wireframe & Blueprint visual prototype
 ├── .nojekyll                                                   # GitHub Pages deployment support
 ├── .gitignore
@@ -156,7 +182,25 @@ Nasa-Project/
 
 ---
 
-## 📊 5. Datasets and Scientific Validation
+## 🛠️ 5. Quick Start, Testing & Production Deployment
+
+- **PWA Verification (`svelte-check` + `eslint` + `vitest` + bundle budget <= 5 MB):**
+  ```bash
+  cd astha-pwa && npm install && npm run verify
+  ```
+- **Rust Sync Hub (`fmt` + `clippy` + `cargo test`):**
+  ```bash
+  cd sync-hub && cargo test && cargo clippy --all-targets -- -D warnings
+  ```
+- **Full Containerized Stack (PWA + Sync Hub + Caddy):**
+  ```bash
+  ASTHA_DOMAIN=localhost docker compose --profile tls up -d --build
+  ```
+  See [`LOCAL_TEST_GUIDE.md`](LOCAL_TEST_GUIDE.md), [`sync-hub/README.md`](sync-hub/README.md), and [`docs/CICD_DOCKER_DEPLOYMENT.md`](docs/CICD_DOCKER_DEPLOYMENT.md) for local testing, device enrollment (`ADR-020`), and AWS self-hosted CD configuration.
+
+---
+
+## 📊 6. Datasets and Scientific Validation
 
 * **NASA OSDR Study OSD-574 (SOMA):** Clinical and microgravity adaptation data from the SpaceX Inspiration4 commercial crew mission.
 * **NASA Planetary Data System (PDS) RAD:** Deep-space radiation telemetry from the Mars Science Laboratory.
