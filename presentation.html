@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASTHA — Project Demo · NASA Space Apps 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --navy: #0B1424;
+    --navy-2: #111E33;
+    --panel: #18294A;
+    --paper: #F4F1EA;
+    --paper-2: #E9E4D8;
+    --card: #FBFAF6;
+    --ink: #0F1A2E;
+    --ink-soft: #46546B;
+    --on-dark: #EEF2F6;
+    --on-dark-soft: #A9B8CC;
+    --orange: #FF8A3D;
+    --orange-deep: #B83D0B;
+    --blue: #5AB0FF;
+    --blue-deep: #1D5FA8;
+    --line-dark: #2A3D60;
+    --line-light: #CFC7B5;
+    --f-head: 'Space Grotesk', Arial, sans-serif;
+    --f-body: 'Inter', Arial, sans-serif;
+    --f-mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: #05090F; font-family: var(--f-body); overflow: hidden; }
+
+  /* ---------- stage: fixed 1920×1080 canvas scaled to the viewport ---------- */
+  .stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .deck { position: relative; width: 1920px; height: 1080px; flex: none; transform-origin: center center; }
+  .slide {
+    position: absolute; inset: 0;
+    padding: 128px 128px 160px;
+    display: flex; flex-direction: column; gap: 40px;
+    overflow: hidden;
+    visibility: hidden; opacity: 0;
+    transition: opacity 400ms ease, visibility 0s linear 400ms;
+  }
+  .slide.active { visibility: visible; opacity: 1; transition: opacity 400ms ease; }
+  .dark { background: var(--navy); color: var(--on-dark); }
+  .dark2 { background: var(--navy-2); color: var(--on-dark); }
+  .light { background: var(--paper); color: var(--ink); }
+  .accent { background: var(--orange); color: var(--ink); }
+
+  /* ---------- type scale: 112 / 64 / 40 / 30 / 24 ---------- */
+  .eyebrow { font-family: var(--f-mono); font-size: 24px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--orange); }
+  .light .eyebrow { color: var(--orange-deep); }
+  .accent .eyebrow { color: var(--ink); }
+  .head { display: flex; flex-direction: column; gap: 16px; }
+  .title { font-family: var(--f-head); font-size: 64px; font-weight: 700; line-height: 1.08; letter-spacing: -1px; }
+  .body { font-size: 24px; line-height: 1.45; color: var(--on-dark-soft); }
+  .light .body { color: var(--ink-soft); }
+  .big { font-family: var(--f-head); font-size: 112px; font-weight: 700; line-height: 1; letter-spacing: -2px; }
+
+  .footer {
+    position: absolute; left: 128px; right: 128px; bottom: 64px;
+    display: flex; justify-content: space-between;
+    font-family: var(--f-mono); font-size: 24px; color: var(--on-dark-soft);
+  }
+  .light .footer { color: var(--ink-soft); }
+  .accent .footer { color: var(--ink); }
+
+  /* ---------- arrival motion (replays each time a slide becomes active) ---------- */
+  .active .rise { animation: rise 600ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 110ms + 150ms); }
+  .active .fadein { animation: fadein 1000ms ease-out both; animation-delay: 200ms; }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+  @keyframes fadein { from { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .active .rise, .active .fadein { animation: none; }
+    .slide { transition: none; }
+  }
+
+  /* ---------- 1 · cover ---------- */
+  .cover-main { display: flex; flex-direction: column; gap: 28px; width: 1000px; flex: 1; justify-content: center; position: relative; }
+  .cover-name { font-family: var(--f-head); font-size: 220px; font-weight: 700; line-height: .95; letter-spacing: -6px; }
+  .cover-sub { font-family: var(--f-head); font-size: 40px; font-weight: 500; line-height: 1.2; }
+  .tagline { font-size: 40px; line-height: 1.3; color: var(--orange); font-style: italic; }
+  .meta { display: flex; gap: 64px; position: relative; }
+  .meta-item { display: flex; flex-direction: column; gap: 8px; }
+  .meta-label { font-family: var(--f-mono); font-size: 24px; letter-spacing: 3px; text-transform: uppercase; color: var(--on-dark-soft); }
+  .meta-value { font-size: 30px; font-weight: 600; line-height: 1.3; }
+  .orbit { position: absolute; left: 1150px; top: 120px; width: 680px; height: 800px; }
+  .orbit-label { position: absolute; font-family: var(--f-mono); font-size: 24px; letter-spacing: 3px; color: var(--on-dark-soft); }
+  .orbit-delay { position: absolute; font-family: var(--f-head); font-size: 40px; font-weight: 700; color: var(--orange); }
+
+  /* ---------- 2 · problem ---------- */
+  .stats { display: flex; gap: 48px; }
+  .stat { flex: 1; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid var(--line-dark); padding-top: 28px; }
+  .stat .big { color: var(--orange); }
+  .risks { display: flex; gap: 24px; }
+  .risk { flex: 1; background: var(--panel); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 10px; }
+  .risk-title { font-family: var(--f-head); font-size: 30px; font-weight: 700; }
+  .risk-tag { font-family: var(--f-mono); font-size: 24px; color: var(--blue); }
+  .kicker { font-size: 30px; font-weight: 600; }
+
+  /* ---------- 3 · solution ---------- */
+  .core { font-family: var(--f-head); font-size: 40px; font-weight: 500; line-height: 1.25; max-width: 1500px; }
+  .flow { display: flex; align-items: stretch; }
+  .step { flex: 1; background: var(--card); border: 2px solid var(--line-light); border-radius: 20px; padding: 36px; display: flex; flex-direction: column; gap: 14px; }
+  .step-num { font-family: var(--f-mono); font-size: 24px; letter-spacing: 3px; color: var(--orange-deep); font-weight: 600; }
+  .step-name { font-family: var(--f-head); font-size: 64px; font-weight: 700; line-height: 1; }
+  .step-feature { font-size: 30px; font-weight: 600; line-height: 1.25; }
+  .arrow { width: 72px; flex: none; align-self: center; display: flex; justify-content: center; }
+  .fit { align-self: flex-start; background: var(--ink); color: var(--paper); font-size: 24px; padding: 16px 28px; border-radius: 999px; }
+
+  /* ---------- 4 · data ---------- */
+  table.data { width: 100%; border-collapse: collapse; font-size: 26px; line-height: 1.35; color: var(--ink); }
+  table.data th, table.data td { padding: 16px 20px; text-align: left; vertical-align: top; }
+  table.data th { background: var(--ink); color: var(--paper); font-weight: 600; }
+  table.data td:first-child { font-weight: 600; white-space: nowrap; }
+  table.data tr:nth-child(odd) td { background: var(--paper-2); }
+  .honest { display: flex; gap: 24px; align-items: center; }
+  .tag { font-family: var(--f-mono); font-size: 24px; font-weight: 600; padding: 8px 18px; border-radius: 8px; letter-spacing: 2px; white-space: nowrap; background: var(--orange); color: var(--ink); }
+  .honest-text { font-size: 24px; line-height: 1.4; color: var(--ink-soft); flex: 1; }
+
+  /* ---------- 5 · prototype ---------- */
+  .pipe { display: flex; align-items: stretch; }
+  .pipe .chip { display: flex; align-items: center; justify-content: center; }
+  .chip { flex: 1; background: var(--panel); border: 2px solid var(--line-dark); border-radius: 14px; padding: 20px 16px; font-size: 24px; font-weight: 600; text-align: center; line-height: 1.25; }
+  .chip-hot { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+  .pipe .arrow { width: 44px; }
+  .cols { display: flex; gap: 48px; flex: 1; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 22px; background: var(--panel); border-radius: 20px; padding: 36px 40px; }
+  .col-head { display: flex; align-items: center; gap: 16px; }
+  .col-title { font-family: var(--f-head); font-size: 40px; font-weight: 700; }
+  .col ul { font-size: 26px; line-height: 1.4; padding-left: 32px; display: flex; flex-direction: column; gap: 12px; }
+  .col li::marker { color: var(--blue); }
+
+  /* ---------- 6 · results ---------- */
+  .kpis { display: flex; gap: 48px; }
+  .kpi { flex: 1; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid var(--ink); padding-top: 24px; }
+  .split { display: flex; gap: 56px; flex: 1; }
+  .chart { position: relative; width: 860px; height: 330px; flex: none; background: var(--card); border: 2px solid var(--line-light); border-radius: 20px; }
+  .chart svg { position: absolute; inset: 0; }
+  .chart-label { position: absolute; font-family: var(--f-mono); font-size: 24px; color: var(--ink-soft); }
+  .chart-warn { position: absolute; font-family: var(--f-mono); font-size: 24px; font-weight: 600; color: var(--orange-deep); }
+  .notes { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+  .note { display: flex; flex-direction: column; gap: 6px; }
+  .note-title { font-family: var(--f-head); font-size: 30px; font-weight: 700; }
+
+  /* ---------- 7 · closing ---------- */
+  .statement { font-family: var(--f-head); font-size: 112px; font-weight: 700; line-height: 1; letter-spacing: -3px; }
+  .contrib { font-size: 30px; line-height: 1.4; max-width: 1400px; }
+  .close-row { display: flex; gap: 56px; align-items: stretch; flex: 1; }
+  .next { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+  .next-item { display: flex; gap: 24px; align-items: flex-start; }
+  .next-num { font-family: var(--f-head); font-size: 36px; font-weight: 700; width: 64px; height: 64px; border: 3px solid var(--ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; }
+  .next-text { font-size: 30px; line-height: 1.35; flex: 1; padding-top: 8px; }
+  .links { display: flex; gap: 32px; align-items: center; }
+  .qr { width: 220px; height: 220px; flex: none; border: 4px dashed var(--ink); border-radius: 16px; display: flex; align-items: center; justify-content: center; background: #FFB27D; font-family: var(--f-mono); font-size: 24px; font-weight: 600; text-align: center; }
+  .link-list { display: flex; flex-direction: column; gap: 10px; }
+  .link-label { font-family: var(--f-mono); font-size: 24px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; }
+  .link-url { font-family: var(--f-mono); font-size: 24px; color: var(--ink); text-decoration: none; }
+  .link-url:hover { text-decoration: underline; }
+  .credits { font-size: 24px; line-height: 1.4; }
+
+  /* ---------- chrome: progress, hint, speaker notes ---------- */
+  .progress { position: fixed; left: 0; bottom: 0; height: 4px; background: var(--orange); transition: width 300ms ease; z-index: 10; }
+  .hint { position: fixed; right: 16px; bottom: 14px; font: 12px var(--f-mono); color: #6B7A90; z-index: 10; transition: opacity 600ms; }
+  .speaker { position: fixed; left: 16px; right: 16px; bottom: 16px; max-width: 900px; margin: 0 auto; background: rgba(11,20,36,.95); color: var(--on-dark); border: 1px solid var(--line-dark); border-radius: 12px; padding: 16px 20px; font-size: 16px; line-height: 1.5; z-index: 11; display: none; }
+  .speaker.show { display: block; }
+  .speaker b { font-family: var(--f-mono); color: var(--orange); font-size: 13px; letter-spacing: 2px; display: block; margin-bottom: 6px; }
+  aside.note-src { display: none; }
+
+  /* ---------- print / PDF export: one slide per page ---------- */
+  @page { size: 1920px 1080px; margin: 0; }
+  @media print {
+    body { overflow: visible; background: none; }
+    .stage { position: static; display: block; }
+    .deck { transform: none !important; width: 1920px; height: auto; }
+    .slide { position: relative; visibility: visible; opacity: 1; width: 1920px; height: 1080px; page-break-after: always; break-after: page; transition: none; }
+    .rise, .fadein, .active .rise, .active .fadein { animation: none !important; }
+    .progress, .hint, .speaker { display: none !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+<main class="deck" id="deck">
+
+<!-- 1 · Title & Project Overview -->
+<section class="slide dark" data-title="Title">
+  <svg class="orbit fadein" viewBox="0 0 680 800" aria-label="Earth to Mars trajectory with a spacecraft in transit">
+    <circle cx="120" cy="680" r="300" fill="none" stroke="#1C2C4A" stroke-width="2"/>
+    <circle cx="120" cy="680" r="470" fill="none" stroke="#1C2C4A" stroke-width="2"/>
+    <path d="M150 650 C 260 420, 420 260, 560 150" fill="none" stroke="#FF8A3D" stroke-width="3" stroke-dasharray="10 14"/>
+    <circle cx="120" cy="680" r="42" fill="#5AB0FF"/>
+    <circle cx="120" cy="680" r="60" fill="none" stroke="#5AB0FF" stroke-opacity=".35" stroke-width="2"/>
+    <circle cx="580" cy="130" r="30" fill="#E0703A"/>
+    <circle cx="150" cy="650" r="9" fill="#EEF2F6">
+      <animateMotion dur="9s" repeatCount="indefinite" path="M0 0 C 110 -230, 270 -390, 410 -500"/>
+    </circle>
+  </svg>
+  <p class="orbit-label" style="left:1210px; top:870px;">EARTH</p>
+  <p class="orbit-label" style="left:1690px; top:160px;">MARS</p>
+  <p class="orbit-delay" style="left:1470px; top:470px;">≤ 22 min</p>
+  <p class="orbit-label" style="left:1470px; top:522px;">one-way signal</p>
+  <div class="cover-main">
+    <p class="eyebrow rise" style="--i:0">NASA Space Apps 2026 · Project Demo</p>
+    <h1 class="cover-name rise" style="--i:1">ASTHA</h1>
+    <p class="cover-sub rise" style="--i:2">Autonomous Space Telemetry &amp; Health Analytics</p>
+    <p class="tagline rise" style="--i:3">Health monitoring that works 22 light-minutes from Earth.</p>
+  </div>
+  <div class="meta rise" style="--i:4">
+    <div class="meta-item"><p class="meta-label">Team</p><p class="meta-value">[TEAM NAME]</p></div>
+    <div class="meta-item"><p class="meta-label">Challenge</p><p class="meta-value">Create Health Monitoring Software<br>for Astronauts on Space Missions</p></div>
+  </div>
+  <aside class="note-src">On a Mars transit, the crew can’t wait for answers from Earth. ASTHA runs health monitoring and decision support entirely on the crew’s own devices. Introduce the team and the challenge in one breath, then move on.</aside>
+</section>
+
+<!-- 2 · Problem Statement -->
+<section class="slide dark2" data-title="Problem">
+  <div class="head">
+    <p class="eyebrow rise" style="--i:0">Problem Statement</p>
+    <h2 class="title rise" style="--i:1">On the way to Mars, help from Earth arrives too late</h2>
+  </div>
+  <div class="stats">
+    <div class="stat rise" style="--i:2"><p class="big">22 min</p><p class="body">One-way signal delay at maximum distance. Real-time support from Earth is impossible.</p></div>
+    <div class="stat rise" style="--i:3"><p class="big">0</p><p class="body">Medical evacuation options. Every emergency is handled on board.</p></div>
+    <div class="stat rise" style="--i:4"><p class="big">0</p><p class="body">Physicians guaranteed on board. Crews are engineers, pilots and scientists.</p></div>
+  </div>
+  <div class="risks rise" style="--i:5">
+    <div class="risk"><p class="risk-title">SANS</p><p class="risk-tag">Optic disc edema</p></div>
+    <div class="risk"><p class="risk-title">Bone loss</p><p class="risk-tag">1–1.5% per month</p></div>
+    <div class="risk"><p class="risk-title">Cabin CO₂</p><p class="risk-tag">&gt; 3.0 mmHg pockets</p></div>
+    <div class="risk"><p class="risk-title">Solar storms</p><p class="risk-tag">SPE radiation spikes</p></div>
+  </div>
+  <p class="kicker rise" style="--i:6">Caught late, a manageable condition becomes a mission-ending one.</p>
+  <div class="footer"><p>ASTHA · NASA Space Apps 2026</p><p class="pg"></p></div>
+  <aside class="note-src">Three facts frame the problem: the signal delay, no evacuation, and a crew that isn’t medically trained. Then the silent risks: SANS, bone loss, CO₂ and radiation. They develop slowly, which is exactly why early detection matters.</aside>
+</section>
+
+<!-- 3 · Proposed Solution -->
+<section class="slide light" data-title="Solution">
+  <div class="head">
+    <p class="eyebrow rise" style="--i:0">Proposed Solution</p>
+    <h2 class="title rise" style="--i:1">An offline clinical co-pilot for the crew</h2>
+  </div>
+  <p class="core rise" style="--i:2">ASTHA spots physiological drift before symptoms appear and turns it into step-by-step actions the crew can execute.</p>
+  <div class="flow">
+    <div class="step rise" style="--i:3"><p class="step-num">01</p><p class="step-name">Sense</p><p class="step-feature">One timeline</p><p class="body">Vitals, cabin CO₂, radiation dose and quick symptom reports together.</p></div>
+    <div class="arrow rise" style="--i:3"><svg width="56" height="32" viewBox="0 0 56 32" aria-hidden="true"><path d="M2 16 H46 M34 4 L50 16 L34 28" fill="none" stroke="#B83D0B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="step rise" style="--i:4"><p class="step-num">02</p><p class="step-name">Detect</p><p class="step-feature">Early drift warning</p><p class="body">Personal baseline + Modified Z-Score (MAD). Alert when |M| ≥ 2.5.</p></div>
+    <div class="arrow rise" style="--i:4"><svg width="56" height="32" viewBox="0 0 56 32" aria-hidden="true"><path d="M2 16 H46 M34 4 L50 16 L34 28" fill="none" stroke="#B83D0B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="step rise" style="--i:5"><p class="step-num">03</p><p class="step-name">Act</p><p class="step-feature">Triage + protocols</p><p class="body">A 3D organ map shows where the risk is; checklists say what to do: storm shelter, LBNP, ARED, CO₂.</p></div>
+  </div>
+  <p class="fit rise" style="--i:6">Challenge fit: health monitoring with zero dependence on Earth</p>
+  <div class="footer"><p>ASTHA · NASA Space Apps 2026</p><p class="pg"></p></div>
+  <aside class="note-src">One sentence: ASTHA detects drift early and turns it into action. Sense, detect, act. The key technical choice is the Modified Z-Score against each astronaut’s own baseline: it ignores outliers and individual variability, so it warns early without crying wolf.</aside>
+</section>
+
+<!-- 4 · NASA Data Integration -->
+<section class="slide light" data-title="NASA data">
+  <div class="head">
+    <p class="eyebrow rise" style="--i:0">NASA Data Integration</p>
+    <h2 class="title rise" style="--i:1">Built on NASA science, not guesswork</h2>
+  </div>
+  <table class="data rise" style="--i:2">
+    <thead><tr><th style="width:22%">NASA source</th><th style="width:44%">What we take → how we transform it</th><th style="width:34%">Use in ASTHA</th></tr></thead>
+    <tbody>
+      <tr><td>OSDR Biodata API v2</td><td>116 human spaceflight studies (OSD-574 Inspiration4, OSD-715 retina) → bundled offline snapshot</td><td>In-app study explorer: evidence behind each risk</td></tr>
+      <tr><td>NASA-STD-3001 Vol. 1 &amp; 2</td><td>Medical and cabin exposure limits → editable threshold bands</td><td>Green / amber / red risk light</td></tr>
+      <tr><td>OSDR EDA (ISS cabin)</td><td>CO₂ ppm + cabin pressure → pCO₂ = ppm ÷ 10⁶ × P</td><td>Alert at ≥ 3.0 mmHg (1-hour average)</td></tr>
+      <tr><td>OSDR RadLab</td><td>Dose rate → µSv/h → integrated over time</td><td>Dose vs. 250 mSv SPE and 600 mSv career limits</td></tr>
+    </tbody>
+  </table>
+  <div class="honest rise" style="--i:3">
+    <p class="tag">SYNTHETIC</p>
+    <p class="honest-text">OSDR publishes no continuous astronaut vitals, so crew telemetry in ASTHA is synthetic, calibrated to OSD-574 ranges. Sources, thresholds and formulas come from NASA.</p>
+  </div>
+  <div class="footer"><p>ASTHA · NASA Space Apps 2026</p><p class="pg"></p></div>
+  <aside class="note-src">Walk the table top to bottom. Continuous heart-rate or SpO₂ streams aren’t public in OSDR, so we calibrated a synthetic 4-crew dataset against Inspiration4 and kept every threshold traceable to NASA sources.</aside>
+</section>
+
+<!-- 5 · Prototype / How It Works -->
+<section class="slide dark" data-title="Prototype">
+  <div class="head">
+    <p class="eyebrow rise" style="--i:0">Prototype · How It Works</p>
+    <h2 class="title rise" style="--i:1">From sensor reading to action in one glance</h2>
+  </div>
+  <div class="pipe rise" style="--i:2">
+    <p class="chip">Ingest</p>
+    <div class="arrow"><svg width="32" height="24" viewBox="0 0 32 24" aria-hidden="true"><path d="M2 12 H24 M16 4 L26 12 L16 20" fill="none" stroke="#5AB0FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <p class="chip">Validate</p>
+    <div class="arrow"><svg width="32" height="24" viewBox="0 0 32 24" aria-hidden="true"><path d="M2 12 H24 M16 4 L26 12 L16 20" fill="none" stroke="#5AB0FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <p class="chip">Baseline + drift</p>
+    <div class="arrow"><svg width="32" height="24" viewBox="0 0 32 24" aria-hidden="true"><path d="M2 12 H24 M16 4 L26 12 L16 20" fill="none" stroke="#5AB0FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <p class="chip">Flight-rule correlation</p>
+    <div class="arrow"><svg width="32" height="24" viewBox="0 0 32 24" aria-hidden="true"><path d="M2 12 H24 M16 4 L26 12 L16 20" fill="none" stroke="#5AB0FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <p class="chip">3D organ map</p>
+    <div class="arrow"><svg width="32" height="24" viewBox="0 0 32 24" aria-hidden="true"><path d="M2 12 H24 M16 4 L26 12 L16 20" fill="none" stroke="#5AB0FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <p class="chip chip-hot">Checklist</p>
+  </div>
+  <div class="cols">
+    <div class="col rise" style="--i:3">
+      <div class="col-head">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="#5AB0FF" stroke-width="3"/><path d="M12 20.5 L18 26 L28 14" fill="none" stroke="#5AB0FF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p class="col-title">Clinical app</p>
+      </div>
+      <ul>
+        <li>Svelte 5 PWA with clinical logic in web workers, fully offline</li>
+        <li>6 views: Biomedical, Environment, Triage (3D), Code Red, Simulator, Lock</li>
+        <li>180-day, 4-crew synthetic dataset</li>
+        <li>Simulator with 6 crisis scenarios (SPE, SANS, CO₂, hypercalciuria…)</li>
+      </ul>
+    </div>
+    <div class="col rise" style="--i:4">
+      <div class="col-head">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="8" y="18" width="24" height="18" rx="3" fill="none" stroke="#5AB0FF" stroke-width="3"/><path d="M13 18 V12 a7 7 0 0 1 14 0 V18" fill="none" stroke="#5AB0FF" stroke-width="3"/></svg>
+        <p class="col-title">Data &amp; sync</p>
+      </div>
+      <ul>
+        <li>AES-GCM-256 encrypted local storage</li>
+        <li>Rust Sync Hub: LAN relay that never sees plaintext</li>
+        <li>CRDT sync: devices keep working if the hub fails and converge when it returns</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><p>ASTHA · NASA Space Apps 2026</p><p class="pg"></p></div>
+  <aside class="note-src">Live demo: open the Simulator, trigger the solar storm, and show the alert flowing to the organ map and the storm-shelter checklist. Then point out that everything runs on-device and data is encrypted at rest and in sync.</aside>
+</section>
+
+<!-- 6 · Results & Impact -->
+<section class="slide light" data-title="Results">
+  <div class="head">
+    <p class="eyebrow rise" style="--i:0">Results &amp; Impact</p>
+    <h2 class="title rise" style="--i:1">Tested like flight software</h2>
+  </div>
+  <div class="kpis">
+    <div class="kpi rise" style="--i:2"><p class="big">200+</p><p class="body">automated tests, incl. hub-crash end-to-end</p></div>
+    <div class="kpi rise" style="--i:3"><p class="big">4/4</p><p class="body">core crises → the right protocol</p></div>
+    <div class="kpi rise" style="--i:4"><p class="big">&lt; 50 ms</p><p class="body">to raise CO₂ and SPE alerts</p></div>
+  </div>
+  <div class="split">
+    <div class="chart rise" style="--i:5">
+      <svg width="860" height="330" viewBox="0 0 860 330" aria-label="Illustration: a Modified Z-score rises over mission days and crosses the 2.5 alert threshold before symptoms appear">
+        <line x1="30" y1="110" x2="840" y2="110" stroke="#B83D0B" stroke-width="3" stroke-dasharray="10 10"/>
+        <line x1="720" y1="30" x2="720" y2="300" stroke="#46546B" stroke-width="2" stroke-dasharray="4 8"/>
+        <polyline points="40,290 120,282 200,286 280,270 360,240 420,180 480,110 560,72 640,52 820,40" fill="none" stroke="#1D5FA8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="480" cy="110" r="14" fill="#FF8A3D" stroke="#0F1A2E" stroke-width="3"/>
+      </svg>
+      <p class="chart-label" style="left:40px; top:64px;">alert threshold |M| = 2.5</p>
+      <p class="chart-warn" style="left:500px; top:124px;">early warning</p>
+      <p class="chart-label" style="left:728px; top:262px;">symptoms</p>
+      <p class="chart-label" style="left:40px; top:18px; font-size:20px;">illustrative</p>
+    </div>
+    <div class="notes rise" style="--i:6">
+      <div class="note"><p class="note-title">Who it’s for</p><p class="body">Crews on long missions beyond Earth orbit.</p></div>
+      <div class="note"><p class="note-title">What makes it different</p><p class="body">100% on-device, glove-ready UI, encrypted end to end.</p></div>
+      <div class="note"><p class="note-title">Scope</p><p class="body">All tests run on synthetic data.</p></div>
+    </div>
+  </div>
+  <div class="footer"><p>ASTHA · NASA Space Apps 2026</p><p class="pg"></p></div>
+  <aside class="note-src">Over 200 automated tests across the PWA and the Rust hub, including an end-to-end test where the hub crashes and devices still converge. Each core crisis scenario routes to its protocol, and CO₂ and SPE alerts compute in under 50 ms. The chart illustrates the idea: the drift score crosses 2.5 before symptoms would show.</aside>
+</section>
+
+<!-- 7 · Closing & Next Steps -->
+<section class="slide accent" data-title="Closing">
+  <div class="head">
+    <p class="eyebrow rise" style="--i:0">Closing &amp; Next Steps</p>
+    <h2 class="statement rise" style="--i:1">Autonomy is the new<br>life support</h2>
+  </div>
+  <p class="contrib rise" style="--i:2">ASTHA turns NASA science into decisions a non-physician crew can act on, with no help from Earth.</p>
+  <div class="close-row">
+    <div class="next rise" style="--i:3">
+      <div class="next-item"><p class="next-num">1</p><p class="next-text">Expand the clinical rules and scenarios with more NASA OSDR studies.</p></div>
+      <div class="next-item"><p class="next-num">2</p><p class="next-text">Usability testing of the triage and checklist flows.</p></div>
+    </div>
+    <div class="links rise" style="--i:4">
+      <div class="qr">[QR]<br>live demo</div>
+      <div class="link-list">
+        <p class="link-label">Live demo</p>
+        <a class="link-url" href="https://angelcontres.github.io/AstroVital-SpaceApps/">angelcontres.github.io/<br>AstroVital-SpaceApps</a>
+        <p class="link-label" style="margin-top:12px">Code</p>
+        <a class="link-url" href="https://github.com/angelcontres/ASTHA-SpaceApps">github.com/angelcontres/<br>ASTHA-SpaceApps</a>
+      </div>
+    </div>
+  </div>
+  <p class="credits rise" style="--i:5">Credits: NASA OSDR (OSD-574, OSD-715) · NASA-STD-3001 · Iglewicz &amp; Hoaglin (Modified Z-Score)</p>
+  <div class="footer"><p>ASTHA · NASA Space Apps 2026 · TUXEROS</p><p class="pg"></p></div>
+  <aside class="note-src">Land the takeaway: autonomy is the new life support. Name the two next steps, point at the QR code for the live demo, and thank NASA OSDR for the open data.</aside>
+</section>
+
+</main>
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="hint" id="hint">← → navigate · F fullscreen · N notes</div>
+<div class="speaker" id="speaker"><b id="speaker-title"></b><span id="speaker-text"></span></div>
+
+<script>
+(() => {
+  const deck = document.getElementById('deck');
+  const slides = [...deck.querySelectorAll('.slide')];
+  const total = slides.length;
+  const progress = document.getElementById('progress');
+  const speaker = document.getElementById('speaker');
+  const speakerTitle = document.getElementById('speaker-title');
+  const speakerText = document.getElementById('speaker-text');
+  let current = 0;
+
+  slides.forEach((s, i) => {
+    const pg = s.querySelector('.pg');
+    if (pg) pg.textContent = `${i + 1} / ${total}`;
+  });
+
+  function fit() {
+    const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    deck.style.transform = `scale(${scale})`;
+  }
+
+  function show(n) {
+    current = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+    const note = slides[current].querySelector('aside.note-src');
+    speakerTitle.textContent = `SLIDE ${current + 1} · ${slides[current].dataset.title.toUpperCase()}`;
+    speakerText.textContent = note ? note.textContent : '';
+    if (location.hash !== `#${current + 1}`) history.replaceState(null, '', `#${current + 1}`);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    switch (e.key) {
+      case 'ArrowRight': case 'PageDown': case ' ': case 'Enter': e.preventDefault(); show(current + 1); break;
+      case 'ArrowLeft': case 'PageUp': case 'Backspace': e.preventDefault(); show(current - 1); break;
+      case 'Home': show(0); break;
+      case 'End': show(total - 1); break;
+      case 'f': case 'F':
+        if (document.fullscreenElement) document.exitFullscreen();
+        else document.documentElement.requestFullscreen?.();
+        break;
+      case 'n': case 'N': speaker.classList.toggle('show'); break;
+    }
+  });
+
+  document.querySelector('.stage').addEventListener('click', (e) => {
+    if (e.target.closest('a')) return;
+    show(current + (e.clientX < window.innerWidth / 3 ? -1 : 1));
+  });
+
+  let touchX = null;
+  document.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) show(current + (dx < 0 ? 1 : -1));
+    touchX = null;
+  });
+
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', () => show(parseInt(location.hash.slice(1), 10) - 1 || 0));
+  setTimeout(() => { document.getElementById('hint').style.opacity = 0; }, 4000);
+
+  fit();
+  show(parseInt(location.hash.slice(1), 10) - 1 || 0);
+})();
+</script>
+</body>
+</html>
