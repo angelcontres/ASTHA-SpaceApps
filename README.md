@@ -184,19 +184,70 @@ ASTHA-SpaceApps/
 
 ## 🛠️ 5. Quick Start, Testing & Production Deployment
 
+### 5.1 Local Development & Verification
+
 - **PWA Verification (`svelte-check` + `eslint` + `vitest` + bundle budget <= 5 MB):**
   ```bash
   cd astha-pwa && npm install && npm run verify
+  ```
+- **PWA Dev Server (UI only):**
+  ```bash
+  cd astha-pwa && npm run dev
   ```
 - **Rust Sync Hub (`fmt` + `clippy` + `cargo test`):**
   ```bash
   cd sync-hub && cargo test && cargo clippy --all-targets -- -D warnings
   ```
-- **Full Containerized Stack (PWA + Sync Hub + Caddy):**
+- **Local PWA + Sync Hub End-to-End (No TLS Certificates):**
   ```bash
-  ASTHA_DOMAIN=localhost docker compose --profile tls up -d --build
+  cd astha-pwa && npm run build:hub
+  cd ../sync-hub && cargo run -- --insecure-http --no-mdns --bind 127.0.0.1:8443 --static-dir ../astha-pwa/dist --auto-enroll
   ```
-  See [`LOCAL_TEST_GUIDE.md`](LOCAL_TEST_GUIDE.md), [`sync-hub/README.md`](sync-hub/README.md), and [`docs/CICD_DOCKER_DEPLOYMENT.md`](docs/CICD_DOCKER_DEPLOYMENT.md) for local testing, device enrollment (`ADR-020`), and AWS self-hosted CD configuration.
+  Open `http://localhost:8443` in two separate browser profiles to test real-time WebSocket CRDT synchronization.
+
+### 5.2 Containerized Deployment with Docker Compose (`astha-pwa` + `astha-hub` + `caddy`)
+
+1. **Bootstrap Docker Engine on a fresh Linux host** (Debian/Ubuntu/RHEL-family, optional):
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/angelcontres/ASTHA-SpaceApps/main/deploy/server-bootstrap.sh | bash
+   ```
+2. **Start the full production stack (`astha-pwa`, `astha-hub`, and `astha-caddy`):**
+   - **Behind a TLS proxy / Cloudflare Tunnel or local HTTP (`:80`):**
+     ```bash
+     ASTHA_DOMAIN=":80" ASTHA_HUB_AUTO_ENROLL=true docker compose --profile tls up -d --build
+     ```
+   - **Direct HTTPS with automatic Let's Encrypt or Caddy internal TLS (`443`):**
+     ```bash
+     ASTHA_DOMAIN="astha.example.com" ASTHA_HUB_AUTO_ENROLL=false docker compose --profile tls up -d --build
+     ```
+3. **Verify container health & reverse proxy routes:**
+   ```bash
+   docker compose --profile tls ps
+   docker exec astha-pwa wget -qO- http://127.0.0.1:8080/healthz
+   docker exec astha-hub /usr/local/bin/astha-sync-hub healthcheck
+   curl -fsS http://127.0.0.1:80/api/v1/health
+   ```
+4. **Device Enrollment (`ADR-020`):**
+   - With `ASTHA_HUB_AUTO_ENROLL=true`, any browser supporting Web Crypto `Ed25519` enrolls automatically on its first signed WebSocket handshake.
+   - With `ASTHA_HUB_AUTO_ENROLL=false` (strict flight allow-list), open **Simulator → Sync Hub enrollment record (ADR-020)** in the PWA, copy the JSON, and run:
+     ```bash
+     docker exec astha-hub astha-sync-hub enroll '{"deviceId":"...","publicJwk":{...}}'
+     ```
+
+### 5.3 Automated CI/CD Deployment on Self-Hosted AWS EC2 / Lightsail
+
+Merging or pushing to `main` runs [`.github/workflows/cd.yml`](.github/workflows/cd.yml):
+1. `build-and-publish-image` runs `npm run verify`, builds `ghcr.io/angelcontres/astha-spaceapps-pwa` (with `VITE_ASTHA_HUB=1`) and `ghcr.io/angelcontres/astha-spaceapps-hub`, and pushes both images to GHCR.
+2. `deploy-aws` runs directly on the `[self-hosted, Linux, X64]` runner on the AWS host, copies [`docker-compose.yml`](docker-compose.yml) and [`deploy/Caddyfile`](deploy/Caddyfile) to `DEPLOY_DIR` (`/opt/astha`), writes `.env`, pulls the immutable SHA images, and starts `--profile tls`.
+
+| GitHub Setting | Type | Default | Purpose |
+| :--- | :--- | :--- | :--- |
+| `ASTHA_DOMAIN` | Variable | `:80` (HTTP) | Public domain for automatic Caddy HTTPS; when unset, Caddy serves `:80` (compatible with Cloudflare Proxy SSL **Flexible** or `cloudflared` tunnel). Set to your domain when terminating HTTPS directly on EC2 with ports `80`/`443` open. |
+| `ASTHA_HUB_AUTO_ENROLL` | Variable | `false` | Set to `true` to auto-enroll browsers on first `Ed25519` handshake (demo mode); keep `false` for manual `devices.json` allow-listing. |
+| `DEPLOY_DIR` | Variable | `/opt/astha` | Target deployment directory on the self-hosted AWS host. |
+| `ASTHA_MISSION_SECRET` | Secret | Built-in demo secret | Shared mission secret used to derive crew wrapping keys across synchronized devices. |
+
+For detailed operational runbooks, firewall ports, and rollback instructions, see [`LOCAL_TEST_GUIDE.md`](LOCAL_TEST_GUIDE.md), [`sync-hub/README.md`](sync-hub/README.md), and [`docs/CICD_DOCKER_DEPLOYMENT.md`](docs/CICD_DOCKER_DEPLOYMENT.md).
 
 ---
 
