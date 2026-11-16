@@ -12,7 +12,7 @@ This document describes the containerized packaging and automated GitHub Actions
 | Hardened PWA Nginx Config | `astha-pwa/nginx/default.conf` | Serves `/healthz`, enforces `no-store`/`no-cache` on `/sw.js` and `/manifest.webmanifest`, sets `immutable` caching on hashed `/assets/`, and adds security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `COOP`). |
 | Compose Stack | `docker-compose.yml` | Runs `astha-pwa` with a `read_only` root filesystem, bounded `tmpfs` mounts, `128 MB` RAM cap, healthchecks, and an optional `tls` profile launching **Caddy** (`deploy/Caddyfile`) for automatic Let's Encrypt HTTPS. |
 | CI Pipeline | `.github/workflows/ci.yml` | On every PR and push to `main`: executes `npm run verify` (`svelte-check`, `tsc`, `eslint`, `vitest`, bundle budget), validates `docker compose config`, builds the Docker image, and runs an end-to-end hardened container smoke test. |
-| CD & Auto-Deploy Pipeline | `.github/workflows/cd.yml` | On merge to `main`, release tags (`v*`), or manual dispatch: verifies the app, publishes an immutable image (`sha-<7>` and `latest`) to **GHCR**, and automatically deploys to AWS over SSH when deployment secrets are configured. |
+| CD & Auto-Deploy Pipeline | `.github/workflows/cd.yml` | On merge to `main`, release tags (`v*`), or manual dispatch: verifies the app, publishes an immutable image (`sha-<7>` and `latest`) to **GHCR**, and automatically deploys the container stack directly on the `self-hosted` AWS Linux host. |
 
 ---
 
@@ -56,19 +56,16 @@ curl -fsSL https://raw.githubusercontent.com/angelcontres/ASTHA-SpaceApps/main/d
 Create an **A record** in your DNS provider pointing your domain (for example `astha.yourdomain.com`) to the instance's static public IPv4 address.  
 *(HTTPS is mandatory for `crypto.subtle` Ed25519 and Service Worker registration on non-localhost origins.)*
 
-### Step 3 — Configure GitHub Repository Secrets & Variables
-In **GitHub → Settings → Secrets and variables → Actions**:
+### Step 3 — Configure GitHub Self-Hosted Runner & Optional Variables
+Register a GitHub Actions `self-hosted` (`Linux`, `X64`) runner on your EC2/Lightsail host (no SSH private key secret required).
+
+Optional in **GitHub → Settings → Secrets and variables → Actions → Variables**:
 
 | Kind | Name | Required | Description |
 | --- | --- | --- | --- |
-| Secret | `SSH_HOST` | Yes (for deploy) | Public IPv4 or hostname of your AWS instance |
-| Secret | `SSH_USER` | Yes (for deploy) | SSH user (e.g., `ubuntu`) |
-| Secret | `SSH_PRIVATE_KEY` | Yes (for deploy) | Private SSH key matching `~/.ssh/authorized_keys` on the server |
-| Variable | `ASTHA_DOMAIN` | Recommended | Custom domain (e.g., `astha.yourdomain.com`). When set, enables `--profile tls` with automatic Caddy HTTPS. When omitted, exposes HTTP directly on port `80`. |
-| Variable | `SSH_PORT` | Optional | Custom SSH port (defaults to `22`) |
-| Variable | `DEPLOY_DIR` | Optional | Target folder on host (defaults to `/opt/astha`) |
-
-> If `SSH_HOST`, `SSH_USER`, or `SSH_PRIVATE_KEY` are not yet defined, `.github/workflows/cd.yml` still builds and publishes the verified Docker image to `ghcr.io` and cleanly skips the SSH rollout step.
+| Variable | `ASTHA_DOMAIN` | Recommended | Custom domain (e.g., `astha.yourdomain.com`). When set, enables `--profile tls` with automatic Caddy HTTPS. When omitted, exposes HTTP directly on port `80` (or `ASTHA_HTTP_PORT`). |
+| Variable | `ASTHA_HTTP_PORT` | Optional | HTTP port when `ASTHA_DOMAIN` is unset (defaults to `80`). |
+| Variable | `DEPLOY_DIR` | Optional | Target folder on host (defaults to `/opt/astha`). |
 
 ---
 

@@ -43,12 +43,9 @@ sudo ufw --force enable
 cat <<EOF
 
 Bootstrap complete!
-Next steps in GitHub -> Settings -> Secrets and variables -> Actions:
-  Secrets:
-    - SSH_HOST        = <Public IPv4 of this EC2/Lightsail instance>
-    - SSH_USER        = ${DEPLOY_USER}
-    - SSH_PRIVATE_KEY = <Private SSH key matching ~/.ssh/authorized_keys>
-  Variables (optional):
-    - ASTHA_DOMAIN    = <Your domain, e.g. astha.yourdomain.com> (enables automatic HTTPS via Caddy)
-    - SSH_PORT        = 22
+Next steps:
+  1. Ensure your GitHub Actions self-hosted runner (Linux X64) is running on this host.
+  2. (Recommended for HTTPS) In GitHub -> Settings -> Secrets and variables -> Actions -> Variables:
+     - ASTHA_DOMAIN = <Your domain or nip.io/sslip.io host, e.g. astha.yourdomain.com> (enables automatic HTTPS via Caddy)
+     - DEPLOY_DIR   = ${DEPLOY_DIR} (optional, defaults to /opt/astha)
 EOF
