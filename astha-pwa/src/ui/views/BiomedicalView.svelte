@@ -308,23 +308,21 @@
         <section class="panel trend" aria-labelledby="trend-h">
           <div class="hud-head">
             <h2 id="trend-h" class="label">Trend · {activeTrend ? indLabel(activeTrend) : ''}</h2>
-            <span class="hud-tag">COMP-04 // UPLOT 2D</span>
-          </div>
-          <div class="metric-pills" role="group" aria-label="Quick chart metric selector">
-            {#each CHARTABLE as id (id)}
-              {@const ind = get(id)}
-              {#if ind}
-                <button
-                  type="button"
-                  class="btn m-pill st {ind.status}"
-                  class:active={ui.bioIndicator === id}
-                  aria-pressed={ui.bioIndicator === id}
-                  onclick={() => (ui.bioIndicator = id)}
-                >
-                  {indShort(ind)}
-                </button>
-              {/if}
-            {/each}
+            <div class="row">
+              <label class="sr-only" for="trend-metric-select">Select chart metric</label>
+              <select
+                id="trend-metric-select"
+                class="btn metric-select"
+                value={ui.bioIndicator}
+                onchange={(e) => (ui.bioIndicator = e.currentTarget.value as CrewIndicator)}
+              >
+                {#each CHARTABLE as id (id)}
+                  {@const ind = get(id)}
+                  {#if ind}<option value={id}>{indShort(ind)} · {indLabel(ind)}</option>{/if}
+                {/each}
+              </select>
+              <span class="hud-tag">COMP-04 // UPLOT 2D</span>
+            </div>
           </div>
           {#if survival}
             <table class="tab num">
@@ -486,20 +484,7 @@
   .eclss { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin-top: 4px; }
   .split { display: grid; grid-template-columns: 7fr 5fr; gap: var(--gap); }
   .trend, .check { min-width: 0; }
-  .metric-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; }
-  .m-pill {
-    min-height: 34px;
-    padding: 4px 10px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    border-color: var(--border);
-    color: var(--text-muted);
-  }
-  .m-pill.active {
-    border-color: var(--accent);
-    color: var(--text);
-    background: color-mix(in srgb, var(--accent) 16%, transparent);
-  }
+  .metric-select { min-height: 36px; height: auto; padding: 4px 10px; font-size: 0.85rem; max-width: 240px; }
   .lower-capsule {
     display: grid;
     grid-template-columns: 3fr 2fr;

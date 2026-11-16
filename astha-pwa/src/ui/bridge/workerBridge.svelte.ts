@@ -9,7 +9,7 @@ import { LOW_POWER_FRAME_MS } from './powerPolicy';
 import type { ScenarioId } from '../../storage/telemetrySources';
 import {
   DEFAULT_PREFS,
-  type ClinicalToUi, type DataState, type DataToUi, type PrefKey, type UiToClinical, type UiToData,
+  type ClinicalToUi, type DataState, type DataToUi, type HubHealthInfo, type PrefKey, type UiToClinical, type UiToData,
 } from '../../workers/protocol';
 
 type Incoming = { from: 'clinical'; msg: ClinicalToUi } | { from: 'data'; msg: DataToUi };
@@ -33,6 +33,7 @@ const EMPTY_STATE: DataState = {
   ready: false, provisioning: false, session: null, crew: [], selectedCrew: '', day: 0, maxDay: 180, playing: false,
   activeScenarios: [], symptoms: {}, acks: [], checks: {}, overrides: [], prefs: { ...DEFAULT_PREFS }, xp: {},
   syncStatus: 'disabled', quarantinedCount: 0, lockedCount: 0, recoveredCount: 0, nodeId: '', enrollment: null,
+  peerNodes: [], ingestCount: 0,
 };
 
 const HABITAT_SET = new Set<string>(HABITAT_INDICATORS);
@@ -50,6 +51,7 @@ export class WorkerBridge {
   ledgerChain = $state.raw<ChainCheck | null>(null);
   notices = $state.raw<Notice[]>([]);
   lastExport = $state.raw<{ fileName: string; text: string; gz: Uint8Array | null } | null>(null);
+  hubHealth = $state.raw<HubHealthInfo | null>(null);
   /** Motor (worker) y ciclo completo acción → Assessment en la UI (RNF-PER-01). */
   engineMs = $state<number | null>(null);
   cycleMs = $state<number | null>(null);
@@ -224,6 +226,7 @@ export class WorkerBridge {
         if (msg.chain) this.ledgerChain = msg.chain;
         break;
       case 'exported': this.lastExport = { fileName: msg.fileName, text: msg.text, gz: msg.gz }; break;
+      case 'hubHealth': this.hubHealth = msg.health; break;
       case 'notice':
         if (msg.reqId !== undefined) this.sentAt.delete(msg.reqId);
         this.pushNotice(msg.level, msg.code, msg.message);
@@ -277,6 +280,8 @@ export class WorkerBridge {
   exportData(kind: 'history' | 'summary', anonymize = false) { this.send({ type: 'export', kind, anonymize }); }
   importData(text: string) { this.send({ type: 'import', text }, true); }
   loadReferenceDataset() { this.send({ type: 'loadReference' }, true); }
+  ingestTelemetry(body: unknown) { this.send({ type: 'ingest', body }, true); }
+  refreshHubHealth() { this.send({ type: 'refreshHubHealth' }); }
   injectBitFlip(both = false) { this.send({ type: 'injectBitFlip', both }, true); }
   verifyLedger() { this.send({ type: 'verifyLedger' }); }
 

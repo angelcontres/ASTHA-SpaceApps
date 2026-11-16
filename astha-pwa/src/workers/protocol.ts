@@ -46,9 +46,28 @@ export type UiToData = Req &
     | { type: 'ingest'; body: unknown }
     | { type: 'injectBitFlip'; both?: boolean }
     | { type: 'verifyLedger' }
+    | { type: 'refreshHubHealth' }
     | { type: 'visibility'; visible: boolean }
     | { type: 'online' }
   );
+
+export interface HubHealthInfo {
+  status: 'ONLINE' | 'DEGRADED';
+  hubVersion: string;
+  oplogSequence: number;
+  mdnsHost: string;
+  enrolledDevices: number;
+  enrolledDeviceIds: string[];
+  autoEnroll: boolean;
+  degradedReasons: string[];
+  fetchedAt: string;
+}
+
+export interface PeerNodeSummary {
+  nodeId: string;
+  envelopes: number;
+  isSelf: boolean;
+}
 
 // ---------------- Data → UI ----------------
 
@@ -84,6 +103,10 @@ export interface DataState {
   nodeId: string;
   /** Sync Hub enrollment record of this device (ADR-020). */
   enrollment: { deviceId: string; alg: string; publicJwk: JsonWebKey } | null;
+  /** Distinct device nodes observed in local/synced envelopes. */
+  peerNodes: PeerNodeSummary[];
+  /** Number of imported / ingested external telemetry records in CRDT. */
+  ingestCount: number;
 }
 
 export type DataToUi =
@@ -92,6 +115,7 @@ export type DataToUi =
   | { type: 'ledger'; entries: DecryptedEntry[]; chain: ChainCheck | null }
   /** gz: gzip-compressed package for the DTN router (null where CompressionStream is unavailable). */
   | { type: 'exported'; fileName: string; text: string; gz: Uint8Array | null }
+  | { type: 'hubHealth'; health: HubHealthInfo | null }
   | { type: 'notice'; level: 'info' | 'error'; code: string; message: string; reqId?: number };
 
 // ---------------- Data ⇄ Clinical (MessageChannel) ----------------

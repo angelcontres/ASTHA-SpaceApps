@@ -139,3 +139,10 @@ flowchart LR
 ### 5.2 Integrating Any Hardware or External Data Feed
 
 Because ASTHA enforces `ADR-016` (daily physiological records) and runs offline inside the browser's hardened sandbox without direct Web Bluetooth / serial hardware drivers, connecting **any** new wearable, medical device, CSV/JSON exporter, or spacecraft ECLSS gateway only requires translating its readings into the `POST /ingest/telemetry` JSON contract defined in [`openapi.yaml`](openapi.yaml) and dispatching `{ type: 'ingest', body }` to the Data Worker (`astha-pwa/src/storage/ingestAdapter.ts`). No changes to clinical rules, CRDT storage, encryption, or Sync Hub replication are needed.
+
+### 5.3 Live Inspection in the PWA (`DevicesTelemetryModal`)
+
+To keep the cockpit uncluttered while giving full observability over connected nodes and external telemetry feeds:
+- **Header Sync Pill (`HabitatStrip.svelte`) / Tab 4 (`SimulatorView.svelte`):** Clicking the live sync pill (`Sync OK · N` / `No Hub` / `Autonomous`) or **Inspect Devices & Test Telemetry Input** opens [`DevicesTelemetryModal.svelte`](../../astha-pwa/src/ui/components/DevicesTelemetryModal.svelte).
+- **Connected Devices & Hub State:** The Data Worker fetches `GET /api/v1/health` on connection or manual refresh (event-driven, zero polling) and merges `enrolledDeviceIds`, `autoEnroll`, and `oplogSequence` with peer node IDs observed in CRDT envelopes (`peerNodes`).
+- **Interactive Telemetry Connection Tester:** Includes a collapsible **"Test External Telemetry Feed (JSON Ingest)"** section pre-filled with a `POST /ingest/telemetry` sample frame that dispatches `{ type: 'ingest', body }` directly into `adaptIngest()` + `validateValue()` and records the result in the audit ledger.

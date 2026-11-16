@@ -22,13 +22,16 @@ fn error(status: StatusCode, message: impl Into<String>) -> Response {
 /// `GET /health`
 pub async fn health(State(hub): State<AppState>) -> Json<Value> {
     let degraded = hub.degraded_reasons();
+    let enrolled_ids = hub.enrolled_device_ids();
     Json(json!({
         "status": if degraded.is_empty() { "ONLINE" } else { "DEGRADED" },
         "hubVersion": env!("CARGO_PKG_VERSION"),
         "bundleHashSha256": hub.config.bundle_hash,
         "oplogSequence": hub.tip_seq(),
         "mdnsHost": MDNS_HOST,
-        "enrolledDevices": hub.registry_len(),
+        "enrolledDevices": enrolled_ids.len(),
+        "enrolledDeviceIds": enrolled_ids,
+        "autoEnroll": hub.config.auto_enroll,
         "degradedReasons": degraded,
     }))
 }

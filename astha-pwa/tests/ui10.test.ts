@@ -93,6 +93,20 @@ describe('UI-10 · View B Code Red SPE & Complementary Modals', () => {
     const sim = read('src/ui/views/SimulatorView.svelte');
     expect(sim).toContain('SCENARIO_IDS');
     expect(sim).toContain('bridge.exportData');
+    expect(sim).toContain('Connected Devices &amp; Telemetry Feeds');
+
+    const devicesModal = read('src/ui/components/DevicesTelemetryModal.svelte');
+    expect(devicesModal).toContain('Connected Devices &amp; Telemetry Links');
+    expect(devicesModal).toContain('bridge.ingestTelemetry');
+    expect(devicesModal).toContain('bridge.refreshHubHealth');
+    expect(devicesModal).not.toMatch(/[áéíóúñÁÉÍÓÚÑ¿¡]/);
+
+    const bio = read('src/ui/views/BiomedicalView.svelte');
+    expect(bio).toContain('trend-metric-select');
+
+    const app = read('src/App.svelte');
+    expect(app).toContain('<DevicesTelemetryModal />');
+    expect(app).toContain('Quick Crisis Sim');
   });
 
   it('keeps all clinical UI data and engine output generators strictly in English', () => {

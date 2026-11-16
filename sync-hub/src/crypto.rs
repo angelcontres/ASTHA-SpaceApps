@@ -132,6 +132,12 @@ impl Registry {
         self.devices.is_empty()
     }
 
+    pub fn device_ids(&self) -> Vec<String> {
+        let mut ids: Vec<String> = self.devices.keys().cloned().collect();
+        ids.sort();
+        ids
+    }
+
     fn verify(&self, device_id: &str, message: &[u8], sig_b64: &str) -> Result<(), Rejection> {
         let (key, _) = self
             .devices

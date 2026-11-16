@@ -6,6 +6,7 @@
   import AlarmManager from './ui/components/AlarmManager.svelte';
   import BioPassportModal from './ui/components/BioPassportModal.svelte';
   import CrewBar from './ui/components/CrewBar.svelte';
+  import DevicesTelemetryModal from './ui/components/DevicesTelemetryModal.svelte';
   import EmergencyDrawer from './ui/components/EmergencyDrawer.svelte';
   import HabitatStrip from './ui/components/HabitatStrip.svelte';
   import HudIcon from './ui/components/HudIcon.svelte';
@@ -48,8 +49,10 @@
       ui.openAlertId = null;
       ui.codeRedId = null;
       ui.selectedRegion = null;
+      ui.devicesOpen = false;
     }
   });
+  let simQuickOpen = $state(false);
 
   const codeRed = $derived(
     ui.codeRedId
@@ -179,20 +182,29 @@
   </main>
 
   {#if !prefs.zen}
-    <!-- COMP-06: quick crisis fault-injection bar -->
+    <!-- COMP-06: collapsible quick crisis fault-injection bar (reduces visual clutter on cockpit views) -->
     <footer class="simbar" aria-label="Quick crisis simulator">
-      {#each SCENARIO_IDS.slice(0, 4) as id (id)}
-        <button type="button" class="btn" onclick={() => bridge.injectScenario(id)}>
-          <HudIcon name="alert" size={14} /> {id} · {scenarioLabel(id, scen(id).label)}
-        </button>
-      {/each}
-      <button type="button" class="btn primary" onclick={() => bridge.reset()}><HudIcon name="check" size={15} /> Reset Nominal</button>
+      <button type="button" class="btn" aria-expanded={simQuickOpen} onclick={() => (simQuickOpen = !simQuickOpen)}>
+        <HudIcon name="alert" size={14} /> Quick Crisis Sim ({simQuickOpen ? 'Hide' : 'A–D'})
+        {#if bridge.data.activeScenarios.length}<span class="num">· {bridge.data.activeScenarios.length} active</span>{/if}
+      </button>
+      {#if simQuickOpen}
+        {#each SCENARIO_IDS.slice(0, 4) as id (id)}
+          <button type="button" class="btn" onclick={() => bridge.injectScenario(id)}>
+            <HudIcon name="alert" size={14} /> {id} · {scenarioLabel(id, scen(id).label)}
+          </button>
+        {/each}
+      {/if}
+      {#if simQuickOpen || bridge.data.activeScenarios.length > 0}
+        <button type="button" class="btn primary" onclick={() => bridge.reset()}><HudIcon name="check" size={15} /> Reset Nominal</button>
+      {/if}
       <span class="label provenance">Synthetic demo telemetry · not measured NASA flight data</span>
     </footer>
   {/if}
 
   {#if ui.emergencyOpen}<EmergencyDrawer />{/if}
   {#if ui.bioPassportOpen}<BioPassportModal />{/if}
+  {#if ui.devicesOpen}<DevicesTelemetryModal />{/if}
 {/if}
 
 {#if codeRed}<CodeRedView alert={codeRed} locked={!unlocked} />{/if}

@@ -144,6 +144,10 @@ impl Hub {
         self.registry.read().unwrap().len()
     }
 
+    pub fn enrolled_device_ids(&self) -> Vec<String> {
+        self.registry.read().unwrap().device_ids()
+    }
+
     /// Is the device enrolled? Re-reads the enrollment file first if it changed on disk.
     pub fn is_enrolled(&self, device_id: &str) -> bool {
         if self.registry.read().unwrap().contains(device_id) {

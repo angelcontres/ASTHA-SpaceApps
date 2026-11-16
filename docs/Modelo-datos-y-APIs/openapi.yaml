@@ -53,6 +53,17 @@ paths:
                   mdnsHost:
                     type: string
                     example: "astha.local"
+                  enrolledDevices:
+                    type: integer
+                    minimum: 0
+                  enrolledDeviceIds:
+                    type: array
+                    items:
+                      type: string
+                    description: Sorted list of 12-character Ed25519 key fingerprints enrolled on the hub (zero PII)
+                  autoEnroll:
+                    type: boolean
+                    description: Whether unknown devices proving Ed25519 key possession auto-enroll on handshake
 
   /sync/handshake:
     post:

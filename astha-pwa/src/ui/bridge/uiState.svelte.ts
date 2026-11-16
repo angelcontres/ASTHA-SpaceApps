@@ -15,6 +15,7 @@ class UiState {
   envIndicator = $state<IndicatorId>('ppco2');
   view = $state<'front' | 'back'>('front');
   settingsOpen = $state(false);
+  devicesOpen = $state(false);
   emergencyOpen = $state(false);
   bioPassportOpen = $state(false);
   /** Reactive escalation stage per alert ID (1: 0-8s local, 2: 2 min CMO, 3: 5 min cabin). */

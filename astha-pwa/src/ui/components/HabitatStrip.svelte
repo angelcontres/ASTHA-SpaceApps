@@ -22,6 +22,15 @@
     online: 'Sync OK',
     unauthorized: 'Not enrolled',
   } as const;
+  const syncTone = {
+    disabled: 'nominal',
+    offline: 'caution',
+    connecting: 'caution',
+    online: 'nominal',
+    unauthorized: 'critical',
+  } as const;
+  const peerCount = $derived(bridge.hubHealth?.enrolledDevices ?? bridge.data.peerNodes.length);
+  const activeModes = $derived(Number(zen) + Number(survival) + Number(red));
 </script>
 
 <header class="strip">
@@ -63,24 +72,40 @@
 
   <div class="meta label" aria-live="off">
     <span>Cycle {bridge.cycleMs != null ? `${fmt(bridge.cycleMs, 1)} ms` : '—'}</span>
-    <span>{syncLabel[bridge.syncStatus]}</span>
+    <button
+      type="button"
+      class="btn sync-pill st {syncTone[bridge.syncStatus]}"
+      aria-expanded={ui.devicesOpen}
+      title="View connected devices, Sync Hub status & telemetry inputs"
+      onclick={() => { ui.devicesOpen = !ui.devicesOpen; bridge.refreshHubHealth(); }}
+    >
+      <span class="sym" aria-hidden="true"></span>
+      <span>{syncLabel[bridge.syncStatus]}{peerCount > 0 ? ` · ${peerCount}` : ''}</span>
+    </button>
   </div>
 
   <div class="actions">
-    <button type="button" class="btn" aria-pressed={zen} onclick={() => bridge.setPref('zen', !zen)}>Zen</button>
-    <button
-      type="button"
-      class="btn"
-      aria-pressed={survival}
-      disabled={bridge.activeRole !== 'commander'}
-      title={bridge.activeRole === 'commander' ? 'Power survival mode < 5 W' : 'Commander only'}
-      onclick={() => bridge.setPref('survival', !survival)}
-    >
-      Survival
-    </button>
-    <button type="button" class="btn" aria-pressed={red} onclick={() => bridge.setPref('redMode', !red)}>
-      Red 630
-    </button>
+    <details class="modes-menu">
+      <summary class="btn" aria-label="Display and power modes">
+        Modes{#if activeModes > 0}<span class="mode-badge num">{activeModes}</span>{/if}
+      </summary>
+      <div class="modes-drop panel stack" role="group" aria-label="Quick display modes">
+        <button type="button" class="btn" aria-pressed={zen} onclick={() => bridge.setPref('zen', !zen)}>Zen</button>
+        <button
+          type="button"
+          class="btn"
+          aria-pressed={survival}
+          disabled={bridge.activeRole !== 'commander'}
+          title={bridge.activeRole === 'commander' ? 'Power survival mode < 5 W' : 'Commander only'}
+          onclick={() => bridge.setPref('survival', !survival)}
+        >
+          Survival
+        </button>
+        <button type="button" class="btn" aria-pressed={red} onclick={() => bridge.setPref('redMode', !red)}>
+          Red 630
+        </button>
+      </div>
+    </details>
     <button
       type="button"
       class="btn icon"
@@ -150,8 +175,45 @@
   .eclss li { display: flex; align-items: baseline; gap: 6px; padding: 4px 10px; border: 1px solid var(--border); border-bottom: var(--st-bw) solid var(--st); border-radius: var(--radius-btn); background: var(--space-800); }
   .eclss .v { font-weight: 700; }
   .eclss .sym { color: var(--st-text); }
-  .meta { display: flex; flex-direction: column; gap: 2px; }
-  .actions { display: flex; flex-wrap: wrap; gap: var(--gap); margin-left: auto; }
+  .meta { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .sync-pill {
+    min-height: 32px;
+    height: auto;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    border-color: var(--st);
+    color: var(--st-text);
+    gap: 6px;
+  }
+  .modes-menu { position: relative; }
+  .modes-menu summary { list-style: none; gap: 6px; }
+  .modes-menu summary::-webkit-details-marker { display: none; }
+  .mode-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--space-950);
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+  .modes-drop {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 45;
+    min-width: 170px;
+    padding: 8px;
+    background: var(--space-900);
+    border: 1px solid var(--accent);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+  }
+  .modes-drop .btn { width: 100%; justify-content: flex-start; }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--gap); margin-left: auto; align-items: center; }
   .emergency {
     font-weight: 800;
     letter-spacing: 0.04em;

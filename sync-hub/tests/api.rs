@@ -44,6 +44,8 @@ async fn health_matches_schema() {
     assert_eq!(b["mdnsHost"], "astha.local");
     assert_eq!(b["oplogSequence"], 0);
     assert!(b["hubVersion"].is_string());
+    assert!(b["enrolledDeviceIds"].is_array());
+    assert_eq!(b["autoEnroll"], false);
     assert_eq!(b["bundleHashSha256"].as_str().unwrap().len(), 0); // no static dir configured in this test
 }
 

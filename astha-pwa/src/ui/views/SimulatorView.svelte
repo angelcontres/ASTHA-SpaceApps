@@ -4,7 +4,7 @@
   import { SCENARIO_IDS, SYNTHETIC, type ScenarioDef, type ScenarioId } from '../../storage/telemetrySources';
   import { power } from '../bridge/power.svelte';
   import { bridge } from '../bridge/workerBridge.svelte';
-  import { fd, fmt } from '../bridge/uiState.svelte';
+  import { fd, fmt, ui } from '../bridge/uiState.svelte';
   import HudIcon from '../components/HudIcon.svelte';
 
   let target = $state<string>('');
@@ -22,6 +22,23 @@
 </script>
 
 <div class="sim">
+  <section class="panel net-card" aria-labelledby="net-h">
+    <div class="net-head">
+      <div>
+        <h2 id="net-h">Connected Devices &amp; Telemetry Feeds</h2>
+        <p class="muted small">
+          Sync Hub: <strong>{bridge.syncStatus}</strong> ·
+          Enrolled: <strong class="num">{bridge.hubHealth?.enrolledDevices ?? bridge.data.peerNodes.length}</strong> ·
+          Node: <code class="num">{bridge.data.nodeId || '—'}</code> ·
+          External Ingest Ops: <strong class="num">{bridge.data.ingestCount}</strong>
+        </p>
+      </div>
+      <button type="button" class="btn primary" onclick={() => { ui.devicesOpen = true; bridge.refreshHubHealth(); }}>
+        Inspect Devices &amp; Test Telemetry Input
+      </button>
+    </div>
+  </section>
+
   <section class="panel stack" aria-labelledby="sc-h">
     <h2 id="sc-h">Crisis Scenarios</h2>
     <label class="row target">
@@ -66,60 +83,56 @@
     </dl>
   </section>
 
-  <section class="panel stack" aria-labelledby="int-h">
-    <h2 id="int-h">Data Integrity &amp; Earth Downlink</h2>
-    <dl class="metrics num">
-      <div><dt class="label">Recovered from replica</dt><dd>{bridge.data.recoveredCount}</dd></div>
-      <div><dt class="label">Quarantined records</dt><dd>{bridge.quarantinedCount}</dd></div>
-      <div><dt class="label">Sync Hub</dt><dd>{bridge.syncStatus}</dd></div>
-      <div><dt class="label">Battery</dt><dd>{power.supported && power.level !== null ? `${Math.round(power.level * 100)}%${power.charging ? ' · charging' : ''}` : 'API unavailable'}{power.low ? ' · critical mode' : ''}</dd></div>
-      <div><dt class="label">Node</dt><dd>{bridge.data.nodeId}</dd></div>
-    </dl>
-    <div class="row">
-      <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip()}>Inject SEU (bit-flip)</button>
-      <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip(true)}>SEU in envelope &amp; replica</button>
-      <button type="button" class="btn" aria-pressed={power.simulated} onclick={() => power.simulate(!power.simulated)}>
-        {power.simulated ? 'Restore Battery' : 'Simulate Critical Battery (EPS)'}
-      </button>
-      <button type="button" class="btn" onclick={() => bridge.verifyLedger()}>Verify Ledger Chain</button>
-    </div>
-    {#if bridge.ledgerChain}
-      <p class="st {bridge.ledgerChain.ok ? 'nominal' : 'critical'}" role="status">
-        <span class="sym" aria-hidden="true"></span>
-        {bridge.ledgerChain.ok ? `Chain intact: ${bridge.ledgerChain.checked} entries verified` : `Chain broken at ${bridge.ledgerChain.brokenAt}: ${bridge.ledgerChain.reason}`}
-      </p>
-    {/if}
-    <div class="row">
-      <button type="button" class="btn" onclick={() => bridge.exportData('summary')}>Flight Surgeon Summary</button>
-      <button type="button" class="btn" onclick={() => bridge.exportData('history')}>Full Mission History</button>
-      {#if bridge.lastExport}
-        <button type="button" class="btn primary" onclick={() => bridge.downloadExport()}><HudIcon name="download" size={16} /> {bridge.lastExport.fileName}</button>
-      {/if}
-    </div>
-    <label class="btn file">
-      Import signed history (.json)
-      <input type="file" accept="application/json,.json" class="sr-only" onchange={importFile} />
-    </label>
-    {#if bridge.data.enrollment}
-      <details class="enroll">
-        <summary class="label">Sync Hub enrollment record (ADR-020)</summary>
-        {#if bridge.data.enrollment.alg !== 'Ed25519'}
-          <p class="err small">This browser signs with {bridge.data.enrollment.alg}; the Sync Hub accepts Ed25519 devices only.</p>
-        {/if}
-        <pre class="num">{JSON.stringify({ deviceId: bridge.data.enrollment.deviceId, publicJwk: bridge.data.enrollment.publicJwk })}</pre>
-        <button type="button" class="btn" onclick={() => navigator.clipboard?.writeText(JSON.stringify({ deviceId: bridge.data.enrollment!.deviceId, publicJwk: bridge.data.enrollment!.publicJwk }))}>
-          Copy for devices.json
+  <details class="panel capsule" aria-labelledby="int-h">
+    <summary id="int-h" class="cap-sum">
+      <span>Data Integrity, SEU Faults &amp; Earth Downlink</span>
+      <span class="muted small num">Recovered {bridge.data.recoveredCount} · Quarantined {bridge.quarantinedCount}</span>
+    </summary>
+    <div class="stack cap-body">
+      <dl class="metrics num">
+        <div><dt class="label">Recovered from replica</dt><dd>{bridge.data.recoveredCount}</dd></div>
+        <div><dt class="label">Quarantined records</dt><dd>{bridge.quarantinedCount}</dd></div>
+        <div><dt class="label">Sync Hub</dt><dd>{bridge.syncStatus}</dd></div>
+        <div><dt class="label">Battery</dt><dd>{power.supported && power.level !== null ? `${Math.round(power.level * 100)}%${power.charging ? ' · charging' : ''}` : 'API unavailable'}{power.low ? ' · critical mode' : ''}</dd></div>
+        <div><dt class="label">Node</dt><dd>{bridge.data.nodeId}</dd></div>
+      </dl>
+      <div class="row">
+        <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip()}>Inject SEU (bit-flip)</button>
+        <button type="button" class="btn danger" onclick={() => bridge.injectBitFlip(true)}>SEU in envelope &amp; replica</button>
+        <button type="button" class="btn" aria-pressed={power.simulated} onclick={() => power.simulate(!power.simulated)}>
+          {power.simulated ? 'Restore Battery' : 'Simulate Critical Battery (EPS)'}
         </button>
-      </details>
-    {/if}
-    <button type="button" class="btn" disabled={bridge.activeRole !== 'cmo'} onclick={() => bridge.loadReferenceDataset()}>
-      Load reference dataset (OSD-574-calibrated, 90 days)
-    </button>
-    <p class="muted small">Offline alternative source bundled with the app. Overrides days 1–90 for the whole crew (CMO only).</p>
-  </section>
+        <button type="button" class="btn" onclick={() => bridge.verifyLedger()}>Verify Ledger Chain</button>
+      </div>
+      {#if bridge.ledgerChain}
+        <p class="st {bridge.ledgerChain.ok ? 'nominal' : 'critical'}" role="status">
+          <span class="sym" aria-hidden="true"></span>
+          {bridge.ledgerChain.ok ? `Chain intact: ${bridge.ledgerChain.checked} entries verified` : `Chain broken at ${bridge.ledgerChain.brokenAt}: ${bridge.ledgerChain.reason}`}
+        </p>
+      {/if}
+      <div class="row">
+        <button type="button" class="btn" onclick={() => bridge.exportData('summary')}>Flight Surgeon Summary</button>
+        <button type="button" class="btn" onclick={() => bridge.exportData('history')}>Full Mission History</button>
+        {#if bridge.lastExport}
+          <button type="button" class="btn primary" onclick={() => bridge.downloadExport()}><HudIcon name="download" size={16} /> {bridge.lastExport.fileName}</button>
+        {/if}
+      </div>
+      <label class="btn file">
+        Import signed history (.json)
+        <input type="file" accept="application/json,.json" class="sr-only" onchange={importFile} />
+      </label>
+      <button type="button" class="btn" disabled={bridge.activeRole !== 'cmo'} onclick={() => bridge.loadReferenceDataset()}>
+        Load reference dataset (OSD-574-calibrated, 90 days)
+      </button>
+      <p class="muted small">Offline alternative source bundled with the app. Overrides days 1–90 for the whole crew (CMO only).</p>
+    </div>
+  </details>
 
-  <section class="panel log" aria-labelledby="log-h">
-    <h2 id="log-h">Append-Only Audit Ledger <span class="unit">({bridge.ledgerEntries.length} latest)</span></h2>
+  <details class="panel log capsule" aria-labelledby="log-h">
+    <summary id="log-h" class="cap-sum">
+      <span>Append-Only Audit Ledger</span>
+      <span class="unit num">({bridge.ledgerEntries.length} latest entries)</span>
+    </summary>
     <ol class="entries">
       {#each ledger as e (e.key)}
         <li>
@@ -137,7 +150,7 @@
         <li class="muted">No entries yet.</li>
       {/each}
     </ol>
-  </section>
+  </details>
 </div>
 
 <style>
@@ -159,7 +172,20 @@
   .detail { flex: 1 1 100%; color: var(--text-muted); font-size: 0.9375rem; }
   @media (max-width: 1023px) { .sim { grid-template-columns: 1fr; } }
   .small { font-size: 0.875rem; }
-  .enroll pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.8125rem; margin: 8px 0; }
-  .enroll summary { cursor: pointer; min-height: var(--touch); display: flex; align-items: center; }
-  .err { color: var(--alert-red-text); }
+  .net-card { grid-column: 1 / -1; }
+  .net-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .net-head h2 { margin: 0 0 4px; font-size: 1.05rem; }
+  .capsule { grid-column: 1 / -1; }
+  .cap-sum {
+    cursor: pointer;
+    min-height: var(--touch);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    list-style: none;
+  }
+  .cap-sum::-webkit-details-marker { display: none; }
+  .cap-body { padding-top: 12px; border-top: 1px solid var(--border); margin-top: 8px; }
 </style>

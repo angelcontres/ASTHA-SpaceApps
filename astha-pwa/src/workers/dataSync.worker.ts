@@ -25,7 +25,8 @@ import {
 } from '../storage/telemetrySources';
 import {
   DEFAULT_PREFS,
-  type ClinicalToData, type DataState, type DataToClinical, type DataToUi, type PrefKey, type Prefs, type UiToData,
+  type ClinicalToData, type DataState, type DataToClinical, type DataToUi, type HubHealthInfo,
+  type PeerNodeSummary, type PrefKey, type Prefs, type UiToData,
 } from './protocol';
 
 interface WorkerScope {
@@ -302,6 +303,20 @@ function buildState(): DataState {
   const symptoms: DataState['symptoms'] = {};
   for (const c of allowed) symptoms[c] = lastView?.symptoms[c] ?? [];
 
+  const counts = new Map<string, number>();
+  for (const env of envCache.values()) counts.set(env.autor, (counts.get(env.autor) ?? 0) + 1);
+  if (device && !counts.has(device.nodeId)) counts.set(device.nodeId, 0);
+  const peerNodes: PeerNodeSummary[] = [...counts.entries()]
+    .map(([nodeId, envelopes]) => ({ nodeId, envelopes, isSelf: device?.nodeId === nodeId }))
+    .sort((a, b) => Number(b.isSelf) - Number(a.isSelf) || b.envelopes - a.envelopes);
+
+  let ingestCount = 0;
+  for (const op of crdt.sorted()) {
+    if ((op.body.t === 'measurement' || op.body.t === 'habitat' || op.body.t === 'symptom') && op.body.source === 'import') {
+      ingestCount++;
+    }
+  }
+
   return {
     ready,
     provisioning: !!provisioning,
@@ -325,7 +340,41 @@ function buildState(): DataState {
     nodeId: device?.nodeId ?? '',
     // Record to enroll this device on the Sync Hub (devices.json, ADR-020). The hub verifies Ed25519 only.
     enrollment: device ? { deviceId: device.nodeId, alg: device.alg, publicJwk: device.publicJwk } : null,
+    peerNodes,
+    ingestCount,
   };
+}
+
+async function fetchHubHealth(): Promise<void> {
+  if (!sync || sync.status === 'disabled' || typeof fetch !== 'function' || !globalThis.location?.origin) {
+    post({ type: 'hubHealth', health: null });
+    return;
+  }
+  try {
+    const url = new URL('/api/v1/health', globalThis.location.origin);
+    const signal = typeof AbortSignal !== 'undefined' && 'timeout' in AbortSignal ? AbortSignal.timeout(2500) : undefined;
+    const res = await fetch(url, { signal, cache: 'no-store' });
+    if (!res.ok) return;
+    const raw = (await res.json()) as Record<string, unknown>;
+    const health: HubHealthInfo = {
+      status: raw.status === 'DEGRADED' ? 'DEGRADED' : 'ONLINE',
+      hubVersion: typeof raw.hubVersion === 'string' ? raw.hubVersion : '0.1.0',
+      oplogSequence: typeof raw.oplogSequence === 'number' ? raw.oplogSequence : 0,
+      mdnsHost: typeof raw.mdnsHost === 'string' ? raw.mdnsHost : 'astha.local',
+      enrolledDevices: typeof raw.enrolledDevices === 'number' ? raw.enrolledDevices : 0,
+      enrolledDeviceIds: Array.isArray(raw.enrolledDeviceIds)
+        ? raw.enrolledDeviceIds.filter((x): x is string => typeof x === 'string')
+        : [],
+      autoEnroll: raw.autoEnroll === true,
+      degradedReasons: Array.isArray(raw.degradedReasons)
+        ? raw.degradedReasons.filter((x): x is string => typeof x === 'string')
+        : [],
+      fetchedAt: new Date().toISOString(),
+    };
+    post({ type: 'hubHealth', health });
+  } catch {
+    // Silent when Hub is temporarily offline (zero-error offline posture).
+  }
 }
 
 let ledgerScheduled = false;
@@ -506,6 +555,7 @@ async function handle(msg: UiToData): Promise<void> {
       for (const op of r.ops) await persist(op, op.t === 'habitat' ? 'hab' : keyRefFor((op as { crewId?: string }).crewId));
       await log('import', target?.crewId ?? null, `Ingest: ${r.ops.length} ops${r.suspect.length ? `, suspect ${r.suspect.join(', ')}` : ''}`);
       if (r.suspect.length) notice('info', 'suspect', `Values flagged as suspect: ${r.suspect.join(', ')}`, reqId);
+      else notice('info', 'ingested', `External telemetry ingested (${r.ops.length} ops).`, reqId);
       return scheduleEval(reqId);
     }
     case 'import': {
@@ -542,6 +592,8 @@ async function handle(msg: UiToData): Promise<void> {
     }
     case 'verifyLedger':
       return scheduleLedger(true);
+    case 'refreshHubHealth':
+      return fetchHubHealth();
     case 'visibility':
       sync?.setVisible(msg.visible);
       return;
@@ -614,7 +666,10 @@ async function boot(): Promise<void> {
           notifiedUnenrolled = true;
           notice('error', 'not-enrolled', 'Sync Hub refused this device: add its enrollment record (Simulator → Sync Hub enrollment record) to the hub devices.json.');
         }
-        if (s === 'online') notifiedUnenrolled = false;
+        if (s === 'online') {
+          notifiedUnenrolled = false;
+          void fetchHubHealth();
+        }
         postState();
       },
     });
