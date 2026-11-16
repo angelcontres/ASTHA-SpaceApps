@@ -119,9 +119,10 @@ jobs:
       - name: Deploy ASTHA container stack on self-hosted AWS host
         env:
           IMAGE_REF: ${{ needs.build-and-publish-image.outputs.image_ref }}
+          HUB_IMAGE_REF: ${{ needs.build-and-publish-image.outputs.hub_image_ref }}
           DEPLOY_DIR: ${{ vars.DEPLOY_DIR || '/opt/astha' }}
           ASTHA_DOMAIN: ${{ vars.ASTHA_DOMAIN }}
-          ASTHA_HTTP_PORT_VAR: ${{ vars.ASTHA_HTTP_PORT || '80' }}
+          ASTHA_HUB_AUTO_ENROLL: ${{ vars.ASTHA_HUB_AUTO_ENROLL || 'false' }}
           GHCR_ACTOR: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -163,18 +164,18 @@ jobs:
           cp docker-compose.yml "${DEPLOY_DIR}/docker-compose.yml"
           cp deploy/Caddyfile "${DEPLOY_DIR}/deploy/Caddyfile"
 
+          BIND_ADDR="127.0.0.1"
+          HTTP_PORT="8080"
+          COMPOSE_PROFILE="--profile tls"
           if [ -n "$ASTHA_DOMAIN" ]; then
-            BIND_ADDR="127.0.0.1"
-            HTTP_PORT="8080"
-            COMPOSE_PROFILE="--profile tls"
+            CADDY_SITE="$ASTHA_DOMAIN"
           else
-            BIND_ADDR="0.0.0.0"
-            HTTP_PORT="${ASTHA_HTTP_PORT_VAR}"
-            COMPOSE_PROFILE=""
+            # No domain configured yet: Caddy listens on HTTP :80 and routes /ws/sync & /api/v1/* to astha-hub.
+            CADDY_SITE=":80"
           fi
 
-          printf 'ASTHA_IMAGE=%s\nASTHA_BIND_ADDR=%s\nASTHA_HTTP_PORT=%s\nASTHA_DOMAIN=%s\n' \
-            "$IMAGE_REF" "$BIND_ADDR" "$HTTP_PORT" "${ASTHA_DOMAIN:-localhost}" > "${DEPLOY_DIR}/.env"
+          printf 'ASTHA_IMAGE=%s\nASTHA_HUB_IMAGE=%s\nASTHA_BIND_ADDR=%s\nASTHA_HTTP_PORT=%s\nASTHA_DOMAIN=%s\nASTHA_HUB_AUTO_ENROLL=%s\n' \
+            "$IMAGE_REF" "$HUB_IMAGE_REF" "$BIND_ADDR" "$HTTP_PORT" "$CADDY_SITE" "$ASTHA_HUB_AUTO_ENROLL" > "${DEPLOY_DIR}/.env"
 
           trap '$DOCKER logout ghcr.io >/dev/null 2>&1 || true' EXIT
           printf '%s\n' "$GHCR_TOKEN" | $DOCKER login ghcr.io -u "$GHCR_ACTOR" --password-stdin
@@ -185,17 +186,26 @@ jobs:
 
           for i in $(seq 1 20); do
             if $DOCKER exec astha-pwa wget -qO- http://127.0.0.1:8080/healthz | grep -qx "ok"; then
-              echo "Container healthcheck passed."
+              echo "astha-pwa healthcheck passed."
               break
             fi
             sleep 1
           done
           $DOCKER exec astha-pwa wget -qO- http://127.0.0.1:8080/healthz | grep -qx "ok"
 
-          if [ -z "$COMPOSE_PROFILE" ]; then
-            curl -fsS "http://127.0.0.1:${HTTP_PORT}/healthz" | grep -qx "ok"
-          else
-            curl -fsS "http://127.0.0.1:8080/healthz" | grep -qx "ok"
+          for i in $(seq 1 20); do
+            if $DOCKER exec astha-hub /usr/local/bin/astha-sync-hub healthcheck; then
+              echo "astha-hub healthcheck passed."
+              break
+            fi
+            sleep 1
+          done
+          $DOCKER exec astha-hub /usr/local/bin/astha-sync-hub healthcheck
+
+          curl -fsS "http://127.0.0.1:8080/healthz" | grep -qx "ok"
+          if [ "$CADDY_SITE" = ":80" ]; then
+            curl -fsS "http://127.0.0.1:80/healthz" | grep -qx "ok"
+            curl -fsS "http://127.0.0.1:80/api/v1/health" | grep -q '"status":"ONLINE"'
           fi
 
           $DOCKER image prune -f
@@ -205,11 +215,13 @@ jobs:
             echo "### ASTHA Self-Hosted Production Deployment"
             echo ""
             echo "- **Runner:** \`${RUNNER_NAME:-self-hosted}\`"
-            echo "- **Image:** \`${IMAGE_REF}\`"
-            echo "- **Mode:** \`${ASTHA_DOMAIN:-http-only (port ${HTTP_PORT})}\`"
+            echo "- **PWA Image:** \`${IMAGE_REF}\`"
+            echo "- **Sync Hub Image:** \`${HUB_IMAGE_REF}\`"
+            echo "- **Sync Hub Auto-Enroll:** \`${ASTHA_HUB_AUTO_ENROLL}\`"
+            echo "- **Mode:** \`${ASTHA_DOMAIN:-caddy-http (:80 -> astha-pwa + astha-hub)}\`"
             if [ -n "$ASTHA_DOMAIN" ]; then
               echo "- **URL:** https://${ASTHA_DOMAIN}"
             else
-              echo "- **Note:** Set GitHub Actions variable \`ASTHA_DOMAIN\` to enable automatic Caddy HTTPS (required for Web Crypto Ed25519 & Service Worker on public origins)."
+              echo "- **Note:** Set GitHub Actions variable \`ASTHA_DOMAIN\` to enable automatic Caddy HTTPS (required for Web Crypto Ed25519 & Service Worker on public origins unless TLS terminates at Cloudflare/tunnel)."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
