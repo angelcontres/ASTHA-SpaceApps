@@ -69,14 +69,14 @@ describe('Docker containerization & CI/CD pipeline contracts', () => {
     expect(cd).toContain('ghcr.io');
     expect(cd).toContain('packages: write');
     expect(cd).toContain('deploy-aws:');
-    expect(cd).toContain('SSH_HOST');
-    expect(cd).toContain('docker logout ghcr.io');
+    expect(cd).toContain('[self-hosted, Linux, X64]');
+    expect(cd).toContain('logout ghcr.io');
   });
 
   it('includes English CI/CD documentation and server bootstrap script', () => {
     const doc = readRepo('docs/CICD_DOCKER_DEPLOYMENT.md');
     expect(doc).toContain('AWS Lightsail');
-    expect(doc).toContain('SSH_PRIVATE_KEY');
+    expect(doc).toContain('self-hosted');
     expect(doc).toContain('ASTHA_DOMAIN');
 
     const bootstrap = readRepo('deploy/server-bootstrap.sh');
